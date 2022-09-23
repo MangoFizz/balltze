@@ -1383,7 +1383,7 @@ namespace Balltze {
 
             MEMORY_BASIC_INFORMATION mbi;
 
-            // Find Chimera's map memory memory
+            // Find Chimera's map memory buffer
             for(auto *m = reinterpret_cast<std::byte *>(0x80000000); m < reinterpret_cast<std::byte *>(0xF0000000) && !map_memory_buffer; m += 0x10000000) {
                 if(VirtualQuery(m, &mbi, sizeof(mbi))) {
                     if(mbi.RegionSize == total_buffer_size && mbi.State == MEM_COMMIT | MEM_RESERVE && mbi.Protect == PAGE_READWRITE) {
