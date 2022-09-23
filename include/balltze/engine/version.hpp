@@ -20,7 +20,7 @@ namespace Balltze::Engine {
      * Get the game engine used
      * @return game engine used
      */
-    EngineType get_engine_type() noexcept;
+    EngineType get_engine_type();
 }
 
 #endif

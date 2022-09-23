@@ -110,13 +110,13 @@ void CodeFinder::boyerFind(const short* signature, size_t sigLength, BYTE* memor
     }
 }
 
-std::uintptr_t FindCode(HANDLE module, const short* signature, size_t signatureLen) {
-    CodeFinder finder(module, signature, signatureLen);
-    std::vector<std::uintptr_t> locations = finder.find();
+std::uintptr_t FindCode(HANDLE module, const short* signature, size_t signatureLen, unsigned int match_num) {
+	CodeFinder finder(module, signature, signatureLen);
+	std::vector<std::uintptr_t> locations = finder.find();
 
-    if(!locations.empty()) {
-        return locations[0];
-    } else {
-        return (std::uintptr_t) NULL;
-    }
+	if(!locations.empty() and match_num < locations.size()) {
+		return locations[match_num];
+	} else {
+		return (std::uintptr_t) NULL;
+	}
 }

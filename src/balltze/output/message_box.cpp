@@ -5,7 +5,7 @@
 #include <balltze/output/message_box.hpp>
 
 namespace Balltze {
-    void message_box(const char *message) noexcept {
+    void show_message_box_raw(unsigned int type, const char *message) noexcept {
         HWND window_handle;
         try {
             auto *window_globals = Engine::WindowGlobals::get();
@@ -14,6 +14,6 @@ namespace Balltze {
         catch(...) {
             window_handle = nullptr;
         }
-        MessageBoxA(window_handle, message, "Balltze", MB_OK);
+        MessageBoxA(window_handle, message, "Balltze", type);
     }
 }

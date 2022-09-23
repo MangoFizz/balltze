@@ -32,7 +32,7 @@ namespace Balltze::Memory {
              * @param signature Signature bytes
              * @param lenght    Number of bytes
              */
-            Signature(const char *name, const short *signature, std::size_t lenght, std::uint16_t offset);
+            Signature(const char *name, const short *signature, std::size_t lenght, std::uint16_t offset, std::size_t match_num);
 
         private:
             /** Signature name */

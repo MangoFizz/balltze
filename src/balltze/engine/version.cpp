@@ -7,7 +7,7 @@
 #include <balltze/engine/version.hpp>
 
 namespace Balltze::Engine {
-    EngineType get_engine_type() noexcept {
+    EngineType get_engine_type() {
         static std::optional<EngineType> engine_type;
 
         if(!engine_type.has_value()) {
