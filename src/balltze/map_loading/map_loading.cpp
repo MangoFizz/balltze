@@ -1359,7 +1359,7 @@ namespace Balltze {
         // Calculate CRC32
         get_map_entry(new_map.name.c_str())->crc32 = ~calculate_crc32_of_map_file(&new_map);
 
-        show_message_box("Map %s loaded successfully", new_map.name.c_str());
+        std::cout << "[Balltze] Loaded map " << new_map.name << " (" << new_map.path << ")" << std::endl;
         
         // Done!
         return &loaded_maps.emplace_back(new_map);

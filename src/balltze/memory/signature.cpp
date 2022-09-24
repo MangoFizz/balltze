@@ -36,8 +36,8 @@ namespace Balltze::Memory {
         else {
             std::stringstream ss;
             ss << "Could not find signature '" << name << "'";
-            show_error_box("Could not find signature %s", name);
-            std::terminate();
+            std::cerr << "[Balltze] " << ss.str() << std::endl;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -48,8 +48,7 @@ namespace Balltze::Memory {
             }
         }
 
-        std::cerr << "Could not find signature '" << name << "'" << std::endl;
-        show_error_box("Could not find signature %s", name.c_str());
+        std::cerr << "[Balltze] Signature '" << name << "' does not exists" << std::endl;
         return nullptr;
     }
 
