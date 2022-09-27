@@ -71,6 +71,9 @@ namespace Balltze {
     static std::vector<std::vector<std::byte>> custom_edition_loc_tag_data;
     static std::vector<bool> custom_edition_loc_tag_data_fixed; // we don't know what tag is what, so we depend on the map to determine that for us
 
+    // Tag array
+    static std::vector<Tag> tag_array;
+
     extern "C" {
         void data_map_loading_asm() noexcept;
         void map_loading_asm() noexcept;
@@ -278,7 +281,7 @@ namespace Balltze {
         auto last = loaded_maps.end();
         while(iterator != last) {
             if(iterator.operator->() == map) {
-                // loaded_maps.erase(iterator);
+                loaded_maps.erase(iterator);
                 return;
             }
             
@@ -1068,7 +1071,27 @@ namespace Balltze {
             // Load the map if it's not loaded
             auto *map = load_map(file_name_cstr);
             if(map && map->memory_location.has_value()) {
-                std::memcpy(output, *map->memory_location + file_offset, size);
+                if(output == get_tag_data_address()) {
+                    std::size_t copied_bytes = 0;
+                    
+                    // tag data header
+                    std::memcpy(output, map->memory_location.value() + file_offset, sizeof(TagDataHeader));
+                    copied_bytes += sizeof(TagDataHeader);
+                    
+                    // tag array
+                    auto &tag_data_header = get_tag_data_header();
+                    auto *tag_array_raw = reinterpret_cast<Tag *>(map->memory_location.value() + file_offset + copied_bytes);
+                    tag_array.resize(tag_data_header.tag_count);
+                    tag_array.insert(tag_array.begin(), tag_array_raw, tag_array_raw + tag_data_header.tag_count);
+                    tag_data_header.tag_array = tag_array.data();
+                    copied_bytes += sizeof(Tag) * tag_data_header.tag_count;
+
+                    // rest of tag data
+                    std::memcpy(output + copied_bytes, map->memory_location.value() + file_offset + copied_bytes, size - copied_bytes);
+                }
+                else {
+                    std::memcpy(output, *map->memory_location + file_offset, size);
+                }
                 return 1;
             }
         }
