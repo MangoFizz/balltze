@@ -276,16 +276,9 @@ namespace Balltze {
         return crc;
     }
 
-    static void unload_map(LoadedMap *map) {
-        auto iterator = loaded_maps.begin();
-        auto last = loaded_maps.end();
-        while(iterator != last) {
-            if(iterator.operator->() == map) {
-                loaded_maps.erase(iterator);
-                return;
-            }
-            
-            iterator++;
+    static void unload_maps() {
+        while(loaded_maps.size() > 1) {
+            loaded_maps.pop_back();
         }
     }
 
@@ -945,7 +938,20 @@ namespace Balltze {
     }
 
     extern "C" void do_map_loading_handling(char *map_path, const char *map_name) {
+        if(loaded_maps.size() > 1) {
+            if(loaded_maps[1].secondary) {
+                if(std::strcmp(map_name, "ui") != 0) {
+                    unload_maps();
+                }
+            }
+            else {
+                if(loaded_maps[1].name != map_name) {
+                    unload_maps();
+                }
+            }
+        }
         std::strcpy(map_path, load_map(map_name)->path.string().c_str());
+        load_map("ui", true);
     }
 
     extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {
@@ -1081,13 +1087,75 @@ namespace Balltze {
                     // tag array
                     auto &tag_data_header = get_tag_data_header();
                     auto *tag_array_raw = reinterpret_cast<Tag *>(map->memory_location.value() + file_offset + copied_bytes);
+                    tag_array.clear();
                     tag_array.resize(tag_data_header.tag_count);
-                    tag_array.insert(tag_array.begin(), tag_array_raw, tag_array_raw + tag_data_header.tag_count);
+                    for(std::size_t i = 0; i < tag_data_header.tag_count; i++) {
+                        tag_array[i] = tag_array_raw[i];
+                    }
                     tag_data_header.tag_array = tag_array.data();
                     copied_bytes += sizeof(Tag) * tag_data_header.tag_count;
 
                     // rest of tag data
                     std::memcpy(output + copied_bytes, map->memory_location.value() + file_offset + copied_bytes, size - copied_bytes);
+
+                    // Append secondary maps tag list
+                    for(auto &m : loaded_maps) {
+                        if(!m.secondary) {
+                            continue;
+                        }
+
+                        auto secondary_map_header = reinterpret_cast<MapHeader *>(m.memory_location.value());
+                        auto *secondary_map_tag_data_header = reinterpret_cast<TagDataHeader *>(m.memory_location.value() + secondary_map_header->tag_data_offset);
+                        auto secondary_map_tag_array_raw = reinterpret_cast<Tag *>(secondary_map_tag_data_header + 1);
+
+                        for(std::size_t i = 0; i < secondary_map_tag_data_header->tag_count; i++) {
+                            if(secondary_map_tag_array_raw[i].primary_class != TagClassInt::TAG_CLASS_BITMAP || secondary_map_tag_array_raw[i].indexed) {
+                                continue;
+                            }
+
+                            auto disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(secondary_map_tag_data_header);
+
+                            #define TRANSLATE_ADDRESS(x) reinterpret_cast<decltype(x)>(reinterpret_cast<std::byte *>(x) - disp)
+
+                            tag_array.insert(tag_array.end(), secondary_map_tag_array_raw[i]);
+                            auto &tag = tag_array.back();
+                            auto &previous_tag = tag_array[tag_array.size() - 2];
+                            tag.id.index.index = previous_tag.id.index.index + 1;
+                            tag.id.index.id = previous_tag.id.index.id + 1;
+                            tag.path = TRANSLATE_ADDRESS(tag.path);
+                            tag.data = TRANSLATE_ADDRESS(tag.data);
+                            tag_data_header.tag_count++;
+
+
+                            // if tags are already fixed we can continue
+                            if(m.fixed_tags) {
+                               continue; 
+                            }
+                            
+                            Bitmap *bitmap = reinterpret_cast<Bitmap *>(tag.data);
+
+                            if(bitmap->sequences_count > 0) {
+                                bitmap->sequences = TRANSLATE_ADDRESS(bitmap->sequences);
+                                for(std::size_t j = 0; j < bitmap->sequences_count; j++) {
+                                    auto *sequence = bitmap->sequences + j;
+                                    if(sequence->sprites_count > 0) {
+                                        sequence->sprites = TRANSLATE_ADDRESS(sequence->sprites);
+                                    }
+                                }
+                            }
+
+                            if(bitmap->bitmaps_count > 0) {
+                                bitmap->bitmaps = TRANSLATE_ADDRESS(bitmap->bitmaps);
+                                for(std::size_t j = 0; j < bitmap->bitmaps_count; j++) {
+                                    bitmap->bitmaps[j].pixel_data += map->loaded_size; 
+                                }
+                            }
+                        }
+
+                        m.fixed_tags = true;
+                    }
+
+                    tag_data_header.tag_array = tag_array.data();
                 }
                 else {
                     std::memcpy(output, *map->memory_location + file_offset, size);
@@ -1127,7 +1195,7 @@ namespace Balltze {
         return nullptr;
     }
 
-    LoadedMap *load_map(const char *map_name) {
+    LoadedMap *load_map(const char *map_name, bool secondary) {
         // Lowercase it
         char map_name_lowercase[32] = {};
         std::strncpy(map_name_lowercase, map_name, sizeof(map_name_lowercase) - 1);
@@ -1135,45 +1203,32 @@ namespace Balltze {
             i = std::tolower(i);
         }
         
-        // Check if it's the current map. If so, do not attempt to reload it.
-        if(std::strcmp(get_map_name(), map_name_lowercase) == 0) {
-            for(auto &i : loaded_maps) {
-                if(i.name == map_name_lowercase) {
-                    return &i;
-                }
-            }
-        }
-        
         // Get the map path and modified time
         auto map_path = path_for_map_local(map_name_lowercase);
         std::error_code ec;
         auto timestamp = std::filesystem::last_write_time(map_path, ec);
-        std::size_t actual_size;
         
         if(ec) {
             char error_message[256];
             std::snprintf(error_message, sizeof(error_message), "Unable to determine the modified time of %s.map.\n\nMake sure the map exists in your maps folder and try again.", map_name);
-            show_error_box("Map error", error_message);
+            MessageBoxA(nullptr, error_message, "Map error", MB_OK | MB_ICONERROR);
             std::exit(EXIT_FAILURE);
         }
         
         // Is the map already loaded?
-        for(auto &i : loaded_maps) {
-            if(i.name == map_name_lowercase) {
-                // If the map is loaded and it hasn't been modified, do not reload it
-                if(i.timestamp == timestamp) {
-                    // Move it to the front of the array, though
-                    auto copy = i;
-                    unload_map(&i);
-                    return &loaded_maps.emplace_back(copy);
+        auto loaded_map_it = loaded_maps.begin();
+        while(loaded_map_it != loaded_maps.end()) {
+            auto &map = *loaded_map_it;
+            if(map.name == map_name_lowercase && map.secondary == secondary) {
+                if(map.timestamp == timestamp) {
+                    return &map;
                 }
-                
-                // Remove the map from the list; we're reloading it
-                unload_map(&i);
+                loaded_maps.erase(loaded_map_it, loaded_maps.end());
                 break;
             }
+            loaded_map_it++;
         }
-        
+
         // Add our map to the list
         std::size_t size = std::filesystem::file_size(map_path);
         LoadedMap new_map;
@@ -1182,6 +1237,7 @@ namespace Balltze {
         new_map.file_size = size;
         new_map.decompressed_size = size;
         new_map.path = map_path;
+        new_map.secondary = secondary;
         
         // Load it
         std::FILE *f = nullptr;
@@ -1248,142 +1304,62 @@ namespace Balltze {
             invalid("Header is invalid");
         }
         
-        // Do we have enough space to load into memory?
-        bool tmp_file = true;
-        if(total_buffer_size > 0) {
-            std::size_t remaining_buffer_size = total_buffer_size;
-            auto *buffer_location = map_memory_buffer;
-            
-            // If it's not ui.map, then we need to ensure ui.map is always loaded
-            if(std::strcmp(map_name_lowercase, "ui") != 0) {
-                for(auto &i : loaded_maps) {
-                    if(i.name == "ui" && i.memory_location.has_value()) {
-                        auto size = i.loaded_size;
-                        remaining_buffer_size -= size;
-                        buffer_location += size;
-                        break;
-                    }
-                }
+        std::size_t remaining_buffer_size = total_buffer_size;
+        auto *buffer_location = map_memory_buffer;
+        for(auto &i : loaded_maps) {
+            remaining_buffer_size -= i.loaded_size;
+            buffer_location += i.loaded_size;
+        }
+        
+        // Check if we have enough space
+        if(remaining_buffer_size < size) {
+            invalid("Not enough memory to load map.");
+        }
+
+        // We do!
+        if(needs_decompressed) {
+            std::size_t actual_size;
+            try {
+                actual_size = decompress_map_file(map_path.string().c_str(), buffer_location, size);
             }
-            
-            // We do!
-            if(remaining_buffer_size >= size) {
-                if(needs_decompressed) {
-                    try {
-                        actual_size = decompress_map_file(map_path.string().c_str(), buffer_location, size);
-                    }
-                    catch (std::exception &) {
-                        invalid("Failed to read map");
-                    }
-                    if(actual_size != size) {
-                        invalid("Size in map is incorrect");
-                    }
-                    new_map.decompressed_size = actual_size;
-                }
-                else {
-                    std::fseek(f, 0, SEEK_SET);
-                    if(std::fread(buffer_location, size, 1, f) != 1) {
-                        invalid("Failed to read map");
-                    }
-                }
-                
-                // Next, we need to remove any loaded map we may have, not including ui.map
-                for(auto &i : loaded_maps) {
-                    if((i.name != "ui" || std::strcmp(map_name_lowercase, "ui") == 0) && i.memory_location.has_value()) {
-                        unload_map(&i);
-                        break;
-                    }
-                }
-                
-                // We're done with this
-                std::fclose(f);
-                f = nullptr;
-                
-                // Find all metadata after the thing we're loading to
-                std::size_t metadata_size = metadata.size();
-                for(std::size_t m = 0; m < metadata_size; m++) {
-                    auto &md = metadata[m];
-                    if(md.data >= buffer_location) {
-                        metadata.erase(metadata.begin() + m);
-                        m--;
-                        metadata_size--;
-                        continue;
-                    }
-                }
-                
-                new_map.loaded_size = size;
-                new_map.memory_location = buffer_location;
-                new_map.buffer_size = remaining_buffer_size;
-                
-                tmp_file = false;
+            catch (std::exception &) {
+                invalid("Failed to read map");
+            }
+            if(actual_size != size) {
+                invalid("Size in map is incorrect");
+            }
+            new_map.decompressed_size = actual_size;
+        }
+        else {
+            std::fseek(f, 0, SEEK_SET);
+            if(std::fread(buffer_location, size, 1, f) != 1) {
+                invalid("Failed to read map");
             }
         }
         
-        if(tmp_file) {
-            // Nothing more to do with this
-            std::fclose(f);
-            f = nullptr;
-            
-            // Does it need decompressed?
-            if(needs_decompressed) {
-                // First we need to reserve a temp file
-                if(max_temp_files == 0) {
-                    invalid("Temporary files are disabled");
-                }
-                
-                // Go through each possible index. See if we can reserve something.
-                for(std::size_t t = 0; t < max_temp_files; t++) {
-                    bool found = false;
-                    for(auto &i : loaded_maps) {
-                        if(i.tmp_file == t) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if(!found) {
-                        new_map.tmp_file = t;
-                        break;
-                    }
-                }
-                
-                // No? We need to take one then. Find the lowest-index temp file and remove it
-                if(!new_map.tmp_file.has_value()) {
-                    for(auto &i : loaded_maps) {
-                        if(i.tmp_file.has_value()) {
-                            new_map.tmp_file = i.tmp_file;
-                            unload_map(&i);
-                            break;
-                        }
-                    }
-                }
-                
-                new_map.path = path_for_tmp(new_map.tmp_file.value());
-                
-                // Decompress it
-                try {
-                    actual_size = decompress_map_file(map_path.string().c_str(), new_map.path.string().c_str());
-                }
-                catch (std::exception &) {
-                    invalid("Failed to read map");
-                }
-                if(actual_size != size) {
-                    invalid("Size in map is incorrect");
-                }
-                
-                new_map.decompressed_size = size;
-            }
-            
-            // No action needs to be taken
-            else {
-                new_map.path = map_path;
+        // We're done with this
+        std::fclose(f);
+        f = nullptr;
+        
+        // Find all metadata after the thing we're loading to
+        std::size_t metadata_size = metadata.size();
+        for(std::size_t m = 0; m < metadata_size; m++) {
+            auto &md = metadata[m];
+            if(md.data >= buffer_location) {
+                metadata.erase(metadata.begin() + m);
+                m--;
+                metadata_size--;
+                continue;
             }
         }
+
+        new_map.loaded_size = size;
+        new_map.memory_location = buffer_location;
+        new_map.buffer_size = remaining_buffer_size;
         
         // Calculate CRC32
         get_map_entry(new_map.name.c_str())->crc32 = ~calculate_crc32_of_map_file(&new_map);
 
-        std::cout << "[Balltze] Loaded map " << new_map.name << " (" << new_map.path << ")" << std::endl;
-        
         // Done!
         return &loaded_maps.emplace_back(new_map);
     }

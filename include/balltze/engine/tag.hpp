@@ -84,6 +84,32 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(TagDataHeader) == 0x28);
 
+    struct Bitmap {
+        struct BitmapSequence {
+            PADDING(0x34);
+            std::uint32_t sprites_count;
+            void *sprites;
+        };
+        static_assert(sizeof(BitmapSequence) == 0x3C);
+
+        struct BitmapData {
+            PADDING(0x18);
+            std::uint32_t pixel_data;
+            std::uint32_t pixel_data_size;
+            PADDING(0x10);
+        };
+        static_assert(sizeof(BitmapData) == 0x30);
+
+        PADDING(0x54);
+
+        std::uint32_t sequences_count;
+        BitmapSequence *sequences;
+
+        PADDING(0x4);
+        std::uint32_t bitmaps_count;
+        BitmapData *bitmaps;
+    };
+
     /**
      * Get the tag data address
      * @return tag data address

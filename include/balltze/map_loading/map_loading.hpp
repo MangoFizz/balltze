@@ -30,6 +30,8 @@ namespace Balltze {
         std::size_t loaded_size;
         std::size_t file_size;
         std::filesystem::file_time_type timestamp; // time it was modified
+        bool secondary;
+        bool fixed_tags = false;
     };
     
     /**
@@ -44,7 +46,7 @@ namespace Balltze {
      * @param map_name map to load
      * @return         loaded map
      */
-    LoadedMap *load_map(const char *map_name);
+    LoadedMap *load_map(const char *map_name, bool secondary = false);
 
     /**
      * Set up loading maps outside of the maps directory
