@@ -3,15 +3,22 @@
 #include <windows.h>
 #include <filesystem>
 #include <vector>
+#include <map>
 #include <deque>
 #include <cstring>
 #include <memory>
 #include <iostream>
+#include <functional>
 
 #include <balltze/config/ini.hpp>
 #include <balltze/engine/map.hpp>
 #include <balltze/engine/path.hpp>
 #include <balltze/engine/tag.hpp>
+#include <balltze/engine/tag_definitions/ui_widget_definition.hpp>
+#include <balltze/engine/tag_definitions/unicode_string_list.hpp>
+#include <balltze/engine/tag_definitions/bitmap.hpp>
+#include <balltze/engine/tag_definitions/sound.hpp>
+#include <balltze/engine/tag_definitions/font.hpp>
 #include <balltze/engine/tag_class.hpp>
 #include <balltze/engine/version.hpp>
 #include <balltze/events/map_load.hpp>
@@ -938,18 +945,7 @@ namespace Balltze {
     }
 
     extern "C" void do_map_loading_handling(char *map_path, const char *map_name) {
-        if(loaded_maps.size() > 1) {
-            if(loaded_maps[1].secondary) {
-                if(std::strcmp(map_name, "ui") != 0) {
-                    unload_maps();
-                }
-            }
-            else {
-                if(loaded_maps[1].name != map_name) {
-                    unload_maps();
-                }
-            }
-        }
+        unload_maps();
         std::strcpy(map_path, load_map(map_name)->path.string().c_str());
         load_map("ui", true);
     }
@@ -1075,7 +1071,7 @@ namespace Balltze {
             }
             
             // Load the map if it's not loaded
-            auto *map = load_map(file_name_cstr);
+            auto *map = get_loaded_map(file_name_cstr);
             if(map && map->memory_location.has_value()) {
                 if(output == get_tag_data_address()) {
                     std::size_t copied_bytes = 0;
@@ -1087,11 +1083,7 @@ namespace Balltze {
                     // tag array
                     auto &tag_data_header = get_tag_data_header();
                     auto *tag_array_raw = reinterpret_cast<Tag *>(map->memory_location.value() + file_offset + copied_bytes);
-                    tag_array.clear();
-                    tag_array.resize(tag_data_header.tag_count);
-                    for(std::size_t i = 0; i < tag_data_header.tag_count; i++) {
-                        tag_array[i] = tag_array_raw[i];
-                    }
+                    tag_array = std::vector<Tag>(tag_array_raw, tag_array_raw + tag_data_header.tag_count);
                     tag_data_header.tag_array = tag_array.data();
                     copied_bytes += sizeof(Tag) * tag_data_header.tag_count;
 
@@ -1107,55 +1099,230 @@ namespace Balltze {
                         auto secondary_map_header = reinterpret_cast<MapHeader *>(m.memory_location.value());
                         auto *secondary_map_tag_data_header = reinterpret_cast<TagDataHeader *>(m.memory_location.value() + secondary_map_header->tag_data_offset);
                         auto secondary_map_tag_array_raw = reinterpret_cast<Tag *>(secondary_map_tag_data_header + 1);
+                        auto tag_data_base_address_displacement = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(secondary_map_tag_data_header);
+                        auto data_base_offset = reinterpret_cast<std::uint32_t>(m.memory_location.value()) - reinterpret_cast<std::uint32_t>(map->memory_location.value());
 
-                        for(std::size_t i = 0; i < secondary_map_tag_data_header->tag_count; i++) {
-                            if(secondary_map_tag_array_raw[i].primary_class != TagClassInt::TAG_CLASS_BITMAP || secondary_map_tag_array_raw[i].indexed) {
-                                continue;
+                        std::map<TagID, TagID> tag_id_map; 
+
+                        auto is_supported_tag = [](TagClassInt tag_class) {
+                            static TagClassInt supportedTags[] = {
+                                TagClassInt::TAG_CLASS_BITMAP,
+                                TagClassInt::TAG_CLASS_UNICODE_STRING_LIST,
+                                TagClassInt::TAG_CLASS_SOUND,
+                                TagClassInt::TAG_CLASS_FONT,
+                                TagClassInt::TAG_CLASS_UI_WIDGET_DEFINITION
+                            };
+
+                            for(auto &i : supportedTags) {
+                                if(i == tag_class) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        };
+
+                        auto get_tag_from_secondary_map = [&secondary_map_tag_data_header, &secondary_map_tag_array_raw](std::uint32_t tag_id) -> Tag * {
+                            for(std::size_t i = 0; i < secondary_map_tag_data_header->tag_count; i++) {
+                                if(secondary_map_tag_array_raw[i].id.whole_id == tag_id) {
+                                    return &secondary_map_tag_array_raw[i];
+                                }
+                            }
+                            return nullptr;
+                        };
+
+                        std::function<TagID *(Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagID * {
+                            if(tag->indexed || !is_supported_tag(tag->primary_class)) {
+                                if(required) {
+                                    char error[2048];
+                                    std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag->path, m.name);
+                                    MessageBoxA(nullptr, error, "Error", MB_OK);
+                                    std::exit(EXIT_FAILURE);
+                                }
+                                return nullptr;
                             }
 
-                            auto disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(secondary_map_tag_data_header);
+                            // Already loaded?
+                            if(tag_id_map.find(tag->id) != tag_id_map.end()) {
+                                return &tag_id_map.find(tag->id)->second;
+                            }
 
-                            #define TRANSLATE_ADDRESS(x) reinterpret_cast<decltype(x)>(reinterpret_cast<std::byte *>(x) - disp)
+                            #define TRANSLATE_ADDRESS(x) { \
+                                if(reinterpret_cast<void *>(x) != nullptr) { \
+                                    x = reinterpret_cast<decltype(x)>(reinterpret_cast<std::byte *>(x) - tag_data_base_address_displacement); \
+                                } \
+                            }
 
-                            tag_array.insert(tag_array.end(), secondary_map_tag_array_raw[i]);
-                            auto &tag = tag_array.back();
+                            #define TRANSLATE_DEPENDENCY(tag_dependency) { \
+                                if(tag_dependency.tag_id != -1) { \
+                                    TRANSLATE_ADDRESS(tag_dependency.path_pointer); \
+                                    auto *taga = get_tag_from_secondary_map(tag_dependency.tag_id); \
+                                    auto *tagid = load_tag(taga, true); \
+                                    tag_dependency.tag_id = tagid->whole_id; \
+                                } \
+                            }
+
+                            #define TRANSLATE_DATA_OFFSET(tag_data_offset) { \
+                                if(reinterpret_cast<std::byte *>(tag_data_offset.pointer) != nullptr) { \
+                                    TRANSLATE_ADDRESS(tag_data_offset.pointer); \
+                                } \
+                                if(tag_data_offset.file_offset != 0) { \
+                                    tag_data_offset.file_offset += data_base_offset; \
+                                } \
+                            }
+
+
+                            auto &new_tag = tag_array.emplace_back(*tag);
                             auto &previous_tag = tag_array[tag_array.size() - 2];
-                            tag.id.index.index = previous_tag.id.index.index + 1;
-                            tag.id.index.id = previous_tag.id.index.id + 1;
-                            tag.path = TRANSLATE_ADDRESS(tag.path);
-                            tag.data = TRANSLATE_ADDRESS(tag.data);
+                            new_tag.id.index.index = previous_tag.id.index.index + 1;
+                            new_tag.id.index.id = previous_tag.id.index.id + 1;
+                            TRANSLATE_ADDRESS(new_tag.path);
+                            TRANSLATE_ADDRESS(new_tag.data);
                             tag_data_header.tag_count++;
 
+                            tag_id_map.insert_or_assign(tag->id, new_tag.id);
 
                             // if tags are already fixed we can continue
                             if(m.fixed_tags) {
-                               continue; 
+                               return &new_tag.id; 
                             }
-                            
-                            Bitmap *bitmap = reinterpret_cast<Bitmap *>(tag.data);
 
-                            if(bitmap->sequences_count > 0) {
-                                bitmap->sequences = TRANSLATE_ADDRESS(bitmap->sequences);
-                                for(std::size_t j = 0; j < bitmap->sequences_count; j++) {
-                                    auto *sequence = bitmap->sequences + j;
-                                    if(sequence->sprites_count > 0) {
-                                        sequence->sprites = TRANSLATE_ADDRESS(sequence->sprites);
+                            switch(new_tag.primary_class) {
+                                case TagClassInt::TAG_CLASS_BITMAP: {
+                                    Bitmap *bitmap = reinterpret_cast<Bitmap *>(new_tag.data);
+
+                                    if(bitmap->bitmap_group_sequence.count > 0) {
+                                        TRANSLATE_ADDRESS(bitmap->bitmap_group_sequence.offset);
+                                        for(std::size_t j = 0; j < bitmap->bitmap_group_sequence.count; j++) {
+                                            auto *sequence = bitmap->bitmap_group_sequence.offset + j;
+                                            if(sequence->sprites.count > 0) {
+                                                TRANSLATE_ADDRESS(sequence->sprites.offset);
+                                            }
+                                        }
                                     }
+
+                                    if(bitmap->bitmap_data.count > 0) {
+                                        TRANSLATE_ADDRESS(bitmap->bitmap_data.offset);
+                                        for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
+                                            bitmap->bitmap_data.offset[j].pixel_data_offset += data_base_offset; 
+                                        }
+                                    }
+
+                                    break;
+                                }
+
+                                case TagClassInt::TAG_CLASS_UI_WIDGET_DEFINITION: {
+                                    auto *ui_widget_definition = reinterpret_cast<UIWidgetDefinition *>(new_tag.data);
+
+                                    TRANSLATE_ADDRESS(ui_widget_definition->game_data_inputs.offset);
+                                    TRANSLATE_ADDRESS(ui_widget_definition->event_handlers.offset);
+                                    TRANSLATE_ADDRESS(ui_widget_definition->search_and_replace_functions.offset);
+                                    TRANSLATE_ADDRESS(ui_widget_definition->conditional_widgets.offset);
+                                    TRANSLATE_ADDRESS(ui_widget_definition->child_widgets.offset);
+
+                                    TRANSLATE_DEPENDENCY(ui_widget_definition->background_bitmap);
+                                    TRANSLATE_DEPENDENCY(ui_widget_definition->text_label_unicode_strings_list);
+                                    TRANSLATE_DEPENDENCY(ui_widget_definition->text_font);
+                                    TRANSLATE_DEPENDENCY(ui_widget_definition->list_header_bitmap);
+                                    TRANSLATE_DEPENDENCY(ui_widget_definition->list_footer_bitmap);
+                                    TRANSLATE_DEPENDENCY(ui_widget_definition->extended_description_widget);
+                                    
+                                    for(std::size_t i = 0; i < ui_widget_definition->event_handlers.count; i++) {
+                                        TRANSLATE_DEPENDENCY(ui_widget_definition->event_handlers.offset[i].widget_tag);
+                                        TRANSLATE_DEPENDENCY(ui_widget_definition->event_handlers.offset[i].sound_effect);
+                                    }
+
+                                    for(std::size_t i = 0; i < ui_widget_definition->conditional_widgets.count; i++) {
+                                        TRANSLATE_DEPENDENCY(ui_widget_definition->conditional_widgets.offset[i].widget_tag);
+                                    }
+
+                                    for(std::size_t i = 0; i < ui_widget_definition->child_widgets.count; i++) {
+                                        TRANSLATE_DEPENDENCY(ui_widget_definition->child_widgets.offset[i].widget_tag);
+                                    }
+
+                                    if(reinterpret_cast<std::uint32_t>(new_tag.path) == 0xFEEEFEEE || reinterpret_cast<std::uint32_t>(new_tag.data) == 0xFEEEFEEE) {
+                                        char asd[256];
+                                        std::sprintf(asd, "Tag: 0x%p\nTag ID: 0x%.8X\nData: 0x%p", &new_tag, new_tag.id.whole_id, new_tag.data);
+                                        MessageBoxA(nullptr, asd, "asd", MB_OK);
+                                    }
+
+                                    break;
+                                }
+
+                                case TagClassInt::TAG_CLASS_UNICODE_STRING_LIST: {
+                                    auto *unicode_string_list = reinterpret_cast<UnicodeStringList *>(new_tag.data);
+                                    
+                                    TRANSLATE_ADDRESS(unicode_string_list->strings.offset);
+                                    
+                                    for(std::size_t j = 0; j < unicode_string_list->strings.count; j++) {
+                                        TRANSLATE_DATA_OFFSET(unicode_string_list->strings.offset[j].string);
+                                    }
+
+                                    break;
+                                }
+
+                                case TagClassInt::TAG_CLASS_SOUND: {
+                                    auto *sound = reinterpret_cast<Sound *>(new_tag.data);
+
+                                    TRANSLATE_ADDRESS(sound->pitch_ranges.offset);
+
+                                    TRANSLATE_DEPENDENCY(sound->promotion_sound);
+                                    
+                                    for(std::size_t i = 0; i < sound->pitch_ranges.count; i++) {
+                                        auto &pitch_range = sound->pitch_ranges.offset[i];
+                                        
+                                        TRANSLATE_ADDRESS(pitch_range.permutations.offset);
+                                        
+                                        for(std::size_t j = 0; j < pitch_range.permutations.count; j++) {
+                                            auto &permutation = pitch_range.permutations.offset[j];
+                                            TRANSLATE_DATA_OFFSET(permutation.samples);
+                                            TRANSLATE_DATA_OFFSET(permutation.mouth_data);
+                                            TRANSLATE_DATA_OFFSET(permutation.subtitle_data);
+                                        }
+                                    }
+
+                                    break;
+                                }
+
+                                case TagClassInt::TAG_CLASS_FONT: {
+                                    auto *font = reinterpret_cast<Font *>(new_tag.data);
+                                    
+                                    TRANSLATE_ADDRESS(font->character_tables.offset);
+                                    TRANSLATE_ADDRESS(font->characters.offset);
+
+                                    TRANSLATE_DEPENDENCY(font->bold);
+                                    TRANSLATE_DEPENDENCY(font->italic);
+                                    TRANSLATE_DEPENDENCY(font->condense);
+                                    TRANSLATE_DEPENDENCY(font->underline);
+
+                                    for(std::size_t i = 0; i < font->character_tables.count; i++) {
+                                        TRANSLATE_ADDRESS(font->character_tables.offset[i].character_table.offset);
+                                    }
+
+                                    for(std::size_t i = 0; i < font->characters.count; i++) {
+                                        font->characters.offset[i].pixels_offset += data_base_offset;
+                                    }
+
+                                    TRANSLATE_DATA_OFFSET(font->pixels);
+                                    
+                                    break;
                                 }
                             }
 
-                            if(bitmap->bitmaps_count > 0) {
-                                bitmap->bitmaps = TRANSLATE_ADDRESS(bitmap->bitmaps);
-                                for(std::size_t j = 0; j < bitmap->bitmaps_count; j++) {
-                                    bitmap->bitmaps[j].pixel_data += map->loaded_size; 
-                                }
-                            }
+                            return &new_tag.id;
+                        };
+
+                        for(std::size_t i = 0; i < secondary_map_tag_data_header->tag_count; i++) {
+                            load_tag(secondary_map_tag_array_raw + i, false);
                         }
 
                         m.fixed_tags = true;
                     }
 
                     tag_data_header.tag_array = tag_array.data();
+
+                    char message[256];
+                    std::sprintf(message, "Loaded %p tags", tag_array.data());
+                    MessageBoxA(nullptr, message, "Success", MB_OK);
                 }
                 else {
                     std::memcpy(output, *map->memory_location + file_offset, size);

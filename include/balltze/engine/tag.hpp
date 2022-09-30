@@ -84,7 +84,7 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(TagDataHeader) == 0x28);
 
-    struct Bitmap {
+    struct Bitmapo {
         struct BitmapSequence {
             PADDING(0x34);
             std::uint32_t sprites_count;
@@ -109,6 +109,7 @@ namespace Balltze::Engine {
         std::uint32_t bitmaps_count;
         BitmapData *bitmaps;
     };
+    static_assert(sizeof(Bitmapo) == 0x68);
 
     /**
      * Get the tag data address

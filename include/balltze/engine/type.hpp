@@ -34,6 +34,10 @@ namespace Balltze::Engine {
         bool operator!=(const ElementID &other) const noexcept {
             return this->whole_id != other.whole_id;
         }
+
+        bool operator<(const ElementID& other) const noexcept {
+            return index.index < other.index.index; 
+        }
     };
 
     using PlayerID = ElementID;
