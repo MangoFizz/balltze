@@ -923,13 +923,12 @@ namespace Balltze {
             Memory::remove_chimera_hook(map_load_resolve_indexed_tags_sig->data(), true, false, true);
             try {
                 resolve_indexed_tags_hook.initialize(map_load_resolve_indexed_tags_sig->data(), reinterpret_cast<void *>(resolve_indexed_tags));
-
+                resolve_indexed_tags_hook.hook();
             }
             catch(std::exception &e) {
                 show_error_box("Failed to hook map load resolve indexed tags. %p", map_load_resolve_indexed_tags_sig->data());
                 std::exit(EXIT_FAILURE);
             }
-            // resolve_indexed_tags_hook.hook();
         }
         
         return true;
@@ -945,7 +944,18 @@ namespace Balltze {
     }
 
     extern "C" void do_map_loading_handling(char *map_path, const char *map_name) {
-        unload_maps();
+        if(loaded_maps.size() > 1) {
+            if(loaded_maps[1].secondary) {
+                if(std::strcmp(map_name, "ui") != 0) {
+                    unload_maps();
+                }
+            }
+            else {
+                if(loaded_maps[1].name != map_name) {
+                    unload_maps();
+                }
+            }
+        }
         std::strcpy(map_path, load_map(map_name)->path.string().c_str());
         load_map("ui", true);
     }
@@ -1155,9 +1165,9 @@ namespace Balltze {
                             #define TRANSLATE_DEPENDENCY(tag_dependency) { \
                                 if(tag_dependency.tag_id != -1) { \
                                     TRANSLATE_ADDRESS(tag_dependency.path_pointer); \
-                                    auto *taga = get_tag_from_secondary_map(tag_dependency.tag_id); \
-                                    auto *tagid = load_tag(taga, true); \
-                                    tag_dependency.tag_id = tagid->whole_id; \
+                                    auto *dependency = get_tag_from_secondary_map(tag_dependency.tag_id); \
+                                    auto *tag_id = load_tag(dependency, true); \
+                                    tag_dependency.tag_id = tag_id->whole_id; \
                                 } \
                             }
 
@@ -1202,6 +1212,7 @@ namespace Balltze {
 
                                     if(bitmap->bitmap_data.count > 0) {
                                         TRANSLATE_ADDRESS(bitmap->bitmap_data.offset);
+
                                         for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
                                             bitmap->bitmap_data.offset[j].pixel_data_offset += data_base_offset; 
                                         }
@@ -1319,10 +1330,6 @@ namespace Balltze {
                     }
 
                     tag_data_header.tag_array = tag_array.data();
-
-                    char message[256];
-                    std::sprintf(message, "Loaded %p tags", tag_array.data());
-                    MessageBoxA(nullptr, message, "Success", MB_OK);
                 }
                 else {
                     std::memcpy(output, *map->memory_location + file_offset, size);
@@ -1560,7 +1567,9 @@ namespace Balltze {
             }
 
             if(!map_memory_buffer) {
-                show_message_box("Failed to find Chimera's map memory buffer. This may be a bug.");
+                char error_dialog[256];
+                std::snprintf(error_dialog, sizeof(error_dialog), "Failed to find Chimera's map memory buffer. This may be a bug.");
+                MessageBoxA(nullptr, error_dialog, "Balltze", MB_OK | MB_ICONERROR);
                 std::exit(EXIT_FAILURE);
             }
         }
