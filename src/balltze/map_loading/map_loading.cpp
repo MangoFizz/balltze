@@ -1141,25 +1141,30 @@ namespace Balltze {
                         };
 
                         std::function<TagID *(Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagID * {
-                            if(tag->indexed || !is_supported_tag(tag->primary_class)) {
+
+                            if(!is_supported_tag(tag->primary_class)) {
                                 if(required) {
                                     char error[2048];
-                                    std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag->path, m.name);
+                                    std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag->path, m.name.c_str());
                                     MessageBoxA(nullptr, error, "Error", MB_OK);
                                     std::exit(EXIT_FAILURE);
                                 }
                                 return nullptr;
                             }
 
-                            // Already loaded?
-                            if(tag_id_map.find(tag->id) != tag_id_map.end()) {
-                                return &tag_id_map.find(tag->id)->second;
-                            }
-
                             #define TRANSLATE_ADDRESS(x) { \
                                 if(reinterpret_cast<void *>(x) != nullptr) { \
                                     x = reinterpret_cast<decltype(x)>(reinterpret_cast<std::byte *>(x) - tag_data_base_address_displacement); \
                                 } \
+                            }
+
+                            if(tag->indexed) {
+                                auto copy = *tag;
+                                TRANSLATE_ADDRESS(copy.path);
+                                auto *indexed_tag = get_tag(copy.path, copy.primary_class);
+                                if(indexed_tag) {
+                                    return &indexed_tag->id;
+                                }
                             }
 
                             #define TRANSLATE_DEPENDENCY(tag_dependency) { \
@@ -1180,6 +1185,10 @@ namespace Balltze {
                                 } \
                             }
 
+                            // Already loaded?
+                            if(tag_id_map.find(tag->id) != tag_id_map.end()) {
+                                return &tag_id_map.find(tag->id)->second;
+                            }
 
                             auto &new_tag = tag_array.emplace_back(*tag);
                             auto &previous_tag = tag_array[tag_array.size() - 2];
@@ -1283,12 +1292,14 @@ namespace Balltze {
                                         
                                         TRANSLATE_ADDRESS(pitch_range.permutations.offset);
                                         
-                                        for(std::size_t j = 0; j < pitch_range.permutations.count; j++) {
-                                            auto &permutation = pitch_range.permutations.offset[j];
-                                            TRANSLATE_DATA_OFFSET(permutation.samples);
-                                            TRANSLATE_DATA_OFFSET(permutation.mouth_data);
-                                            TRANSLATE_DATA_OFFSET(permutation.subtitle_data);
+                                            for(std::size_t j = 0; j < pitch_range.permutations.count; j++) {
+                                                auto &permutation = pitch_range.permutations.offset[j];
+                                        if(!tag->indexed) {
+                                                TRANSLATE_DATA_OFFSET(permutation.samples);
+                                                TRANSLATE_DATA_OFFSET(permutation.mouth_data);
+                                                TRANSLATE_DATA_OFFSET(permutation.subtitle_data);
                                         }
+                                            }
                                     }
 
                                     break;
