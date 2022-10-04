@@ -1142,30 +1142,11 @@ namespace Balltze {
 
                         std::function<TagID *(Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagID * {
 
-                            if(!is_supported_tag(tag->primary_class)) {
-                                if(required) {
-                                    char error[2048];
-                                    std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag->path, m.name.c_str());
-                                    MessageBoxA(nullptr, error, "Error", MB_OK);
-                                    std::exit(EXIT_FAILURE);
-                                }
-                                return nullptr;
-                            }
-
                             #define TRANSLATE_ADDRESS(x) { \
                                 if(reinterpret_cast<void *>(x) != nullptr) { \
                                     x = reinterpret_cast<decltype(x)>(reinterpret_cast<std::byte *>(x) - tag_data_base_address_displacement); \
                                 } \
-                            }
-
-                            if(tag->indexed) {
-                                auto copy = *tag;
-                                TRANSLATE_ADDRESS(copy.path);
-                                auto *indexed_tag = get_tag(copy.path, copy.primary_class);
-                                if(indexed_tag) {
-                                    return &indexed_tag->id;
-                                }
-                            }
+                            }   
 
                             #define TRANSLATE_DEPENDENCY(tag_dependency) { \
                                 if(tag_dependency.tag_id != -1) { \
@@ -1180,28 +1161,56 @@ namespace Balltze {
                                 if(reinterpret_cast<std::byte *>(tag_data_offset.pointer) != nullptr) { \
                                     TRANSLATE_ADDRESS(tag_data_offset.pointer); \
                                 } \
-                                if(tag_data_offset.file_offset != 0) { \
+                                else if(tag_data_offset.file_offset != 0) { \
                                     tag_data_offset.file_offset += data_base_offset; \
                                 } \
                             }
 
-                            // Already loaded?
+                            // Check if current tag class is supported
+                            if(!is_supported_tag(tag->primary_class)) {
+                                if(required) {
+                                    char error[2048];
+                                    std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag->path, m.name.c_str());
+                                    MessageBoxA(nullptr, error, "Error", MB_OK);
+                                    std::exit(EXIT_FAILURE);
+                                }
+                                return nullptr;
+                            }
+
+                            // Check if tag already exists in main map... or maybe not
+                            if(tag->indexed) {
+                                char *tag_path = tag->path;
+                                TRANSLATE_ADDRESS(tag_path);
+                                auto *indexed_tag = get_tag(tag_path, tag->primary_class);
+                                if(indexed_tag) {
+                                    return &indexed_tag->id;
+                                }
+                            }
+
+                            // Check if we've already loaded this tag
                             if(tag_id_map.find(tag->id) != tag_id_map.end()) {
                                 return &tag_id_map.find(tag->id)->second;
                             }
 
+                            // Set up new tag entry
                             auto &new_tag = tag_array.emplace_back(*tag);
                             auto &previous_tag = tag_array[tag_array.size() - 2];
                             new_tag.id.index.index = previous_tag.id.index.index + 1;
                             new_tag.id.index.id = previous_tag.id.index.id + 1;
                             TRANSLATE_ADDRESS(new_tag.path);
-                            TRANSLATE_ADDRESS(new_tag.data);
+
+                            if(!tag->indexed) {
+                                // Translate data address before fix tag
+                                TRANSLATE_ADDRESS(new_tag.data);
+                            }
+
                             tag_data_header.tag_count++;
 
+                            // Map new tag
                             tag_id_map.insert_or_assign(tag->id, new_tag.id);
 
-                            // if tags are already fixed we can continue
-                            if(m.fixed_tags) {
+                            // if current tag are indexed or if tags are already fixed, we can continue
+                            if(m.fixed_tags || tag->indexed) {
                                return &new_tag.id; 
                             }
 
@@ -1259,12 +1268,6 @@ namespace Balltze {
                                         TRANSLATE_DEPENDENCY(ui_widget_definition->child_widgets.offset[i].widget_tag);
                                     }
 
-                                    if(reinterpret_cast<std::uint32_t>(new_tag.path) == 0xFEEEFEEE || reinterpret_cast<std::uint32_t>(new_tag.data) == 0xFEEEFEEE) {
-                                        char asd[256];
-                                        std::sprintf(asd, "Tag: 0x%p\nTag ID: 0x%.8X\nData: 0x%p", &new_tag, new_tag.id.whole_id, new_tag.data);
-                                        MessageBoxA(nullptr, asd, "asd", MB_OK);
-                                    }
-
                                     break;
                                 }
 
@@ -1292,14 +1295,12 @@ namespace Balltze {
                                         
                                         TRANSLATE_ADDRESS(pitch_range.permutations.offset);
                                         
-                                            for(std::size_t j = 0; j < pitch_range.permutations.count; j++) {
-                                                auto &permutation = pitch_range.permutations.offset[j];
-                                        if(!tag->indexed) {
-                                                TRANSLATE_DATA_OFFSET(permutation.samples);
-                                                TRANSLATE_DATA_OFFSET(permutation.mouth_data);
-                                                TRANSLATE_DATA_OFFSET(permutation.subtitle_data);
+                                        for(std::size_t j = 0; j < pitch_range.permutations.count; j++) {
+                                            auto &permutation = pitch_range.permutations.offset[j];
+                                            TRANSLATE_DATA_OFFSET(permutation.samples);
+                                            TRANSLATE_DATA_OFFSET(permutation.mouth_data);
+                                            TRANSLATE_DATA_OFFSET(permutation.subtitle_data);
                                         }
-                                            }
                                     }
 
                                     break;
