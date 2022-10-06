@@ -25,19 +25,17 @@
 #include <balltze/map_loading/compression.hpp>
 #include <balltze/map_loading/crc32.hpp>
 #include <balltze/map_loading/laa.hpp>
+#include <balltze/math/trig.hpp>
 #include <balltze/memory/hook.hpp>
 #include <balltze/memory/memory.hpp>
 #include <balltze/output/message_box.hpp>
 #include <balltze/balltze.hpp>
+#include <balltze/map_loading/map.hpp>
 #include <balltze/map_loading/map_loading.hpp>
-
-#define HALO_PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679
-#define DEGREES_TO_RADIANS(deg) (deg / 180.0 * HALO_PI)
 
 namespace Balltze {
     using namespace Engine;
 
-    static constexpr const char *tmp_format = "tmp_%zu.map";
     static constexpr const char *bitmaps_file = "bitmaps.map";
     static constexpr const char *sounds_file = "sounds.map";
     static constexpr const char *loc_file = "loc.map";
@@ -68,7 +66,6 @@ namespace Balltze {
     static std::vector<ResourceMetadata> metadata;
     static std::byte *map_memory_buffer = nullptr;
     static std::size_t total_buffer_size = 0;
-    static std::size_t max_temp_files = 3;
     static bool custom_edition_maps_supported = false;
 
     // Resource maps' tag data
@@ -87,104 +84,6 @@ namespace Balltze {
         void on_read_map_file_data_asm() noexcept;
         void override_ting_volume_set_asm() noexcept;
         void override_ting_volume_write_asm() noexcept;
-    }
-
-    static const std::filesystem::path get_map_path() noexcept {
-        static auto &balltze = Balltze::get();
-        static auto &chimera_ini = balltze.chimera_ini();
-        static std::optional<std::filesystem::path> path;
-
-        if(!path.has_value()) {
-            const char *ini_path = chimera_ini.get_value("halo.map_path");
-            if(ini_path){
-                path = std::filesystem::path(ini_path);
-                std::filesystem::create_directory(*path);
-            }
-            else {
-                path = std::filesystem::path("maps");
-            }
-        }
-        return *path;
-    }
-
-    static const std::filesystem::path get_download_map_path() noexcept {
-        static auto &balltze = Balltze::get();
-        static auto &chimera_ini = balltze.chimera_ini();
-        static std::optional<std::filesystem::path> path;
-
-        if(!path.has_value()) {
-            const char *ini_path = chimera_ini.get_value("halo.download_map_path");
-            if(ini_path){
-                path = std::filesystem::path(ini_path);
-                std::filesystem::create_directory(*path);
-            }
-            else {
-                path = std::filesystem::path("maps");
-            }
-        }
-        return *path;
-    }
-
-    static std::filesystem::path path_for_tmp(std::size_t tmp) {
-        char tmp_name[64];
-        std::snprintf(tmp_name, sizeof(tmp_name), tmp_format, tmp);
-        return get_path() / "chimera" / "tmp" / tmp_name;
-    }
-
-    static bool same_string_case_insensitive(const char *a, const char *b) {
-        if(a == b) return true;
-        while(std::tolower(*a) == std::tolower(*b)) {
-            if(*a == 0) return true;
-            a++;
-            b++;
-        }
-        return false;
-    }
-    
-    static std::optional<MapEntry> get_map_entry(const char *map_name) {
-        // First, let's lowercase it
-        char map_name_lowercase[32];
-        std::strncpy(map_name_lowercase, map_name, sizeof(map_name_lowercase) - 1);
-        for(auto &i : map_name_lowercase) {
-            i = std::tolower(i);
-        }
-        
-        // Add it!
-        MapEntry map;
-        map.name = map_name_lowercase;
-        map.index = std::nullopt;
-        map.multiplayer = true;
-        
-        // Make sure it exists first.
-        if(!std::filesystem::exists(map.get_file_path())) {
-            return std::nullopt;
-        }
-        
-        // If it's known to not be a multiplayer map, set this
-        static const char *NON_MULTIPLAYER_MAPS[] = {
-            "a10",
-            "a30",
-            "a50",
-            "b30",
-            "b40",
-            "c10",
-            "c20",
-            "c40",
-            "d20",
-            "d40",
-            "ui"
-        };
-        for(auto &nmp : NON_MULTIPLAYER_MAPS) {
-            if(same_string_case_insensitive(nmp, map_name)) {
-                map.multiplayer = false;
-            }
-        }
-        
-        return std::move(map);
-    }
-
-    static std::filesystem::path path_for_map_local(const char *map_name) {
-        return get_map_entry(map_name)->get_file_path();
     }
 
     static std::uint32_t calculate_crc32_of_map_file(const LoadedMap *map) noexcept {
@@ -284,8 +183,14 @@ namespace Balltze {
     }
 
     static void unload_maps() {
-        while(loaded_maps.size() > 1) {
-            loaded_maps.pop_back();
+        auto it = loaded_maps.begin();
+        while(it != loaded_maps.end()) {
+            if(it->name != "ui" || it->secondary) {
+                it = loaded_maps.erase(it);
+            }
+            else {
+                it++;
+            }
         }
     }
 
@@ -391,10 +296,6 @@ namespace Balltze {
 
     template <typename T> static std::vector<std::byte> &translate_index(T index, std::vector<std::vector<std::byte>> &of_what) {
         auto index_val = reinterpret_cast<std::uint32_t>(index);
-        if(index_val >= of_what.size()) {
-            show_error_box("Map error", "Map could not be loaded due to an invalid index.");
-            std::exit(EXIT_FAILURE);
-        }
         return of_what[index_val];
     }
 
@@ -752,6 +653,13 @@ namespace Balltze {
         
         // Preload it all
         preload_assets(*get_loaded_map(get_map_name()));
+
+        // Preload secondary maps
+        for(auto &loaded_map : loaded_maps) {
+            if(loaded_map.secondary) {
+                preload_assets(loaded_map);
+            }
+        }
     }
 
     static bool set_up_custom_edition_map_support() {
@@ -957,7 +865,7 @@ namespace Balltze {
             }
         }
         std::strcpy(map_path, load_map(map_name)->path.string().c_str());
-        load_map("ui", true);
+        load_map("bloodgulch", true);
     }
 
     extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {
@@ -1055,30 +963,8 @@ namespace Balltze {
         }
 
         else {
-            // Check if we're a tmp file
             auto file_name_str = file_name.stem().string();
             auto *file_name_cstr = file_name_str.c_str();
-            if(std::strncmp(file_name_cstr, tmp_format, 4) == 0) {
-                for(auto &i : loaded_maps) {
-                    if(i.tmp_file.has_value()) {
-                        // Format it
-                        char tmp_name[64];
-                        std::snprintf(tmp_name, sizeof(tmp_name), tmp_format, *i.tmp_file);
-                        
-                        // Truncate the extension
-                        for(auto &c : tmp_name) {
-                            if(c == '.') {
-                                c = 0;
-                                break;
-                            }
-                        }
-                        
-                        if(file_name_str == tmp_name) {
-                            return 0;
-                        }
-                    }
-                }
-            }
             
             // Load the map if it's not loaded
             auto *map = get_loaded_map(file_name_cstr);
@@ -1170,7 +1056,9 @@ namespace Balltze {
                             if(!is_supported_tag(tag->primary_class)) {
                                 if(required) {
                                     char error[2048];
-                                    std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag->path, m.name.c_str());
+                                    char *tag_path = tag->path;
+                                    TRANSLATE_ADDRESS(tag_path);
+                                    std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag_path, m.name.c_str());
                                     MessageBoxA(nullptr, error, "Error", MB_OK);
                                     std::exit(EXIT_FAILURE);
                                 }
@@ -1353,16 +1241,6 @@ namespace Balltze {
         return 0;
     }
 
-    std::filesystem::path MapEntry::get_file_path() {
-        auto p1 = get_map_path() / (this->name + ".map");
-        if(std::filesystem::exists(p1)) {
-            return p1;
-        }
-        else {
-            return get_download_map_path() / (this->name + ".map");
-        }
-    }
-
     LoadedMap *get_loaded_map(const char *name) noexcept {
         // Make a lowercase version
         char map_name_lowercase[32];
@@ -1435,7 +1313,7 @@ namespace Balltze {
             
             char error_dialog[256];
             std::snprintf(error_dialog, sizeof(error_dialog), "Failed to load %s due to an error\n\n%s", map_name_lowercase, error);
-            show_error_box("Map error", error_dialog);
+            show_error_box("Map error: %s", error_dialog);
             std::exit(1);
         };
         

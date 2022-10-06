@@ -25,6 +25,7 @@ add_library(balltze MODULE
     src/balltze/map_loading/compression.cpp
     src/balltze/map_loading/crc32.c
     src/balltze/map_loading/laa.cpp
+    src/balltze/map_loading/map.cpp
     src/balltze/map_loading/map_loading.cpp
     src/balltze/map_loading/map_loading.S
     src/balltze/memory/codecave.cpp
