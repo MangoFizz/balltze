@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 find_package(LuaRuntime REQUIRED)
 
 set(TAG_DEFINITIONS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/invader/tag/hek/definition")
-set(TAG_STRUCTURES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/engine/tag_definitions")
+set(TAG_STRUCTURES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/balltze/engine/tag_definitions")
 file(GLOB TAG_DEFINITION_FILES ${TAG_DEFINITIONS_PATH}/*.json)
 set(TAG_STRUCTURE_OUTPUT_FILES)
 set(COMMANDS)
@@ -19,7 +19,7 @@ foreach(TAG_DEFINITION_FILE ${TAG_DEFINITION_FILES})
     set(TAG_STRUCTURE_OUTPUT_FILES ${TAG_STRUCTURE_OUTPUT_FILES} ${TAG_STRUCTURE_FILE})
     add_custom_command(
         OUTPUT ${TAG_STRUCTURE_FILE}
-        COMMAND ${CMAKE_COMMAND} -E env LUA_INIT="@${CMAKE_SOURCE_DIR}/lua/env.lua" ${LUA_EXECUTABLE} ${CMAKE_SOURCE_DIR}/lua/tag_definitions_generator/generate_structs.lua ${TAG_DEFINITION_FILE}
+        COMMAND ${CMAKE_COMMAND} -E env LUA_INIT="@${CMAKE_SOURCE_DIR}/lua/env.lua" ${LUA_EXECUTABLE} ${CMAKE_SOURCE_DIR}/lua/tag_definitions_generator/generate_structs.lua ${TAG_DEFINITION_FILE} ${TAG_STRUCTURE_FILE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endforeach()

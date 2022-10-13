@@ -9,9 +9,7 @@ local inspect = require "inspect"
 
 local parser = argparse("invader2kaitai", "Convert Invader tags to Kaitai Struct")
 parser:argument("input", "Input file"):args(1)
--- parser:flag("-r --runtime", "Generate runtime structure")
-parser:flag("-c --code", "Generate language code")
-parser:flag("-s --struct", "Dump KSY result to a C struct")
+parser:argument("output", "Output file"):args(1)
 
 local args = parser:parse()
 
@@ -20,6 +18,7 @@ local fileName = args.input:match("([^/]+)$")
 local defFileName = "tag_" .. fileName
 local defName = defFileName:match("^(.+)%..+$")
 local defLabel = fileName:match("^(.+)%..+$")
+local outputFile = args.output
 
 ---@class InvaderElement
 ---@field name string
@@ -236,7 +235,7 @@ namespace Balltze::Engine::TagDefinitions {
 #endif
 
 ]])
-    glue.writefile(TagStructuresOutputPath .. structName .. ".hpp", struct, "t")
+    glue.writefile(outputFile, struct, "t")
 end
 
 ---@type table<string, table<string>>
