@@ -866,7 +866,7 @@ namespace Balltze {
             }
         }
         std::strcpy(map_path, load_map(map_name)->path.string().c_str());
-        load_map("bloodgulch", true);
+        load_map("ui", true);
     }
 
     extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {
