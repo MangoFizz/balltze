@@ -1,0 +1,232 @@
+[
+    {
+        "name": "SoundLoopingTrackFlags",
+        "type": "bitfield",
+        "fields": [
+            "fade in at start",
+            "fade out at stop",
+            "fade in alternate"
+        ],
+        "width": 32
+    },
+    {
+        "name": "SoundLoopingDetailFlags",
+        "type": "bitfield",
+        "fields": [
+            "don't play with alternate",
+            "don't play without alternate"
+        ],
+        "width": 32
+    },
+    {
+        "name": "SoundLoopingFlags",
+        "type": "bitfield",
+        "fields": [
+            "deafening to ais",
+            "not a loop",
+            "stops music",
+            "siege of madrigal"
+        ],
+        "width": 32
+    },
+    {
+        "name": "SoundLoopingTrack",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "SoundLoopingTrackFlags"
+            },
+            {
+                "name": "gain",
+                "type": "Fraction",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "default": 1.0
+            },
+            {
+                "name": "fade in duration",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "fade out duration",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "start",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "name": "loop",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "name": "end",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "alternate loop",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "name": "alternate end",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            }
+        ],
+        "type": "struct",
+        "size": 160
+    },
+    {
+        "name": "SoundLoopingDetail",
+        "fields": [
+            {
+                "name": "sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "name": "random period bounds",
+                "bounds": true,
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "gain",
+                "type": "Fraction",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "default": 1.0
+            },
+            {
+                "name": "flags",
+                "type": "SoundLoopingDetailFlags"
+            },
+            {
+                "type": "pad",
+                "size": 48
+            },
+            {
+                "name": "yaw bounds",
+                "bounds": true,
+                "type": "Angle",
+                "default": [
+                    -3.14159265359,
+                    3.14159265359
+                ]
+            },
+            {
+                "name": "pitch bounds",
+                "bounds": true,
+                "type": "Angle",
+                "default": [
+                    -1.57079632679,
+                    1.57079632679
+                ]
+            },
+            {
+                "name": "distance bounds",
+                "bounds": true,
+                "unit": "world units",
+                "type": "float"
+            }
+        ],
+        "type": "struct",
+        "title": "sound",
+        "size": 104
+    },
+    {
+        "name": "SoundLooping",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "SoundLoopingFlags"
+            },
+            {
+                "name": "zero detail sound period",
+                "type": "float"
+            },
+            {
+                "name": "zero detail unknown floats",
+                "type": "float",
+                "endian": "little",
+                "count": 2
+            },
+            {
+                "name": "one detail sound period",
+                "type": "float"
+            },
+            {
+                "name": "one detail unknown floats",
+                "type": "float",
+                "endian": "little",
+                "count": 2
+            },
+            {
+                "name": "unknown int",
+                "type": "uint32",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "maximum distance",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "continuous damage effect",
+                "type": "TagDependency",
+                "classes": [
+                    "continuous_damage_effect"
+                ]
+            },
+            {
+                "name": "tracks",
+                "type": "TagReflexive",
+                "struct": "SoundLoopingTrack",
+                "maximum": 4
+            },
+            {
+                "name": "detail sounds",
+                "type": "TagReflexive",
+                "struct": "SoundLoopingDetail",
+                "maximum": 32
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "post_compile": true,
+        "size": 84,
+        "class": "sound_looping"
+    }
+]

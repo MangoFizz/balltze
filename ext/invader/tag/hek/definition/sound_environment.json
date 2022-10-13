@@ -1,0 +1,79 @@
+[
+    {
+        "name": "SoundEnvironment",
+        "fields": [
+            {
+                "name": "unknown",
+                "type": "int32",
+                "cache_only": true
+            },
+            {
+                "name": "priority",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "room intensity",
+                "type": "Fraction"
+            },
+            {
+                "name": "room intensity hf",
+                "type": "Fraction"
+            },
+            {
+                "name": "room rolloff",
+                "type": "float"
+            },
+            {
+                "name": "decay time",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "decay hf ratio",
+                "type": "float"
+            },
+            {
+                "name": "reflections intensity",
+                "type": "Fraction"
+            },
+            {
+                "name": "reflections delay",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "reverb intensity",
+                "type": "Fraction"
+            },
+            {
+                "name": "reverb delay",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "diffusion",
+                "type": "float"
+            },
+            {
+                "name": "density",
+                "type": "float"
+            },
+            {
+                "name": "hf reference",
+                "unit": "Hz",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            }
+        ],
+        "type": "struct",
+        "size": 72,
+        "class": "sound_environment"
+    }
+]

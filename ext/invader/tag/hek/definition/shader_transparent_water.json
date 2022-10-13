@@ -1,0 +1,193 @@
+[
+    {
+        "name": "ShaderTransparentWaterFlags",
+        "type": "bitfield",
+        "fields": [
+            "base map alpha modulates reflection",
+            "base map color modulates background",
+            "atmospheric fog",
+            "draw before fog"
+        ],
+        "width": 16
+    },
+    {
+        "name": "ShaderTransparentWaterRipple",
+        "groups": [
+            {
+                "name": "transparent water shader",
+                "description": "Shader Transparent Water attributes",
+                "first": "contribution factor"
+            }
+        ],
+        "fields": [
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "contribution factor",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "animation angle",
+                "type": "Angle"
+            },
+            {
+                "name": "animation velocity",
+                "type": "float"
+            },
+            {
+                "name": "map offset",
+                "type": "Vector2D"
+            },
+            {
+                "name": "map repeats",
+                "type": "uint16",
+                "default": 1
+            },
+            {
+                "name": "map index",
+                "type": "Index"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            }
+        ],
+        "type": "struct",
+        "size": 76
+    },
+    {
+        "name": "ShaderTransparentWater",
+        "fields": [
+            {
+                "name": "water flags",
+                "type": "ShaderTransparentWaterFlags"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "base map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "view perpendicular brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "view perpendicular tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "view parallel brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction",
+                "default": 1.0
+            },
+            {
+                "name": "view parallel tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "reflection map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "ripple animation angle",
+                "type": "Angle"
+            },
+            {
+                "name": "ripple animation velocity",
+                "type": "float"
+            },
+            {
+                "name": "ripple scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "ripple maps",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "ripple mipmap levels",
+                "type": "uint16",
+                "default": 1
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "ripple mipmap fade factor",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "ripple mipmap detail bias",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 64
+            },
+            {
+                "name": "ripples",
+                "type": "TagReflexive",
+                "struct": "ShaderTransparentWaterRipple",
+                "maximum": 4
+            },
+            {
+                "type": "pad",
+                "size": 16
+            }
+        ],
+        "type": "struct",
+        "inherits": "Shader",
+        "pre_compile": true,
+        "post_compile": true,
+        "size": 320,
+        "class": "shader_transparent_water"
+    }
+]

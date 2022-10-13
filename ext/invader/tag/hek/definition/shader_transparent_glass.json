@@ -1,0 +1,192 @@
+[
+    {
+        "name": "ShaderTransparentGlassReflectionType",
+        "options": [
+            "bumped cube map",
+            "flat cube map",
+            "dynamic mirror"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ShaderTransparentGlassFlags",
+        "type": "bitfield",
+        "fields": [
+            "alpha tested",
+            "decal",
+            "two sided",
+            "bump map is specular mask"
+        ],
+        "width": 16
+    },
+    {
+        "name": "ShaderTransparentGlass",
+        "groups": [
+            {
+                "name": "transparent glass shader",
+                "description": "Shader Transparent Glass attributes",
+                "first": "shader transparent glass flags"
+            }
+        ],
+        "fields": [
+            {
+                "name": "shader transparent glass flags",
+                "type": "ShaderTransparentGlassFlags"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 40
+            },
+            {
+                "name": "background tint color",
+                "type": "ColorRGB",
+                "default": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            {
+                "name": "background tint map scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "background tint map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 20
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "reflection type",
+                "type": "ShaderTransparentGlassReflectionType"
+            },
+            {
+                "name": "perpendicular brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "perpendicular tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "parallel brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "parallel tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "reflection map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "bump map scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "bump map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 128
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "diffuse map scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "diffuse map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "diffuse detail map scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "diffuse detail map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "specular map scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "specular map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "specular detail map scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "specular detail map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 28
+            }
+        ],
+        "type": "struct",
+        "inherits": "Shader",
+        "pre_compile": true,
+        "post_compile": true,
+        "size": 480,
+        "class": "shader_transparent_glass"
+    }
+]

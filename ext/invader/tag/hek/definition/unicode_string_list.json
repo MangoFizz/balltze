@@ -1,0 +1,30 @@
+[
+    {
+        "name": "UnicodeStringListString",
+        "fields": [
+            {
+                "name": "string",
+                "type": "TagDataOffset",
+                "maximum": 32768
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "size": 20
+    },
+    {
+        "name": "UnicodeStringList",
+        "fields": [
+            {
+                "name": "strings",
+                "type": "TagReflexive",
+                "struct": "UnicodeStringListString",
+                "read_only": true,
+                "maximum": 800
+            }
+        ],
+        "type": "struct",
+        "size": 12,
+        "class": "unicode_string_list"
+    }
+]

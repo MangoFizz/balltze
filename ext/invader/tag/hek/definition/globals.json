@@ -1,0 +1,1727 @@
+[
+    {
+        "name": "MultiplayerInformationSound",
+        "options": [
+            "play ball",
+            "game over",
+            "one minute to win",
+            "30 seconds to win",
+            "red team minute to win",
+            "red team 30 to win",
+            "blue team minute to win",
+            "blue team 30 to win",
+            "blue team has the flag",
+            "blue team flag returned",
+            "blue team score",
+            "red team has the flag",
+            "red team flag returned",
+            "red team score",
+            "double kill",
+            "triple kill",
+            "killtacular",
+            "running riot",
+            "killing spree",
+            "oddball",
+            "race",
+            "slayer",
+            "capture the flag",
+            "warthog",
+            "ghost",
+            "scorpion",
+            "countdown timer",
+            "teleporter activate",
+            "flag failure",
+            "countdown for respawn",
+            "hill move",
+            "player respawn",
+            "team king of the hill",
+            "team oddball",
+            "team race",
+            "team slayer",
+            "king of the hill",
+            "blue team ctf",
+            "red team ctf",
+            "hill contested",
+            "hill controlled",
+            "hill occupied",
+            "countdown timer end",
+            "ting"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "GlobalsRasterizerDataFlags",
+        "type": "bitfield",
+        "fields": [
+            "tint edge density"
+        ],
+        "width": 16
+    },
+    {
+        "name": "GlobalsBreakableSurfaceParticleEffectFlags",
+        "type": "bitfield",
+        "fields": [
+            "interpolate color in hsv",
+            "more colors"
+        ],
+        "width": 32
+    },
+    {
+        "name": "GlobalsSound",
+        "type": "struct",
+        "fields": [
+            {
+                "name": "sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            }
+        ],
+        "title": "sound",
+        "size": 16
+    },
+    {
+        "name": "GlobalsCamera",
+        "type": "struct",
+        "fields": [
+            {
+                "name": "default unit camera track",
+                "type": "TagDependency",
+                "classes": [
+                    "camera_track"
+                ]
+            }
+        ],
+        "title": "default unit camera track",
+        "size": 16
+    },
+    {
+        "name": "GlobalsLookFunction",
+        "fields": [
+            {
+                "name": "scale",
+                "type": "float"
+            }
+        ],
+        "type": "struct",
+        "size": 4
+    },
+    {
+        "name": "GlobalsPlayerControl",
+        "fields": [
+            {
+                "name": "magnetism friction",
+                "type": "float"
+            },
+            {
+                "name": "magnetism adhesion",
+                "type": "float"
+            },
+            {
+                "name": "inconsequential target scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 52
+            },
+            {
+                "name": "look acceleration time",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "look acceleration scale",
+                "type": "float"
+            },
+            {
+                "name": "look peg threshold",
+                "type": "float"
+            },
+            {
+                "name": "look default pitch rate",
+                "type": "float"
+            },
+            {
+                "name": "look default yaw rate",
+                "type": "float"
+            },
+            {
+                "name": "look autolevelling scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 20
+            },
+            {
+                "name": "minimum weapon swap ticks",
+                "type": "int16"
+            },
+            {
+                "name": "minimum autolevelling ticks",
+                "type": "int16"
+            },
+            {
+                "name": "minimum angle for vehicle flipping",
+                "type": "Angle"
+            },
+            {
+                "name": "look function",
+                "type": "TagReflexive",
+                "struct": "GlobalsLookFunction",
+                "maximum": 16
+            }
+        ],
+        "type": "struct",
+        "size": 128
+    },
+    {
+        "name": "GlobalsDifficulty",
+        "fields": [
+            {
+                "name": "easy enemy damage",
+                "type": "float"
+            },
+            {
+                "name": "normal enemy damage",
+                "type": "float"
+            },
+            {
+                "name": "hard enemy damage",
+                "type": "float"
+            },
+            {
+                "name": "imposs enemy damage",
+                "type": "float"
+            },
+            {
+                "name": "easy enemy vitality",
+                "type": "float"
+            },
+            {
+                "name": "normal enemy vitality",
+                "type": "float"
+            },
+            {
+                "name": "hard enemy vitality",
+                "type": "float"
+            },
+            {
+                "name": "imposs enemy vitality",
+                "type": "float"
+            },
+            {
+                "name": "easy enemy shield",
+                "type": "float"
+            },
+            {
+                "name": "normal enemy shield",
+                "type": "float"
+            },
+            {
+                "name": "hard enemy shield",
+                "type": "float"
+            },
+            {
+                "name": "imposs enemy shield",
+                "type": "float"
+            },
+            {
+                "name": "easy enemy recharge",
+                "type": "float"
+            },
+            {
+                "name": "normal enemy recharge",
+                "type": "float"
+            },
+            {
+                "name": "hard enemy recharge",
+                "type": "float"
+            },
+            {
+                "name": "imposs enemy recharge",
+                "type": "float"
+            },
+            {
+                "name": "easy friend damage",
+                "type": "float"
+            },
+            {
+                "name": "normal friend damage",
+                "type": "float"
+            },
+            {
+                "name": "hard friend damage",
+                "type": "float"
+            },
+            {
+                "name": "imposs friend damage",
+                "type": "float"
+            },
+            {
+                "name": "easy friend vitality",
+                "type": "float"
+            },
+            {
+                "name": "normal friend vitality",
+                "type": "float"
+            },
+            {
+                "name": "hard friend vitality",
+                "type": "float"
+            },
+            {
+                "name": "imposs friend vitality",
+                "type": "float"
+            },
+            {
+                "name": "easy friend shield",
+                "type": "float"
+            },
+            {
+                "name": "normal friend shield",
+                "type": "float"
+            },
+            {
+                "name": "hard friend shield",
+                "type": "float"
+            },
+            {
+                "name": "imposs friend shield",
+                "type": "float"
+            },
+            {
+                "name": "easy friend recharge",
+                "type": "float"
+            },
+            {
+                "name": "normal friend recharge",
+                "type": "float"
+            },
+            {
+                "name": "hard friend recharge",
+                "type": "float"
+            },
+            {
+                "name": "imposs friend recharge",
+                "type": "float"
+            },
+            {
+                "name": "easy infection forms",
+                "type": "float"
+            },
+            {
+                "name": "normal infection forms",
+                "type": "float"
+            },
+            {
+                "name": "hard infection forms",
+                "type": "float"
+            },
+            {
+                "name": "imposs infection forms",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "easy rate of fire",
+                "type": "float"
+            },
+            {
+                "name": "normal rate of fire",
+                "type": "float"
+            },
+            {
+                "name": "hard rate of fire",
+                "type": "float"
+            },
+            {
+                "name": "imposs rate of fire",
+                "type": "float"
+            },
+            {
+                "name": "easy projectile error",
+                "type": "float"
+            },
+            {
+                "name": "normal projectile error",
+                "type": "float"
+            },
+            {
+                "name": "hard projectile error",
+                "type": "float"
+            },
+            {
+                "name": "imposs projectile error",
+                "type": "float"
+            },
+            {
+                "name": "easy burst error",
+                "type": "float"
+            },
+            {
+                "name": "normal burst error",
+                "type": "float"
+            },
+            {
+                "name": "hard burst error",
+                "type": "float"
+            },
+            {
+                "name": "imposs burst error",
+                "type": "float"
+            },
+            {
+                "name": "easy new target delay",
+                "type": "float"
+            },
+            {
+                "name": "normal new target delay",
+                "type": "float"
+            },
+            {
+                "name": "hard new target delay",
+                "type": "float"
+            },
+            {
+                "name": "imposs new target delay",
+                "type": "float"
+            },
+            {
+                "name": "easy burst separation",
+                "type": "float"
+            },
+            {
+                "name": "normal burst separation",
+                "type": "float"
+            },
+            {
+                "name": "hard burst separation",
+                "type": "float"
+            },
+            {
+                "name": "imposs burst separation",
+                "type": "float"
+            },
+            {
+                "name": "easy target tracking",
+                "type": "float"
+            },
+            {
+                "name": "normal target tracking",
+                "type": "float"
+            },
+            {
+                "name": "hard target tracking",
+                "type": "float"
+            },
+            {
+                "name": "imposs target tracking",
+                "type": "float"
+            },
+            {
+                "name": "easy target leading",
+                "type": "float"
+            },
+            {
+                "name": "normal target leading",
+                "type": "float"
+            },
+            {
+                "name": "hard target leading",
+                "type": "float"
+            },
+            {
+                "name": "imposs target leading",
+                "type": "float"
+            },
+            {
+                "name": "easy overcharge chance",
+                "type": "float"
+            },
+            {
+                "name": "normal overcharge chance",
+                "type": "float"
+            },
+            {
+                "name": "hard overcharge chance",
+                "type": "float"
+            },
+            {
+                "name": "imposs overcharge chance",
+                "type": "float"
+            },
+            {
+                "name": "easy special fire delay",
+                "type": "float"
+            },
+            {
+                "name": "normal special fire delay",
+                "type": "float"
+            },
+            {
+                "name": "hard special fire delay",
+                "type": "float"
+            },
+            {
+                "name": "imposs special fire delay",
+                "type": "float"
+            },
+            {
+                "name": "easy guidance vs player",
+                "type": "float"
+            },
+            {
+                "name": "normal guidance vs player",
+                "type": "float"
+            },
+            {
+                "name": "hard guidance vs player",
+                "type": "float"
+            },
+            {
+                "name": "imposs guidance vs player",
+                "type": "float"
+            },
+            {
+                "name": "easy melee delay base",
+                "type": "float"
+            },
+            {
+                "name": "normal melee delay base",
+                "type": "float"
+            },
+            {
+                "name": "hard melee delay base",
+                "type": "float"
+            },
+            {
+                "name": "imposs melee delay base",
+                "type": "float"
+            },
+            {
+                "name": "easy melee delay scale",
+                "type": "float"
+            },
+            {
+                "name": "normal melee delay scale",
+                "type": "float"
+            },
+            {
+                "name": "hard melee delay scale",
+                "type": "float"
+            },
+            {
+                "name": "imposs melee delay scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "easy grenade chance scale",
+                "type": "float"
+            },
+            {
+                "name": "normal grenade chance scale",
+                "type": "float"
+            },
+            {
+                "name": "hard grenade chance scale",
+                "type": "float"
+            },
+            {
+                "name": "imposs grenade chance scale",
+                "type": "float"
+            },
+            {
+                "name": "easy grenade timer scale",
+                "type": "float"
+            },
+            {
+                "name": "normal grenade timer scale",
+                "type": "float"
+            },
+            {
+                "name": "hard grenade timer scale",
+                "type": "float"
+            },
+            {
+                "name": "imposs grenade timer scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "easy major upgrade",
+                "type": "float"
+            },
+            {
+                "name": "normal major upgrade",
+                "type": "float"
+            },
+            {
+                "name": "hard major upgrade",
+                "type": "float"
+            },
+            {
+                "name": "imposs major upgrade",
+                "type": "float"
+            },
+            {
+                "name": "easy major upgrade 1",
+                "type": "float"
+            },
+            {
+                "name": "normal major upgrade 1",
+                "type": "float"
+            },
+            {
+                "name": "hard major upgrade 1",
+                "type": "float"
+            },
+            {
+                "name": "imposs major upgrade 1",
+                "type": "float"
+            },
+            {
+                "name": "easy major upgrade 2",
+                "type": "float"
+            },
+            {
+                "name": "normal major upgrade 2",
+                "type": "float"
+            },
+            {
+                "name": "hard major upgrade 2",
+                "type": "float"
+            },
+            {
+                "name": "imposs major upgrade 2",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 84
+            }
+        ],
+        "type": "struct",
+        "size": 644
+    },
+    {
+        "name": "GlobalsGrenade",
+        "groups": [
+            {
+                "name": "grenade count",
+                "description": "\"maximum count\" is the number of grenades the player can hold, while \"mp spawn default\" is the default number of grenades. On Xbox, \"mp spawn default\" will only be used if the player count is four players or less. Otherwise, the maximum count is used.\n\nNOTE: Do not use more than 7 grenades if creating a multiplayer map for the Gearbox versions of the game (i.e. custom, retail, demo), as the grenade count will underflow if the player exceeds 7 grenades due to the four-bit signed integer used in the netcode for syncing grenades.",
+                "first": "maximum count"
+            }
+        ],
+        "fields": [
+            {
+                "name": "maximum count",
+                "type": "int16",
+                "maximum": 127,
+                "minimum": 0
+            },
+            {
+                "name": "mp spawn default",
+                "type": "int16",
+                "maximum": 127,
+                "minimum": 0
+            },
+            {
+                "name": "throwing effect",
+                "type": "TagDependency",
+                "classes": [
+                    "effect"
+                ]
+            },
+            {
+                "name": "hud interface",
+                "type": "TagDependency",
+                "classes": [
+                    "grenade_hud_interface"
+                ]
+            },
+            {
+                "name": "equipment",
+                "type": "TagDependency",
+                "classes": [
+                    "equipment"
+                ]
+            },
+            {
+                "name": "projectile",
+                "type": "TagDependency",
+                "classes": [
+                    "projectile"
+                ]
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "size": 68
+    },
+    {
+        "name": "GlobalsRasterizerData",
+        "fields": [
+            {
+                "name": "distance attenuation",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "vector normalization",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "atmospheric fog density",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "planar fog density",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "linear corner fade",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "active camouflage distortion",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "glow",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "type": "pad",
+                "size": 60
+            },
+            {
+                "name": "default 2d",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "default 3d",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "default cube map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "test 0",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "test 1",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "test 2",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "test 3",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "video scanline map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "video noise map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "type": "pad",
+                "size": 52
+            },
+            {
+                "name": "flags",
+                "type": "GlobalsRasterizerDataFlags"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "refraction amount",
+                "type": "float"
+            },
+            {
+                "name": "distance falloff",
+                "type": "float"
+            },
+            {
+                "name": "tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "hyper stealth refraction",
+                "type": "float"
+            },
+            {
+                "name": "hyper stealth distance falloff",
+                "type": "float"
+            },
+            {
+                "name": "hyper stealth tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "distance attenuation 2d",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            }
+        ],
+        "type": "struct",
+        "size": 428
+    },
+    {
+        "name": "GlobalsInterfaceBitmaps",
+        "fields": [
+            {
+                "name": "font system",
+                "type": "TagDependency",
+                "classes": [
+                    "font"
+                ]
+            },
+            {
+                "name": "font terminal",
+                "type": "TagDependency",
+                "classes": [
+                    "font"
+                ]
+            },
+            {
+                "name": "screen color table",
+                "type": "TagDependency",
+                "classes": [
+                    "color_table"
+                ]
+            },
+            {
+                "name": "hud color table",
+                "type": "TagDependency",
+                "classes": [
+                    "color_table"
+                ]
+            },
+            {
+                "name": "editor color table",
+                "type": "TagDependency",
+                "classes": [
+                    "color_table"
+                ]
+            },
+            {
+                "name": "dialog color table",
+                "type": "TagDependency",
+                "classes": [
+                    "color_table"
+                ]
+            },
+            {
+                "name": "hud globals",
+                "type": "TagDependency",
+                "classes": [
+                    "hud_globals"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "motion sensor sweep bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "motion sensor sweep bitmap mask",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "multiplayer hud bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "localization",
+                "type": "TagDependency",
+                "classes": [
+                    "string_list"
+                ]
+            },
+            {
+                "name": "hud digits definition",
+                "type": "TagDependency",
+                "classes": [
+                    "hud_number"
+                ]
+            },
+            {
+                "name": "motion sensor blip bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "interface goo map1",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "interface goo map2",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "interface goo map3",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "type": "pad",
+                "size": 48
+            }
+        ],
+        "type": "struct",
+        "size": 304
+    },
+    {
+        "name": "GlobalsWeapon",
+        "type": "struct",
+        "fields": [
+            {
+                "name": "weapon",
+                "type": "TagDependency",
+                "classes": [
+                    "item"
+                ]
+            }
+        ],
+        "size": 16
+    },
+    {
+        "name": "GlobalsCheatPowerup",
+        "type": "struct",
+        "fields": [
+            {
+                "name": "powerup",
+                "type": "TagDependency",
+                "classes": [
+                    "equipment"
+                ]
+            }
+        ],
+        "size": 16
+    },
+    {
+        "name": "GlobalsVehicle",
+        "type": "struct",
+        "fields": [
+            {
+                "name": "vehicle",
+                "type": "TagDependency",
+                "classes": [
+                    "unit"
+                ]
+            }
+        ],
+        "size": 16
+    },
+    {
+        "name": "GlobalsMultiplayerInformation",
+        "fields": [
+            {
+                "name": "flag",
+                "type": "TagDependency",
+                "classes": [
+                    "weapon"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "unit",
+                "type": "TagDependency",
+                "classes": [
+                    "unit"
+                ]
+            },
+            {
+                "name": "vehicles",
+                "type": "TagReflexive",
+                "struct": "GlobalsVehicle",
+                "maximum": 20
+            },
+            {
+                "name": "hill shader",
+                "type": "TagDependency",
+                "classes": [
+                    "shader"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "flag shader",
+                "type": "TagDependency",
+                "classes": [
+                    "shader"
+                ]
+            },
+            {
+                "name": "ball",
+                "type": "TagDependency",
+                "classes": [
+                    "weapon"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "sounds",
+                "type": "TagReflexive",
+                "struct": "GlobalsSound",
+                "maximum": 60
+            },
+            {
+                "type": "pad",
+                "size": 56
+            }
+        ],
+        "type": "struct",
+        "post_compile": true,
+        "size": 160
+    },
+    {
+        "name": "GlobalsPlayerInformation",
+        "fields": [
+            {
+                "name": "unit",
+                "type": "TagDependency",
+                "classes": [
+                    "unit"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "name": "walking speed",
+                "unit": "world units per second",
+                "type": "float"
+            },
+            {
+                "name": "double speed multiplier",
+                "type": "float"
+            },
+            {
+                "name": "run forward",
+                "unit": "world units per second",
+                "type": "float"
+            },
+            {
+                "name": "run backward",
+                "unit": "world units per second",
+                "type": "float"
+            },
+            {
+                "name": "run sideways",
+                "unit": "world units per second",
+                "type": "float"
+            },
+            {
+                "name": "run acceleration",
+                "unit": "world units per second squared",
+                "type": "float"
+            },
+            {
+                "name": "sneak forward",
+                "unit": "world units per second",
+                "type": "float"
+            },
+            {
+                "name": "sneak backward",
+                "unit": "world units per second",
+                "type": "float"
+            },
+            {
+                "name": "sneak sideways",
+                "unit": "world units per second",
+                "type": "float"
+            },
+            {
+                "name": "sneak acceleration",
+                "unit": "world units per second squared",
+                "type": "float"
+            },
+            {
+                "name": "airborne acceleration",
+                "unit": "world units per second squared",
+                "type": "float"
+            },
+            {
+                "name": "speed multiplier",
+                "unit": "multiplayer only",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "grenade origin",
+                "type": "Point3D"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "stun movement penalty",
+                "type": "float"
+            },
+            {
+                "name": "stun turning penalty",
+                "type": "float"
+            },
+            {
+                "name": "stun jumping penalty",
+                "type": "float"
+            },
+            {
+                "name": "minimum stun time",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "maximum stun time",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "first person idle time",
+                "unit": "seconds",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "first person skip fraction",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "coop respawn effect",
+                "type": "TagDependency",
+                "classes": [
+                    "effect"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 44
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "size": 244
+    },
+    {
+        "name": "GlobalsFirstPersonInterface",
+        "groups": [
+            {
+                "name": "first person interface",
+                "first": "first person hands",
+                "description": "The \"first person hands\" model is used when holding a weapon that has first person animations. It will not appear if the player is unarmed or is using a weapon that doesn't have first person animations. The \"night vision on effect\" and \"night vision off effect\" are played once when enabling and disabling night vision, respectfully.\n\nThe \"base bitmap\", \"shield meter\", \"shield meter origin\", \"body meter\", and \"body meter origin\" tags are not used, and they appear to be a holdover from an older, unreleased version of the original Halo engine. The unit HUD interface tag referenced in the biped is used, instead."
+            }
+        ],
+        "fields": [
+            {
+                "name": "first person hands",
+                "type": "TagDependency",
+                "classes": [
+                    "model"
+                ],
+                "description": "This is the model used for hands when a weapon with first person animatinos is held."
+            },
+            {
+                "name": "base bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "shield meter",
+                "type": "TagDependency",
+                "classes": [
+                    "meter"
+                ]
+            },
+            {
+                "name": "shield meter origin",
+                "type": "Point2DInt"
+            },
+            {
+                "name": "body meter",
+                "type": "TagDependency",
+                "classes": [
+                    "meter"
+                ]
+            },
+            {
+                "name": "body meter origin",
+                "type": "Point2DInt"
+            },
+            {
+                "name": "night vision on effect",
+                "type": "TagDependency",
+                "classes": [
+                    "effect"
+                ],
+                "description": "This effect is played when enabling night vision."
+            },
+            {
+                "name": "night vision off effect",
+                "type": "TagDependency",
+                "classes": [
+                    "effect"
+                ],
+                "description": "This effect is played when disabling night vision."
+            },
+            {
+                "type": "pad",
+                "size": 88
+            }
+        ],
+        "type": "struct",
+        "size": 192
+    },
+    {
+        "name": "GlobalsFallingDamage",
+        "fields": [
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "harmful falling distance",
+                "unit": "world units",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "falling damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "maximum falling distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "distance damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "name": "vehicle environment collision damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "name": "vehicle killed unit damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "name": "vehicle collision damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "name": "flaming death damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "maximum falling velocity",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "harmful falling velocity",
+                "bounds": true,
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "size": 152
+    },
+    {
+        "name": "GlobalsBreakableSurfaceParticleEffect",
+        "fields": [
+            {
+                "name": "particle type",
+                "type": "TagDependency",
+                "classes": [
+                    "particle"
+                ]
+            },
+            {
+                "name": "flags",
+                "type": "GlobalsBreakableSurfaceParticleEffectFlags"
+            },
+            {
+                "name": "density",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "velocity scale",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "angular velocity",
+                "bounds": true,
+                "unit": "degrees per second",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "radius",
+                "bounds": true,
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "tint lower bound",
+                "type": "ColorARGB"
+            },
+            {
+                "name": "tint upper bound",
+                "type": "ColorARGB"
+            },
+            {
+                "type": "pad",
+                "size": 28
+            }
+        ],
+        "type": "struct",
+        "title": "particle type",
+        "size": 128
+    },
+    {
+        "name": "GlobalsMaterial",
+        "fields": [
+            {
+                "type": "pad",
+                "size": 100
+            },
+            {
+                "type": "pad",
+                "size": 48
+            },
+            {
+                "name": "ground friction scale",
+                "type": "float"
+            },
+            {
+                "name": "ground friction normal k1 scale",
+                "type": "float"
+            },
+            {
+                "name": "ground friction normal k0 scale",
+                "type": "float"
+            },
+            {
+                "name": "ground depth scale",
+                "type": "float"
+            },
+            {
+                "name": "ground damp fraction scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 76
+            },
+            {
+                "type": "pad",
+                "size": 480
+            },
+            {
+                "name": "maximum vitality",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "effect",
+                "type": "TagDependency",
+                "classes": [
+                    "effect"
+                ]
+            },
+            {
+                "name": "sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 24
+            },
+            {
+                "name": "particle effects",
+                "type": "TagReflexive",
+                "struct": "GlobalsBreakableSurfaceParticleEffect",
+                "maximum": 8
+            },
+            {
+                "type": "pad",
+                "size": 60
+            },
+            {
+                "name": "melee hit sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            }
+        ],
+        "type": "struct",
+        "size": 884
+    },
+    {
+        "name": "GlobalsPlaylistMember",
+        "fields": [
+            {
+                "name": "map name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "game variant",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "minimum experience",
+                "type": "int32"
+            },
+            {
+                "name": "maximum experience",
+                "type": "int32",
+                "default": 10
+            },
+            {
+                "name": "minimum player count",
+                "type": "int32",
+                "default": 1
+            },
+            {
+                "name": "maximum player count",
+                "type": "int32",
+                "default": 16
+            },
+            {
+                "name": "rating",
+                "type": "int32",
+                "default": 100
+            },
+            {
+                "type": "pad",
+                "size": 64
+            }
+        ],
+        "type": "struct",
+        "title": "map name",
+        "size": 148
+    },
+    {
+        "name": "Globals",
+        "fields": [
+            {
+                "type": "pad",
+                "size": 248
+            },
+            {
+                "name": "sounds",
+                "type": "TagReflexive",
+                "struct": "GlobalsSound",
+                "minimum": 2,
+                "maximum": 2
+            },
+            {
+                "name": "camera",
+                "type": "TagReflexive",
+                "struct": "GlobalsCamera",
+                "minimum": 1,
+                "maximum": 1
+            },
+            {
+                "name": "player control",
+                "type": "TagReflexive",
+                "struct": "GlobalsPlayerControl",
+                "minimum": 1,
+                "maximum": 1
+            },
+            {
+                "name": "difficulty",
+                "type": "TagReflexive",
+                "struct": "GlobalsDifficulty",
+                "minimum": 1,
+                "maximum": 1
+            },
+            {
+                "name": "grenades",
+                "type": "TagReflexive",
+                "struct": "GlobalsGrenade",
+                "minimum": 2,
+                "maximum": 4,
+                "legacy_maximum": 2
+            },
+            {
+                "name": "rasterizer data",
+                "type": "TagReflexive",
+                "struct": "GlobalsRasterizerData",
+                "minimum": 1,
+                "maximum": 1
+            },
+            {
+                "name": "interface bitmaps",
+                "type": "TagReflexive",
+                "struct": "GlobalsInterfaceBitmaps",
+                "minimum": 1,
+                "maximum": 1
+            },
+            {
+                "name": "weapon list",
+                "type": "TagReflexive",
+                "struct": "GlobalsWeapon",
+                "maximum": 20
+            },
+            {
+                "name": "cheat powerups",
+                "type": "TagReflexive",
+                "struct": "GlobalsCheatPowerup",
+                "maximum": 20
+            },
+            {
+                "name": "multiplayer information",
+                "type": "TagReflexive",
+                "struct": "GlobalsMultiplayerInformation",
+                "maximum": 1
+            },
+            {
+                "name": "player information",
+                "type": "TagReflexive",
+                "struct": "GlobalsPlayerInformation",
+                "minimum": 1,
+                "maximum": 1
+            },
+            {
+                "name": "first person interface",
+                "type": "TagReflexive",
+                "struct": "GlobalsFirstPersonInterface",
+                "minimum": 1,
+                "maximum": 1
+            },
+            {
+                "name": "falling damage",
+                "type": "TagReflexive",
+                "struct": "GlobalsFallingDamage",
+                "maximum": 1
+            },
+            {
+                "name": "materials",
+                "type": "TagReflexive",
+                "struct": "GlobalsMaterial",
+                "maximum": 33
+            },
+            {
+                "name": "playlist members",
+                "type": "TagReflexive",
+                "struct": "GlobalsPlaylistMember",
+                "maximum": 20
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "size": 428,
+        "class": "globals"
+    }
+]

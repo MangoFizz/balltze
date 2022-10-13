@@ -1,0 +1,321 @@
+[
+    {
+        "name": "WeatherParticleSystemRenderDirectionSource",
+        "options": [
+            "from velocity",
+            "from acceleration"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeatherParticleSystemParticleTypeFlags",
+        "type": "bitfield",
+        "fields": [
+            "interpolate colors in hsv",
+            "along long hue path",
+            "random rotation"
+        ],
+        "width": 32
+    },
+    {
+        "name": "WeatherParticleSystemParticleType",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "flags",
+                "type": "WeatherParticleSystemParticleTypeFlags"
+            },
+            {
+                "name": "fade in start distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "fade in end distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "fade out start distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "fade out end distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "fade in start height",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "fade in end height",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "fade out start height",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "fade out end height",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 96
+            },
+            {
+                "name": "particle count",
+                "unit": "particles per cubic world unit",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "physics",
+                "type": "TagDependency",
+                "classes": [
+                    "point_physics"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "acceleration magnitude",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "acceleration turning rate",
+                "type": "Fraction"
+            },
+            {
+                "name": "acceleration change rate",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "particle radius",
+                "bounds": true,
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "animation rate",
+                "bounds": true,
+                "unit": "frames per second",
+                "type": "float"
+            },
+            {
+                "name": "rotation rate",
+                "bounds": true,
+                "unit": "degrees per second",
+                "type": "Angle"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "color lower bound",
+                "type": "ColorARGB"
+            },
+            {
+                "name": "color upper bound",
+                "type": "ColorARGB"
+            },
+            {
+                "name": "sprite size",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "type": "pad",
+                "size": 60
+            },
+            {
+                "name": "sprite bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "render mode",
+                "type": "ParticleOrientation"
+            },
+            {
+                "name": "render direction source",
+                "type": "WeatherParticleSystemRenderDirectionSource"
+            },
+            {
+                "type": "pad",
+                "size": 36
+            },
+            {
+                "name": "not broken",
+                "type": "uint32",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "shader flags",
+                "type": "ParticleShaderFlags"
+            },
+            {
+                "name": "framebuffer blend function",
+                "type": "FramebufferBlendFunction"
+            },
+            {
+                "name": "framebuffer fade mode",
+                "type": "FramebufferFadeMode"
+            },
+            {
+                "name": "map flags",
+                "type": "IsUnfilteredFlag"
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "name": "bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "anchor",
+                "type": "ParticleAnchor"
+            },
+            {
+                "name": "flags 1",
+                "type": "IsUnfilteredFlag"
+            },
+            {
+                "name": "u animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "u animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "u animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "u animation phase",
+                "type": "float"
+            },
+            {
+                "name": "u animation scale",
+                "unit": "repeats",
+                "type": "float"
+            },
+            {
+                "name": "v animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "v animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "v animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "v animation phase",
+                "type": "float"
+            },
+            {
+                "name": "v animation scale",
+                "unit": "repeats",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "rotation animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "rotation animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation phase",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation scale",
+                "type": "Angle"
+            },
+            {
+                "name": "rotation animation center",
+                "type": "Point2D"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "zsprite radius scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 20
+            }
+        ],
+        "type": "struct",
+        "post_compile": true,
+        "title": "name",
+        "size": 604
+    },
+    {
+        "name": "WeatherParticleSystem",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "IsUnusedFlag",
+                "unused": true
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "particle types",
+                "type": "TagReflexive",
+                "struct": "WeatherParticleSystemParticleType",
+                "maximum": 8
+            }
+        ],
+        "type": "struct",
+        "size": 48,
+        "class": "weather_particle_system"
+    }
+]

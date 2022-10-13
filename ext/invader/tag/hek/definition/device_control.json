@@ -1,0 +1,79 @@
+[
+    {
+        "name": "DeviceType",
+        "options": [
+            "toggle switch",
+            "on button",
+            "off button",
+            "call button"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "DeviceTriggersWhen",
+        "options": [
+            "touched by player",
+            "destroyed"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "DeviceControl",
+        "groups": [
+            {
+                "name": "device control",
+                "description": "Device Control attributes",
+                "first": "type"
+            }
+        ],
+        "fields": [
+            {
+                "name": "type",
+                "type": "DeviceType"
+            },
+            {
+                "name": "triggers when",
+                "type": "DeviceTriggersWhen"
+            },
+            {
+                "name": "call value",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 80
+            },
+            {
+                "name": "on",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "off",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "deny",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            }
+        ],
+        "type": "struct",
+        "inherits": "Device",
+        "pre_compile": true,
+        "post_compile": true,
+        "postprocess_hek_data": true,
+        "size": 792,
+        "class": "device_control"
+    }
+]

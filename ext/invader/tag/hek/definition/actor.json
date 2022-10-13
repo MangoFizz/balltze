@@ -1,0 +1,794 @@
+[
+    {
+        "name": "ActorType",
+        "options": [
+            "elite",
+            "jackal",
+            "grunt",
+            "hunter",
+            "engineer",
+            "assassin",
+            "player",
+            "marine",
+            "crew",
+            "combat form",
+            "infection form",
+            "carrier form",
+            "monitor",
+            "sentinel",
+            "none",
+            "mounted weapon"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ActorUnreachableDangerTrigger",
+        "options": [
+            "never",
+            "visible",
+            "shooting",
+            "shooting near us",
+            "damaging us",
+            "unused",
+            "unused1",
+            "unused2",
+            "unused3",
+            "unused4"
+        ],
+        "exclude": [
+            {
+                "option": "unused"
+            },
+            {
+                "option": "unused1"
+            },
+            {
+                "option": "unused2"
+            },
+            {
+                "option": "unused3"
+            },
+            {
+                "option": "unused4"
+            }
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ActorDefensiveCrouchType",
+        "options": [
+            "never",
+            "danger",
+            "low shields",
+            "hide behind shield",
+            "any target",
+            "flood shamble"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ActorFlags",
+        "type": "bitfield",
+        "fields": [
+            "can see in darkness",
+            "sneak uncovering target",
+            "sneak uncovering pursuit position",
+            "unused",
+            "shoot at target s last location",
+            "try to stay still when crouched",
+            "crouch when not in combat",
+            "crouch when guarding",
+            "unused 1",
+            "must crouch to shoot",
+            "panic when surprised",
+            "always charge at enemies",
+            "gets in vehicles with player",
+            "start firing before aligned",
+            "standing must move forward",
+            "crouching must move forward",
+            "defensive crouch while charging",
+            "use stalking behavior",
+            "stalking freeze if exposed",
+            "always berserk in attacking mode",
+            "berserking uses panicked movement",
+            "flying",
+            "panicked by unopposable enemy",
+            "crouch when hiding from unopposable",
+            "always charge in attacking mode",
+            "dive off ledges",
+            "swarm",
+            "suicidal melee attack",
+            "cannot move while crouching",
+            "fixed crouch facing",
+            "crouch when in line of fire",
+            "avoid friends line of fire"
+        ],
+        "exclude": [
+            {
+                "field": "unused"
+            },
+            {
+                "field": "unused 1"
+            }
+        ],
+        "width": 32
+    },
+    {
+        "name": "ActorMoreFlags",
+        "type": "bitfield",
+        "fields": [
+            "avoid all enemy attack vectors",
+            "must stand to fire",
+            "must stop to fire",
+            "disallow vehicle combat",
+            "pathfinding ignores danger",
+            "panic in groups",
+            "no corpse shooting"
+        ],
+        "width": 32
+    },
+    {
+        "name": "Actor",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "ActorFlags"
+            },
+            {
+                "name": "more flags",
+                "type": "ActorMoreFlags"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "type",
+                "type": "ActorType"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "max vision distance",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "central vision angle",
+                "type": "Angle"
+            },
+            {
+                "name": "max vision angle",
+                "type": "Angle"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "peripheral vision angle",
+                "type": "Angle"
+            },
+            {
+                "name": "peripheral distance",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "standing gun offset",
+                "type": "Vector3D"
+            },
+            {
+                "name": "crouching gun offset",
+                "type": "Vector3D"
+            },
+            {
+                "name": "hearing distance",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "notice projectile chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "notice vehicle chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "combat perception time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "guard perception time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "non combat perception time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "inverse combat perception time",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "inverse guard perception time",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "inverse non combat perception time",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "dive into cover chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "emerge from cover chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "dive from grenade chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "pathfinding radius",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "glass ignorance chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "stationary movement dist",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "free flying sidestep",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "begin moving angle",
+                "type": "Angle"
+            },
+            {
+                "name": "cosine begin moving angle",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "maximum aiming deviation",
+                "type": "Euler2D"
+            },
+            {
+                "name": "maximum looking deviation",
+                "type": "Euler2D"
+            },
+            {
+                "name": "noncombat look delta l",
+                "type": "Angle"
+            },
+            {
+                "name": "noncombat look delta r",
+                "type": "Angle"
+            },
+            {
+                "name": "combat look delta l",
+                "type": "Angle"
+            },
+            {
+                "name": "combat look delta r",
+                "type": "Angle"
+            },
+            {
+                "name": "idle aiming range",
+                "type": "Euler2D"
+            },
+            {
+                "name": "idle looking range",
+                "type": "Euler2D"
+            },
+            {
+                "name": "event look time modifier",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "noncombat idle facing",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "noncombat idle aiming",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "noncombat idle looking",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "guard idle facing",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "guard idle aiming",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "guard idle looking",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "combat idle facing",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "combat idle aiming",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "combat idle looking",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "cosine maximum aiming deviation",
+                "type": "Euler2D",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "cosine maximum looking deviation",
+                "type": "Euler2D",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "do not use",
+                "type": "TagDependency",
+                "classes": [
+                    "weapon"
+                ],
+                "unused": true
+            },
+            {
+                "type": "pad",
+                "size": 268
+            },
+            {
+                "name": "do not use 1",
+                "type": "TagDependency",
+                "classes": [
+                    "projectile"
+                ],
+                "unused": true
+            },
+            {
+                "name": "unreachable danger trigger",
+                "type": "ActorUnreachableDangerTrigger"
+            },
+            {
+                "name": "vehicle danger trigger",
+                "type": "ActorUnreachableDangerTrigger"
+            },
+            {
+                "name": "player danger trigger",
+                "type": "ActorUnreachableDangerTrigger"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "danger trigger time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "friends killed trigger",
+                "type": "int16"
+            },
+            {
+                "name": "friends retreating trigger",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "retreat time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "cowering time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "friend killed panic chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "leader type",
+                "type": "ActorType"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "leader killed panic chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "panic damage threshold",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "surprise distance",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "name": "hide behind cover time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "hide target not visible time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "hide shield fraction",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "attack shield fraction",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "pursue shield fraction",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "defensive crouch type",
+                "type": "ActorDefensiveCrouchType"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "attacking crouch threshold",
+                "type": "float"
+            },
+            {
+                "name": "defending crouch threshold",
+                "type": "float"
+            },
+            {
+                "name": "min stand time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "min crouch time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "defending hide time modifier",
+                "type": "float"
+            },
+            {
+                "name": "attacking evasion threshold",
+                "type": "float"
+            },
+            {
+                "name": "defending evasion threshold",
+                "type": "float"
+            },
+            {
+                "name": "evasion seek cover chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "evasion delay time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "max seek cover distance",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "cover damage threshold",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "stalking discovery time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "stalking max distance",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "stationary facing angle",
+                "type": "Angle"
+            },
+            {
+                "name": "change facing stand time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "uncover delay time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "target search time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "pursuit position time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "num positions (coord)",
+                "type": "uint16",
+                "minimum": 0.0
+            },
+            {
+                "name": "num positions (normal)",
+                "type": "uint16",
+                "minimum": 0.0
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "melee attack delay",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "melee fudge factor",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "melee charge time",
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "melee leap range",
+                "bounds": true,
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "melee leap velocity",
+                "type": "float",
+                "unit": "world units per tick",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "melee leap chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "melee leap ballistic",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "berserk damage amount",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "berserk damage threshold",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "berserk proximity",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "suicide sensing dist",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "berserk grenade chance",
+                "type": "float",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "guard position time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "combat position time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "old position avoid dist",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "name": "friend avoid dist",
+                "type": "float",
+                "unit": "world units"
+            },
+            {
+                "type": "pad",
+                "size": 40
+            },
+            {
+                "name": "noncombat idle speech time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "name": "combat idle speech time",
+                "bounds": true,
+                "type": "float",
+                "unit": "seconds"
+            },
+            {
+                "type": "pad",
+                "size": 48
+            },
+            {
+                "type": "pad",
+                "size": 128
+            },
+            {
+                "name": "do not use 2",
+                "type": "TagDependency",
+                "classes": [
+                    "actor"
+                ],
+                "unused": true
+            },
+            {
+                "type": "pad",
+                "size": 48
+            }
+        ],
+        "type": "struct",
+        "post_compile": true,
+        "size": 1272,
+        "class": "actor"
+    }
+]

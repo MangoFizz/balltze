@@ -1,0 +1,154 @@
+[
+    {
+        "name": "VirtualKeyboardKeyboardKey",
+        "options": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "0",
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "r",
+            "s",
+            "t",
+            "u",
+            "v",
+            "w",
+            "x",
+            "y",
+            "z",
+            "done",
+            "shift",
+            "caps lock",
+            "symbols",
+            "backspace",
+            "left",
+            "right",
+            "space"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "VirtualKeyboardVirtualKey",
+        "fields": [
+            {
+                "name": "keyboard key",
+                "type": "VirtualKeyboardKeyboardKey"
+            },
+            {
+                "name": "lowercase character",
+                "type": "int16"
+            },
+            {
+                "name": "shift character",
+                "type": "int16"
+            },
+            {
+                "name": "caps character",
+                "type": "int16"
+            },
+            {
+                "name": "symbols character",
+                "type": "int16"
+            },
+            {
+                "name": "shift caps character",
+                "type": "int16"
+            },
+            {
+                "name": "shift symbols character",
+                "type": "int16"
+            },
+            {
+                "name": "caps symbols character",
+                "type": "int16"
+            },
+            {
+                "name": "unselected background bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "selected background bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "active background bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "sticky background bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            }
+        ],
+        "type": "struct",
+        "size": 80
+    },
+    {
+        "name": "VirtualKeyboard",
+        "fields": [
+            {
+                "name": "display font",
+                "type": "TagDependency",
+                "classes": [
+                    "font"
+                ]
+            },
+            {
+                "name": "background bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "special key labels string list",
+                "type": "TagDependency",
+                "classes": [
+                    "unicode_string_list"
+                ]
+            },
+            {
+                "name": "virtual keys",
+                "type": "TagReflexive",
+                "struct": "VirtualKeyboardVirtualKey",
+                "maximum": 44
+            }
+        ],
+        "type": "struct",
+        "size": 60,
+        "class": "virtual_keyboard"
+    }
+]

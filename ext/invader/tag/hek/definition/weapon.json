@@ -1,0 +1,939 @@
+[
+    {
+        "name": "WeaponSecondaryTriggerMode",
+        "options": [
+            "normal",
+            "slaved to primary",
+            "inhibits primary",
+            "loads alterate ammunition",
+            "loads multiple primary ammunition"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeaponFunctionIn",
+        "options": [
+            "none",
+            "heat",
+            "primary ammunition",
+            "secondary ammunition",
+            "primary rate of fire",
+            "secondary rate of fire",
+            "ready",
+            "primary ejection port",
+            "secondary ejection port",
+            "overheated",
+            "primary charged",
+            "secondary charged",
+            "illumination",
+            "age",
+            "integrated light",
+            "primary firing",
+            "secondary firing",
+            "primary firing on",
+            "secondary firing on"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeaponMovementPenalized",
+        "options": [
+            "always",
+            "when zoomed",
+            "when zoomed or reloading"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeaponType",
+        "options": [
+            "undefined",
+            "shotgun",
+            "needler",
+            "plasma pistol",
+            "plasma rifle",
+            "rocket launcher"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeaponPredictionType",
+        "options": [
+            "none",
+            "continuous",
+            "instant"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeaponOverchargedAction",
+        "options": [
+            "none",
+            "explode",
+            "discharge"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeaponDistributionFunction",
+        "options": [
+            "point",
+            "horizontal fan"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "WeaponMagazineFlags",
+        "type": "bitfield",
+        "fields": [
+            "wastes rounds when reloaded",
+            "every round must be chambered"
+        ],
+        "width": 32
+    },
+    {
+        "name": "WeaponTriggerFlags",
+        "type": "bitfield",
+        "fields": [
+            "tracks fired projectile",
+            "random firing effects",
+            "can fire with partial ammo",
+            "does not repeat automatically",
+            "locks in on off state",
+            "projectiles use weapon origin",
+            "sticks when dropped",
+            "ejects during chamber",
+            "discharging spews",
+            "analog rate of fire",
+            "use error when unzoomed",
+            "projectile vector cannot be adjusted",
+            "projectiles have identical error",
+            "projectile is client side only",
+            "use original unit adjust projectile ray"
+        ],
+        "width": 32
+    },
+    {
+        "name": "WeaponFlags",
+        "type": "bitfield",
+        "fields": [
+            "vertical heat display",
+            "mutually exclusive triggers",
+            "attacks automatically on bump",
+            "must be readied",
+            "doesn't count toward maximum",
+            "aim assists only when zoomed",
+            "prevents grenade throwing",
+            "must be picked up",
+            "holds triggers when dropped",
+            "prevents melee attack",
+            "detonates when dropped",
+            "cannot fire at maximum age",
+            "secondary trigger overrides grenades",
+            "obsolete does not depower active camo in multilplayer",
+            "enables integrated night vision",
+            "ais use weapon melee damage"
+        ],
+        "width": 32
+    },
+    {
+        "name": "WeaponMagazineObject",
+        "fields": [
+            {
+                "name": "rounds",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 10
+            },
+            {
+                "name": "equipment",
+                "type": "TagDependency",
+                "classes": [
+                    "equipment"
+                ]
+            }
+        ],
+        "type": "struct",
+        "size": 28
+    },
+    {
+        "name": "WeaponMagazine",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "WeaponMagazineFlags"
+            },
+            {
+                "name": "rounds recharged",
+                "type": "int16"
+            },
+            {
+                "name": "rounds total initial",
+                "type": "int16",
+                "comment": "includes loaded ammo"
+            },
+            {
+                "name": "rounds reserved maximum",
+                "type": "int16",
+                "comment": "does not include loaded ammo"
+            },
+            {
+                "name": "rounds loaded maximum",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "reload time",
+                "type": "float"
+            },
+            {
+                "name": "rounds reloaded",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "chamber time",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "reloading effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "chambering effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "magazine objects",
+                "type": "TagReflexive",
+                "struct": "WeaponMagazineObject",
+                "maximum": 8
+            }
+        ],
+        "type": "struct",
+        "size": 112
+    },
+    {
+        "name": "WeaponTriggerFiringEffect",
+        "fields": [
+            {
+                "name": "shot count lower bound",
+                "type": "int16"
+            },
+            {
+                "name": "shot count upper bound",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "firing effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "misfire effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "empty effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "firing damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "name": "misfire damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "name": "empty damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            }
+        ],
+        "type": "struct",
+        "size": 132
+    },
+    {
+        "name": "WeaponTrigger",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "WeaponTriggerFlags"
+            },
+            {
+                "name": "maximum rate of fire",
+                "bounds": true,
+                "type": "float",
+                "unit": "shots per second",
+                "comment": "This determines the maximum number of times this trigger can be fired per second.\nThe first value is initial rate of fire and the second value is the final rate of fire.\nWeapons cannot fire faster than once per tick, and non-positive (0 or less) rate of fire results in firing once per tick.\nBecause weapons cannot fire in between ticks, fire rate is also effectively rounded down to the nearest tickrate/n for any positive integer n (so at 30 ticks per second: 30, 15, 10, 7.5, 6, 5, 4.288, 3.75, 3.333, 3, etc.)"
+            },
+            {
+                "name": "acceleration time",
+                "type": "float",
+                "unit": "seconds",
+                "comment": "This is the number of seconds required to hold the trigger in order to reach the final rate of fire.\n0 acceleration time means the trigger will always use the final rate of fire."
+            },
+            {
+                "name": "deceleration time",
+                "unit": "seconds",
+                "type": "float",
+                "comment": "This is the number of seconds required to release the trigger in order to reach the initial rate of fire.\n0 deceleration time means the trigger will revert to the initial rate of fire the moment the trigger is released."
+            },
+            {
+                "name": "blurred rate of fire",
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "magazine",
+                "type": "Index",
+                "reflexive": "magazines",
+                "struct": "Weapon",
+                "comment": "This is the index of the magazine used for drawing ammunition for this trigger.\nIf no magazine is given (null), then the weapon effectively has an unlimited amount of rounds."
+            },
+            {
+                "name": "rounds per shot",
+                "type": "int16",
+                "comment": "This is the amount of ammo each trigger fire uses.\nUnless the \"can fire with partial ammo\" flag is set, the trigger cannot be fired if there is less than this much ammo remaining and will, instead, reload automatically.\nFiring with partial ammo with the partial ammo flag will result in the loaded ammo reaching 0 rather than a negative amount.\nA negative value results in the magazine gaining loaded rounds upon firing."
+            },
+            {
+                "name": "minimum rounds loaded",
+                "type": "int16",
+                "comment": "The magazine will automatically reload if less than this much ammo remains in the magazine, and the weapon cannot fire unless this much ammo is loaded.\nUnlike \"rounds per shot\", this ignores the \"can fire with partial ammo\" flag."
+            },
+            {
+                "name": "projectiles between contrails",
+                "type": "int16",
+                "comment": "Contrails will not be created until this many projectiles have been fired.\nThis resets every time the trigger is released, and the first projectile will always have a contrail."
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "prediction type",
+                "type": "WeaponPredictionType",
+                "comment": "behavior of the trigger in a network predicted game.",
+                "engines": [
+                    "mcc"
+                ]
+            },
+            {
+                "name": "firing noise",
+                "type": "ObjectNoise",
+                "comment": "This determines how AI will respond to the trigger being fired, if at all."
+            },
+            {
+                "name": "error",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "error acceleration time",
+                "type": "float"
+            },
+            {
+                "name": "error deceleration time",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "charging time",
+                "type": "float"
+            },
+            {
+                "name": "charged time",
+                "type": "float"
+            },
+            {
+                "name": "overcharged action",
+                "type": "WeaponOverchargedAction"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "charged illumination",
+                "type": "float"
+            },
+            {
+                "name": "spew time",
+                "type": "float"
+            },
+            {
+                "name": "charging effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "distribution function",
+                "type": "WeaponDistributionFunction"
+            },
+            {
+                "name": "projectiles per shot",
+                "type": "int16",
+                "comment": "This is the number of projectiles that spawn when the trigger is fired."
+            },
+            {
+                "name": "distribution angle",
+                "type": "Angle"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "minimum error",
+                "type": "Angle"
+            },
+            {
+                "name": "error angle",
+                "bounds": true,
+                "type": "Angle",
+                "comment": "This determines the maximum angle the projectile can deviate from the first person camera.\nThe first value is the initial error angle and the second value is the final error angle. "
+            },
+            {
+                "name": "first person offset",
+                "type": "Point3D",
+                "comment": "This is the relative offset from the first person camera the projectile spawns.\nX is front (+) and back (-), Y is left (+) and right (-), Z is up (+) and down (-)."
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "projectile",
+                "type": "TagDependency",
+                "classes": [
+                    "projectile"
+                ],
+                "comment": "This is the object that spawns when firing the weapon.\nThe object will spawn facing the same direction as the first person camera (along with any error angle applied, if necessary) with the velocity of the shooter."
+            },
+            {
+                "name": "ejection port recovery time",
+                "type": "float"
+            },
+            {
+                "name": "illumination recovery time",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "heat generated per round",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "age generated per round",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "overload time",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "illumination recovery rate",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "ejection port recovery rate",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "firing acceleration rate",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "firing deceleration rate",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "error acceleration rate",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "error deceleration rate",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "firing effects",
+                "type": "TagReflexive",
+                "struct": "WeaponTriggerFiringEffect",
+                "maximum": 8
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "size": 276
+    },
+    {
+        "name": "Weapon",
+        "groups": [
+            {
+                "name": "weapon",
+                "first": "weapon flags",
+                "description": "These are the weapon attributes of this weapon.\n\nThe flags are as follows:\n- \"Mutually exclusive triggers\" prevent both triggers from firing at the same time.\n- \"Must be readied\" is used for indicating that a weapon is used as a gametype objective for CTF or Oddball.\n- \"Doesn't count towards maximum\" allows the weapon to bypass the 2 weapon limit, but note that only four weapons can be held at once.\n- \"Aim assists only when zoomed\" prevents the weapon from engaging aim assist unless the player is zoomed in.\n- \"Prevents grenade throwing\" prevents the player from throwing grenades while the weapon is held.\n- \"Must be picked up\" forces the player to pick up the weapon rather than giving the option to do so.\n- \"Prevents melee attack\" prevents the player from performing a melee attack while the weapon is out.\n- \"Detonates when dropped\" causes the weapon to perform its detonation effect as indicated in the Item attributes.\n- \"Cannot fire at max age\" prevents the weapon from firing at all when it hits maximum age.\n- \"Secondary trigger overrides grenades\" results in the grenade button firing the second trigger instead.\n- \"Does not depower active camo in multiplayer\" prevents the weapon from revealing the player upon being fired, though this flag is made obsolete by the fact that there is an \"active camo ding\" field.\n\"Enables integrated night vision\" allows the weapon to have night vision when activating the flash light while zoomed in.\n- \"AIs use weapon melee damage\" has the weapon's melee damage override the actors when performing a melee attack.\n\nFor a unit to pick up the weapon, they must have animations available for this weapon that match the label tag."
+            },
+            {
+                "name": "zoom levels",
+                "first": "zoom levels",
+                "description": "These attributes are used for determining magnification levels of the weapon. The minimum zoom level is used for the first zoom level, and the maximum zoom level is used for the final zoom level. Zoom levels in between the minimum and maximum are interpolated. For example, if you have four zoom levels and the minimum was 2 with the maximum being 8, then the second and third zoom levels will be 4x and 6x, respectively.\n\nWhen zoomed in, if the weapon's HUD has a zoom overlay crosshair, it will appear. If there are multiple zoom levels, then it will changed to the next bitmap or sprite in its sequence every time the player zooms in. Note that if there are not enough bitmaps in the sequence, the game may crash (invader-build will check this)."
+            }
+        ],
+        "fields": [
+            {
+                "name": "weapon flags",
+                "type": "WeaponFlags"
+            },
+            {
+                "name": "label",
+                "type": "TagString",
+                "comment": "Units that have this label in their animations will be able to pick up the weapon",
+                "endian": null
+            },
+            {
+                "name": "secondary trigger mode",
+                "type": "WeaponSecondaryTriggerMode"
+            },
+            {
+                "name": "maximum alternate shots loaded",
+                "type": "int16"
+            },
+            {
+                "name": "weapon a in",
+                "type": "WeaponFunctionIn"
+            },
+            {
+                "name": "weapon b in",
+                "type": "WeaponFunctionIn"
+            },
+            {
+                "name": "weapon c in",
+                "type": "WeaponFunctionIn"
+            },
+            {
+                "name": "weapon d in",
+                "type": "WeaponFunctionIn"
+            },
+            {
+                "name": "ready time",
+                "type": "float"
+            },
+            {
+                "name": "ready effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "heat recovery threshold",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "overheated threshold",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "heat detonation threshold",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "heat detonation fraction",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "heat loss rate",
+                "minimum": 0.0,
+                "unit": "per second",
+                "type": "Fraction"
+            },
+            {
+                "name": "heat illumination",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "overheated",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "overheat detonation",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ],
+                "comment": "This effect is played when the weapon overheats and is set to detonate as a result"
+            },
+            {
+                "name": "player melee damage",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "name": "player melee response",
+                "type": "TagDependency",
+                "classes": [
+                    "damage_effect"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "actor firing parameters",
+                "type": "TagDependency",
+                "classes": [
+                    "actor_variant"
+                ]
+            },
+            {
+                "name": "near reticle range",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "far reticle range",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "intersection reticle range",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "zoom levels",
+                "type": "int16"
+            },
+            {
+                "name": "zoom magnification range",
+                "bounds": true,
+                "comment": "Minimum is the magnification amount for the first zoom level, and maximum is the magnification amount for the final zoom level",
+                "type": "float"
+            },
+            {
+                "name": "autoaim angle",
+                "type": "Angle"
+            },
+            {
+                "name": "autoaim range",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "magnetism angle",
+                "type": "Angle"
+            },
+            {
+                "name": "magnetism range",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "deviation angle",
+                "type": "Angle"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "movement penalized",
+                "type": "WeaponMovementPenalized"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "forward movement penalty",
+                "type": "Fraction"
+            },
+            {
+                "name": "sideways movement penalty",
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "minimum target range",
+                "type": "float"
+            },
+            {
+                "name": "looking time modifier",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "light power on time",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "light power off time",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "light power on effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "light power off effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "age heat recovery penalty",
+                "type": "float"
+            },
+            {
+                "name": "age rate of fire penalty",
+                "type": "float"
+            },
+            {
+                "name": "age misfire start",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "age misfire chance",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "first person model",
+                "type": "TagDependency",
+                "classes": [
+                    "model"
+                ]
+            },
+            {
+                "name": "first person animations",
+                "type": "TagDependency",
+                "classes": [
+                    "model_animations"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "hud interface",
+                "type": "TagDependency",
+                "classes": [
+                    "weapon_hud_interface"
+                ]
+            },
+            {
+                "name": "pickup sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "name": "zoom in sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "name": "zoom out sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "active camo ding",
+                "type": "float"
+            },
+            {
+                "name": "active camo regrowth rate",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "weapon type",
+                "type": "WeaponType"
+            },
+            {
+                "name": "more predicted resources",
+                "type": "TagReflexive",
+                "struct": "PredictedResource",
+                "cache_only": true,
+                "maximum": 1024
+            },
+            {
+                "name": "magazines",
+                "type": "TagReflexive",
+                "struct": "WeaponMagazine",
+                "maximum": 2
+            },
+            {
+                "name": "triggers",
+                "type": "TagReflexive",
+                "struct": "WeaponTrigger",
+                "maximum": 2
+            }
+        ],
+        "type": "struct",
+        "inherits": "Item",
+        "pre_compile": true,
+        "post_compile": true,
+        "postprocess_hek_data": true,
+        "size": 1288,
+        "class": "weapon"
+    }
+]

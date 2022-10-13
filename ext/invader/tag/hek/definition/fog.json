@@ -1,0 +1,209 @@
+[
+    {
+        "name": "FogFlags",
+        "type": "bitfield",
+        "fields": [
+            "is water",
+            "atmosphere dominant",
+            "fog screen only"
+        ],
+        "width": 32
+    },
+    {
+        "name": "FogScreenFlags",
+        "type": "bitfield",
+        "fields": [
+            "no environment multipass",
+            "no model multipass",
+            "no texture based falloff"
+        ],
+        "width": 16
+    },
+    {
+        "name": "Fog",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "FogFlags"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "type": "pad",
+                "size": 76
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "maximum density",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "opaque distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "opaque depth",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "distance to water plane",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "flags 1",
+                "type": "FogScreenFlags"
+            },
+            {
+                "name": "layer count",
+                "type": "int16"
+            },
+            {
+                "name": "distance gradient",
+                "bounds": true,
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "density gradient",
+                "bounds": true,
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "start distance from fog plane",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "screen layers color",
+                "type": "ColorARGBInt"
+            },
+            {
+                "name": "rotation multiplier",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "strafing multiplier",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "zoom multiplier",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "map scale",
+                "type": "float"
+            },
+            {
+                "name": "map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "wind velocity",
+                "unit": "world units per second",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "wind period",
+                "unit": "seconds",
+                "bounds": true,
+                "default": [
+                    1.0,
+                    1.0
+                ],
+                "type": "float"
+            },
+            {
+                "name": "wind acceleration weight",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "wind perpendicular weight",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "background sound",
+                "type": "TagDependency",
+                "classes": [
+                    "sound_looping"
+                ]
+            },
+            {
+                "name": "sound environment",
+                "type": "TagDependency",
+                "classes": [
+                    "sound_environment"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 120
+            }
+        ],
+        "type": "struct",
+        "size": 396,
+        "class": "fog"
+    }
+]

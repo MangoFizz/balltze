@@ -1,0 +1,470 @@
+[
+    {
+        "name": "BitmapDataType",
+        "options": [
+            "2d texture",
+            "3d texture",
+            "cube map",
+            "white"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "BitmapDataFormat",
+        "options": [
+            "a8",
+            "y8",
+            "ay8",
+            "a8y8",
+            "unused1",
+            "unused2",
+            "r5g6b5",
+            "unused3",
+            "a1r5g5b5",
+            "a4r4g4b4",
+            "x8r8g8b8",
+            "a8r8g8b8",
+            "unused4",
+            "unused5",
+            "dxt1",
+            "dxt3",
+            "dxt5",
+            "p8 bump"
+        ],
+        "exclude": [
+            {
+                "option": "unused1"
+            },
+            {
+                "option": "unused2"
+            },
+            {
+                "option": "unused3"
+            },
+            {
+                "option": "unused4"
+            },
+            {
+                "option": "unused5"
+            }
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "BitmapType",
+        "options": [
+            "2d textures",
+            "3d textures",
+            "cube maps",
+            "sprites",
+            "interface bitmaps"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "BitmapFormat",
+        "options": [
+            "dxt1",
+            "dxt3",
+            "dxt5",
+            "16-bit",
+            "32-bit",
+            "monochrome"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "BitmapUsage",
+        "options": [
+            "alpha blend",
+            "default",
+            "height map",
+            "detail map",
+            "light map",
+            "vector map"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "BitmapSpriteBudgetSize",
+        "options": [
+            "32x32",
+            "64x64",
+            "128x128",
+            "256x256",
+            "512x512",
+            "1024x1024"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "BitmapSpriteUsage",
+        "options": [
+            "blend add subtract max",
+            "multiply min",
+            "double multiply"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "BitmapDataFlags",
+        "type": "bitfield",
+        "fields": [
+            "power of two dimensions",
+            "compressed",
+            "palettized",
+            "swizzled",
+            "linear",
+            "v16u16",
+            "unused",
+            "make it actually work",
+            "external",
+            "environment"
+        ],
+        "cache_only": [
+            "unused",
+            "make it actually work",
+            "external",
+            "environment"
+        ],
+        "comment": "The 'environment' flag is only on CEA and it is set for lightmaps and environment shader base maps, and if it isn't set, it causes lightmaps to have issues.\nThe 'external' flag is for Gearbox versions and CEA and is set if the data is in an external bitmaps.map file.",
+        "width": 16
+    },
+    {
+        "name": "BitmapFlags",
+        "type": "bitfield",
+        "fields": [
+            "enable diffusion dithering",
+            "disable height map compression",
+            "uniform sprite sequences",
+            "filthy sprite bug fix",
+            "half hud scale"
+        ],
+        "width": 16
+    },
+    {
+        "name": "BitmapGroupSprite",
+        "fields": [
+            {
+                "name": "bitmap index",
+                "type": "Index",
+                "reflexive": "bitmap data",
+                "struct": "Bitmap"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "left",
+                "type": "float"
+            },
+            {
+                "name": "right",
+                "type": "float"
+            },
+            {
+                "name": "top",
+                "type": "float"
+            },
+            {
+                "name": "bottom",
+                "type": "float"
+            },
+            {
+                "name": "registration point",
+                "type": "Point2D"
+            }
+        ],
+        "type": "struct",
+        "size": 32,
+        "read_only": true
+    },
+    {
+        "name": "BitmapGroupSequence",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "first bitmap index",
+                "type": "Index",
+                "reflexive": "bitmap data",
+                "struct": "Bitmap"
+            },
+            {
+                "name": "bitmap count",
+                "type": "uint16",
+                "retcon_note": "This value was originally signed"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "sprites",
+                "type": "TagReflexive",
+                "struct": "BitmapGroupSprite",
+                "maximum": 64,
+                "extended_maximum": 32767
+            }
+        ],
+        "type": "struct",
+        "size": 64,
+        "read_only": true
+    },
+    {
+        "name": "BitmapData",
+        "fields": [
+            {
+                "name": "bitmap class",
+                "type": "TagFourCC",
+                "hidden": true
+            },
+            {
+                "name": "width",
+                "type": "uint16",
+                "unit": "pixels"
+            },
+            {
+                "name": "height",
+                "type": "uint16",
+                "unit": "pixels"
+            },
+            {
+                "name": "depth",
+                "type": "uint16",
+                "unit": "pixels"
+            },
+            {
+                "name": "type",
+                "type": "BitmapDataType"
+            },
+            {
+                "name": "format",
+                "type": "BitmapDataFormat"
+            },
+            {
+                "name": "flags",
+                "type": "BitmapDataFlags"
+            },
+            {
+                "name": "registration point",
+                "type": "Point2DInt"
+            },
+            {
+                "name": "mipmap count",
+                "type": "uint16"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "pixel data offset",
+                "type": "uint32"
+            },
+            {
+                "name": "pixel data size",
+                "endian": "little",
+                "cache_only": true,
+                "type": "uint32"
+            },
+            {
+                "name": "bitmap tag id",
+                "type": "TagID",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "pointer",
+                "type": "Pointer",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "type": "pad",
+                "size": 4,
+                "comment": "this appears to be a pointer specific to the tool editing it; it gets changed whenever the tag is opened in any of the HEK tools (guerilla.exe, tool.exe, etc.)"
+            }
+        ],
+        "type": "struct",
+        "size": 48,
+        "pre_compile": true,
+        "unsafe_to_dedupe": true,
+        "read_only": true
+    },
+    {
+        "name": "Bitmap",
+        "groups": [
+            {
+                "name": "type",
+                "first": "type",
+                "description": "Type determines the structure of the bitmap.\n\n\"2D textures\" generate regular 2D bitmaps.\n\n\"3D textures\" are composed of multiple 2D bitmaps.\n\n\"Cube maps\" form the face of a cube out of six 2D bitmaps.\n\n\"Sprites\" are used for multiple bitmaps that can be non-power-of-two, typically used for particles and HUD elements.\n\n\"Interface bitmaps\" are 2D bitmaps that can be non-power-of-two."
+            },
+            {
+                "name": "encoding format",
+                "first": "encoding format",
+                "description": "Encoding format determines the maximum format of the bitmap. If \"disable height map compression\" is not set and usage is set to \"height map\" or \"vector map\", then this will be ignored.\n\n\"dxt1\" (4 bits per pixel) compression encodes pixels into 4x4 blocks interpolated between two colors. Alpha from the color plate is reduced to 1-bit alpha, though using alpha may result in even worse quality.\n\n\"dxt3\" (8 bits per pixel) compression uses dxt1 for the color and explicit alpha from the color plate, reduced to 4 bits per pixel. This can cause banding for alpha gradients, but it may be better for noise and shapes. If alpha isn't used, dxt1 is used automatically.\n\n\"dxt5\" (8 bits per pixel) compression uses dxt1 for the color while also compressing and interpolating the alpha similar. This is better than dxt3 for alpha gradients, but not as good for noisy alpha or definite shapes. If alpha isn't used, dxt1 is used automatically.\n\n\"16-bit\" (16 bits per pixel) reduces pixels to 16-bits per pixel. Alpha can optionally be present, but depending on the depth of the alpha, the depth of the colors is affected (no alpha = 5-bit red/blue and 6-bit green; 1-bit alpha = 5-bit red/green/blue, 4-bit alpha = 4-bit red/green/blue). This may cause heavy banding, but dithering can somewhat mitigate this at the cost of added noise.\n\n\"32-bit\" (32 bits per pixel) outputs the original color from the color plate with no loss in quality. Alpha may or may not be used, but it does not affect the size of the bitmap.\n\n\"monochrome\" (8 or 16 bits per pixel) signficantly reduces the size of the bitmap data losslessly if the original input is monochrome/grayscale. This can be especially useful for monochrome HUDs and noise maps. However, monochrome bitmaps do not work on the Gearbox version of Halo without a mod."
+            },
+            {
+                "name": "usage",
+                "first": "usage",
+                "description": "Usage affects how the bitmap is generated.\n\n\"alpha blend\" is the same as \"default\" except pixels with 0% alpha are discarded when generating mipmaps.\n\n\"default\" generates mipmaps using linear downscaling.\n\n\"height map\" generates bumpmaps, and if height map compression is enabled, converts it to a palettized format. Palettized bitmaps do not work on the Gearbox version of Halo without a mod, so it is recommended to set \"disable height map compression\" if using this.\n\n\"detail map\" is \"default\" except mipmap colors fade to gray based on the \"detail fade factor\" value\n\n\"light map\" does not generate mipmaps\n\n\"vector map\" generates a vector map. Pixels are normalized in post processing."
+            },
+            {
+                "name": "sprite properties",
+                "first": "sprite usage",
+                "description": "\"sprite usage\" affects how sprite sheets are generated if making a sprites bitmap by controlling the background of the sprite sheet: \"blend add subtract max\" uses a transparent black background and replaces pixels with the sprites, \"multiply min\" uses a white background and alpha blends the sprites over white, and \"double multiply\" uses a 50% gray and 50% alpha background and replaces pixels with the sprites\n\n\"sprite spacing\" sets the padding added on the edge of each sprite (this is added into the sprite, itself). If it is 0, then it depends on mipmap count (1 if one mipmap, 4 otherwise). Note that sprite spacing is not added if a sprite is by itself on a sprite sheet which may result in unexpected behavior/sizing depending on how the budget is set."
+            },
+            {
+                "name": "sprite budget",
+                "first": "sprite budget size",
+                "description": "Sprite budget affects the sprite sheets that are generated.\n\n\"sprite budget size\" determines the maximum size of a sprite sheet. This value is ignored if sprite budget count is set to 0.\n\n\"sprite budget count\" multiplies the sprite budget size squared to get the maximum number of pixels.\n\nNote that invader-bitmap will try to ensure all sprites in each sprite sequence are in the same sprite sheet, but if the budget is set too low, it may have to split them across multiple sprite sheets. If this happens, you may, in some instances, experience graphical or performance issues.\n\nIf the budget count is set to 0, then invader-bitmap will default to budget of 32767 sprite sheets with no hard limit. This will also guarantee that all sprites in a sequence share a sprite sheet."
+            }
+        ],
+        "fields": [
+            {
+                "name": "type",
+                "type": "BitmapType"
+            },
+            {
+                "name": "encoding format",
+                "type": "BitmapFormat",
+                "comment": "Format to use when generating the tag"
+            },
+            {
+                "name": "usage",
+                "type": "BitmapUsage"
+            },
+            {
+                "name": "flags",
+                "type": "BitmapFlags"
+            },
+            {
+                "name": "detail fade factor",
+                "type": "Fraction",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "sharpen amount",
+                "type": "Fraction",
+                "minimum": 0.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "bump height",
+                "type": "Fraction",
+                "unit": "repeats"
+            },
+            {
+                "name": "sprite budget size",
+                "type": "BitmapSpriteBudgetSize"
+            },
+            {
+                "name": "sprite budget count",
+                "type": "uint16",
+                "retcon_note": "This value was originally signed"
+            },
+            {
+                "name": "color plate width",
+                "type": "uint16",
+                "retcon_note": "This value was originally signed",
+                "unit": "pixels",
+                "non_cached": true,
+                "read_only": true,
+                "volatile": true
+            },
+            {
+                "name": "color plate height",
+                "type": "uint16",
+                "retcon_note": "This value was originally signed",
+                "unit": "pixels",
+                "non_cached": true,
+                "read_only": true,
+                "volatile": true
+            },
+            {
+                "name": "compressed color plate data",
+                "type": "TagDataOffset",
+                "non_cached": true,
+                "read_only": true,
+                "volatile": true,
+                "maximum": 1073741824,
+                "legacy_maximum": 16777216
+            },
+            {
+                "name": "processed pixel data",
+                "type": "TagDataOffset",
+                "non_cached": true,
+                "read_only": true,
+                "maximum": 1073741824,
+                "legacy_maximum": 16777216
+            },
+            {
+                "name": "blur filter size",
+                "type": "float",
+                "unit": "pixels",
+                "minimum": 0.0,
+                "maximum": 10.0
+            },
+            {
+                "name": "alpha bias",
+                "type": "float",
+                "minimum": -1.0,
+                "maximum": 1.0
+            },
+            {
+                "name": "mipmap count",
+                "type": "uint16",
+                "retcon_note": "This value was originally signed"
+            },
+            {
+                "name": "sprite usage",
+                "type": "BitmapSpriteUsage"
+            },
+            {
+                "name": "sprite spacing",
+                "type": "uint16",
+                "retcon_note": "This value was originally signed"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "bitmap group sequence",
+                "type": "TagReflexive",
+                "struct": "BitmapGroupSequence",
+                "read_only": true,
+                "maximum": 256,
+                "extended_maximum": 32767
+            },
+            {
+                "name": "bitmap data",
+                "type": "TagReflexive",
+                "struct": "BitmapData",
+                "maximum": 65536,
+                "read_only": true,
+                "legacy_maximum": 2048
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "post_cache_parse": true,
+        "postprocess_hek_data": true,
+        "size": 108,
+        "class": "bitmap"
+    }
+]

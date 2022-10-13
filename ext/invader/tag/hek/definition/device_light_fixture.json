@@ -1,0 +1,18 @@
+[
+    {
+        "name": "DeviceLightFixture",
+        "fields": [
+            {
+                "type": "pad",
+                "size": 64
+            }
+        ],
+        "type": "struct",
+        "inherits": "Device",
+        "pre_compile": true,
+        "post_compile": true,
+        "postprocess_hek_data": true,
+        "size": 720,
+        "class": "device_light_fixture"
+    }
+]

@@ -1,0 +1,89 @@
+[
+    {
+        "name": "ShaderTransparentChicagoExtended",
+        "groups": [
+            {
+                "name": "transparent chicago extended shader",
+                "description": "This works the same as shader_transparent_chicago, but it supports 2-stage maps for 2003's low-end potato PCs that have no business running games more complex than Hearts.\nUse shader_transparent_chicago, instead, since it's the same thing but less annoying.",
+                "first": "numeric counter limit"
+            }
+        ],
+        "fields": [
+            {
+                "name": "numeric counter limit",
+                "type": "uint8",
+                "endian": null
+            },
+            {
+                "name": "shader transparent chicago extended flags",
+                "type": "ShaderTransparentGenericFlags",
+                "endian": null
+            },
+            {
+                "name": "first map type",
+                "type": "ShaderFirstMapType"
+            },
+            {
+                "name": "framebuffer blend function",
+                "type": "FramebufferBlendFunction"
+            },
+            {
+                "name": "framebuffer fade mode",
+                "type": "FramebufferFadeMode"
+            },
+            {
+                "name": "framebuffer fade source",
+                "type": "FunctionOut"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "lens flare spacing",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "lens flare",
+                "type": "TagDependency",
+                "classes": [
+                    "lens_flare"
+                ]
+            },
+            {
+                "name": "extra layers",
+                "type": "TagReflexive",
+                "struct": "ShaderTransparentExtraLayer",
+                "maximum": 4
+            },
+            {
+                "name": "maps 4 stage",
+                "type": "TagReflexive",
+                "struct": "ShaderTransparentChicagoMap",
+                "maximum": 4
+            },
+            {
+                "name": "maps 2 stage",
+                "type": "TagReflexive",
+                "struct": "ShaderTransparentChicagoMap",
+                "comment": "The original definitions have these set to 4, but issues occur when you do this as these are 2-stage maps, not 4-stage maps!\nUse the 4 stage maps (or just shader_transparent_chicago) for 4-stage maps.",
+                "maximum": 2
+            },
+            {
+                "name": "extra flags",
+                "type": "ShaderTransparentChicagoExtraFlags"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            }
+        ],
+        "type": "struct",
+        "inherits": "Shader",
+        "pre_compile": true,
+        "post_compile": true,
+        "size": 120,
+        "class": "shader_transparent_chicago_extended"
+    }
+]

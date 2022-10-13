@@ -1,0 +1,198 @@
+[
+    {
+        "name": "DecalType",
+        "options": [
+            "scratch",
+            "splatter",
+            "burn",
+            "painted sign"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "DecalLayer",
+        "options": [
+            "primary",
+            "secondary",
+            "light",
+            "alpha tested",
+            "water"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "DecalFlags",
+        "type": "bitfield",
+        "fields": [
+            "geometry inherited by next decal in chain",
+            "interpolate color in hsv",
+            "more colors",
+            "no random rotation",
+            "water effect",
+            "sapien snap to axis",
+            "sapien incremental counter",
+            "animation loop",
+            "preserve aspect",
+            "disabled in anniversary by blood setting"
+        ],
+        "width": 16
+    },
+    {
+        "name": "Decal",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "DecalFlags"
+            },
+            {
+                "name": "type",
+                "type": "DecalType"
+            },
+            {
+                "name": "layer",
+                "type": "DecalLayer"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "next decal in chain",
+                "type": "TagDependency",
+                "classes": [
+                    "decal"
+                ]
+            },
+            {
+                "name": "radius",
+                "bounds": true,
+                "unit": "world units",
+                "type": "float",
+                "default": [
+                    0.125,
+                    0.125
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "intensity",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "bounds": true,
+                "type": "Fraction",
+                "default": [
+                    1.0,
+                    1.0
+                ]
+            },
+            {
+                "name": "color lower bounds",
+                "type": "ColorRGB",
+                "default": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            {
+                "name": "color upper bounds",
+                "type": "ColorRGB",
+                "default": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "animation loop frame",
+                "type": "int16"
+            },
+            {
+                "name": "animation speed",
+                "unit": "ticks per frame",
+                "type": "int16",
+                "default": 1
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "name": "lifetime",
+                "unit": "seconds",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "decay time",
+                "unit": "seconds",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "type": "pad",
+                "size": 40
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "framebuffer blend function",
+                "type": "FramebufferBlendFunction"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 20
+            },
+            {
+                "name": "map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 20
+            },
+            {
+                "name": "maximum sprite extent",
+                "type": "float",
+                "unit": "pixels",
+                "cache_only": true
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "type": "pad",
+                "size": 8
+            }
+        ],
+        "type": "struct",
+        "postprocess_hek_data": true,
+        "size": 268,
+        "class": "decal"
+    }
+]

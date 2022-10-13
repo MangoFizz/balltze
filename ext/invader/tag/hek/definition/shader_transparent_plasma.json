@@ -1,0 +1,169 @@
+[
+    {
+        "name": "ShaderTransparentPlasma",
+        "groups": [
+            {
+                "name": "transparent plasma shader",
+                "description": "Shader Transparent Plasma attributes",
+                "first": "intensity source"
+            }
+        ],
+        "fields": [
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "intensity source",
+                "type": "FunctionOut"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "intensity exponent",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "offset source",
+                "type": "FunctionOut"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "offset amount",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "offset exponent",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "perpendicular brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "perpendicular tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "parallel brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "parallel tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "tint color source",
+                "type": "FunctionNameNullable"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "primary animation period",
+                "unit": "seconds",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "primary animation direction",
+                "type": "Vector3D"
+            },
+            {
+                "name": "primary noise map scale",
+                "type": "float"
+            },
+            {
+                "name": "primary noise map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "secondary animation period",
+                "unit": "seconds",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "secondary animation direction",
+                "type": "Vector3D"
+            },
+            {
+                "name": "secondary noise map scale",
+                "type": "float"
+            },
+            {
+                "name": "secondary noise map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 32
+            }
+        ],
+        "type": "struct",
+        "inherits": "Shader",
+        "pre_compile": true,
+        "post_compile": true,
+        "size": 332,
+        "class": "shader_transparent_plasma"
+    }
+]

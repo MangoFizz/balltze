@@ -1,0 +1,780 @@
+[
+    {
+        "name": "ModelRegionPermutationFlags",
+        "type": "bitfield",
+        "fields": [
+            "cannot be chosen randomly"
+        ],
+        "width": 32
+    },
+    {
+        "name": "ModelGeometryPartFlags",
+        "type": "bitfield",
+        "fields": [
+            "stripped internal",
+            "zoner"
+        ],
+        "width": 32
+    },
+    {
+        "name": "ModelFlags",
+        "type": "bitfield",
+        "fields": [
+            "blend shared normals",
+            "parts have local nodes",
+            "ignore skinning"
+        ],
+        "width": 32
+    },
+    {
+        "name": "ModelMarkerInstance",
+        "fields": [
+            {
+                "name": "region index",
+                "type": "uint8",
+                "endian": null
+            },
+            {
+                "name": "permutation index",
+                "type": "uint8",
+                "endian": null
+            },
+            {
+                "name": "node index",
+                "type": "uint8",
+                "endian": null
+            },
+            {
+                "type": "pad",
+                "size": 1
+            },
+            {
+                "name": "translation",
+                "type": "Point3D"
+            },
+            {
+                "name": "rotation",
+                "type": "Quaternion",
+                "normalize": true
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 32
+    },
+    {
+        "name": "ModelMarker",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "magic identifier",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "instances",
+                "type": "TagReflexive",
+                "struct": "ModelMarkerInstance",
+                "maximum": 32,
+                "extended_maximum": 32767
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "title": "name",
+        "size": 64
+    },
+    {
+        "name": "ModelNode",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "next sibling node index",
+                "type": "Index",
+                "reflexive": "nodes",
+                "struct": "Model"
+            },
+            {
+                "name": "first child node index",
+                "type": "Index",
+                "reflexive": "nodes",
+                "struct": "Model"
+            },
+            {
+                "name": "parent node index",
+                "type": "Index",
+                "reflexive": "nodes",
+                "struct": "Model"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "default translation",
+                "type": "Point3D"
+            },
+            {
+                "name": "default rotation",
+                "normalize": true,
+                "type": "Quaternion"
+            },
+            {
+                "name": "node distance from parent",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "scale",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "rotation",
+                "type": "Matrix",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "translation",
+                "type": "Point3D",
+                "endian": "little",
+                "cache_only": true
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "title": "name",
+        "size": 156
+    },
+    {
+        "name": "ModelRegionPermutationMarker",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "node index",
+                "type": "Index",
+                "reflexive": "nodes",
+                "struct": "Model"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "rotation",
+                "type": "Quaternion",
+                "normalize": true
+            },
+            {
+                "name": "translation",
+                "type": "Point3D"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "title": "name",
+        "size": 80
+    },
+    {
+        "name": "ModelRegionPermutation",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "flags",
+                "read_only": false,
+                "type": "ModelRegionPermutationFlags"
+            },
+            {
+                "name": "permutation number",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 24
+            },
+            {
+                "name": "super low",
+                "type": "Index",
+                "reflexive": "geometries",
+                "struct": "Model"
+            },
+            {
+                "name": "low",
+                "type": "Index",
+                "reflexive": "geometries",
+                "struct": "Model"
+            },
+            {
+                "name": "medium",
+                "type": "Index",
+                "reflexive": "geometries",
+                "struct": "Model"
+            },
+            {
+                "name": "high",
+                "type": "Index",
+                "reflexive": "geometries",
+                "struct": "Model"
+            },
+            {
+                "name": "super high",
+                "type": "Index",
+                "reflexive": "geometries",
+                "struct": "Model"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "markers",
+                "type": "TagReflexive",
+                "struct": "ModelRegionPermutationMarker",
+                "compile_ignore": true,
+                "maximum": 64,
+                "extended_maximum": 32767
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "read_only": true,
+        "title": "name",
+        "size": 88
+    },
+    {
+        "name": "ModelRegion",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "permutations",
+                "type": "TagReflexive",
+                "struct": "ModelRegionPermutation",
+                "maximum": 32,
+                "extended_maximum": 255
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "title": "name",
+        "size": 76
+    },
+    {
+        "name": "ModelVertexUncompressed",
+        "fields": [
+            {
+                "name": "position",
+                "type": "Point3D"
+            },
+            {
+                "name": "normal",
+                "type": "Vector3D"
+            },
+            {
+                "name": "binormal",
+                "type": "Vector3D"
+            },
+            {
+                "name": "tangent",
+                "type": "Vector3D"
+            },
+            {
+                "name": "texture coords",
+                "type": "Point2D"
+            },
+            {
+                "name": "node0 index",
+                "type": "Index"
+            },
+            {
+                "name": "node1 index",
+                "type": "Index"
+            },
+            {
+                "name": "node0 weight",
+                "type": "float"
+            },
+            {
+                "name": "node1 weight",
+                "type": "float"
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 68
+    },
+    {
+        "name": "ModelVertexCompressed",
+        "fields": [
+            {
+                "name": "position",
+                "type": "Point3D"
+            },
+            {
+                "name": "normal",
+                "type": "uint32"
+            },
+            {
+                "name": "binormal",
+                "type": "uint32"
+            },
+            {
+                "name": "tangent",
+                "type": "uint32"
+            },
+            {
+                "name": "texture coordinate u",
+                "type": "int16"
+            },
+            {
+                "name": "texture coordinate v",
+                "type": "int16"
+            },
+            {
+                "name": "node0 index",
+                "type": "int8",
+                "endian": null
+            },
+            {
+                "name": "node1 index",
+                "type": "int8",
+                "endian": null
+            },
+            {
+                "name": "node0 weight",
+                "type": "uint16"
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 32
+    },
+    {
+        "name": "ModelTriangle",
+        "fields": [
+            {
+                "name": "vertex0 index",
+                "type": "Index"
+            },
+            {
+                "name": "vertex1 index",
+                "type": "Index"
+            },
+            {
+                "name": "vertex2 index",
+                "type": "Index"
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 6
+    },
+    {
+        "name": "ModelGeometryPart",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "ModelGeometryPartFlags",
+                "exclude": [
+                    {
+                        "field": "zoner",
+                        "struct": [
+                            "ModelGeometryPart"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "shader index",
+                "type": "Index",
+                "reflexive": "shaders",
+                "struct": "Model"
+            },
+            {
+                "name": "prev filthy part index",
+                "type": "uint8",
+                "comment": "Defaults to 255, but it's a hack how this is done",
+                "description": "Specify rendering order",
+                "read_only": false,
+                "endian": null
+            },
+            {
+                "name": "next filthy part index",
+                "type": "uint8",
+                "comment": "Defaults to 255, but it's a hack how this is done",
+                "description": "Specify rendering order",
+                "read_only": false,
+                "endian": null
+            },
+            {
+                "name": "centroid primary node",
+                "type": "Index",
+                "cache_only": true
+            },
+            {
+                "name": "centroid secondary node",
+                "type": "Index",
+                "cache_only": true
+            },
+            {
+                "name": "centroid primary weight",
+                "type": "Fraction",
+                "cache_only": true
+            },
+            {
+                "name": "centroid secondary weight",
+                "type": "Fraction",
+                "cache_only": true
+            },
+            {
+                "name": "centroid",
+                "type": "Point3D"
+            },
+            {
+                "name": "uncompressed vertices",
+                "type": "TagReflexive",
+                "struct": "ModelVertexUncompressed",
+                "non_cached": true,
+                "maximum": 65535
+            },
+            {
+                "name": "compressed vertices",
+                "type": "TagReflexive",
+                "struct": "ModelVertexCompressed",
+                "non_cached": true,
+                "maximum": 65535
+            },
+            {
+                "name": "triangles",
+                "type": "TagReflexive",
+                "struct": "ModelTriangle",
+                "non_cached": true,
+                "maximum": 65535
+            },
+            {
+                "name": "do not crash the game",
+                "type": "uint32",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "triangle count",
+                "endian": "little",
+                "cache_only": true,
+                "type": "uint32"
+            },
+            {
+                "name": "triangle offset",
+                "endian": "little",
+                "type": "uint32",
+                "cache_only": true,
+                "comment": "On Xbox: pointer to the triangle indices. On PC: offset to triangles relative to the end of the map's vertex data.",
+                "drop_on_extract_hidden": true
+            },
+            {
+                "name": "triangle offset 2",
+                "endian": "little",
+                "type": "uint32",
+                "cache_only": true,
+                "comment": "On Xbox: pointer to the entry in the second parts list which points to the triangle indices. On PC: same value as the first triangle offset",
+                "drop_on_extract_hidden": true
+            },
+            {
+                "name": "vertex type",
+                "type": "VertexType",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "vertex count",
+                "endian": "little",
+                "cache_only": true,
+                "type": "uint32"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "vertex pointer",
+                "type": "Pointer",
+                "endian": "little",
+                "comment": "Appears to be a pointer to the uncompressed vertices",
+                "cache_only": true
+            },
+            {
+                "name": "vertex offset",
+                "type": "uint32",
+                "comment": "On Xbox: pointer to the entry in the second parts list which points to the triangle indices. On PC: offset to first vertex relative to the map's vertex data.",
+                "drop_on_extract_hidden": true,
+                "cache_only": true
+            }
+        ],
+        "type": "struct",
+        "post_cache_parse": true,
+        "unsafe_to_dedupe": true,
+        "pre_compile": true,
+        "read_only": true,
+        "size": 104
+    },
+    {
+        "name": "ModelGeometry",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "IsUnusedFlag"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "parts",
+                "type": "TagReflexive",
+                "struct": "ModelGeometryPart",
+                "maximum": 32,
+                "extended_maximum": 32767
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 48
+    },
+    {
+        "name": "ModelShaderReference",
+        "fields": [
+            {
+                "name": "shader",
+                "type": "TagDependency",
+                "classes": [
+                    "shader"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "permutation",
+                "type": "Index"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 12
+            }
+        ],
+        "type": "struct",
+        "title": "shader",
+        "size": 32
+    },
+    {
+        "name": "Model",
+        "groups": [
+            {
+                "name": "model",
+                "first": "flags",
+                "description": "These kinds of tags are compatible with the Xbox version of the game (but not Gearbox). When the cache file is compiled for Xbox, then the uncompressed vertices are discarded when copied into the map. Otherwise, the compressed vertices are discarded.\n\nFlags:\n- blend shared normals: On map compilation, vertices with the same positions have their normals linearly averaged.\n\nNote that compressed vertices can only address up to 42 nodes."
+            }
+        ],
+        "fields": [
+            {
+                "name": "flags",
+                "read_only": false,
+                "type": "ModelFlags",
+                "exclude": [
+                    {
+                        "field": "parts have local nodes",
+                        "struct": [
+                            "Model"
+                        ]
+                    },
+                    {
+                        "field": "ignore skinning",
+                        "struct": [
+                            "Model"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "node list checksum",
+                "type": "int32"
+            },
+            {
+                "name": "super high detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "high detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "medium detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "low detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "super low detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "super low detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "low detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "medium detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "high detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "super high detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "base map u scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "base map v scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "type": "pad",
+                "size": 116
+            },
+            {
+                "name": "markers",
+                "type": "TagReflexive",
+                "struct": "ModelMarker",
+                "maximum": 0,
+                "hidden": true,
+                "retcon_note": "This field was originally cache only and the maximum was 256, however we define it this way so we can detect erroneous tags generated by HEK+ and Refinery"
+            },
+            {
+                "name": "nodes",
+                "type": "TagReflexive",
+                "struct": "ModelNode",
+                "maximum": 64,
+                "extended_maximum": 255
+            },
+            {
+                "name": "regions",
+                "type": "TagReflexive",
+                "struct": "ModelRegion",
+                "maximum": 32,
+                "extended_maximum": 255
+            },
+            {
+                "name": "geometries",
+                "type": "TagReflexive",
+                "struct": "ModelGeometry",
+                "maximum": 256,
+                "extended_maximum": 32767
+            },
+            {
+                "name": "shaders",
+                "type": "TagReflexive",
+                "struct": "ModelShaderReference",
+                "maximum": 32,
+                "extended_maximum": 32767
+            }
+        ],
+        "type": "struct",
+        "post_cache_deformat": true,
+        "pre_compile": true,
+        "post_compile": true,
+        "postprocess_hek_data": true,
+        "read_only": true,
+        "size": 232,
+        "class": "model"
+    }
+]

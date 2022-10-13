@@ -1,0 +1,332 @@
+[
+    {
+        "name": "ParticleOrientation",
+        "options": [
+            "screen facing",
+            "parallel to direction",
+            "perpendicular to direction"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ParticleAnchor",
+        "options": [
+            "with primary",
+            "with screen space",
+            "zsprite"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ParticleFlags",
+        "type": "bitfield",
+        "fields": [
+            "can animate backwards",
+            "animation stops at rest",
+            "animation starts on random frame",
+            "animate once per frame",
+            "dies at rest",
+            "dies on contact with structure",
+            "tint from diffuse texture",
+            "dies on contact with water",
+            "dies on contact with air",
+            "self illuminated",
+            "random horizontal mirroring",
+            "random vertical mirroring"
+        ],
+        "width": 32
+    },
+    {
+        "name": "ParticleShaderFlags",
+        "type": "bitfield",
+        "fields": [
+            "sort bias",
+            "nonlinear tint",
+            "don't overdraw fp weapon"
+        ],
+        "width": 16
+    },
+    {
+        "name": "Particle",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "ParticleFlags"
+            },
+            {
+                "name": "bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ],
+                "non_null": true
+            },
+            {
+                "name": "physics",
+                "type": "TagDependency",
+                "classes": [
+                    "point_physics"
+                ]
+            },
+            {
+                "name": "sir marty exchanged his children for thine",
+                "type": "TagDependency",
+                "classes": [
+                    "material_effects"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "lifespan",
+                "bounds": true,
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "fade in time",
+                "type": "float"
+            },
+            {
+                "name": "fade out time",
+                "type": "float"
+            },
+            {
+                "name": "collision effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "death effect",
+                "type": "TagDependency",
+                "classes": [
+                    "sound",
+                    "effect"
+                ]
+            },
+            {
+                "name": "minimum size",
+                "unit": "pixels",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 8,
+                "comment": "on some (probably older) tags like effects/particles/energy/smoke c generic.particle, this is floats 2.0 and 1.0, but these tags can't be replicated in the HEK"
+            },
+            {
+                "name": "radius animation",
+                "bounds": true,
+                "type": "float",
+                "default": [
+                    1.0,
+                    1.0
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "animation rate",
+                "bounds": true,
+                "unit": "frames per second",
+                "type": "float"
+            },
+            {
+                "name": "contact deterioration",
+                "type": "float",
+                "non_cached": true,
+                "comment": "this value is totally broken and locks the game up if it's non-zero; even tool.exe sets it to zero",
+                "hidden": true
+            },
+            {
+                "name": "fade start size",
+                "unit": "pixels",
+                "type": "float",
+                "default": 5.0
+            },
+            {
+                "name": "fade end size",
+                "unit": "pixels",
+                "type": "float",
+                "default": 4.0
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "first sequence index",
+                "type": "Index"
+            },
+            {
+                "name": "initial sequence count",
+                "type": "int16"
+            },
+            {
+                "name": "looping sequence count",
+                "type": "int16"
+            },
+            {
+                "name": "final sequence count",
+                "type": "int16"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "sprite size",
+                "type": "float",
+                "cache_only": true,
+                "endian": "little"
+            },
+            {
+                "name": "orientation",
+                "type": "ParticleOrientation"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 36
+            },
+            {
+                "name": "make it actually work",
+                "type": "uint32",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "shader flags",
+                "type": "ParticleShaderFlags"
+            },
+            {
+                "name": "framebuffer blend function",
+                "type": "FramebufferBlendFunction"
+            },
+            {
+                "name": "framebuffer fade mode",
+                "type": "FramebufferFadeMode"
+            },
+            {
+                "name": "map flags",
+                "type": "IsUnfilteredFlag"
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "name": "secondary bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "anchor",
+                "type": "ParticleAnchor"
+            },
+            {
+                "name": "secondary map flags",
+                "type": "IsUnfilteredFlag"
+            },
+            {
+                "name": "u animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "u animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "unit": "seconds",
+                "name": "u animation period",
+                "type": "float"
+            },
+            {
+                "name": "u animation phase",
+                "type": "float"
+            },
+            {
+                "name": "u animation scale",
+                "unit": "repeats",
+                "type": "float"
+            },
+            {
+                "name": "v animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "v animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "v animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "v animation phase",
+                "type": "float"
+            },
+            {
+                "name": "v animation scale",
+                "unit": "repeats",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "rotation animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "rotation animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation phase",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation scale",
+                "unit": "degrees",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation center",
+                "type": "Point2D"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "zsprite radius scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 20
+            }
+        ],
+        "type": "struct",
+        "post_compile": true,
+        "postprocess_hek_data": true,
+        "size": 356,
+        "class": "particle"
+    }
+]

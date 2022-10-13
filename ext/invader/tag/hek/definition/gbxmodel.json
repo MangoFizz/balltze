@@ -1,0 +1,215 @@
+[
+    {
+        "name": "GBXModelGeometryPart",
+        "fields": [
+            {
+                "type": "pad",
+                "size": 1
+            },
+            {
+                "type": "pad",
+                "size": 1
+            },
+            {
+                "type": "pad",
+                "size": 1
+            },
+            {
+                "name": "local node count",
+                "type": "uint8",
+                "maximum": 22,
+                "endian": null,
+                "read_only": true
+            },
+            {
+                "name": "local node indices",
+                "type": "uint8",
+                "endian": null,
+                "count": 22,
+                "hidden": true,
+                "comment": "Local nodes are used to indirectly refer to a real node. So, if local nodes are used, a vertex says node #4, and local node #4 refers to node #5, then the vertex is node #5. There really doesn't seem to be any benefit to using local nodes, considering compressed vertices (which can only address 42 nodes) don't even use them. They just make the models unnecessarily more convoluted while taking up more space."
+            },
+            {
+                "type": "pad",
+                "size": 2
+            }
+        ],
+        "type": "struct",
+        "inherits": "ModelGeometryPart",
+        "post_cache_parse": true,
+        "unsafe_to_dedupe": true,
+        "pre_compile": true,
+        "read_only": true,
+        "size": 132
+    },
+    {
+        "name": "GBXModelGeometry",
+        "fields": [
+            {
+                "name": "flags",
+                "type": "IsUnusedFlag"
+            },
+            {
+                "type": "pad",
+                "size": 32
+            },
+            {
+                "name": "parts",
+                "type": "TagReflexive",
+                "struct": "GBXModelGeometryPart",
+                "maximum": 32,
+                "extended_maximum": 32767
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 48
+    },
+    {
+        "name": "GBXModel",
+        "groups": [
+            {
+                "name": "gbxmodel",
+                "first": "flags",
+                "description": "This type of tag is used for Gearbox maps (but not Xbox) and features local nodes. When the cache file is compiled, then the compressed vertices are discarded when copied into the map.\n\nFlags:\n- blend shared normals: On map compilation, vertices with the same positions have their normals linearly averaged.\n- parts have local nodes: Use local nodes. Geometries with local nodes are flagged as \"ZONER\" in this case.\n- ignore skinning: Unknown?\n\nNote that compressed vertices can only address up to 42 nodes and cannot use local nodes."
+            }
+        ],
+        "fields": [
+            {
+                "name": "flags",
+                "read_only": false,
+                "type": "ModelFlags"
+            },
+            {
+                "name": "node list checksum",
+                "type": "int32"
+            },
+            {
+                "name": "super high detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "high detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "medium detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "low detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "super low detail cutoff",
+                "unit": "pixels",
+                "read_only": false,
+                "type": "float"
+            },
+            {
+                "name": "super low detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "low detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "medium detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "high detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "name": "super high detail node count",
+                "unit": "nodes",
+                "type": "uint16",
+                "cache_only": true
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "base map u scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "base map v scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "type": "pad",
+                "size": 116
+            },
+            {
+                "name": "markers",
+                "type": "TagReflexive",
+                "struct": "ModelMarker",
+                "maximum": 0,
+                "hidden": true,
+                "retcon_note": "This field was originally cache only and the maximum was 256, however we define it this way so we can detect erroneous tags generated by HEK+ and Refinery"
+            },
+            {
+                "name": "nodes",
+                "type": "TagReflexive",
+                "struct": "ModelNode",
+                "maximum": 64,
+                "extended_maximum": 255
+            },
+            {
+                "name": "regions",
+                "type": "TagReflexive",
+                "struct": "ModelRegion",
+                "maximum": 32,
+                "extended_maximum": 255
+            },
+            {
+                "name": "geometries",
+                "type": "TagReflexive",
+                "struct": "GBXModelGeometry",
+                "maximum": 256,
+                "extended_maximum": 32767
+            },
+            {
+                "name": "shaders",
+                "type": "TagReflexive",
+                "struct": "ModelShaderReference",
+                "maximum": 32,
+                "extended_maximum": 32767
+            }
+        ],
+        "type": "struct",
+        "post_cache_deformat": true,
+        "pre_compile": true,
+        "post_compile": true,
+        "postprocess_hek_data": true,
+        "read_only": true,
+        "size": 232,
+        "class": "gbxmodel"
+    }
+]

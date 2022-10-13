@@ -1,0 +1,324 @@
+[
+    {
+        "name": "ShaderModelDetailMask",
+        "options": [
+            "none",
+            "reflection mask inverse",
+            "reflection mask",
+            "self illumination mask inverse",
+            "self illumination mask",
+            "change color mask inverse",
+            "change color mask",
+            "auxiliary mask inverse",
+            "auxiliary mask"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ShaderModelFlags",
+        "type": "bitfield",
+        "fields": [
+            "detail after reflection",
+            "two sided",
+            "not alpha tested",
+            "alpha blended decal",
+            "true atmospheric fog",
+            "disable two sided culling",
+            "use xbox multipurpose channel order"
+        ],
+        "width": 16
+    },
+    {
+        "name": "ShaderModelMoreFlags",
+        "type": "bitfield",
+        "fields": [
+            "no random phase"
+        ],
+        "width": 16
+    },
+    {
+        "name": "ShaderModel",
+        "groups": [
+            {
+                "name": "model shader",
+                "first": "shader model flags",
+                "description": "The shader_model class is typically used as an non-transparent texture for models, and it features support for multipurpose maps."
+            },
+            {
+                "name": "multipurpose map",
+                "first": "multipurpose map",
+                "description": "A multipurpose map is not actually a visible texture but rather a composite four-channel monochrome map used for shading the texture mapped to the UVs of the model.\n\nThe classic channel order (used for the Xbox version of the game) is the following:\n- alpha is the auxiliary channel (optional detail mask)\n- red is specular and detail mapping\n- green is self illumination\n- blue is color change\n\nThe swapped channel order (used for the PC releases of the game) is the following:\n- alpha is color change\n- red is the auxiliary channel (optional detail mask)\n- green is self illumination\n- blue is specular and detail mapping"
+            }
+        ],
+        "fields": [
+            {
+                "name": "shader model flags",
+                "type": "ShaderModelFlags"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "translucency",
+                "type": "Fraction"
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "change color source",
+                "type": "FunctionNameNullable"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "name": "shader model more flags",
+                "type": "ShaderModelMoreFlags"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "color source",
+                "type": "FunctionNameNullable"
+            },
+            {
+                "name": "animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "animation period",
+                "unit": "seconds",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "animation color lower bound",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "animation color upper bound",
+                "type": "ColorRGB"
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "map u scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "map v scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "base map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "multipurpose map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "detail function",
+                "type": "ShaderDetailFunction"
+            },
+            {
+                "name": "detail mask",
+                "type": "ShaderModelDetailMask"
+            },
+            {
+                "name": "detail map scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "detail map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "detail map v scale",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "type": "pad",
+                "size": 12
+            },
+            {
+                "name": "u animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "u animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "u animation period",
+                "unit": "seconds",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "u animation phase",
+                "type": "float"
+            },
+            {
+                "name": "u animation scale",
+                "unit": "repeats",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "v animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "v animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "v animation period",
+                "unit": "seconds",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "v animation phase",
+                "type": "float"
+            },
+            {
+                "name": "v animation scale",
+                "unit": "repeats",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "rotation animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "rotation animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "rotation animation period",
+                "unit": "seconds",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "rotation animation phase",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation scale",
+                "unit": "degrees",
+                "type": "float",
+                "default": 360.0
+            },
+            {
+                "name": "rotation animation center",
+                "type": "Point2D"
+            },
+            {
+                "type": "pad",
+                "size": 8
+            },
+            {
+                "name": "reflection falloff distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "reflection cutoff distance",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "name": "perpendicular brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "perpendicular tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "parallel brightness",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "type": "Fraction"
+            },
+            {
+                "name": "parallel tint color",
+                "type": "ColorRGB"
+            },
+            {
+                "name": "reflection cube map",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "name": "unknown",
+                "type": "float",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "type": "pad",
+                "size": 16
+            },
+            {
+                "type": "pad",
+                "size": 32
+            }
+        ],
+        "type": "struct",
+        "inherits": "Shader",
+        "pre_compile": true,
+        "post_compile": true,
+        "size": 440,
+        "class": "shader_model"
+    }
+]

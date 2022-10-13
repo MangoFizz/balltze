@@ -1,0 +1,44 @@
+[
+    {
+        "name": "InputDeviceDefaultsDeviceType",
+        "options": [
+            "mouse and keyboard",
+            "joysticks gamepads etc",
+            "full profile definition"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "InputDeviceDefaultsFlags",
+        "type": "bitfield",
+        "fields": [
+            "unused"
+        ],
+        "width": 16
+    },
+    {
+        "name": "InputDeviceDefaults",
+        "fields": [
+            {
+                "name": "device type",
+                "type": "InputDeviceDefaultsDeviceType"
+            },
+            {
+                "name": "flags",
+                "type": "InputDeviceDefaultsFlags",
+                "unused": true
+            },
+            {
+                "name": "device id",
+                "type": "TagDataOffset"
+            },
+            {
+                "name": "profile",
+                "type": "TagDataOffset"
+            }
+        ],
+        "type": "struct",
+        "size": 44,
+        "class": "input_device_defaults"
+    }
+]

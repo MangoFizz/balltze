@@ -1,0 +1,489 @@
+[
+    {
+        "name": "ParticleSystemParticleCreationPhysics",
+        "options": [
+            "default",
+            "explosion",
+            "jet"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ParticleSystemParticleUpdatePhysics",
+        "options": [
+            "default"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ParticleSystemComplexSpriteRenderModes",
+        "options": [
+            "simple",
+            "rotational"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ParticleSystemSystemUpdatePhysics",
+        "options": [
+            "default",
+            "explosion"
+        ],
+        "type": "enum"
+    },
+    {
+        "name": "ParticleSystemTypeFlags",
+        "type": "bitfield",
+        "fields": [
+            "type states loop",
+            "forward backward",
+            "particle states loop",
+            "forward backward 1",
+            "particles die in water",
+            "particles die in air",
+            "particles die on ground",
+            "rotational sprites animate sideways",
+            "disabled",
+            "tint by effect color",
+            "initial count scales with effect",
+            "minimum count scales with effect",
+            "creation rate scales with effect",
+            "scale scales with effect",
+            "animation rate scales with effect",
+            "rotation rate scales with effect",
+            "do not draw in first person",
+            "do not draw in third person"
+        ],
+        "width": 32
+    },
+    {
+        "name": "ParticleSystemPhysicsConstant",
+        "fields": [
+            {
+                "name": "k",
+                "type": "float"
+            }
+        ],
+        "type": "struct",
+        "size": 4
+    },
+    {
+        "name": "ParticleSystemTypeStates",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "duration bounds",
+                "unit": "second",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "name": "transition time bounds",
+                "unit": "second",
+                "bounds": true,
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "scale multiplier",
+                "type": "float"
+            },
+            {
+                "name": "animation rate multiplier",
+                "type": "float"
+            },
+            {
+                "name": "rotation rate multiplier",
+                "type": "float"
+            },
+            {
+                "name": "color multiplier",
+                "type": "ColorARGB"
+            },
+            {
+                "name": "radius multiplier",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "minimum particle count",
+                "type": "float"
+            },
+            {
+                "name": "particle creation rate",
+                "unit": "particles per second",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 84
+            },
+            {
+                "name": "particle creation physics",
+                "type": "ParticleSystemParticleCreationPhysics"
+            },
+            {
+                "name": "particle update physics",
+                "type": "ParticleSystemParticleUpdatePhysics"
+            },
+            {
+                "name": "physics constants",
+                "type": "TagReflexive",
+                "struct": "ParticleSystemPhysicsConstant",
+                "maximum": 16
+            }
+        ],
+        "type": "struct",
+        "title": "name",
+        "size": 192
+    },
+    {
+        "name": "ParticleSystemTypeParticleState",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "duration bounds",
+                "bounds": true,
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "transition time bounds",
+                "bounds": true,
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "bitmaps",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "sequence index",
+                "type": "Index"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "scale",
+                "bounds": true,
+                "unit": "world units per pixel",
+                "type": "float"
+            },
+            {
+                "name": "animation rate",
+                "bounds": true,
+                "unit": "frames per second",
+                "type": "float"
+            },
+            {
+                "name": "rotation rate",
+                "bounds": true,
+                "unit": "degrees per second",
+                "type": "Angle"
+            },
+            {
+                "name": "color 1",
+                "type": "ColorARGB"
+            },
+            {
+                "name": "color 2",
+                "type": "ColorARGB"
+            },
+            {
+                "name": "radius multiplier",
+                "type": "float",
+                "default": 1.0
+            },
+            {
+                "name": "point physics",
+                "type": "TagDependency",
+                "classes": [
+                    "point_physics"
+                ]
+            },
+            {
+                "type": "pad",
+                "size": 36
+            },
+            {
+                "type": "pad",
+                "size": 36
+            },
+            {
+                "name": "unknown int",
+                "type": "uint32",
+                "endian": "little",
+                "cache_only": true
+            },
+            {
+                "name": "shader flags",
+                "type": "ParticleShaderFlags"
+            },
+            {
+                "name": "framebuffer blend function",
+                "type": "FramebufferBlendFunction"
+            },
+            {
+                "name": "framebuffer fade mode",
+                "type": "FramebufferFadeMode"
+            },
+            {
+                "name": "map flags",
+                "type": "IsUnfilteredFlag"
+            },
+            {
+                "type": "pad",
+                "size": 28
+            },
+            {
+                "name": "secondary map bitmap",
+                "type": "TagDependency",
+                "classes": [
+                    "bitmap"
+                ]
+            },
+            {
+                "name": "anchor",
+                "type": "ParticleAnchor"
+            },
+            {
+                "name": "flags",
+                "type": "IsUnfilteredFlag"
+            },
+            {
+                "name": "u animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "u animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "u animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "u animation phase",
+                "type": "float"
+            },
+            {
+                "name": "u animation scale",
+                "unit": "repeats",
+                "type": "float"
+            },
+            {
+                "name": "v animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "v animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "v animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "v animation phase",
+                "type": "float"
+            },
+            {
+                "name": "v animation scale",
+                "unit": "repeats",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation source",
+                "type": "FunctionOut"
+            },
+            {
+                "name": "rotation animation function",
+                "type": "WaveFunction"
+            },
+            {
+                "name": "rotation animation period",
+                "unit": "seconds",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation phase",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation scale",
+                "unit": "degrees",
+                "type": "float"
+            },
+            {
+                "name": "rotation animation center",
+                "type": "Point2D"
+            },
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "name": "zsprite radius scale",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 20
+            },
+            {
+                "name": "physics constants",
+                "type": "TagReflexive",
+                "struct": "ParticleSystemPhysicsConstant",
+                "maximum": 16
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "post_compile": true,
+        "title": "name",
+        "size": 376
+    },
+    {
+        "name": "ParticleSystemType",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "flags",
+                "type": "ParticleSystemTypeFlags"
+            },
+            {
+                "name": "initial particle count",
+                "type": "uint16"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "complex sprite render modes",
+                "type": "ParticleSystemComplexSpriteRenderModes"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "radius",
+                "unit": "world units",
+                "type": "float"
+            },
+            {
+                "type": "pad",
+                "size": 36
+            },
+            {
+                "name": "particle creation physics",
+                "type": "ParticleSystemParticleCreationPhysics"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "physics flags",
+                "type": "IsUnusedFlag",
+                "unused": true
+            },
+            {
+                "name": "physics constants",
+                "type": "TagReflexive",
+                "struct": "ParticleSystemPhysicsConstant",
+                "maximum": 16
+            },
+            {
+                "name": "states",
+                "type": "TagReflexive",
+                "struct": "ParticleSystemTypeStates",
+                "maximum": 8
+            },
+            {
+                "name": "particle states",
+                "type": "TagReflexive",
+                "struct": "ParticleSystemTypeParticleState",
+                "maximum": 8
+            }
+        ],
+        "type": "struct",
+        "title": "name",
+        "size": 128
+    },
+    {
+        "name": "ParticleSystem",
+        "fields": [
+            {
+                "type": "pad",
+                "size": 4
+            },
+            {
+                "type": "pad",
+                "size": 52
+            },
+            {
+                "name": "point physics",
+                "type": "TagDependency",
+                "classes": [
+                    "point_physics"
+                ]
+            },
+            {
+                "name": "system update physics",
+                "type": "ParticleSystemSystemUpdatePhysics"
+            },
+            {
+                "type": "pad",
+                "size": 2
+            },
+            {
+                "name": "physics flags",
+                "type": "IsUnusedFlag",
+                "unused": true
+            },
+            {
+                "name": "physics constants",
+                "type": "TagReflexive",
+                "struct": "ParticleSystemPhysicsConstant",
+                "maximum": 16
+            },
+            {
+                "name": "particle types",
+                "type": "TagReflexive",
+                "struct": "ParticleSystemType",
+                "maximum": 4
+            }
+        ],
+        "type": "struct",
+        "size": 104,
+        "class": "particle_system"
+    }
+]

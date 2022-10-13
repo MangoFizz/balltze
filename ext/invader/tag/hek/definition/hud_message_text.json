@@ -1,0 +1,87 @@
+[
+    {
+        "name": "HUDMessageTextElement",
+        "fields": [
+            {
+                "name": "type",
+                "type": "int8",
+                "endian": null
+            },
+            {
+                "name": "data",
+                "type": "uint8",
+                "retcon_note": "this is read as signed in guerilla, but it's actually unsigned in-game!",
+                "endian": null
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 2
+    },
+    {
+        "name": "HUDMessageTextMessage",
+        "fields": [
+            {
+                "name": "name",
+                "type": "TagString",
+                "endian": null
+            },
+            {
+                "name": "start index into text blob",
+                "type": "Index"
+            },
+            {
+                "name": "start index of message block",
+                "type": "Index"
+            },
+            {
+                "name": "panel count",
+                "type": "uint8",
+                "retcon_note": "this is read as signed in guerilla, but it's actually unsigned in-game!",
+                "endian": null
+            },
+            {
+                "type": "pad",
+                "size": 3
+            },
+            {
+                "type": "pad",
+                "size": 24
+            }
+        ],
+        "type": "struct",
+        "title": "name",
+        "read_only": true,
+        "size": 64
+    },
+    {
+        "name": "HUDMessageText",
+        "fields": [
+            {
+                "name": "text data",
+                "type": "TagDataOffset",
+                "maximum": 65536
+            },
+            {
+                "name": "message elements",
+                "type": "TagReflexive",
+                "struct": "HUDMessageTextElement",
+                "maximum": 8192
+            },
+            {
+                "name": "messages",
+                "type": "TagReflexive",
+                "struct": "HUDMessageTextMessage",
+                "maximum": 1024
+            },
+            {
+                "type": "pad",
+                "size": 84
+            }
+        ],
+        "type": "struct",
+        "read_only": true,
+        "size": 128,
+        "class": "hud_message_text"
+    }
+]

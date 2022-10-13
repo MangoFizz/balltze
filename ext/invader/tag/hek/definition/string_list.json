@@ -1,0 +1,30 @@
+[
+    {
+        "name": "StringListString",
+        "fields": [
+            {
+                "name": "string",
+                "type": "TagDataOffset",
+                "maximum": 4096
+            }
+        ],
+        "type": "struct",
+        "pre_compile": true,
+        "size": 20
+    },
+    {
+        "name": "StringList",
+        "fields": [
+            {
+                "name": "strings",
+                "type": "TagReflexive",
+                "struct": "StringListString",
+                "read_only": true,
+                "maximum": 800
+            }
+        ],
+        "type": "struct",
+        "size": 12,
+        "class": "string_list"
+    }
+]
