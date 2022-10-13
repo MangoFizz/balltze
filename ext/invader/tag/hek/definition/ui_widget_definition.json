@@ -381,7 +381,7 @@
         "fields": [
             "load if event handler function fails"
         ],
-        "width": 32
+        "width": 16
     },
     {
         "name": "ChildWidgetReferenceFlags",
@@ -389,7 +389,7 @@
         "fields": [
             "use custom controller index"
         ],
-        "width": 32
+        "width": 16
     },
     {
         "name": "UIWidgetDefinitionFlags",
@@ -423,7 +423,7 @@
             "flashing",
             "don't do that weird focus test"
         ],
-        "width": 32
+        "width": 16
     },
     {
         "name": "UIWidgetDefinitionFlags2",
