@@ -1125,6 +1125,9 @@ namespace Balltze {
                                         }
                                     }
 
+                                    TRANSLATE_DATA_OFFSET(bitmap->compressed_color_plate_data);
+                                    TRANSLATE_DATA_OFFSET(bitmap->processed_pixel_data);
+
                                     break;
                                 }
 
