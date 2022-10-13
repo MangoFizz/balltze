@@ -8,7 +8,13 @@ project(balltze
     LANGUAGES ASM C CXX
 )
 
-# Add include path
+# Set modules path
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+# Include stuff
+include(lua/tag_definitions_generator/tag_definitions.cmake)
+
+# Set include path
 include_directories(include/)
 include_directories(ext/zstd/include)
 
@@ -38,11 +44,14 @@ add_library(balltze MODULE
     src/balltze/main.cpp
 )
 
-# Set output name
+# Set Balltze output properties
 set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 
+add_dependencies(balltze tag-structs)
+
+# Link libraries
 target_link_libraries(balltze ${CMAKE_CURRENT_SOURCE_DIR}/ext/zstd/lib/libzstd.a)
 
 # Install Balltze

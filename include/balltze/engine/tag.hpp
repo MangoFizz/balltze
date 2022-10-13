@@ -8,12 +8,10 @@
 #include <cstddef>
 
 #include "../memory/struct.hpp"
-#include "type.hpp"
+#include "data_types.hpp"
 #include "tag_class.hpp"
 
 namespace Balltze::Engine {
-    using TagID = ElementID;
-
     /**
      * Tags are the building block of a map
      */

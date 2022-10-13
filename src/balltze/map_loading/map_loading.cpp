@@ -35,6 +35,7 @@
 
 namespace Balltze {
     using namespace Engine;
+    using namespace Engine::TagDefinitions;
 
     static constexpr const char *bitmaps_file = "bitmaps.map";
     static constexpr const char *sounds_file = "sounds.map";
