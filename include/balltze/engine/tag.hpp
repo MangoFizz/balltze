@@ -26,7 +26,7 @@ namespace Balltze::Engine {
         TagClassInt tertiary_class;
 
         /** Tag ID of the tag */
-        TagID id;
+        TagHandle id;
 
         /** Tag path; this value *can* be invalid for some tags on protected maps; always check if it's within 0x40440000 - 0x41B40000 before trying to read it!! */
         char *path;
@@ -54,7 +54,7 @@ namespace Balltze::Engine {
         Tag *tag_array;
 
         /** Main scenario tag ID - pretty much every map has this as #0 as tool always puts it first, but don't rely on it (it's a great map protection that breaks most tools) */
-        TagID scenario_tag;
+        TagHandle scenario_tag;
 
         /** Unused random number */
         std::uint32_t random_number;
@@ -125,14 +125,14 @@ namespace Balltze::Engine {
      * @param  tag_class class of the tag
      * @return           ID of tag
      */
-    extern "C" TagID get_tag_id(const char *path, std::uint32_t tag_class) noexcept;
+    extern "C" TagHandle get_tag_id(const char *path, std::uint32_t tag_class) noexcept;
 
     /**
      * Get the tag
      * @param  tag_id id of the tag
      * @return        pointer to the tag if found, nullptr if not
      */
-    Tag *get_tag(TagID tag_id) noexcept;
+    Tag *get_tag(TagHandle tag_id) noexcept;
 
     /**
      * Get the tag

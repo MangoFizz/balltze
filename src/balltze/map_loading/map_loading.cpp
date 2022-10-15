@@ -368,8 +368,8 @@ namespace Balltze {
                             
                             for(std::uint32_t pe = 0; pe < permutation_count; pe++) {
                                 auto *permutation = permutation_ptr + pe * 0x7C;
-                                *reinterpret_cast<TagID *>(permutation + 0x34) = tag_id;
-                                *reinterpret_cast<TagID *>(permutation + 0x3C) = tag_id;
+                                *reinterpret_cast<TagHandle *>(permutation + 0x34) = tag_id;
+                                *reinterpret_cast<TagHandle *>(permutation + 0x3C) = tag_id;
                             }
                         }
                         
@@ -999,7 +999,7 @@ namespace Balltze {
                         auto tag_data_base_address_displacement = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(secondary_map_tag_data_header);
                         auto data_base_offset = reinterpret_cast<std::uint32_t>(m.memory_location.value()) - reinterpret_cast<std::uint32_t>(map->memory_location.value());
 
-                        std::map<TagID, TagID> tag_id_map; 
+                        std::map<TagHandle, TagHandle> tag_id_map; 
 
                         auto is_supported_tag = [](TagClassInt tag_class) {
                             static TagClassInt supportedTags[] = {
@@ -1018,16 +1018,16 @@ namespace Balltze {
                             return false;
                         };
 
-                        auto get_tag_from_secondary_map = [&secondary_map_tag_data_header, &secondary_map_tag_array_raw](std::uint32_t tag_id) -> Tag * {
+                        auto get_tag_from_secondary_map = [&secondary_map_tag_data_header, &secondary_map_tag_array_raw](TagHandle tag_handle) -> Tag * {
                             for(std::size_t i = 0; i < secondary_map_tag_data_header->tag_count; i++) {
-                                if(secondary_map_tag_array_raw[i].id.whole_id == tag_id) {
+                                if(secondary_map_tag_array_raw[i].id == tag_handle) {
                                     return &secondary_map_tag_array_raw[i];
                                 }
                             }
                             return nullptr;
                         };
 
-                        std::function<TagID *(Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagID * {
+                        std::function<TagHandle *(Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagHandle * {
 
                             #define TRANSLATE_ADDRESS(x) { \
                                 if(reinterpret_cast<void *>(x) != nullptr) { \
@@ -1132,7 +1132,7 @@ namespace Balltze {
                                 }
 
                                 case TagClassInt::TAG_CLASS_UI_WIDGET_DEFINITION: {
-                                    auto *ui_widget_definition = reinterpret_cast<UIWidgetDefinition *>(new_tag.data);
+                                    auto *ui_widget_definition = reinterpret_cast<UiWidgetDefinition *>(new_tag.data);
 
                                     TRANSLATE_ADDRESS(ui_widget_definition->game_data_inputs.offset);
                                     TRANSLATE_ADDRESS(ui_widget_definition->event_handlers.offset);

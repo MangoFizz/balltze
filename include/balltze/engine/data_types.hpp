@@ -7,20 +7,28 @@
 #include <cstddef> 
 
 namespace Balltze::Engine {
-    union ElementID {
+	using Angle = float;
+	using Fraction = float;
+	using Index = std::uint16_t;
+	using TagEnum = std::uint16_t;
+	using TagString = char[32];
+	using TagFourCC = char[4];
+	using Matrix = float[3][3];
+
+    union ElementHandle {
         std::uint32_t whole_id;
         struct {
             std::uint16_t index;
             std::uint16_t id;
         } index;
 
-        ElementID(std::uint32_t id) {
+        ElementHandle(std::uint32_t id) {
             this->whole_id = id;
         }
 
-        ElementID() = default;
+        ElementHandle() = default;
 
-        static ElementID null_id() noexcept {
+        static ElementHandle null_id() noexcept {
             return { 0xFFFFFFFF };
         }
 
@@ -28,27 +36,29 @@ namespace Balltze::Engine {
             return *this == null_id();
         }
 
-        bool operator==(const ElementID &other) const noexcept {
+        bool operator==(const ElementHandle &other) const noexcept {
             return this->whole_id == other.whole_id;
         }
 
-        bool operator!=(const ElementID &other) const noexcept {
+        bool operator!=(const ElementHandle &other) const noexcept {
             return this->whole_id != other.whole_id;
         }
 
-        bool operator<(const ElementID& other) const noexcept {
+        bool operator<(const ElementHandle& other) const noexcept {
             return index.index < other.index.index; 
         }
     };
+	static_assert(sizeof(ElementHandle) == sizeof(std::uint32_t));
 
-    using PlayerID = ElementID;
-    using TagID = ElementID;
+    using PlayerHandle = ElementHandle;
+    using TagHandle = ElementHandle;
 
     template<typename T> struct TagReflexive {
         std::uint32_t count;
         T *offset;
 		std::byte pad_3[4];
 	};
+	static_assert(sizeof(TagReflexive<void>) == 0xC);
     
 	struct ColorARGBInt {
 		std::uint8_t blue;
@@ -59,10 +69,10 @@ namespace Balltze::Engine {
     static_assert(sizeof(ColorARGBInt) == 0x4);
 
 	struct TagDependency {
-		std::uint32_t tag_fourcc;
+		TagFourCC tag_fourcc;
 		std::uint32_t path_pointer;
-		std::uint32_t path_size;
-		std::uint32_t tag_id;
+		std::size_t path_size;
+		TagHandle tag_id;
 	};
     static_assert(sizeof(TagDependency) == 0x10);
 
@@ -71,6 +81,13 @@ namespace Balltze::Engine {
 		float y;
 	};
     static_assert(sizeof(Point2D) == 0x8);
+
+	struct Point3D {
+		float x;
+		float y;
+		float z;
+	};
+	static_assert(sizeof(Point3D) == 0xC);
 
 	struct TagDataOffset {
 		std::uint32_t size;
@@ -109,6 +126,19 @@ namespace Balltze::Engine {
 	};
 	static_assert(sizeof(Euler2D) == 0x8);
 
+	struct Euler3D {
+		float yaw;
+		float pitch;
+		float roll;
+	};
+	static_assert(sizeof(Euler3D) == 0xC);
+
+	struct Vector2D {
+		float i;
+		float j;
+	};
+	static_assert(sizeof(Vector2D) == 0x8);
+
 	struct Vector3D {
 		float i;
 		float j;
@@ -122,6 +152,88 @@ namespace Balltze::Engine {
 		float blue;
 	};
 	static_assert(sizeof(ColorRGB) == 0xC);
+
+	struct Quaternion {
+		float i;
+		float j;
+		float k;
+		float w;
+	};
+	static_assert(sizeof(Quaternion) == 0x10);
+
+	struct Plane3D {
+		Vector3D vector;
+		float w;
+	};
+	static_assert(sizeof(Plane3D) == 0x10);
+
+	struct Plane2D {
+		Vector2D vector;
+		float w;
+	};
+	static_assert(sizeof(Plane2D) == 0xC);
+
+	union ScenarioScriptNodeValue {
+        std::int8_t bool_int;
+        std::int16_t short_int;
+        std::int32_t long_int;
+        float real;
+        TagHandle tag_handle;
+
+        ScenarioScriptNodeValue() = default;
+        ScenarioScriptNodeValue(const ScenarioScriptNodeValue &copy) = default;
+
+        ScenarioScriptNodeValue(std::uint8_t v) {
+            this->bool_int = v;
+        }
+
+        ScenarioScriptNodeValue(std::uint16_t v) {
+            this->short_int = v;
+        }
+
+        ScenarioScriptNodeValue(std::uint32_t v) {
+            this->long_int = v;
+        }
+
+        ScenarioScriptNodeValue(float v) {
+            this->real = v;
+        }
+
+        ScenarioScriptNodeValue(TagHandle v) {
+            this->tag_handle = v;
+        }
+
+        void operator=(std::uint8_t v) {
+            this->long_int = 0xFFFFFFFF;
+            this->bool_int = v;
+        }
+
+        void operator=(std::uint16_t v) {
+            this->long_int = 0xFFFFFFFF;
+            this->short_int = v;
+        }
+
+        void operator=(std::uint32_t v) {
+            this->long_int = v;
+        }
+
+        void operator=(float v) {
+            this->real = v;
+        }
+
+        void operator=(TagHandle v) {
+            this->tag_handle = v;
+        }
+        
+        bool operator==(const ScenarioScriptNodeValue &other) const noexcept {
+            return this->long_int == other.long_int;
+        }
+        
+        bool operator!=(const ScenarioScriptNodeValue &other) const noexcept {
+            return this->long_int != other.long_int;
+        }
+    };
+	static_assert(sizeof(ScenarioScriptNodeValue) == 0x4);
 }
 
 #endif

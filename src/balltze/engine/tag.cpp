@@ -18,7 +18,7 @@ namespace Balltze::Engine {
         return address.value();
     }
 
-    Tag *get_tag(TagID tag_id) noexcept {
+    Tag *get_tag(TagHandle tag_id) noexcept {
         if(tag_id.is_null()) {
             return nullptr;
         }
