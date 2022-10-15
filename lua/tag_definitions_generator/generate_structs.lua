@@ -28,6 +28,7 @@ local outputFile = args.output
 ---@field fields DefinitionElement[]
 ---@field struct string
 ---@field description string
+---@field inherits string
 
 ---@class StructField
 ---@field name string
@@ -40,6 +41,7 @@ local outputFile = args.output
 ---@class Struct
 ---@field name string
 ---@field width number
+---@field inherits string
 ---@field fields StructField[]
 
 ---@class BitfieldStruct
@@ -122,12 +124,28 @@ local dataTypes = {
 
 -- Dirty workaround for resolve dependencies between tags definitions
 local dependencies = {
+    antenna = {
+        {
+            name = "unit",
+            types = {
+                unit = {width = 0x2F0},
+            }
+        }
+    },
     actor_variant = {
         {
             name = "unit",
             types = {
                 metagame_type = {width = 0x2},
                 metagame_class = {width = 0x2}
+            }
+        }
+    },
+    biped = {
+        {
+            name = "unit",
+            types = {
+                unit = {width = 0x2F0},
             }
         }
     },
@@ -150,6 +168,54 @@ local dependencies = {
             }
         }
     },
+    device = {
+        {
+            name = "object",
+            types = {
+                object = {width = 0x17C},
+            }
+        }
+    },
+    device_control = {
+        {
+            name = "device",
+            types = {
+                device = {width = 0x290},
+            }
+        }
+    },
+    device_light_fixture = {
+        {
+            name = "device",
+            types = {
+                device = {width = 0x290},
+            }
+        }
+    },
+    device_machine = {
+        {
+            name = "device",
+            types = {
+                device = {width = 0x290},
+            }
+        }
+    },
+    equipment = {
+        {
+            name = "item",
+            types = {
+                item = {width = 0x308},
+            }
+        }
+    },
+    garbage = {
+        {
+            name = "item",
+            types = {
+                item = {width = 0x308},
+            }
+        }
+    },
     gbxmodel = {
         {
             name = "model",
@@ -158,7 +224,8 @@ local dependencies = {
                 model_marker = {width = 0x40},
                 model_node = {width = 0x9C},
                 model_region = {width = 0x4C},
-                model_shader_reference = {width = 0x4}
+                model_shader_reference = {width = 0x4},
+                model_geometry_part = {width = 0x68}
             }
         }
     },
@@ -191,6 +258,7 @@ local dependencies = {
         {
             name = "object",
             types = {
+                object = {width = 0x17C},
                 object_function_in = {width = 0x2}
             }
         }
@@ -203,6 +271,14 @@ local dependencies = {
             }
         }
     },
+    object = {
+        {
+            name = "object",
+            types = {
+                object = {width = 0x17C}
+            }
+        }
+    },
     particle_system = {
         {
             name = "particle",
@@ -212,10 +288,19 @@ local dependencies = {
             }
         }
     },
+    placeholder = {
+        {
+            name = "object",
+            types = {
+                basic_object = {width = 0x17C}
+            }
+        }
+    },
     projectile = {
         {
             name = "object",
             types = {
+                object = {width = 0x2},
                 object_noise = {width = 0x2}
             }
         }
@@ -249,10 +334,19 @@ local dependencies = {
             }
         }
     },
+    scenery = {
+        {
+            name = "object",
+            types = {
+                basic_object = {width = 0x17C}
+            }
+        }
+    },
     shader_environment = {
         {
             name = "shader",
             types = {
+                shader = {width = 0x28},
                 shader_detail_function = {width = 0x2}
             }
         }
@@ -261,6 +355,7 @@ local dependencies = {
         {
             name = "shader",
             types = {
+                shader = {width = 0x28},
                 shader_detail_function = {width = 0x2}
             }
         }
@@ -269,6 +364,7 @@ local dependencies = {
         {
             name = "shader",
             types = {
+                shader = {width = 0x28},
                 shader_color_function_type = {width = 0x2},
                 shader_first_map_type = {width = 0x2},
                 shader_transparent_extra_layer = {width = 0x10},
@@ -285,6 +381,7 @@ local dependencies = {
         {
             name = "shader",
             types = {
+                shader = {width = 0x28},
                 shader_color_function_type = {width = 0x2},
                 shader_first_map_type = {width = 0x2},
                 shader_transparent_extra_layer = {width = 0x10},
@@ -308,8 +405,49 @@ local dependencies = {
         {
             name = "shader",
             types = {
+                shader = {width = 0x28},
                 shader_first_map_type = {width = 0x2},
                 shader_transparent_extra_layer = {width = 0x10}
+            }
+        }
+    },
+    shader_transparent_glass = {
+        {
+            name = "shader",
+            types = {
+                shader = {width = 0x28}
+            }
+        }
+    },
+    shader_transparent_meter = {
+        {
+            name = "shader",
+            types = {
+                shader = {width = 0x28}
+            }
+        }
+    },
+    shader_transparent_plasma = {
+        {
+            name = "shader",
+            types = {
+                shader = {width = 0x28}
+            }
+        }
+    },
+    shader_transparent_water = {
+        {
+            name = "shader",
+            types = {
+                shader = {width = 0x28}
+            }
+        }
+    },
+    sound_scenery = {
+        {
+            name = "object",
+            types = {
+                basic_object = {width = 0x17C}
             }
         }
     },
@@ -317,6 +455,7 @@ local dependencies = {
         {
             name = "object",
             types = {
+                object = {width = 0x2},
                 object_noise = {width = 0x2},
             }
         }
@@ -339,6 +478,12 @@ local dependencies = {
             types = {
                 object_noise = {width = 0x2},
                 predicted_resource = {width = 0x2}
+            }
+        },
+        {
+            name = "item",
+            types = {
+                item = {width = 0x308},
             }
         }
     },
@@ -365,6 +510,14 @@ local dependencies = {
                 particle_orientation = {width = 0x2},
                 particle_shader_flags = {width = 0x2},
                 particle_anchor = {width = 0x2}
+            }
+        }
+    },
+    vehicle = {
+        {
+            name = "unit",
+            types = {
+                unit = {width = 0x2F0},
             }
         }
     }
@@ -418,6 +571,10 @@ local function parseStruct(structDefinition)
         width = structDefinition.size,
         fields = {}
     }
+
+    if(structDefinition.inherits) then
+        struct.inherits = structDefinition.inherits
+    end
 
     for fieldIndex, field in pairs(structDefinition.fields) do
         local fieldName = normalToSnakeCase(camelCaseToSnakeCase(field.name))
@@ -544,6 +701,11 @@ local function parseDefinition(definition)
 
     -- Check if everything is ok
     for _, struct in ipairs(structs) do
+        if struct.inherits then
+            if not typeExists(struct.inherits) then
+                error("Struct " .. struct.name .. " inherits from " .. struct.inherits .. " which does not exist")
+            end
+        end
         for _, field in pairs(struct.fields) do
             if field.type == "tag_reflexive" then
                 if not typeExists(field.struct) then
@@ -592,7 +754,7 @@ local function generateCHeader(tagDefinition)
 
     if(dependencies[definitionName]) then
         for _, dependency in ipairs(dependencies[definitionName]) do
-            add("#include \"" .. dependency .. ".hpp\"\n")
+            add("#include \"" .. dependency.name .. ".hpp\"\n")
         end
     end
 
@@ -633,7 +795,11 @@ namespace Balltze::Engine::TagDefinitions {
     
     for _, struct in pairs(tagDefinition.structs) do
         ident(1)
-        add("struct " .. snakeCaseToCamelCase(struct.name) .. " {\n")
+        add("struct " .. snakeCaseToCamelCase(struct.name) .. " ")
+        if struct.inherits then
+            add(": public " .. snakeCaseToCamelCase(struct.inherits) .. " ")
+        end
+        add("{\n")
         for _, field in ipairs(struct.fields) do
             ident(2)
             if not field.type then
