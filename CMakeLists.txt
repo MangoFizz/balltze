@@ -28,8 +28,6 @@ add_library(balltze MODULE
     src/balltze/engine/window.cpp
     src/balltze/events/map_load.cpp
     src/balltze/events/tick.cpp
-    src/balltze/map_loading/compression.cpp
-    src/balltze/map_loading/crc32.c
     src/balltze/map_loading/laa.cpp
     src/balltze/map_loading/map.cpp
     src/balltze/map_loading/map_loading.cpp

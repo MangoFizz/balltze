@@ -37,7 +37,7 @@ namespace Balltze {
         // set_up_tick_event();
 
         // Set up map load event
-        set_up_map_load_event();
+        // set_up_map_load_event();
 
         // Set up first tick
         add_tick_event(first_tick, EventPriority::EVENT_PRIORITY_BEFORE);

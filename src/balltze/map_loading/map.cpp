@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <filesystem>
 #include <cstring>
 
 #include <balltze/config/ini.hpp>
@@ -63,6 +62,12 @@ namespace Balltze {
 
     std::filesystem::path path_for_map_local(const char *map_name) {
         return get_map_entry(map_name)->get_file_path();
+    }
+
+    std::filesystem::path path_for_tmp(std::size_t tmp) noexcept {
+        char tmp_name[64];
+        std::snprintf(tmp_name, sizeof(tmp_name), tmp_format, tmp);
+        return Engine::get_path() / "chimera" / "tmp" / tmp_name;
     }
 
     bool same_string_case_insensitive(const char *a, const char *b) noexcept {
