@@ -24,6 +24,7 @@ local outputFile = args.output
 ---@field type string | '"struct"' | '"enum"' | '"pad"' | '"bitfield"' | '"Angle"' | '"Fraction"' | '"TagEnum"' | '"TagString"' | '"TagIndex"' | '"unint8"' | '"unint16"' | '"unint32"' | '"int8"' | '"int16"' | '"int32"' | '"float"'
 ---@field size number
 ---@field width number
+---@field count number
 ---@field bounds number
 ---@field fields DefinitionElement[]
 ---@field struct string
@@ -579,10 +580,15 @@ local function parseStruct(structDefinition)
     for fieldIndex, field in pairs(structDefinition.fields) do
         local fieldName = normalToSnakeCase(camelCaseToSnakeCase(field.name))
         local fieldType = field.type
+
+        if fieldName and fieldName:find("%d") == 1 then
+            fieldName = "_" .. fieldName
+        end
+
         local structField = {}
 
         if field.type == "pad" then
-            structField = {type = "pad", size = field.size}
+            structField = {type = "pad"}
         elseif field.type == "TagID" then
             structField = {name = fieldName, type = "tag_handle"}
         elseif field.type == "Pointer" then
@@ -592,6 +598,8 @@ local function parseStruct(structDefinition)
         else
             structField = {name = fieldName, type = fieldType}
         end
+
+        structField.size = field.size or field.count
 
         if field.bounds then
             structField.size = 2
@@ -640,7 +648,11 @@ local function parseBitfield(bitfieldDefinition)
     local bitfield = {name = bitfieldDefinition.name, type = bitfieldType, fields = {}}
     if bitfieldDefinition.fields then
         for index, field in pairs(bitfieldDefinition.fields) do
-            bitfield.fields[index] = dashAndSentenceToSnakeCase(field)
+            local fieldName = dashAndSentenceToSnakeCase(field)
+            if fieldName and fieldName:find("%d") == 1 then
+                fieldName = "_" .. fieldName
+            end
+            bitfield.fields[index] = fieldName
         end
     end
     return bitfield
