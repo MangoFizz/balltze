@@ -16,7 +16,6 @@ include(lua/tag_definitions_generator/tag_structures.cmake)
 
 # Set include path
 include_directories(include/)
-include_directories(ext/zstd/include)
 
 add_library(balltze MODULE
     src/balltze/config/ini.cpp
@@ -48,9 +47,6 @@ set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 
 add_dependencies(balltze tag-structures)
-
-# Link libraries
-target_link_libraries(balltze ${CMAKE_CURRENT_SOURCE_DIR}/ext/zstd/lib/libzstd.a)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
