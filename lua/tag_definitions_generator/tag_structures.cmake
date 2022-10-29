@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 find_package(LuaRuntime REQUIRED)
 
 # Our super Lua scripts
-set(TAG_STRUCTURES_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/tag_definitions_generator/generate_structs.lua)
+set(TAG_STRUCTURES_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/tag_definitions_generator/generate_struct.lua)
 set(LUA_ENVIRONMENT_SCRIPT ${CMAKE_SOURCE_DIR}/lua/env.lua)
 
 # Tag definitions

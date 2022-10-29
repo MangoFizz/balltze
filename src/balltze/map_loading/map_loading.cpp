@@ -7,6 +7,7 @@
 #include <deque>
 #include <memory>
 #include <functional>
+#include <numeric>
 
 #include <balltze/engine/map.hpp>
 #include <balltze/engine/path.hpp>
@@ -16,6 +17,23 @@
 #include <balltze/engine/tag_definitions/bitmap.hpp>
 #include <balltze/engine/tag_definitions/sound.hpp>
 #include <balltze/engine/tag_definitions/font.hpp>
+#include <balltze/engine/tag_definitions/gbxmodel.hpp>
+#include <balltze/engine/tag_definitions/shader_model.hpp>
+#include <balltze/engine/tag_definitions/shader_transparent_chicago.hpp>
+#include <balltze/engine/tag_definitions/shader_transparent_chicago_extended.hpp>
+#include <balltze/engine/tag_definitions/shader_transparent_glass.hpp>
+#include <balltze/engine/tag_definitions/scenery.hpp>
+#include <balltze/engine/tag_definitions/model_animations.hpp>
+#include <balltze/engine/tag_definitions/model_collision_geometry.hpp>
+#include <balltze/engine/tag_definitions/physics.hpp>
+#include <balltze/engine/tag_definitions/effect.hpp>
+#include <balltze/engine/tag_definitions/damage_effect.hpp>
+#include <balltze/engine/tag_definitions/light.hpp>
+#include <balltze/engine/tag_definitions/lens_flare.hpp>
+#include <balltze/engine/tag_definitions/particle_system.hpp>
+#include <balltze/engine/tag_definitions/decal.hpp>
+#include <balltze/engine/tag_definitions/particle.hpp>
+#include <balltze/engine/tag_definitions/material_effects.hpp>
 #include <balltze/engine/tag_class.hpp>
 #include <balltze/map_loading/laa.hpp>
 #include <balltze/memory/hook.hpp>
@@ -32,16 +50,18 @@ namespace Balltze {
     struct LoadedMap {
         std::string name;
         std::filesystem::path path;
+        MapHeader header;
         bool secondary = false;
+
+        std::size_t tag_data_size() {
+            return this->header.tag_data_size;
+        }
 
         TagDataHeader tag_data_header() noexcept {
             std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
-            MapHeader header;
+            MapHeader header = this->header;
             TagDataHeader tag_data_header;
 
-            // Read map header
-            std::fread(&header, sizeof(MapHeader), 1, file);
-            
             // Read tag data header
             std::fseek(file, header.tag_data_offset, SEEK_SET);
             std::fread(&tag_data_header, sizeof(TagDataHeader), 1, file);
@@ -55,6 +75,13 @@ namespace Balltze {
             this->name = name;
             this->path = path_for_map_local(name.c_str());
             this->secondary = secondary;
+
+            // Read map header
+            std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
+            MapHeader header;
+            std::fread(&header, sizeof(MapHeader), 1, file);
+            std::fclose(file);
+            this->header = header;
         }
     };
 
@@ -66,6 +93,14 @@ namespace Balltze {
     extern "C" {
         void map_loading_asm() noexcept;
         void on_read_map_file_data_asm() noexcept;
+    }
+
+    static void reallocate_tag_data_buffer() noexcept {
+        std::size_t buffer_size = 0;
+        for(auto &map : loaded_maps) {
+            buffer_size += map.header.tag_data_size;
+        }
+        tag_data = std::make_unique<std::byte[]>(buffer_size);
     }
 
     static std::byte *read_tag_data(LoadedMap &map) noexcept {
@@ -132,7 +167,8 @@ namespace Balltze {
             auto data_base_offset = 0;
             
             // Allocate buffer for maps tag data
-            tag_data = std::make_unique<std::byte[]>((64 * 1024 * 1024) * loaded_maps.size());
+            auto tag_data_buffer_size = std::transform_reduce(loaded_maps.begin(), loaded_maps.end(), 0, std::plus<>(), std::mem_fn(LoadedMap::tag_data_size));
+            tag_data = std::make_unique<std::byte[]>(tag_data_buffer_size);
 
             for(auto &map : loaded_maps) {
                 auto map_tag_data_header = map.tag_data_header();
@@ -160,11 +196,29 @@ namespace Balltze {
 
                     auto is_supported_tag = [](TagClassInt tag_class) {
                         static TagClassInt supportedTags[] = {
-                            TagClassInt::TAG_CLASS_BITMAP,
-                            TagClassInt::TAG_CLASS_UNICODE_STRING_LIST,
-                            TagClassInt::TAG_CLASS_SOUND,
-                            TagClassInt::TAG_CLASS_FONT,
-                            TagClassInt::TAG_CLASS_UI_WIDGET_DEFINITION
+                            TAG_CLASS_BITMAP,
+                            TAG_CLASS_UNICODE_STRING_LIST,
+                            TAG_CLASS_SOUND,
+                            TAG_CLASS_FONT,
+                            TAG_CLASS_UI_WIDGET_DEFINITION,
+                            TAG_CLASS_GBXMODEL,
+                            TAG_CLASS_SHADER_MODEL,
+                            TAG_CLASS_SHADER_TRANSPARENT_CHICAGO,
+                            TAG_CLASS_SHADER_TRANSPARENT_CHICAGO_EXTENDED,
+                            TAG_CLASS_SHADER_TRANSPARENT_GENERIC,
+                            TAG_CLASS_MODEL_ANIMATIONS,
+                            TAG_CLASS_SCENERY,
+                            TAG_CLASS_MODEL_COLLISION_GEOMETRY,
+                            TAG_CLASS_PHYSICS,
+                            TAG_CLASS_EFFECT,
+                            TAG_CLASS_DAMAGE_EFFECT,
+                            TAG_CLASS_LIGHT,
+                            TAG_CLASS_LENS_FLARE,
+                            TAG_CLASS_PARTICLE_SYSTEM,
+                            TAG_CLASS_POINT_PHYSICS,
+                            TAG_CLASS_DECAL,
+                            TAG_CLASS_PARTICLE,
+                            TAG_CLASS_MATERIAL_EFFECTS
                         };
 
                         for(auto &i : supportedTags) {
@@ -261,7 +315,7 @@ namespace Balltze {
                         }
 
                         switch(new_tag.primary_class) {
-                            case TagClassInt::TAG_CLASS_BITMAP: {
+                            case TAG_CLASS_BITMAP: {
                                 Bitmap *bitmap = reinterpret_cast<Bitmap *>(new_tag.data);
 
                                 if(bitmap->bitmap_group_sequence.count > 0) {
@@ -288,7 +342,7 @@ namespace Balltze {
                                 break;
                             }
 
-                            case TagClassInt::TAG_CLASS_UI_WIDGET_DEFINITION: {
+                            case TAG_CLASS_UI_WIDGET_DEFINITION: {
                                 auto *ui_widget_definition = reinterpret_cast<UiWidgetDefinition *>(new_tag.data);
 
                                 TRANSLATE_ADDRESS(ui_widget_definition->game_data_inputs.offset);
@@ -320,7 +374,7 @@ namespace Balltze {
                                 break;
                             }
 
-                            case TagClassInt::TAG_CLASS_UNICODE_STRING_LIST: {
+                            case TAG_CLASS_UNICODE_STRING_LIST: {
                                 auto *unicode_string_list = reinterpret_cast<UnicodeStringList *>(new_tag.data);
                                 
                                 TRANSLATE_ADDRESS(unicode_string_list->strings.offset);
@@ -332,7 +386,7 @@ namespace Balltze {
                                 break;
                             }
 
-                            case TagClassInt::TAG_CLASS_SOUND: {
+                            case TAG_CLASS_SOUND: {
                                 auto *sound = reinterpret_cast<Sound *>(new_tag.data);
 
                                 TRANSLATE_ADDRESS(sound->pitch_ranges.offset);
@@ -355,7 +409,7 @@ namespace Balltze {
                                 break;
                             }
 
-                            case TagClassInt::TAG_CLASS_FONT: {
+                            case TAG_CLASS_FONT: {
                                 auto *font = reinterpret_cast<Font *>(new_tag.data);
                                 
                                 TRANSLATE_ADDRESS(font->character_tables.offset);
@@ -376,6 +430,375 @@ namespace Balltze {
 
                                 TRANSLATE_DATA_OFFSET(font->pixels);
                                 
+                                break;
+                            }
+
+                            case TAG_CLASS_GBXMODEL: {
+                                auto *gbxmodel = reinterpret_cast<Gbxmodel *>(new_tag.data);
+
+                                TRANSLATE_ADDRESS(gbxmodel->markers.offset);
+                                for(std::size_t i = 0; i < gbxmodel->markers.count; i++) {
+                                    TRANSLATE_ADDRESS(gbxmodel->markers.offset[i].instances.offset);
+                                }
+
+                                TRANSLATE_ADDRESS(gbxmodel->nodes.offset);
+
+                                TRANSLATE_ADDRESS(gbxmodel->regions.offset);
+                                for(std::size_t i = 0; i < gbxmodel->regions.count; i++) {  
+                                    TRANSLATE_ADDRESS(gbxmodel->regions.offset[i].permutations.offset);
+
+                                    auto &region = gbxmodel->regions.offset[i];
+
+                                    for(std::size_t i = 0; i < region.permutations.count; i++) {
+                                        TRANSLATE_ADDRESS(region.permutations.offset[i].markers.offset);
+                                    }
+                                }
+
+                                TRANSLATE_ADDRESS(gbxmodel->geometries.offset);
+                                for(std::size_t i = 0; i < gbxmodel->geometries.count; i++) {
+                                    TRANSLATE_ADDRESS(gbxmodel->geometries.offset[i].parts.offset);
+
+                                    for(std::size_t j = 0; j < gbxmodel->geometries.offset[i].parts.count; j++) {
+                                        TRANSLATE_ADDRESS(gbxmodel->geometries.offset[i].parts.offset[j].uncompressed_vertices.offset);
+                                        TRANSLATE_ADDRESS(gbxmodel->geometries.offset[i].parts.offset[j].compressed_vertices.offset);
+                                        TRANSLATE_ADDRESS(gbxmodel->geometries.offset[i].parts.offset[j].triangles.offset);
+                                    }                               
+                                }
+
+                                TRANSLATE_ADDRESS(gbxmodel->shaders.offset);
+                                for(std::size_t i = 0; i < gbxmodel->shaders.count; i++) {
+                                    TRANSLATE_DEPENDENCY(gbxmodel->shaders.offset[i].shader);
+                                }
+
+                                break;
+                            }
+
+                            case TAG_CLASS_SHADER_MODEL: {
+                                auto *shader_model = reinterpret_cast<ShaderModel *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(shader_model->base_map);
+                                TRANSLATE_DEPENDENCY(shader_model->multipurpose_map);
+                                TRANSLATE_DEPENDENCY(shader_model->detail_map);
+                                TRANSLATE_DEPENDENCY(shader_model->reflection_cube_map);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_MODEL_ANIMATIONS: {
+                                auto *model_animations = reinterpret_cast<ModelAnimations *>(new_tag.data);
+
+                                TRANSLATE_ADDRESS(model_animations->objects.offset);
+
+                                TRANSLATE_ADDRESS(model_animations->units.offset);
+                                for(std::size_t i = 0; i < model_animations->units.count; i++) {
+                                    TRANSLATE_ADDRESS(model_animations->units.offset[i].animations.offset);
+                                    TRANSLATE_ADDRESS(model_animations->units.offset[i].ik_points.offset);
+                                    
+                                    TRANSLATE_ADDRESS(model_animations->units.offset[i].weapons.offset);
+                                    for(std::size_t j = 0; j < model_animations->units.offset[i].weapons.count; j++) {
+                                        TRANSLATE_ADDRESS(model_animations->units.offset[i].weapons.offset[j].animations.offset);
+                                        TRANSLATE_ADDRESS(model_animations->units.offset[i].weapons.offset[j].ik_point.offset);
+
+                                        TRANSLATE_ADDRESS(model_animations->units.offset[i].weapons.offset[j].weapon_types.offset);
+                                        for(std::size_t k = 0; k < model_animations->units.offset[i].weapons.offset[j].weapon_types.count; k++) {
+                                            TRANSLATE_ADDRESS(model_animations->units.offset[i].weapons.offset[j].weapon_types.offset[k].animations.offset);
+                                        }
+                                    }
+                                }
+
+                                TRANSLATE_ADDRESS(model_animations->weapons.offset);
+                                for(std::size_t i = 0; i < model_animations->weapons.count; i++) {
+                                    TRANSLATE_ADDRESS(model_animations->weapons.offset[i].animations.offset);
+                                }
+
+                                TRANSLATE_ADDRESS(model_animations->vehicles.offset);
+                                for(std::size_t i = 0; i < model_animations->vehicles.count; i++) {
+                                    TRANSLATE_ADDRESS(model_animations->vehicles.offset[i].animations.offset);
+                                    TRANSLATE_ADDRESS(model_animations->vehicles.offset[i].suspension_animations.offset);
+                                }
+
+                                TRANSLATE_ADDRESS(model_animations->devices.offset);
+                                for(std::size_t i = 0; i < model_animations->devices.count; i++) {
+                                    TRANSLATE_ADDRESS(model_animations->devices.offset[i].animations.offset);
+                                }
+
+                                TRANSLATE_ADDRESS(model_animations->unit_damage.offset);
+                                
+                                TRANSLATE_ADDRESS(model_animations->first_person_weapons.offset);
+                                for(std::size_t i = 0; i < model_animations->first_person_weapons.count; i++) {
+                                    TRANSLATE_ADDRESS(model_animations->first_person_weapons.offset[i].animations.offset);
+                                }
+
+                                TRANSLATE_ADDRESS(model_animations->sound_references.offset);
+                                for(std::size_t i = 0; i < model_animations->sound_references.count; i++) {
+                                    TRANSLATE_DEPENDENCY(model_animations->sound_references.offset[i].sound);
+                                }
+
+                                TRANSLATE_ADDRESS(model_animations->nodes.offset);
+
+                                TRANSLATE_ADDRESS(model_animations->animations.offset);
+                                for(std::size_t i = 0; i < model_animations->animations.count; i++) {
+                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].frame_info);
+                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].default_data);
+                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].frame_data);
+                                }
+
+                                break;
+                            }
+
+                            case TAG_CLASS_SHADER_TRANSPARENT_CHICAGO: {
+                                auto *shader_transparent_chicago = reinterpret_cast<ShaderTransparentChicago *>(new_tag.data);
+        
+                                TRANSLATE_DEPENDENCY(shader_transparent_chicago->lens_flare);
+
+                                TRANSLATE_ADDRESS(shader_transparent_chicago->extra_layers.offset);
+                                for(std::size_t i = 0; i < shader_transparent_chicago->extra_layers.count; i++) {
+                                    TRANSLATE_DEPENDENCY(shader_transparent_chicago->extra_layers.offset[i].shader);
+                                }
+
+                                TRANSLATE_ADDRESS(shader_transparent_chicago->maps.offset);
+                                for(std::size_t i = 0; i < shader_transparent_chicago->maps.count; i++) {
+                                    TRANSLATE_DEPENDENCY(shader_transparent_chicago->maps.offset[i].map);
+                                }
+
+                                break;
+                            }
+
+                            case TAG_CLASS_SHADER_TRANSPARENT_CHICAGO_EXTENDED: {
+                                auto *shader_transparent_chicago_extended = reinterpret_cast<ShaderTransparentChicagoExtended *>(new_tag.data);
+        
+                                TRANSLATE_DEPENDENCY(shader_transparent_chicago_extended->lens_flare);
+
+                                TRANSLATE_ADDRESS(shader_transparent_chicago_extended->extra_layers.offset);
+                                for(std::size_t i = 0; i < shader_transparent_chicago_extended->extra_layers.count; i++) {
+                                    TRANSLATE_DEPENDENCY(shader_transparent_chicago_extended->extra_layers.offset[i].shader);
+                                }
+
+                                TRANSLATE_ADDRESS(shader_transparent_chicago_extended->maps_4_stage.offset);
+                                for(std::size_t i = 0; i < shader_transparent_chicago_extended->maps_4_stage.count; i++) {
+                                    TRANSLATE_DEPENDENCY(shader_transparent_chicago_extended->maps_4_stage.offset[i].map);
+                                }
+
+                                TRANSLATE_ADDRESS(shader_transparent_chicago_extended->maps_2_stage.offset);
+                                for(std::size_t i = 0; i < shader_transparent_chicago_extended->maps_2_stage.count; i++) {
+                                    TRANSLATE_DEPENDENCY(shader_transparent_chicago_extended->maps_2_stage.offset[i].map);
+                                }
+
+                                break;
+                            }
+
+                            case TAG_CLASS_SHADER_TRANSPARENT_GLASS: {
+                                auto *shader_transparent_generic = reinterpret_cast<ShaderTransparentGlass *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(shader_transparent_generic->background_tint_map);
+                                TRANSLATE_DEPENDENCY(shader_transparent_generic->reflection_map);
+                                TRANSLATE_DEPENDENCY(shader_transparent_generic->bump_map);
+                                TRANSLATE_DEPENDENCY(shader_transparent_generic->diffuse_map);
+                                TRANSLATE_DEPENDENCY(shader_transparent_generic->diffuse_detail_map);
+                                TRANSLATE_DEPENDENCY(shader_transparent_generic->specular_map);
+                                TRANSLATE_DEPENDENCY(shader_transparent_generic->specular_detail_map);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_SCENERY: {
+                                auto *scenery = reinterpret_cast<Scenery *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(scenery->model);
+                                TRANSLATE_DEPENDENCY(scenery->animation_graph);
+                                TRANSLATE_DEPENDENCY(scenery->collision_model);
+                                TRANSLATE_DEPENDENCY(scenery->physics);
+                                TRANSLATE_DEPENDENCY(scenery->modifier_shader);
+                                TRANSLATE_DEPENDENCY(scenery->creation_effect);
+
+                                TRANSLATE_ADDRESS(scenery->attachments.offset);
+                                for(std::size_t i = 0; i < scenery->attachments.count; i++) {
+                                    TRANSLATE_DEPENDENCY(scenery->attachments.offset[i].type);
+                                }
+
+                                TRANSLATE_ADDRESS(scenery->widgets.offset);
+                                for(std::size_t i = 0; i < scenery->widgets.count; i++) {
+                                    TRANSLATE_DEPENDENCY(scenery->widgets.offset[i].reference);
+                                }
+
+                                TRANSLATE_ADDRESS(scenery->functions.offset);
+
+                                TRANSLATE_ADDRESS(scenery->change_colors.offset);
+                                for(std::size_t i = 0; i < scenery->change_colors.count; i++) {
+                                    TRANSLATE_ADDRESS(scenery->change_colors.offset[i].permutations.offset);
+                                }
+
+                                TRANSLATE_ADDRESS(scenery->predicted_resources.offset);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_MODEL_COLLISION_GEOMETRY: {
+                                auto *model_collision_geometry = reinterpret_cast<ModelCollisionGeometry *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->localized_damage_effect);
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->area_damage_effect);
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->body_damaged_effect);
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->body_depleted_effect);
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->body_destroyed_effect);
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->shield_damaged_effect);
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->shield_depleted_effect);
+                                TRANSLATE_DEPENDENCY(model_collision_geometry->shield_recharging_effect);
+
+                                TRANSLATE_ADDRESS(model_collision_geometry->materials.offset);
+
+                                TRANSLATE_ADDRESS(model_collision_geometry->regions.offset);
+                                for(std::size_t i = 0; i < model_collision_geometry->regions.count; i++) {
+                                    TRANSLATE_DEPENDENCY(model_collision_geometry->regions.offset[i].destroyed_effect);
+                                    TRANSLATE_ADDRESS(model_collision_geometry->regions.offset[i].permutations.offset);
+                                }
+                                
+                                TRANSLATE_ADDRESS(model_collision_geometry->modifiers.offset);
+                                
+                                TRANSLATE_ADDRESS(model_collision_geometry->pathfinding_spheres.offset);
+
+                                TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset);
+                                for(std::size_t i = 0; i < model_collision_geometry->nodes.count; i++) {
+                                    TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset);
+                                    for(std::size_t j = 0; j < model_collision_geometry->nodes.offset[i].bsps.count; j++) {
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].bsp3d_nodes.offset);
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].planes.offset);
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].leaves.offset);
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].bsp2d_references.offset);
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].bsp2d_nodes.offset);
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].surfaces.offset);
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].edges.offset);
+                                        TRANSLATE_ADDRESS(model_collision_geometry->nodes.offset[i].bsps.offset[j].vertices.offset);
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            case TAG_CLASS_PHYSICS: {
+                                auto *physics = reinterpret_cast<Physics *>(new_tag.data);
+
+                                TRANSLATE_ADDRESS(physics->inertial_matrix_and_inverse.offset);
+                                TRANSLATE_ADDRESS(physics->powered_mass_points.offset);
+                                TRANSLATE_ADDRESS(physics->mass_points.offset);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_EFFECT: {
+                                auto *effect = reinterpret_cast<Effect *>(new_tag.data);
+
+                                TRANSLATE_ADDRESS(effect->locations.offset);
+
+                                TRANSLATE_ADDRESS(effect->events.offset);
+                                for(std::size_t i = 0; i < effect->events.count; i++) {
+                                    TRANSLATE_ADDRESS(effect->events.offset[i].parts.offset);
+                                    for(std::size_t j = 0; j < effect->events.offset[i].parts.count; j++) {
+                                        TRANSLATE_DEPENDENCY(effect->events.offset[i].parts.offset[j].type);
+                                    }
+
+                                    TRANSLATE_ADDRESS(effect->events.offset[i].particles.offset);
+                                    for(std::size_t j = 0; j < effect->events.offset[i].particles.count; j++) {
+                                        TRANSLATE_DEPENDENCY(effect->events.offset[i].particles.offset[j].particle_type);
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            case TAG_CLASS_DAMAGE_EFFECT: {
+                                auto *damage_effect = reinterpret_cast<DamageEffect *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(damage_effect->sound);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_LIGHT: {
+                                auto *light = reinterpret_cast<Light *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(light->primary_cube_map);
+                                TRANSLATE_DEPENDENCY(light->secondary_cube_map);
+                                TRANSLATE_DEPENDENCY(light->lens_flare);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_LENS_FLARE: {
+                                auto *lens_flare = reinterpret_cast<LensFlare *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(lens_flare->bitmap);
+                                TRANSLATE_ADDRESS(lens_flare->reflections.offset);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_PARTICLE_SYSTEM: {
+                                auto *particle_system = reinterpret_cast<ParticleSystem *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(particle_system->point_physics);
+
+                                TRANSLATE_ADDRESS(particle_system->physics_constants.offset);
+
+                                TRANSLATE_ADDRESS(particle_system->particle_types.offset);
+                                for(std::size_t i = 0; i < particle_system->particle_types.count; i++) {
+                                    TRANSLATE_ADDRESS(particle_system->particle_types.offset[i].physics_constants.offset);
+
+                                    TRANSLATE_ADDRESS(particle_system->particle_types.offset[i].states.offset);
+                                    for(std::size_t j = 0; j < particle_system->particle_types.offset[i].states.count; j++) {
+                                        TRANSLATE_ADDRESS(particle_system->particle_types.offset[i].states.offset[j].physics_constants.offset);
+                                    }
+
+                                    TRANSLATE_ADDRESS(particle_system->particle_types.offset[i].particle_states.offset);
+                                    for(std::size_t j = 0; j < particle_system->particle_types.offset[i].particle_states.count; j++) {
+                                        TRANSLATE_DEPENDENCY(particle_system->particle_types.offset[i].particle_states.offset[j].bitmaps);
+                                        TRANSLATE_DEPENDENCY(particle_system->particle_types.offset[i].particle_states.offset[j].point_physics);
+                                        TRANSLATE_DEPENDENCY(particle_system->particle_types.offset[i].particle_states.offset[j].secondary_map_bitmap);
+                                        TRANSLATE_ADDRESS(particle_system->particle_types.offset[i].particle_states.offset[j].physics_constants.offset);
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            case TAG_CLASS_POINT_PHYSICS: {
+                                break;
+                            }
+
+                            case TAG_CLASS_DECAL: {
+                                auto *decal = reinterpret_cast<Decal *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(decal->next_decal_in_chain);
+                                TRANSLATE_DEPENDENCY(decal->map);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_PARTICLE: {
+                                auto *particle = reinterpret_cast<Particle *>(new_tag.data);
+
+                                TRANSLATE_DEPENDENCY(particle->bitmap);
+                                TRANSLATE_DEPENDENCY(particle->physics);
+                                TRANSLATE_DEPENDENCY(particle->sir_marty_exchanged_his_children_for_thine);
+                                TRANSLATE_DEPENDENCY(particle->collision_effect);
+                                TRANSLATE_DEPENDENCY(particle->death_effect);
+                                TRANSLATE_DEPENDENCY(particle->secondary_bitmap);
+
+                                break;
+                            }
+
+                            case TAG_CLASS_MATERIAL_EFFECTS: {
+                                auto *material_effects = reinterpret_cast<MaterialEffects *>(new_tag.data);
+
+                                TRANSLATE_ADDRESS(material_effects->effects.offset);
+                                for(std::size_t i = 0; i < material_effects->effects.count; i++) {
+                                    TRANSLATE_ADDRESS(material_effects->effects.offset[i].materials.offset);
+                                    for(std::size_t j = 0; j < material_effects->effects.offset[i].materials.count; j++) {
+                                        TRANSLATE_DEPENDENCY(material_effects->effects.offset[i].materials.offset[j].effect);
+                                        TRANSLATE_DEPENDENCY(material_effects->effects.offset[i].materials.offset[j].sound);
+                                    }
+                                }
+
                                 break;
                             }
                         }

@@ -34,7 +34,7 @@ local outputFile = args.output
 ---@class StructField
 ---@field name string
 ---@field type string
----@field is_pointer boolean
+---@field pointer boolean
 ---@field size number
 ---@field description string
 ---@field struct string
@@ -836,7 +836,7 @@ namespace Balltze::Engine::TagDefinitions {
                 
                 -- Field name
                 add(" ")
-                if field.is_pointer then
+                if field.pointer then
                     add("*")
                 end
                 add(field.name)
