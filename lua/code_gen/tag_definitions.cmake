@@ -45,7 +45,7 @@ add_custom_command(
 set(TAG_DEFINITION_HPP_FILES ${TAG_DEFINITION_HPP_FILES} ${TAG_DEFINITIONS_HPP_COLLECTION})
 
 # Tag rebase offsets function CPP
-set(TAG_REBASE_OFFSETS_FUNCTION_CPP ${CMAKE_BINARY_DIR}"/tag_rebase_offsets.cpp")
+set(TAG_REBASE_OFFSETS_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_rebase_offsets.cpp")
 add_custom_command(
     OUTPUT ${TAG_REBASE_OFFSETS_FUNCTION_CPP}
     COMMAND ${CMAKE_COMMAND} -E env LUA_INIT="@${LUA_ENVIRONMENT_SCRIPT}" ${LUA_EXECUTABLE} ${TAG_REBASE_OFFSETS_FUNCTION_GENERATOR_SCRIPT} ${TAG_REBASE_OFFSETS_FUNCTION_CPP} ${TAG_DEFINITION_FILES}
@@ -55,7 +55,7 @@ set(TAG_DEFINITION_CPP_FILES ${TAG_DEFINITION_CPP_FILES} ${TAG_REBASE_OFFSETS_FU
 
 # Add tag stuff targets, so we can add them as a dependency to Balltze
 add_custom_target(tag-definitions-hpp DEPENDS ${TAG_DEFINITION_HPP_FILES})
-add_library(tag-functions STATIC build/tag_rebase_offsets.cpp)
+add_library(tag-functions STATIC ${TAG_REBASE_OFFSETS_FUNCTION_CPP})
 
 set_target_properties(tag-functions PROPERTIES LINKER_LANGUAGE CXX)
 add_dependencies(tag-functions tag-definitions-hpp)

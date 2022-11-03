@@ -37,7 +37,7 @@ for _, file in ipairs(files) do
     local fileName = file:match("([^/]+)$")
     local definition = json.decode(glue.readfile(file))
     local definitionName = fileName:match("^(.+)%..+$")
-    if(definitionName ~= "enum" and definitionName ~= "bitfield" and definitionName ~= "hud_interface_types") then
+    if(definitionName ~= "enum" and definitionName ~= "bitfield") then
         local parsedDefinition = definitionParser.parseDefinition(definitionName, definition)
         for _, struct in ipairs(parsedDefinition.structs) do
             if(struct.inherits or hasOffsetFields(struct)) then
