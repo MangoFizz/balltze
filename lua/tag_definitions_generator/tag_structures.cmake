@@ -7,6 +7,7 @@ find_package(LuaRuntime REQUIRED)
 
 # Our super Lua scripts
 set(TAG_STRUCTURES_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/tag_definitions_generator/generate_struct.lua)
+set(HEADER_COLLECTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/generate_header_collection.lua)
 set(LUA_ENVIRONMENT_SCRIPT ${CMAKE_SOURCE_DIR}/lua/env.lua)
 
 # Tag definitions
@@ -32,7 +33,15 @@ foreach(TAG_DEFINITION_FILE ${TAG_DEFINITION_FILES})
     set(TAG_STRUCTURE_OUTPUT_FILES ${TAG_STRUCTURE_OUTPUT_FILES} ${TAG_STRUCTURE_FILE})
 endforeach()
 
+# Add the tag structures to a header
+set(TAG_DEFINITIONS_HEADER "${TAG_STRUCTURES_OUTPUT_PATH}/definitions.hpp")
+add_custom_command(
+    OUTPUT ${TAG_DEFINITIONS_HEADER}
+    COMMAND ${CMAKE_COMMAND} -E env LUA_INIT="@${LUA_ENVIRONMENT_SCRIPT}" ${LUA_EXECUTABLE} ${HEADER_COLLECTION_GENERATOR_SCRIPT} ${TAG_DEFINITIONS_HEADER} ${TAG_STRUCTURE_OUTPUT_FILES}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
 # Add tag structures as a custom target, so we can add it as a dependency to Balltze
 add_custom_target(tag-structures
-    DEPENDS ${TAG_STRUCTURE_OUTPUT_FILES}
+    DEPENDS ${TAG_STRUCTURE_OUTPUT_FILES} ${TAG_DEFINITIONS_HEADER}
 )
