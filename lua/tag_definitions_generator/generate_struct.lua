@@ -547,7 +547,7 @@ end
 local function normalToSnakeCase(str)
     if str then
         -- convert normal sentence to snake_case
-        return str:gsub(" ", "_"):gsub("'", "")
+        return str:gsub(" ", "_"):gsub("[(|)|']", "")
     end
 end
 
