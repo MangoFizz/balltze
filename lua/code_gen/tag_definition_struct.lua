@@ -1,11 +1,9 @@
 -- SPDX-License-Identifier: GPL-3.0-only
 
--- from https://github.com/Sledmine/invader2kaitai/blob/main/src/lua/
-
 local argparse = require "argparse"
 local glue = require "glue"
 local json = require "json"
-local definitionParser = require "parse_definition"
+local definitionParser = require "parse_tag_definition"
 
 local parser = argparse("Balltze tag structure generator", "Convert Invader tag definitions to C structs")
 parser:argument("input", "Input file"):args(1)
@@ -112,7 +110,7 @@ namespace Balltze::Engine::TagDefinitions {
                     add("std::byte")
                 elseif field.type == "float" then
                     add(field.type)
-                elseif field.type == "tag_reflexive" then
+                elseif field.type == "TagReflexive" then
                     add(definitionParser.snakeCaseToCamelCase(field.type) .. "<" .. definitionParser.snakeCaseToCamelCase(field.struct) .. ">")
                 else
                     add(definitionParser.snakeCaseToCamelCase(field.type))

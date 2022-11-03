@@ -12,7 +12,7 @@ project(balltze
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Include stuff
-include(lua/tag_definitions_generator/tag_structures.cmake)
+include(lua/code_gen/tag_definitions.cmake)
 
 # Set include path
 include_directories(include/)
@@ -46,7 +46,9 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 
-add_dependencies(balltze tag-structures)
+add_dependencies(balltze tag-definitions-hpp tag-functions)
+
+target_link_libraries(balltze tag-functions)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")

@@ -93,7 +93,7 @@ namespace Balltze::Engine {
 		std::uint32_t size;
 		std::uint32_t external;
 		std::uint32_t file_offset;
-		std::uint32_t pointer;
+		std::byte *pointer;
 		std::byte pad_5[4];
 	};
     static_assert(sizeof(TagDataOffset) == 0x14);

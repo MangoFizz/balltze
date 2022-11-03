@@ -1,2 +1,2 @@
 -- Set modules path
-package.path = "lua/modules/?.lua;lua/tag_definitions_generator/?.lua;./?.lua" .. package.path
+package.path = "lua/modules/?.lua;lua/code_gen/?.lua;./?.lua" .. package.path

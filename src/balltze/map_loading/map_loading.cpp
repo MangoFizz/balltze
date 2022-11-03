@@ -12,8 +12,8 @@
 #include <balltze/engine/map.hpp>
 #include <balltze/engine/path.hpp>
 #include <balltze/engine/tag.hpp>
-#include <balltze/engine/tag_class.hpp>
 #include <balltze/engine/tag_definitions/definitions.hpp>
+#include <balltze/engine/tag_class.hpp>
 #include <balltze/map_loading/laa.hpp>
 #include <balltze/memory/hook.hpp>
 #include <balltze/memory/memory.hpp>

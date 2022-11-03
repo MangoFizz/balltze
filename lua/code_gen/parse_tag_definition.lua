@@ -573,11 +573,11 @@ local function parseStruct(structDefinition)
         if field.type == "pad" then
             structField = {type = "pad"}
         elseif field.type == "TagID" then
-            structField = {name = fieldName, type = "tag_handle"}
+            structField = {name = fieldName, type = "TagHandle"}
         elseif field.type == "Pointer" then
             structField = {name = fieldName, type = "byte", pointer = true}
         elseif field.type == "TagReflexive" then
-            structField = {name = fieldName, type = "tag_reflexive", struct = field.struct}    
+            structField = {name = fieldName, type = "TagReflexive", struct = field.struct}    
         else
             structField = {name = fieldName, type = fieldType}
         end

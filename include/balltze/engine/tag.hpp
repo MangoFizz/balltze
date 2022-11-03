@@ -4,12 +4,14 @@
 #define BALLTZE__ENGINE__TAG_HPP
 
 #include <string>
+#include <functional>
 #include <cstring>
 #include <cstddef>
 
 #include "../memory/struct.hpp"
 #include "data_types.hpp"
 #include "tag_class.hpp"
+#include "tag_definitions/definitions.hpp"
 
 namespace Balltze::Engine {
     /**
@@ -43,6 +45,18 @@ namespace Balltze::Engine {
         std::uint32_t indexed;
 
         PADDING(0x4);
+
+        /**
+         * Rebase tag offsets to a new data address 
+         * @param new_data_address New data address for tag data
+         */
+        void rebase_offsets(std::byte *new_data_address);
+
+        /**
+         * Fix tag dependencies
+         * @param dependency_resolver Dependency resolver
+         */
+        void fix_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver);
     };
     static_assert(sizeof(Tag) == 0x20);
 
