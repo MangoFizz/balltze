@@ -209,6 +209,13 @@ namespace Balltze::Memory {
                         instruction_size = 7;
                         break;
                     }
+                    // call dword ptr [imm32]
+                    else if(instruction[1] == 0x15) {
+                        this->cave.insert(0x15);
+                        this->cave.insert(&instruction[2], 4);
+                        instruction_size = 6;
+                        break;
+                    }
                     else {
                         throw Hook::Exception("Unsupported call instruction.");
                     }

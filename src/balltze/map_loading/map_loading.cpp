@@ -93,6 +93,7 @@ namespace Balltze {
     extern "C" {
         void map_loading_asm() noexcept;
         void on_read_map_file_data_asm() noexcept;
+        void on_model_data_buffer_alloc_asm() noexcept;
     }
 
     static void reallocate_tag_data_buffer() noexcept {
@@ -165,6 +166,7 @@ namespace Balltze {
         if(output == get_tag_data_address()) {
             auto &tag_data_header = get_tag_data_header();
             auto data_base_offset = 0;
+            auto model_data_base_offset = 0;
             
             // Allocate buffer for maps tag data
             auto tag_data_buffer_size = std::transform_reduce(loaded_maps.begin(), loaded_maps.end(), 0, std::plus<>(), std::mem_fn(LoadedMap::tag_data_size));
@@ -462,6 +464,10 @@ namespace Balltze {
                                         TRANSLATE_ADDRESS(gbxmodel->geometries.offset[i].parts.offset[j].uncompressed_vertices.offset);
                                         TRANSLATE_ADDRESS(gbxmodel->geometries.offset[i].parts.offset[j].compressed_vertices.offset);
                                         TRANSLATE_ADDRESS(gbxmodel->geometries.offset[i].parts.offset[j].triangles.offset);
+
+                                        gbxmodel->geometries.offset[i].parts.offset[j].vertex_offset += model_data_base_offset;
+                                        gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset += model_data_base_offset - tag_data_header.vertex_size + map_tag_data_header.vertex_size;
+                                        gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset_2 += model_data_base_offset - tag_data_header.vertex_size + map_tag_data_header.vertex_size;
                                     }                               
                                 }
 
@@ -812,6 +818,7 @@ namespace Balltze {
                 }
 
                 data_base_offset += std::filesystem::file_size(map.path);
+                model_data_base_offset += map_tag_data_header.model_data_size;
             }
 
             tag_data_header.tag_array = tag_array.data();
@@ -845,7 +852,28 @@ namespace Balltze {
             std::exit(EXIT_FAILURE);
         }
 
+        if(loaded_maps[0].tag_data_header().model_data_file_offset == file_offset && loaded_maps[0].tag_data_header().model_data_size == size) {
+            std::size_t buffer_cursor = 0;
+            for(auto &map : loaded_maps) {
+                std::FILE *file = std::fopen(map.path.string().c_str(), "rb");
+                std::fseek(file, map.tag_data_header().model_data_file_offset, SEEK_SET);
+                std::fread(output + buffer_cursor, 1, map.tag_data_header().model_data_size, file);
+                std::fclose(file);
+                buffer_cursor += map.tag_data_header().model_data_size;
+            }
+            return 1;
+        }
+
         return 0;
+    }
+
+    extern "C" void on_model_data_buffer_alloc(std::size_t *size) {
+        for(auto &map : loaded_maps) {
+            if(!map.secondary) {
+                continue;
+            }
+            *size += map.tag_data_header().model_data_size;
+        }
     }
 
     void set_up_map_loading() {
@@ -863,5 +891,11 @@ namespace Balltze {
         static Memory::Hook read_cache_file_data_hook;
         read_cache_file_data_hook.initialize(read_cache_file_data_sig->data(), reinterpret_cast<void *>(on_read_map_file_data_asm));
         read_cache_file_data_hook.hook();
+
+        // Hook model data buffer allocation
+        static auto *model_data_buffer_alloc_sig = sig_manager.get("model_data_buffer_alloc");
+        static Memory::Hook model_data_buffer_alloc_hook;
+        model_data_buffer_alloc_hook.initialize(model_data_buffer_alloc_sig->data(), reinterpret_cast<void *>(on_model_data_buffer_alloc_asm));
+        model_data_buffer_alloc_hook.hook();
     }
 }

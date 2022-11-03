@@ -74,7 +74,7 @@ namespace Balltze::Engine {
         /** Vertex size and offset of indices from model_data_file_offset */
         std::uint32_t vertex_size;
 
-        /** Size of the model data (unused?) */
+        /** Size of the model data */
         std::uint32_t model_data_size;
 
         /** Literally says "tags" */

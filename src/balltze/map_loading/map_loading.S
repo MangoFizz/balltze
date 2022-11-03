@@ -25,3 +25,11 @@ _on_read_map_file_data_asm:
     mov dword ptr [esp+0x14], 0 ;# set the size to 0 if the function returns 1. yes this is janky and I'm proud
     on_read_map_file_data_asm_end:
     ret
+
+.globl _on_model_data_buffer_alloc_asm
+_on_model_data_buffer_alloc_asm:
+    lea eax, [esp + 0x2C]
+    push eax
+    call _on_model_data_buffer_alloc
+    add esp, 4
+    ret
