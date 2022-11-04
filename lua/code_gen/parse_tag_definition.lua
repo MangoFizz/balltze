@@ -723,7 +723,8 @@ return {
     camelCaseToSnakeCase = camelCaseToSnakeCase,
     dashAndSentenceToSnakeCase = dashAndSentenceToSnakeCase,
     normalToSnakeCase = normalToSnakeCase,
-    dependencies = dependencies
+    dependencies = dependencies,
+    dataTypes = dataTypes
 }
 
 

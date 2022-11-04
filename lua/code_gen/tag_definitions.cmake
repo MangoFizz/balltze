@@ -8,6 +8,7 @@ find_package(LuaRuntime REQUIRED)
 # Our super Lua scripts
 set(TAG_STRUCTS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_definition_struct.lua)
 set(TAG_REBASE_OFFSETS_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_rebase_offsets_function.lua)
+set(TAG_FIX_DEPENDENCIES_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_resolve_dependencies_function.lua)
 set(HEADER_COLLECTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/header_collection.lua)
 set(LUA_ENVIRONMENT_SCRIPT ${CMAKE_SOURCE_DIR}/lua/env.lua)
 
@@ -53,9 +54,18 @@ add_custom_command(
 )
 set(TAG_DEFINITION_CPP_FILES ${TAG_DEFINITION_CPP_FILES} ${TAG_REBASE_OFFSETS_FUNCTION_CPP})
 
+# Tag fix dependencies function CPP
+set(TAG_FIX_DEPENDENCIES_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_fix_dependencies.cpp")
+add_custom_command(
+    OUTPUT ${TAG_FIX_DEPENDENCIES_FUNCTION_CPP}
+    COMMAND ${CMAKE_COMMAND} -E env LUA_INIT="@${LUA_ENVIRONMENT_SCRIPT}" ${LUA_EXECUTABLE} ${TAG_FIX_DEPENDENCIES_FUNCTION_GENERATOR_SCRIPT} ${TAG_FIX_DEPENDENCIES_FUNCTION_CPP} ${TAG_DEFINITION_FILES}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+set(TAG_DEFINITION_CPP_FILES ${TAG_DEFINITION_CPP_FILES} ${TAG_FIX_DEPENDENCIES_FUNCTION_CPP})
+
 # Add tag stuff targets, so we can add them as a dependency to Balltze
 add_custom_target(tag-definitions-hpp DEPENDS ${TAG_DEFINITION_HPP_FILES})
-add_library(tag-functions STATIC ${TAG_REBASE_OFFSETS_FUNCTION_CPP})
+add_library(tag-functions STATIC ${TAG_DEFINITION_CPP_FILES})
 
 set_target_properties(tag-functions PROPERTIES LINKER_LANGUAGE CXX)
 add_dependencies(tag-functions tag-definitions-hpp)

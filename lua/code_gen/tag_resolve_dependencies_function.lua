@@ -23,15 +23,6 @@ local function indent(n)
     add(string.rep(" ", n * 4))
 end
 
-local function hasOffsetFields(tagDefinition)
-    for _, field in ipairs(tagDefinition.fields) do
-        if(field.type == "TagReflexive" or field.type == "TagDataOffset") then
-            return true
-        end
-    end
-    return false
-end
-
 local structs = {}
 for _, file in ipairs(files) do
     local fileName = file:match("([^/]+)$")
@@ -53,60 +44,40 @@ add([[
 
 namespace Balltze::Engine {
     using namespace TagDefinitions;
-
-    template <typename T>
-    static void displace_offset(T &value, std::int32_t offset) {
-        if(value == nullptr) {
-            return;
-        }
-        value = reinterpret_cast<T>(reinterpret_cast<std::int32_t>(value) + offset);
-    }
     
 ]])
 
 for structName, _ in pairs(structs) do
     indent(1)
-    add("static void displace_offsets(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::int32_t disp); \n");
+    add("static void fix_dependencies_req(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::function<TagDependency(TagDependency)> dependency_resolver); \n");
 end
 
 add("\n")
 
 for structName, struct in pairs(structs) do
     indent(1)
-    add("static void displace_offsets(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::int32_t disp) {\n")
+    add("static void fix_dependencies_req(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::function<TagDependency(TagDependency)> dependency_resolver) {\n")
     
     if(struct.inherits and structs[definitionParser.snakeCaseToCamelCase(struct.inherits)]) then
         indent(2)
-        add("displace_offsets(static_cast<" .. definitionParser.snakeCaseToCamelCase(struct.inherits) .. " &>(" .. structName .. "), disp);\n")
+        add("fix_dependencies_req(static_cast<" .. definitionParser.snakeCaseToCamelCase(struct.inherits) .. " &>(" .. structName .. "), dependency_resolver);\n")
     end
     
     for _, field in ipairs(struct.fields) do
         local fieldAccess = structName .. "." .. (field.name or "")
-        if(field.type == "TagReflexive") then
+        if(field.type == "TagDependency") then
             indent(2)
-            add("if(" .. fieldAccess .. ".count > 0) {\n")
+            add(fieldAccess .. " = " .. "dependency_resolver(" .. fieldAccess .. ");\n")
+        elseif(field.type == "TagReflexive") then
+            indent(2)
+            add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
             indent(3)
-            add("displace_offset(" .. fieldAccess .. ".offset, disp);\n")
-            if(structs[definitionParser.snakeCaseToCamelCase(field.struct)]) then
-                indent(3)
-                add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
-                indent(4)
-                add("displace_offsets(" .. fieldAccess .. ".offset[i], disp);\n")
-                indent(3)
-                add("}\n")
-            end
+            add("fix_dependencies_req(" .. fieldAccess .. ".offset[i], dependency_resolver);\n")
             indent(2)
             add("}\n")
-        elseif(field.type == "TagDataOffset") then
+        elseif(structs[field.type]) then
             indent(2)
-            add("if(!" .. fieldAccess .. ".external) { \n")
-            indent(3)
-            add("displace_offset(" .. fieldAccess .. ".pointer, disp);\n")
-            indent(2)
-            add("}\n")
-        elseif(structs[definitionParser.snakeCaseToCamelCase(field.type)]) then
-            indent(2)
-            add("displace_offsets(" .. fieldAccess .. ", disp);\n")
+            add("fix_dependencies_req(" .. fieldAccess .. ", dependency_resolver);\n")
         end
     end
     indent(1)
@@ -114,11 +85,7 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    void Tag::rebase_offsets(std::byte *new_data_address) {
-        auto offset_displacement = reinterpret_cast<std::int32_t>(new_data_address - this->data);
-
-        this->data = new_data_address;
-
+    void Tag::fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver) {
         switch(this->primary_class) {
 ]])
 
@@ -129,11 +96,9 @@ for _, file in ipairs(files) do
         indent(3)
         add("case TAG_CLASS_" .. definitionName:upper() .. ": { \n")
         indent(4)
-        add("auto &tag_data = *reinterpret_cast<TagDefinitions::" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(this->data); \n")
-        if(structs[definitionParser.snakeCaseToCamelCase(definitionName)]) then
-            indent(4)
-            add("displace_offsets(tag_data, offset_displacement); \n")
-        end
+        add("auto *tag_data = reinterpret_cast<TagDefinitions::" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(this->data); \n")
+        indent(4)
+        add("fix_dependencies_req(*tag_data, dependency_resolver); \n")
         indent(4)
         add("break; \n")
         indent(3)

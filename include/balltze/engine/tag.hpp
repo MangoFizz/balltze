@@ -56,7 +56,7 @@ namespace Balltze::Engine {
          * Fix tag dependencies
          * @param dependency_resolver Dependency resolver
          */
-        void fix_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver);
+        void fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver);
     };
     static_assert(sizeof(Tag) == 0x20);
 
