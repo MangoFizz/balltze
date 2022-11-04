@@ -340,7 +340,9 @@ namespace Balltze {
                             case TAG_CLASS_MODEL_ANIMATIONS: {
                                 auto *model_animations = reinterpret_cast<ModelAnimations *>(new_tag.data);
                                 for(std::size_t i = 0; i < model_animations->animations.count; i++) {
-                                    
+                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].frame_info);
+                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].default_data);
+                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].frame_data);
                                 }
                                 break;
                             }
