@@ -55,7 +55,7 @@ namespace Balltze::Engine {
     using namespace TagDefinitions;
 
     template <typename T>
-    static void displace_offset(T &value, std::int32_t offset) {
+    static void displace_offset(T &value, std::ptrdiff_t offset) {
         if(value == nullptr) {
             return;
         }
@@ -66,18 +66,18 @@ namespace Balltze::Engine {
 
 for structName, _ in pairs(structs) do
     indent(1)
-    add("static void displace_offsets(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::int32_t disp); \n");
+    add("static void displace_offsets(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::ptrdiff_t disp, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver); \n");
 end
 
 add("\n")
 
 for structName, struct in pairs(structs) do
     indent(1)
-    add("static void displace_offsets(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::int32_t disp) {\n")
+    add("static void displace_offsets(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::ptrdiff_t disp, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver) {\n")
     
     if(struct.inherits and structs[definitionParser.snakeCaseToCamelCase(struct.inherits)]) then
         indent(2)
-        add("displace_offsets(static_cast<" .. definitionParser.snakeCaseToCamelCase(struct.inherits) .. " &>(" .. structName .. "), disp);\n")
+        add("displace_offsets(static_cast<" .. definitionParser.snakeCaseToCamelCase(struct.inherits) .. " &>(" .. structName .. "), disp, external_data_offset_resolver);\n")
     end
     
     for _, field in ipairs(struct.fields) do
@@ -91,7 +91,7 @@ for structName, struct in pairs(structs) do
                 indent(3)
                 add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
                 indent(4)
-                add("displace_offsets(" .. fieldAccess .. ".offset[i], disp);\n")
+                add("displace_offsets(" .. fieldAccess .. ".offset[i], disp, external_data_offset_resolver);\n")
                 indent(3)
                 add("}\n")
             end
@@ -99,14 +99,24 @@ for structName, struct in pairs(structs) do
             add("}\n")
         elseif(field.type == "TagDataOffset") then
             indent(2)
-            add("if(!" .. fieldAccess .. ".external) { \n")
+            add("if(" .. fieldAccess .. ".external) { \n")
+            indent(3)
+            add("if(external_data_offset_resolver.has_value()) {\n")
+            indent(4)
+            add(fieldAccess .. ".file_offset = " .. "external_data_offset_resolver.value()(" .. fieldAccess .. ".file_offset);\n")
+            indent(3)
+            add("}\n")
+            indent(2)
+            add("}\n")
+            indent(2)
+            add("else {\n")
             indent(3)
             add("displace_offset(" .. fieldAccess .. ".pointer, disp);\n")
             indent(2)
             add("}\n")
         elseif(structs[definitionParser.snakeCaseToCamelCase(field.type)]) then
             indent(2)
-            add("displace_offsets(" .. fieldAccess .. ", disp);\n")
+            add("displace_offsets(" .. fieldAccess .. ", disp, external_data_offset_resolver);\n")
         end
     end
     indent(1)
@@ -114,8 +124,8 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    void Tag::rebase_offsets(std::byte *new_data_address) {
-        auto offset_displacement = reinterpret_cast<std::int32_t>(new_data_address - this->data);
+    void Tag::fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver) {
+        std::ptrdiff_t offset_disp = reinterpret_cast<std::int32_t>(new_data_address - this->data);
 
         this->data = new_data_address;
 
@@ -132,7 +142,7 @@ for _, file in ipairs(files) do
         add("auto &tag_data = *reinterpret_cast<TagDefinitions::" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(this->data); \n")
         if(structs[definitionParser.snakeCaseToCamelCase(definitionName)]) then
             indent(4)
-            add("displace_offsets(tag_data, offset_displacement); \n")
+            add("displace_offsets(tag_data, offset_disp, external_data_offset_resolver); \n")
         end
         indent(4)
         add("break; \n")

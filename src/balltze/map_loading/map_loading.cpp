@@ -180,6 +180,7 @@ namespace Balltze {
                             TAG_CLASS_BITMAP,
                             TAG_CLASS_UNICODE_STRING_LIST,
                             TAG_CLASS_SOUND,
+                            TAG_CLASS_SOUND_LOOPING,
                             TAG_CLASS_FONT,
                             TAG_CLASS_UI_WIDGET_DEFINITION,
                             TAG_CLASS_GBXMODEL,
@@ -199,7 +200,32 @@ namespace Balltze {
                             TAG_CLASS_POINT_PHYSICS,
                             TAG_CLASS_DECAL,
                             TAG_CLASS_PARTICLE,
-                            TAG_CLASS_MATERIAL_EFFECTS
+                            TAG_CLASS_MATERIAL_EFFECTS,
+                            TAG_CLASS_TAG_COLLECTION,
+                            TAG_CLASS_UI_WIDGET_COLLECTION,
+                            TAG_CLASS_UNIT_HUD_INTERFACE,
+                            TAG_CLASS_WEAPON_HUD_INTERFACE,
+                            TAG_CLASS_GRENADE_HUD_INTERFACE,
+                            TAG_CLASS_HUD_NUMBER,
+                            TAG_CLASS_HUD_MESSAGE_TEXT,
+                            TAG_CLASS_HUD_GLOBALS,
+                            TAG_CLASS_INPUT_DEVICE_DEFAULTS,
+                            TAG_CLASS_VIRTUAL_KEYBOARD,
+                            TAG_CLASS_MULTIPLAYER_SCENARIO_DESCRIPTION,
+                            TAG_CLASS_SHADER_TRANSPARENT_PLASMA,
+                            TAG_CLASS_CAMERA_TRACK,
+                            TAG_CLASS_DIALOGUE,
+                            TAG_CLASS_WEAPON,
+                            TAG_CLASS_PROJECTILE,
+                            TAG_CLASS_EQUIPMENT,
+                            TAG_CLASS_LIGHT_VOLUME,
+                            TAG_CLASS_CONTRAIL,
+                            TAG_CLASS_SHADER_TRANSPARENT_METER,
+                            TAG_CLASS_ACTOR_VARIANT,
+                            TAG_CLASS_SHADER_TRANSPARENT_GLASS,
+                            TAG_CLASS_FLAG,
+                            TAG_CLASS_BIPED,
+                            TAG_CLASS_ANTENNA
                         };
 
                         for(auto &i : supportedTags) {
@@ -222,7 +248,7 @@ namespace Balltze {
                     std::function<TagHandle *(Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagHandle * {
 
                         #define TRANSLATE_ADDRESS(x) ({ \
-                            decltype(x) pointer = static_cast<decltype(x)>(0); \
+                            auto pointer = static_cast<decltype(x)>(0); \
                             if(reinterpret_cast<void *>(x) != nullptr) { \
                                 pointer = reinterpret_cast<decltype(x)>(reinterpret_cast<std::byte *>(x) - tag_data_base_address_disp); \
                             } \
@@ -248,15 +274,14 @@ namespace Balltze {
                             return nullptr;
                         }
 
-                        // Check if tag already exists in main map... or maybe not
-                        if(tag->indexed) {
-                            char *tag_path = tag->path;
-                            tag_path = TRANSLATE_ADDRESS(tag_path);
-                            auto *indexed_tag = get_tag(tag_path, tag->primary_class);
-                            if(indexed_tag) {
-                                return &indexed_tag->id;
-                            }
-                        }
+                        // if(tag->indexed) {
+                        //     char *tag_path = tag->path;
+                        //     tag_path = TRANSLATE_ADDRESS(tag_path);
+                        //     auto *indexed_tag = get_tag(tag_path, tag->primary_class);
+                        //     if(indexed_tag) {
+                        //         return &indexed_tag->id;
+                        //     }
+                        // }
 
                         // Check if we've already loaded this tag
                         if(tag_id_map.find(tag->id) != tag_id_map.end()) {
@@ -280,7 +305,10 @@ namespace Balltze {
                             return &new_tag.id; 
                         }
 
-                        new_tag.rebase_offsets(TRANSLATE_ADDRESS(new_tag.data));
+
+                        new_tag.fix_data_offsets(TRANSLATE_ADDRESS(new_tag.data), [&](std::uint32_t offset) -> std::uint32_t {
+                            return new_tag.indexed ? offset : offset + data_base_offset;
+                        });
 
                         new_tag.fix_dependencies([&](TagDependency tag_dependency) -> TagDependency {
                             if(tag_dependency.tag_id != -1) {
@@ -298,20 +326,6 @@ namespace Balltze {
                                 if(bitmap->bitmap_data.count > 0) {
                                     for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
                                         bitmap->bitmap_data.offset[j].pixel_data_offset += data_base_offset; 
-                                    }
-                                }
-                                break;
-                            }
-
-                            case TAG_CLASS_SOUND: {
-                                auto *sound = reinterpret_cast<Sound *>(new_tag.data);
-                                for(std::size_t i = 0; i < sound->pitch_ranges.count; i++) {
-                                    auto &pitch_range = sound->pitch_ranges.offset[i];
-                                    for(std::size_t j = 0; j < pitch_range.permutations.count; j++) {
-                                        auto &permutation = pitch_range.permutations.offset[j];
-                                        TRANSLATE_DATA_OFFSET(permutation.samples);
-                                        TRANSLATE_DATA_OFFSET(permutation.mouth_data);
-                                        TRANSLATE_DATA_OFFSET(permutation.subtitle_data);
                                     }
                                 }
                                 break;
@@ -337,16 +351,6 @@ namespace Balltze {
                                 break;
                             }
 
-                            case TAG_CLASS_MODEL_ANIMATIONS: {
-                                auto *model_animations = reinterpret_cast<ModelAnimations *>(new_tag.data);
-                                for(std::size_t i = 0; i < model_animations->animations.count; i++) {
-                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].frame_info);
-                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].default_data);
-                                    TRANSLATE_DATA_OFFSET(model_animations->animations.offset[i].frame_data);
-                                }
-                                break;
-                            }
-
                             default: {
                                 break;
                             }
@@ -358,10 +362,6 @@ namespace Balltze {
                     for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
                         auto *tag = tag_array_raw + i;
                         switch(tag->primary_class) {
-                            case TAG_CLASS_SCENARIO:
-                            case TAG_CLASS_SCENARIO_STRUCTURE_BSP:
-                                continue;
-
                             default:
                                 load_tag(tag, false);
                         }

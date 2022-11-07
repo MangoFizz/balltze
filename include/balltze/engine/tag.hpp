@@ -5,6 +5,7 @@
 
 #include <string>
 #include <functional>
+#include <optional>
 #include <cstring>
 #include <cstddef>
 
@@ -47,10 +48,11 @@ namespace Balltze::Engine {
         PADDING(0x4);
 
         /**
-         * Rebase tag offsets to a new data address 
-         * @param new_data_address New data address for tag data
+         * Fix tag offsets with a new data address 
+         * @param new_data_address              New data address for tag data
+         * @param external_data_offset_resolver Function to resolve external data offsets
          */
-        void rebase_offsets(std::byte *new_data_address);
+        void fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
 
         /**
          * Fix tag dependencies
