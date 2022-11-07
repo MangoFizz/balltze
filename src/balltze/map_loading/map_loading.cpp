@@ -302,6 +302,10 @@ namespace Balltze {
 
                         // if current tag are indexed or if tags are already fixed, we can continue
                         if(tag->indexed) {
+                            if(new_tag.primary_class == TAG_CLASS_SOUND) {
+                                new_tag.data = TRANSLATE_ADDRESS(new_tag.data);
+                            }
+
                             return &new_tag.id; 
                         }
 
