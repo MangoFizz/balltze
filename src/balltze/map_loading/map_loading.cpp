@@ -176,93 +176,20 @@ namespace Balltze {
                     std::map<TagHandle, TagHandle> tag_id_map; 
 
                     auto is_supported_tag = [](TagClassInt tag_class) {
-                        static TagClassInt supportedTags[] = {
-                            TAG_CLASS_ACTOR_VARIANT,
-                            TAG_CLASS_ACTOR,
-                            TAG_CLASS_ANTENNA,
-                            TAG_CLASS_BIPED,
-                            TAG_CLASS_BITMAP,
-                            TAG_CLASS_CAMERA_TRACK,
-                            TAG_CLASS_COLOR_TABLE,
-                            TAG_CLASS_CONTINUOUS_DAMAGE_EFFECT,
-                            TAG_CLASS_CONTRAIL,
-                            TAG_CLASS_DAMAGE_EFFECT,
-                            TAG_CLASS_DECAL,
-                            TAG_CLASS_DETAIL_OBJECT_COLLECTION,
-                            TAG_CLASS_DEVICE_CONTROL,
-                            TAG_CLASS_DEVICE_LIGHT_FIXTURE,
-                            TAG_CLASS_DEVICE_MACHINE,
-                            TAG_CLASS_DEVICE,
-                            TAG_CLASS_DIALOGUE,
-                            TAG_CLASS_EFFECT,
-                            TAG_CLASS_EQUIPMENT,
-                            TAG_CLASS_FLAG,
-                            TAG_CLASS_FOG,
-                            TAG_CLASS_FONT,
-                            TAG_CLASS_GARBAGE,
-                            TAG_CLASS_GBXMODEL,
-                            // TAG_CLASS_GLOBALS,
-                            TAG_CLASS_GLOW,
-                            TAG_CLASS_GRENADE_HUD_INTERFACE,
-                            // TAG_CLASS_HUD_GLOBALS,
-                            TAG_CLASS_HUD_MESSAGE_TEXT,
-                            TAG_CLASS_HUD_NUMBER,
-                            TAG_CLASS_INPUT_DEVICE_DEFAULTS,
-                            TAG_CLASS_ITEM_COLLECTION,
-                            TAG_CLASS_ITEM,
-                            TAG_CLASS_LENS_FLARE,
-                            TAG_CLASS_LIGHT_VOLUME,
-                            TAG_CLASS_LIGHT,
-                            TAG_CLASS_LIGHTNING,
-                            TAG_CLASS_MATERIAL_EFFECTS,
-                            // TAG_CLASS_METER,
-                            TAG_CLASS_MODEL_ANIMATIONS,
-                            TAG_CLASS_MODEL_COLLISION_GEOMETRY,
-                            TAG_CLASS_MULTIPLAYER_SCENARIO_DESCRIPTION,
-                            TAG_CLASS_PARTICLE_SYSTEM,
-                            TAG_CLASS_PARTICLE,
-                            TAG_CLASS_PHYSICS,
-                            TAG_CLASS_PLACEHOLDER,
-                            TAG_CLASS_POINT_PHYSICS,
-                            TAG_CLASS_PREFERENCES_NETWORK_GAME,
-                            TAG_CLASS_PROJECTILE,
-                            // TAG_CLASS_SCENARIO_STRUCTURE_BSP,
-                            // TAG_CLASS_SCENARIO,
-                            TAG_CLASS_SCENERY,
-                            TAG_CLASS_SHADER_ENVIRONMENT,
-                            TAG_CLASS_SHADER_MODEL,
-                            TAG_CLASS_SHADER_TRANSPARENT_CHICAGO,
-                            TAG_CLASS_SHADER_TRANSPARENT_CHICAGO_EXTENDED,
-                            TAG_CLASS_SHADER_TRANSPARENT_GLASS,
-                            TAG_CLASS_SHADER_TRANSPARENT_METER,
-                            TAG_CLASS_SHADER_TRANSPARENT_PLASMA,
-                            TAG_CLASS_SHADER_TRANSPARENT_WATER,
-                            TAG_CLASS_SKY,
-                            TAG_CLASS_SOUND_ENVIRONMENT,
-                            TAG_CLASS_SOUND_LOOPING,
-                            TAG_CLASS_SOUND_SCENERY,
-                            TAG_CLASS_SOUND,
-                            TAG_CLASS_STRING_LIST,
-                            TAG_CLASS_TAG_COLLECTION,
-                            TAG_CLASS_UI_WIDGET_COLLECTION,
-                            TAG_CLASS_UI_WIDGET_DEFINITION,
-                            TAG_CLASS_UNICODE_STRING_LIST,
-                            TAG_CLASS_UNIT_HUD_INTERFACE,
-                            TAG_CLASS_UNIT,
-                            TAG_CLASS_VEHICLE,
-                            TAG_CLASS_VIRTUAL_KEYBOARD,
-                            TAG_CLASS_WEAPON,
-                            TAG_CLASS_WEAPON_HUD_INTERFACE,
-                            TAG_CLASS_WEATHER_PARTICLE_SYSTEM,
-                            TAG_CLASS_WIND
+                        static TagClassInt unsupportedTags[] = {
+                            TAG_CLASS_GLOBALS,
+                            TAG_CLASS_HUD_GLOBALS,
+                            TAG_CLASS_METER,
+                            TAG_CLASS_SCENARIO_STRUCTURE_BSP,
+                            TAG_CLASS_SCENARIO,
                         };
 
-                        for(auto &i : supportedTags) {
+                        for(auto &i : unsupportedTags) {
                             if(i == tag_class) {
-                                return true;
+                                return false;
                             }
                         }
-                        return false;
+                        return true;
                     };
 
                     auto get_tag_from_secondary_map = [&map_tag_data_header, &tag_array_raw](TagHandle tag_handle) -> Tag * {
