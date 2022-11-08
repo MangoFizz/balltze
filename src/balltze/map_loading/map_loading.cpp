@@ -177,55 +177,84 @@ namespace Balltze {
 
                     auto is_supported_tag = [](TagClassInt tag_class) {
                         static TagClassInt supportedTags[] = {
+                            TAG_CLASS_ACTOR_VARIANT,
+                            TAG_CLASS_ACTOR,
+                            TAG_CLASS_ANTENNA,
+                            TAG_CLASS_BIPED,
                             TAG_CLASS_BITMAP,
-                            TAG_CLASS_UNICODE_STRING_LIST,
-                            TAG_CLASS_SOUND,
-                            TAG_CLASS_SOUND_LOOPING,
+                            TAG_CLASS_CAMERA_TRACK,
+                            TAG_CLASS_COLOR_TABLE,
+                            TAG_CLASS_CONTINUOUS_DAMAGE_EFFECT,
+                            TAG_CLASS_CONTRAIL,
+                            TAG_CLASS_DAMAGE_EFFECT,
+                            TAG_CLASS_DECAL,
+                            TAG_CLASS_DETAIL_OBJECT_COLLECTION,
+                            TAG_CLASS_DEVICE_CONTROL,
+                            TAG_CLASS_DEVICE_LIGHT_FIXTURE,
+                            TAG_CLASS_DEVICE_MACHINE,
+                            TAG_CLASS_DEVICE,
+                            TAG_CLASS_DIALOGUE,
+                            TAG_CLASS_EFFECT,
+                            TAG_CLASS_EQUIPMENT,
+                            TAG_CLASS_FLAG,
+                            TAG_CLASS_FOG,
                             TAG_CLASS_FONT,
-                            TAG_CLASS_UI_WIDGET_DEFINITION,
+                            TAG_CLASS_GARBAGE,
                             TAG_CLASS_GBXMODEL,
+                            // TAG_CLASS_GLOBALS,
+                            TAG_CLASS_GLOW,
+                            TAG_CLASS_GRENADE_HUD_INTERFACE,
+                            // TAG_CLASS_HUD_GLOBALS,
+                            TAG_CLASS_HUD_MESSAGE_TEXT,
+                            TAG_CLASS_HUD_NUMBER,
+                            TAG_CLASS_INPUT_DEVICE_DEFAULTS,
+                            TAG_CLASS_ITEM_COLLECTION,
+                            TAG_CLASS_ITEM,
+                            TAG_CLASS_LENS_FLARE,
+                            TAG_CLASS_LIGHT_VOLUME,
+                            TAG_CLASS_LIGHT,
+                            TAG_CLASS_LIGHTNING,
+                            TAG_CLASS_MATERIAL_EFFECTS,
+                            // TAG_CLASS_METER,
+                            TAG_CLASS_MODEL_ANIMATIONS,
+                            TAG_CLASS_MODEL_COLLISION_GEOMETRY,
+                            TAG_CLASS_MULTIPLAYER_SCENARIO_DESCRIPTION,
+                            TAG_CLASS_PARTICLE_SYSTEM,
+                            TAG_CLASS_PARTICLE,
+                            TAG_CLASS_PHYSICS,
+                            TAG_CLASS_PLACEHOLDER,
+                            TAG_CLASS_POINT_PHYSICS,
+                            TAG_CLASS_PREFERENCES_NETWORK_GAME,
+                            TAG_CLASS_PROJECTILE,
+                            // TAG_CLASS_SCENARIO_STRUCTURE_BSP,
+                            // TAG_CLASS_SCENARIO,
+                            TAG_CLASS_SCENERY,
+                            TAG_CLASS_SHADER_ENVIRONMENT,
                             TAG_CLASS_SHADER_MODEL,
                             TAG_CLASS_SHADER_TRANSPARENT_CHICAGO,
                             TAG_CLASS_SHADER_TRANSPARENT_CHICAGO_EXTENDED,
-                            TAG_CLASS_SHADER_TRANSPARENT_GENERIC,
-                            TAG_CLASS_MODEL_ANIMATIONS,
-                            TAG_CLASS_SCENERY,
-                            TAG_CLASS_MODEL_COLLISION_GEOMETRY,
-                            TAG_CLASS_PHYSICS,
-                            TAG_CLASS_EFFECT,
-                            TAG_CLASS_DAMAGE_EFFECT,
-                            TAG_CLASS_LIGHT,
-                            TAG_CLASS_LENS_FLARE,
-                            TAG_CLASS_PARTICLE_SYSTEM,
-                            TAG_CLASS_POINT_PHYSICS,
-                            TAG_CLASS_DECAL,
-                            TAG_CLASS_PARTICLE,
-                            TAG_CLASS_MATERIAL_EFFECTS,
+                            TAG_CLASS_SHADER_TRANSPARENT_GLASS,
+                            TAG_CLASS_SHADER_TRANSPARENT_METER,
+                            TAG_CLASS_SHADER_TRANSPARENT_PLASMA,
+                            TAG_CLASS_SHADER_TRANSPARENT_WATER,
+                            TAG_CLASS_SKY,
+                            TAG_CLASS_SOUND_ENVIRONMENT,
+                            TAG_CLASS_SOUND_LOOPING,
+                            TAG_CLASS_SOUND_SCENERY,
+                            TAG_CLASS_SOUND,
+                            TAG_CLASS_STRING_LIST,
                             TAG_CLASS_TAG_COLLECTION,
                             TAG_CLASS_UI_WIDGET_COLLECTION,
+                            TAG_CLASS_UI_WIDGET_DEFINITION,
+                            TAG_CLASS_UNICODE_STRING_LIST,
                             TAG_CLASS_UNIT_HUD_INTERFACE,
-                            TAG_CLASS_WEAPON_HUD_INTERFACE,
-                            TAG_CLASS_GRENADE_HUD_INTERFACE,
-                            TAG_CLASS_HUD_NUMBER,
-                            TAG_CLASS_HUD_MESSAGE_TEXT,
-                            TAG_CLASS_HUD_GLOBALS,
-                            TAG_CLASS_INPUT_DEVICE_DEFAULTS,
+                            TAG_CLASS_UNIT,
+                            TAG_CLASS_VEHICLE,
                             TAG_CLASS_VIRTUAL_KEYBOARD,
-                            TAG_CLASS_MULTIPLAYER_SCENARIO_DESCRIPTION,
-                            TAG_CLASS_SHADER_TRANSPARENT_PLASMA,
-                            TAG_CLASS_CAMERA_TRACK,
-                            TAG_CLASS_DIALOGUE,
                             TAG_CLASS_WEAPON,
-                            TAG_CLASS_PROJECTILE,
-                            TAG_CLASS_EQUIPMENT,
-                            TAG_CLASS_LIGHT_VOLUME,
-                            TAG_CLASS_CONTRAIL,
-                            TAG_CLASS_SHADER_TRANSPARENT_METER,
-                            TAG_CLASS_ACTOR_VARIANT,
-                            TAG_CLASS_SHADER_TRANSPARENT_GLASS,
-                            TAG_CLASS_FLAG,
-                            TAG_CLASS_BIPED,
-                            TAG_CLASS_ANTENNA
+                            TAG_CLASS_WEAPON_HUD_INTERFACE,
+                            TAG_CLASS_WEATHER_PARTICLE_SYSTEM,
+                            TAG_CLASS_WIND
                         };
 
                         for(auto &i : supportedTags) {
@@ -267,21 +296,12 @@ namespace Balltze {
                                 char error[2048];
                                 char *tag_path = tag->path;
                                 tag_path = TRANSLATE_ADDRESS(tag_path);
-                                std::snprintf(error, sizeof(error), "Loading tag %s from map %s is not supported", tag_path, map.name.c_str());
+                                std::snprintf(error, sizeof(error), "Loading tag %s (%.*s) from map %s is not supported", tag_path, 4, reinterpret_cast<char *>(&tag->primary_class), map.name.c_str());
                                 MessageBoxA(nullptr, error, "Error", MB_OK);
                                 std::exit(EXIT_FAILURE);
                             }
                             return nullptr;
                         }
-
-                        // if(tag->indexed) {
-                        //     char *tag_path = tag->path;
-                        //     tag_path = TRANSLATE_ADDRESS(tag_path);
-                        //     auto *indexed_tag = get_tag(tag_path, tag->primary_class);
-                        //     if(indexed_tag) {
-                        //         return &indexed_tag->id;
-                        //     }
-                        // }
 
                         // Check if we've already loaded this tag
                         if(tag_id_map.find(tag->id) != tag_id_map.end()) {
@@ -308,7 +328,6 @@ namespace Balltze {
 
                             return &new_tag.id; 
                         }
-
 
                         new_tag.fix_data_offsets(TRANSLATE_ADDRESS(new_tag.data), [&](std::uint32_t offset) -> std::uint32_t {
                             return new_tag.indexed ? offset : offset + data_base_offset;
@@ -364,11 +383,7 @@ namespace Balltze {
                     };
 
                     for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
-                        auto *tag = tag_array_raw + i;
-                        switch(tag->primary_class) {
-                            default:
-                                load_tag(tag, false);
-                        }
+                        load_tag(tag_array_raw + i, false);
                     }
                 }
 
