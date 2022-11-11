@@ -28,12 +28,12 @@ namespace Balltze::Engine {
 
         ElementHandle() = default;
 
-        static ElementHandle null_id() noexcept {
+        static ElementHandle null() noexcept {
             return { 0xFFFFFFFF };
         }
 
         bool is_null() const noexcept {
-            return *this == null_id();
+            return *this == null();
         }
 
         bool operator==(const ElementHandle &other) const noexcept {

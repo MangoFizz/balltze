@@ -105,6 +105,177 @@ namespace Balltze {
         return map_tag_data;
     }
 
+    static void load_tag_data() noexcept {
+        auto &tag_data_header = get_tag_data_header();
+        auto data_base_offset = 0;
+        auto model_data_base_offset = 0;
+        
+        // Allocate buffer for maps tag data
+        auto tag_data_buffer_size = std::transform_reduce(loaded_maps.begin(), loaded_maps.end(), 0, std::plus<>(), std::mem_fn(LoadedMap::tag_data_size));
+        tag_data = std::make_unique<std::byte[]>(tag_data_buffer_size);
+
+        for(auto &map : loaded_maps) {
+            auto map_tag_data_header = map.tag_data_header();
+            auto *map_tag_data = read_tag_data(map);
+
+            if(!map.secondary) {
+                std::size_t cursor = 0;
+                
+                tag_data_header = map_tag_data_header;
+                cursor += sizeof(TagDataHeader);
+
+                // tag array
+                auto *tag_array_raw = reinterpret_cast<Tag *>(map_tag_data + cursor);
+                tag_array = std::vector<Tag>(tag_array_raw, tag_array_raw + tag_data_header.tag_count);
+                tag_data_header.tag_array = tag_array.data();
+                cursor += sizeof(Tag) * tag_data_header.tag_count;
+
+                // rest of tag data
+                std::memcpy(get_tag_data_address() + cursor, map_tag_data + cursor, map.header.tag_data_size - cursor);
+            }
+            else {
+                std::map<TagHandle, TagHandle> tags_directory;
+                auto tag_array_raw = reinterpret_cast<Tag *>(map_tag_data + sizeof(TagDataHeader));
+                auto tag_data_base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(map_tag_data);
+
+                auto is_supported_tag = [](TagClassInt tag_class) {
+                    static TagClassInt unsupportedTags[] = {
+                        TAG_CLASS_GLOBALS,
+                        TAG_CLASS_HUD_GLOBALS,
+                        TAG_CLASS_METER,
+                        TAG_CLASS_SCENARIO_STRUCTURE_BSP,
+                        TAG_CLASS_SCENARIO,
+                    };
+
+                    for(auto &i : unsupportedTags) {
+                        if(i == tag_class) {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                auto get_tag_from_secondary_map = [&map_tag_data_header, &tag_array_raw](TagHandle tag_handle) -> Tag * {
+                    for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
+                        if(tag_array_raw[i].id == tag_handle) {
+                            return &tag_array_raw[i];
+                        }
+                    }
+                    return nullptr;
+                };
+
+                auto translate_address = [&tag_data_base_address_disp](auto address) {
+                    if(address != 0) {
+                        address = reinterpret_cast<decltype(address)>(reinterpret_cast<std::uint32_t>(address) - tag_data_base_address_disp);
+                    }
+                    return address;
+                };
+
+                std::function<TagHandle (Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagHandle {
+                    // Check if current tag class is supported
+                    if(!is_supported_tag(tag->primary_class)) {
+                        if(required) {
+                            show_error_box("Unsupported tag class %.*s", 4, reinterpret_cast<char *>(&tag->primary_class));
+                            std::exit(EXIT_FAILURE);
+                        }
+                        return TagHandle::null();
+                    }
+
+                    // Check if we've already loaded this tag
+                    if(tags_directory.find(tag->id) != tags_directory.end()) {
+                        return tags_directory.find(tag->id)->second;
+                    }
+
+                    // Set up new tag entry
+                    auto &new_tag_entry = tag_array.emplace_back(*tag);
+                    new_tag_entry.path = translate_address(new_tag_entry.path);
+                    new_tag_entry.id.index.index = tag_data_header.tag_count;
+                    new_tag_entry.id.index.id = tag_data_header.tags_literal + tag_data_header.tag_count;
+                    tags_directory.insert_or_assign(tag->id, new_tag_entry.id);
+                    tag_data_header.tag_count++;
+
+                    // if current tag are indexed or if tags are already fixed, we can continue
+                    if(tag->indexed) {
+                        if(new_tag_entry.primary_class == TAG_CLASS_SOUND) {
+                            new_tag_entry.data = translate_address(new_tag_entry.data);
+                        }
+                        return new_tag_entry.id;
+                    }
+
+                    // There's no data loaded to fix... yet
+                    if(tag->primary_class == TAG_CLASS_SCENARIO_STRUCTURE_BSP) {
+                        return new_tag_entry.id;
+                    }
+
+                    new_tag_entry.fix_data_offsets(translate_address(new_tag_entry.data), [&](std::uint32_t offset) -> std::uint32_t {
+                        return new_tag_entry.indexed ? offset : offset + data_base_offset;
+                    });
+
+                    new_tag_entry.fix_dependencies([&](TagDependency tag_dependency) -> TagDependency {
+                        if(tag_dependency.tag_id != -1) {
+                            tag_dependency.path_pointer = translate_address(tag_dependency.path_pointer); 
+                            auto *dependency = get_tag_from_secondary_map(tag_dependency.tag_id);
+                            auto tag_handle = load_tag(dependency, true); 
+                            tag_dependency.tag_id = tag_handle; 
+                        }
+                        return tag_dependency;
+                    });
+
+                    switch(new_tag_entry.primary_class) {
+                        case TAG_CLASS_BITMAP: {
+                            Bitmap *bitmap = reinterpret_cast<Bitmap *>(new_tag_entry.data);
+                            if(bitmap->bitmap_data.count > 0) {
+                                for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
+                                    bitmap->bitmap_data.offset[j].pixel_data_offset += data_base_offset; 
+                                }
+                            }
+                            break;
+                        }
+
+                        case TAG_CLASS_FONT: {
+                            auto *font = reinterpret_cast<Font *>(new_tag_entry.data);
+                            for(std::size_t i = 0; i < font->characters.count; i++) {
+                                font->characters.offset[i].pixels_offset += data_base_offset;
+                            }
+                            break;
+                        }
+
+                        case TAG_CLASS_GBXMODEL: {
+                            auto *gbxmodel = reinterpret_cast<Gbxmodel *>(new_tag_entry.data);
+                            for(std::size_t i = 0; i < gbxmodel->geometries.count; i++) {
+                                for(std::size_t j = 0; j < gbxmodel->geometries.offset[i].parts.count; j++) {
+                                    gbxmodel->geometries.offset[i].parts.offset[j].vertex_offset += model_data_base_offset;
+                                    gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset += model_data_base_offset - tag_data_header.vertex_size + map_tag_data_header.vertex_size;
+                                    gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset_2 += model_data_base_offset - tag_data_header.vertex_size + map_tag_data_header.vertex_size;
+                                }                               
+                            }
+                            break;
+                        }
+
+                        default: {
+                            break;
+                        }
+                    }
+
+                    return new_tag_entry.id;
+                };
+
+                // Reserve space for tags to AVOID REALLOCATIONS
+                tag_array.reserve(tag_array.size() + map_tag_data_header.tag_count);
+
+                // Load tags
+                for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
+                    load_tag(tag_array_raw + i, false);
+                }
+            }
+
+            data_base_offset += std::filesystem::file_size(map.path);
+            model_data_base_offset += map_tag_data_header.model_data_size;
+        }
+
+        tag_data_header.tag_array = tag_array.data();
+    }
+
     void append_map(const char *map_name) {
         for(auto &map : loaded_maps) {
             if(map.name == map_name) {
@@ -124,239 +295,56 @@ namespace Balltze {
     extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {        
         std::size_t file_offset = overlapped->Offset;
         
-        // Get the name
+        // Get the name of the file we're reading from
         char file_path_chars[MAX_PATH + 1] = {};
         GetFinalPathNameByHandle(file_descriptor, file_path_chars, sizeof(file_path_chars) - 1, VOLUME_NAME_NONE);
         auto file_path = std::filesystem::path(file_path_chars);
         
-        // If it's not a .map file, forget about it
-        char file_path_extension[5] = {};
-        std::snprintf(file_path_extension, sizeof(file_path_extension), "%s", file_path.extension().string().c_str());
-        for(auto &fpe : file_path_extension) {
-            fpe = std::tolower(fpe);
-        }
-        
-        // Get the resource file if possible
+        // Check if we're reading from the current loaded map
+        auto &current_map = loaded_maps.front();
         auto file_name = file_path.filename();
-        if(file_name.stem().string() != loaded_maps[0].name) {
+        if(file_name.stem().string() != current_map.name) {
             return 0;
         }
         
+        // Load tag data
         if(output == get_tag_data_address()) {
-            auto &tag_data_header = get_tag_data_header();
-            auto data_base_offset = 0;
-            auto model_data_base_offset = 0;
-            
-            // Allocate buffer for maps tag data
-            auto tag_data_buffer_size = std::transform_reduce(loaded_maps.begin(), loaded_maps.end(), 0, std::plus<>(), std::mem_fn(LoadedMap::tag_data_size));
-            tag_data = std::make_unique<std::byte[]>(tag_data_buffer_size);
-
-            for(auto &map : loaded_maps) {
-                auto map_tag_data_header = map.tag_data_header();
-                auto *map_tag_data = read_tag_data(map);
-
-                if(!map.secondary) {
-                    std::size_t cursor = 0;
-                    
-                    tag_data_header = map_tag_data_header;
-                    cursor += sizeof(TagDataHeader);
-
-                    // tag array
-                    auto *tag_array_raw = reinterpret_cast<Tag *>(map_tag_data + cursor);
-                    tag_array = std::vector<Tag>(tag_array_raw, tag_array_raw + tag_data_header.tag_count);
-                    tag_data_header.tag_array = tag_array.data();
-                    cursor += sizeof(Tag) * tag_data_header.tag_count;
-
-                    // rest of tag data
-                    std::memcpy(output + cursor, map_tag_data + cursor, size - cursor);
-                }
-                else {
-                    auto tag_array_raw = reinterpret_cast<Tag *>(map_tag_data + sizeof(TagDataHeader));
-                    auto tag_data_base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(map_tag_data);
-                    std::map<TagHandle, TagHandle> tag_id_map; 
-
-                    auto is_supported_tag = [](TagClassInt tag_class) {
-                        static TagClassInt unsupportedTags[] = {
-                            TAG_CLASS_GLOBALS,
-                            TAG_CLASS_HUD_GLOBALS,
-                            TAG_CLASS_METER,
-                            TAG_CLASS_SCENARIO_STRUCTURE_BSP,
-                            TAG_CLASS_SCENARIO,
-                        };
-
-                        for(auto &i : unsupportedTags) {
-                            if(i == tag_class) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    };
-
-                    auto get_tag_from_secondary_map = [&map_tag_data_header, &tag_array_raw](TagHandle tag_handle) -> Tag * {
-                        for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
-                            if(tag_array_raw[i].id == tag_handle) {
-                                return &tag_array_raw[i];
-                            }
-                        }
-                        return nullptr;
-                    };
-
-                    std::function<TagHandle *(Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagHandle * {
-
-                        #define TRANSLATE_ADDRESS(x) ({ \
-                            auto pointer = static_cast<decltype(x)>(0); \
-                            if(reinterpret_cast<void *>(x) != nullptr) { \
-                                pointer = reinterpret_cast<decltype(x)>(reinterpret_cast<std::byte *>(x) - tag_data_base_address_disp); \
-                            } \
-                            pointer; \
-                        })
-
-                        #define TRANSLATE_DATA_OFFSET(tag_data_offset) { \
-                            if(tag_data_offset.file_offset != 0) { \
-                                tag_data_offset.file_offset += data_base_offset; \
-                            } \
-                        }
-
-                        // Check if current tag class is supported
-                        if(!is_supported_tag(tag->primary_class)) {
-                            if(required) {
-                                char error[2048];
-                                char *tag_path = tag->path;
-                                tag_path = TRANSLATE_ADDRESS(tag_path);
-                                std::snprintf(error, sizeof(error), "Loading tag %s (%.*s) from map %s is not supported", tag_path, 4, reinterpret_cast<char *>(&tag->primary_class), map.name.c_str());
-                                MessageBoxA(nullptr, error, "Error", MB_OK);
-                                std::exit(EXIT_FAILURE);
-                            }
-                            return nullptr;
-                        }
-
-                        // Check if we've already loaded this tag
-                        if(tag_id_map.find(tag->id) != tag_id_map.end()) {
-                            return &tag_id_map.find(tag->id)->second;
-                        }
-
-                        // Set up new tag entry
-                        auto &new_tag = tag_array.emplace_back(*tag);
-                        auto &previous_tag = tag_array[tag_array.size() - 2];
-                        new_tag.id.index.index = previous_tag.id.index.index + 1;
-                        new_tag.id.index.id = previous_tag.id.index.id + 1;
-                        new_tag.path = TRANSLATE_ADDRESS(new_tag.path);
-
-                        tag_data_header.tag_count++;
-
-                        // Map new tag
-                        tag_id_map.insert_or_assign(tag->id, new_tag.id);
-
-                        // if current tag are indexed or if tags are already fixed, we can continue
-                        if(tag->indexed) {
-                            if(new_tag.primary_class == TAG_CLASS_SOUND) {
-                                new_tag.data = TRANSLATE_ADDRESS(new_tag.data);
-                            }
-
-                            return &new_tag.id; 
-                        }
-
-                        new_tag.fix_data_offsets(TRANSLATE_ADDRESS(new_tag.data), [&](std::uint32_t offset) -> std::uint32_t {
-                            return new_tag.indexed ? offset : offset + data_base_offset;
-                        });
-
-                        new_tag.fix_dependencies([&](TagDependency tag_dependency) -> TagDependency {
-                            if(tag_dependency.tag_id != -1) {
-                                tag_dependency.path_pointer = TRANSLATE_ADDRESS(tag_dependency.path_pointer); 
-                                auto *dependency = get_tag_from_secondary_map(tag_dependency.tag_id);
-                                auto *tag_id = load_tag(dependency, true); 
-                                tag_dependency.tag_id = tag_id->whole_id; 
-                            } 
-                            return tag_dependency;
-                        });
-
-                        switch(new_tag.primary_class) {
-                            case TAG_CLASS_BITMAP: {
-                                Bitmap *bitmap = reinterpret_cast<Bitmap *>(new_tag.data);
-                                if(bitmap->bitmap_data.count > 0) {
-                                    for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
-                                        bitmap->bitmap_data.offset[j].pixel_data_offset += data_base_offset; 
-                                    }
-                                }
-                                break;
-                            }
-
-                            case TAG_CLASS_FONT: {
-                                auto *font = reinterpret_cast<Font *>(new_tag.data);
-                                for(std::size_t i = 0; i < font->characters.count; i++) {
-                                    font->characters.offset[i].pixels_offset += data_base_offset;
-                                }
-                                break;
-                            }
-
-                            case TAG_CLASS_GBXMODEL: {
-                                auto *gbxmodel = reinterpret_cast<Gbxmodel *>(new_tag.data);
-                                for(std::size_t i = 0; i < gbxmodel->geometries.count; i++) {
-                                    for(std::size_t j = 0; j < gbxmodel->geometries.offset[i].parts.count; j++) {
-                                        gbxmodel->geometries.offset[i].parts.offset[j].vertex_offset += model_data_base_offset;
-                                        gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset += model_data_base_offset - tag_data_header.vertex_size + map_tag_data_header.vertex_size;
-                                        gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset_2 += model_data_base_offset - tag_data_header.vertex_size + map_tag_data_header.vertex_size;
-                                    }                               
-                                }
-                                break;
-                            }
-
-                            default: {
-                                break;
-                            }
-                        }
-
-                        return &new_tag.id;
-                    };
-
-                    for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
-                        load_tag(tag_array_raw + i, false);
-                    }
-                }
-
-                data_base_offset += std::filesystem::file_size(map.path);
-                model_data_base_offset += map_tag_data_header.model_data_size;
-            }
-
-            tag_data_header.tag_array = tag_array.data();
-
+            load_tag_data();
             return 1;
         }
 
-        auto &map = loaded_maps.front();
-        auto file_size = std::filesystem::file_size(map.path);
-        if(file_offset > file_size) {
-            auto acc = file_size; 
+        // Look for secondary maps offset displacement
+        auto offset_acc = std::filesystem::file_size(current_map.path);
+        if(file_offset > offset_acc) {
             for(auto &map : loaded_maps) {
                 if(!map.secondary) {
                     continue;
                 }
-                
-                file_size = std::filesystem::file_size(map.path);
-                if(file_offset <= acc + file_size) {
+                auto map_file_size = std::filesystem::file_size(map.path);
+                if(file_offset <= offset_acc + map_file_size) {
                     std::FILE *file = std::fopen(map.path.string().c_str(), "rb");
-                    std::fseek(file, file_offset - acc, SEEK_SET);
+                    std::fseek(file, file_offset - offset_acc, SEEK_SET);
                     std::fread(output, 1, size, file);
                     std::fclose(file);
                     return 1;
                 }
-                acc += file_size;
+                offset_acc += map_file_size;
             }
 
-            char error[256];
-            std::snprintf(error, sizeof(error), "File offset %zu is out of bounds", file_offset);
-            MessageBoxA(nullptr, error, "Error", MB_OK);
-            std::exit(EXIT_FAILURE);
+            show_error_box("File offset %zu is out of bounds!", file_offset);
         }
 
-        if(loaded_maps[0].tag_data_header().model_data_file_offset == file_offset && loaded_maps[0].tag_data_header().model_data_size == size) {
+        // Read model data for all maps
+        auto tag_data_header = current_map.tag_data_header();
+        if(tag_data_header.model_data_file_offset == file_offset && tag_data_header.model_data_size == size) {
             std::size_t buffer_cursor = 0;
             for(auto &map : loaded_maps) {
+                auto map_tag_data_header = map.tag_data_header();
                 std::FILE *file = std::fopen(map.path.string().c_str(), "rb");
-                std::fseek(file, map.tag_data_header().model_data_file_offset, SEEK_SET);
-                std::fread(output + buffer_cursor, 1, map.tag_data_header().model_data_size, file);
+                std::fseek(file, map_tag_data_header.model_data_file_offset, SEEK_SET);
+                std::fread(output + buffer_cursor, 1, map_tag_data_header.model_data_size, file);
                 std::fclose(file);
-                buffer_cursor += map.tag_data_header().model_data_size;
+                buffer_cursor += map_tag_data_header.model_data_size;
             }
             return 1;
         }
