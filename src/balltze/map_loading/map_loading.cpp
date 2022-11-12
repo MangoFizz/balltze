@@ -54,20 +54,13 @@ namespace Balltze {
     static std::deque<LoadedMap> loaded_maps;
     static std::vector<Tag> tag_array;
     static std::unique_ptr<std::byte[]> tag_data;
+    static std::size_t tag_data_buffer_size;
     static std::size_t tag_data_cursor = 0;
 
     extern "C" {
         void map_loading_asm() noexcept;
         void on_read_map_file_data_asm() noexcept;
         void on_model_data_buffer_alloc_asm() noexcept;
-    }
-
-    static void reallocate_tag_data_buffer() noexcept {
-        std::size_t buffer_size = 0;
-        for(auto &map : loaded_maps) {
-            buffer_size += map.header.tag_data_size;
-        }
-        tag_data = std::make_unique<std::byte[]>(buffer_size);
     }
 
     static std::byte *read_tag_data(LoadedMap &map) noexcept {
@@ -98,8 +91,12 @@ namespace Balltze {
         auto model_data_base_offset = 0;
         
         // Allocate buffer for maps tag data
-        auto tag_data_buffer_size = std::transform_reduce(loaded_maps.begin(), loaded_maps.end(), 0, std::plus<>(), std::mem_fn(LoadedMap::tag_data_size));
-        tag_data = std::make_unique<std::byte[]>(tag_data_buffer_size);
+        auto buffer_size = std::transform_reduce(loaded_maps.begin(), loaded_maps.end(), 0, std::plus<>(), std::mem_fn(LoadedMap::tag_data_size));
+        if(buffer_size > tag_data_buffer_size) {
+            tag_data = std::make_unique<std::byte[]>(buffer_size);
+            tag_data_buffer_size = buffer_size;
+        }
+        tag_data_cursor = 0;
 
         for(auto &map : loaded_maps) {
             const auto &map_tag_data_header = map.tag_data_header;
@@ -263,7 +260,7 @@ namespace Balltze {
         tag_data_header.tag_array = tag_array.data();
     }
 
-    void append_map(const char *map_name) {
+    void append_map_tags(const char *map_name) {
         for(auto &map : loaded_maps) {
             if(map.name == map_name) {
                 return;
@@ -273,10 +270,12 @@ namespace Balltze {
     }
 
     extern "C" void do_map_loading_handling(char *map_path, const char *map_name) {
+        // Clear loaded maps and load the map we're loading
         loaded_maps.clear();
-        tag_data_cursor = 0;
         loaded_maps.emplace_front(map_name, false);
-        append_map("ui");
+
+        // Load ui.map tags by default
+        append_map_tags("ui");
     }
 
     extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {        
