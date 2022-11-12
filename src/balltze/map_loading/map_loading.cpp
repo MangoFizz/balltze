@@ -30,24 +30,11 @@ namespace Balltze {
         std::string name;
         std::filesystem::path path;
         MapHeader header;
+        TagDataHeader tag_data_header;
         bool secondary = false;
 
         std::size_t tag_data_size() {
             return this->header.tag_data_size;
-        }
-
-        TagDataHeader tag_data_header() noexcept {
-            std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
-            MapHeader header = this->header;
-            TagDataHeader tag_data_header;
-
-            // Read tag data header
-            std::fseek(file, header.tag_data_offset, SEEK_SET);
-            std::fread(&tag_data_header, sizeof(TagDataHeader), 1, file);
-
-            std::fclose(file);
-
-            return tag_data_header;
         }
 
         LoadedMap(const std::string name, bool secondary) noexcept {
@@ -55,12 +42,12 @@ namespace Balltze {
             this->path = path_for_map_local(name.c_str());
             this->secondary = secondary;
 
-            // Read map header
+            // Read map data
             std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
-            MapHeader header;
             std::fread(&header, sizeof(MapHeader), 1, file);
+            std::fseek(file, header.tag_data_offset, SEEK_SET);
+            std::fread(&tag_data_header, sizeof(TagDataHeader), 1, file);
             std::fclose(file);
-            this->header = header;
         }
     };
 
@@ -115,8 +102,8 @@ namespace Balltze {
         tag_data = std::make_unique<std::byte[]>(tag_data_buffer_size);
 
         for(auto &map : loaded_maps) {
-            auto map_tag_data_header = map.tag_data_header();
-            auto *map_tag_data = read_tag_data(map);
+            const auto &map_tag_data_header = map.tag_data_header;
+            const auto *map_tag_data = read_tag_data(map);
 
             if(!map.secondary) {
                 std::size_t cursor = 0;
@@ -125,7 +112,7 @@ namespace Balltze {
                 cursor += sizeof(TagDataHeader);
 
                 // tag array
-                auto *tag_array_raw = reinterpret_cast<Tag *>(map_tag_data + cursor);
+                auto *tag_array_raw = reinterpret_cast<const Tag *>(map_tag_data + cursor);
                 tag_array = std::vector<Tag>(tag_array_raw, tag_array_raw + tag_data_header.tag_count);
                 tag_data_header.tag_array = tag_array.data();
                 cursor += sizeof(Tag) * tag_data_header.tag_count;
@@ -135,7 +122,7 @@ namespace Balltze {
             }
             else {
                 std::map<TagHandle, TagHandle> tags_directory;
-                auto tag_array_raw = reinterpret_cast<Tag *>(map_tag_data + sizeof(TagDataHeader));
+                auto tag_array_raw = reinterpret_cast<const Tag *>(map_tag_data + sizeof(TagDataHeader));
                 auto tag_data_base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(map_tag_data);
 
                 auto is_supported_tag = [](TagClassInt tag_class) {
@@ -155,7 +142,7 @@ namespace Balltze {
                     return true;
                 };
 
-                auto get_tag_from_secondary_map = [&map_tag_data_header, &tag_array_raw](TagHandle tag_handle) -> Tag * {
+                auto get_tag_from_secondary_map = [&map_tag_data_header, &tag_array_raw](TagHandle tag_handle) -> const Tag * {
                     for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
                         if(tag_array_raw[i].id == tag_handle) {
                             return &tag_array_raw[i];
@@ -171,11 +158,11 @@ namespace Balltze {
                     return address;
                 };
 
-                std::function<TagHandle (Tag *, bool)> load_tag = [&](Tag *tag, bool required) -> TagHandle {
+                std::function<TagHandle (const Tag *, bool)> load_tag = [&](const Tag *tag, bool required) -> TagHandle {
                     // Check if current tag class is supported
                     if(!is_supported_tag(tag->primary_class)) {
                         if(required) {
-                            show_error_box("Unsupported tag class %.*s", 4, reinterpret_cast<char *>(&tag->primary_class));
+                            show_error_box("Unsupported tag class %.*s", 4, reinterpret_cast<const char *>(&tag->primary_class));
                             std::exit(EXIT_FAILURE);
                         }
                         return TagHandle::null();
@@ -335,11 +322,11 @@ namespace Balltze {
         }
 
         // Read model data for all maps
-        auto tag_data_header = current_map.tag_data_header();
+        const auto &tag_data_header = current_map.tag_data_header;
         if(tag_data_header.model_data_file_offset == file_offset && tag_data_header.model_data_size == size) {
             std::size_t buffer_cursor = 0;
             for(auto &map : loaded_maps) {
-                auto map_tag_data_header = map.tag_data_header();
+                const auto map_tag_data_header = map.tag_data_header;
                 std::FILE *file = std::fopen(map.path.string().c_str(), "rb");
                 std::fseek(file, map_tag_data_header.model_data_file_offset, SEEK_SET);
                 std::fread(output + buffer_cursor, 1, map_tag_data_header.model_data_size, file);
@@ -357,7 +344,7 @@ namespace Balltze {
             if(!map.secondary) {
                 continue;
             }
-            *size += map.tag_data_header().model_data_size;
+            *size += map.tag_data_header.model_data_size;
         }
     }
 
