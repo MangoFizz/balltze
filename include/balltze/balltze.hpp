@@ -4,6 +4,7 @@
 #define BALLTZE_HPP
 
 #include <memory>
+#include <balltze/event/event.hpp>
 #include <balltze/memory/signature.hpp>
 
 namespace Balltze {
@@ -42,7 +43,7 @@ namespace Balltze {
             static Balltze *m_instance;
 
             /** Balltze instance */
-            static void first_tick() noexcept;
+            static void first_tick(TickEvent const &context);
     };
 }
 

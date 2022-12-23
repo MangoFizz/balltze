@@ -3,6 +3,7 @@
 #ifndef BALLTZE__OUTPUT___MESSAGE_BOX_HPP
 #define BALLTZE__OUTPUT___MESSAGE_BOX_HPP
 
+#include <windows.h>
 #include <cstdio>
 
 namespace Balltze {

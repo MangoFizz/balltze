@@ -23,10 +23,11 @@ add_library(balltze MODULE
     src/balltze/engine/path.cpp
     src/balltze/engine/tag.cpp
     src/balltze/engine/tag.S
+    src/balltze/engine/tick.cpp
     src/balltze/engine/version.cpp
     src/balltze/engine/window.cpp
-    src/balltze/events/map_load.cpp
-    src/balltze/events/tick.cpp
+    src/balltze/event/event.cpp
+    src/balltze/event/tick.cpp
     src/balltze/map_loading/laa.cpp
     src/balltze/map_loading/map.cpp
     src/balltze/map_loading/map_loading.cpp
