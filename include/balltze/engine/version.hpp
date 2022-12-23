@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__ENGINE__VERSION_HPP
-#define BALLTZE__ENGINE__VERSION_HPP
+#ifndef BALLTZE_API__ENGINE__VERSION_HPP
+#define BALLTZE_API__ENGINE__VERSION_HPP
+
+#include "../api.hpp"
 
 namespace Balltze::Engine {
     /** Engine used */
-    enum EngineType {
+    enum EngineEdition {
         /** Custom Edition */
         ENGINE_TYPE_CUSTOM_EDITION,
 
@@ -20,7 +22,7 @@ namespace Balltze::Engine {
      * Get the game engine used
      * @return game engine used
      */
-    EngineType get_engine_type();
+    BALLTZE_API EngineEdition get_engine_edition();
 }
 
 #endif

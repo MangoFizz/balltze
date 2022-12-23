@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__ENGINE__WINDOW_HPP
-#define BALLTZE__ENGINE__WINDOW_HPP
+#ifndef BALLTZE_API__ENGINE__WINDOW_HPP
+#define BALLTZE_API__ENGINE__WINDOW_HPP
 
 #include <windows.h>
+#include "../api.hpp"
 
 namespace Balltze::Engine {
     /**
@@ -31,15 +32,15 @@ namespace Balltze::Engine {
         
         /** Halo's small icon resource. */
         HICON hIconSm;
-        
-        /**
-         * Get the window globals.
-         * @return      Reference to the window globals.
-         * @exception   If window globals signature was not found... yet
-         */
-        static WindowGlobals *get();
     };
     static_assert(sizeof(WindowGlobals) == 0x18);
+
+    /**
+     * Get the window globals.
+     * @return      Reference to the window globals.
+     * @exception   If window globals signature was not found... yet
+     */
+    BALLTZE_API WindowGlobals *get_window_globals();
 }
 
 #endif

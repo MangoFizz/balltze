@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <optional>
 #include <filesystem>
-#include "../engine/map.hpp"
+#include <balltze/engine/map.hpp>
 
 namespace Balltze {
     struct MapEntry {

@@ -4,9 +4,9 @@
 #include <list>
 #include <any>
 #include <stdexcept>
-#include <balltze/event/event.hpp>
+#include <balltze/event.hpp>
 
-namespace Balltze {
+namespace Balltze::Event {
     template <typename T>
     struct EventListener {
         inline static std::size_t next_handle = 0;

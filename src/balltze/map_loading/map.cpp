@@ -2,12 +2,12 @@
 
 #include <cstring>
 
-#include <balltze/config/ini.hpp>
 #include <balltze/engine/map.hpp>
 #include <balltze/engine/path.hpp>
 #include <balltze/engine/version.hpp>
-#include <balltze/balltze.hpp>
-#include <balltze/map_loading/map.hpp>
+#include "../config/ini.hpp"
+#include "../balltze.hpp"
+#include "map.hpp"
 
 namespace Balltze {
     using namespace Engine;

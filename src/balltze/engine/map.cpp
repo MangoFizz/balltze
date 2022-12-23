@@ -1,30 +1,29 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <optional>
-#include <balltze/balltze.hpp>
 #include <balltze/engine/map.hpp>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/tag_class.hpp>
 #include <balltze/engine/version.hpp>
+#include <balltze/memory.hpp>
 
 namespace Balltze::Engine {
     MapHeader &get_map_header() noexcept {
-        static auto *map_header_sig = Balltze::get().signature_manager().get("map_header");
+        static auto *map_header_sig = Memory::get_signature("map_header");
         static auto *map_header = *reinterpret_cast<MapHeader **>(map_header_sig->data());
         return *map_header;
     }
 
     MapHeaderDemo &get_demo_map_header() noexcept {
-        static auto *map_header_sig = Balltze::get().signature_manager().get("map_header");
+        static auto *map_header_sig = Memory::get_signature("map_header");
         static auto *map_header = reinterpret_cast<MapHeaderDemo *>(map_header_sig->data()) - 0x2C0;
         return *map_header;
     }
 
     MapList &get_map_list() noexcept {
-        static auto &sig_manager = Balltze::get().signature_manager();
         static std::optional<MapList *> all_map_indices;
         if(!all_map_indices.has_value()) {
-            static auto *map_list_sig = sig_manager.get("map_index");
+            static auto *map_list_sig = Memory::get_signature("map_index");
             all_map_indices = *reinterpret_cast<MapList **>(map_list_sig->data());
         }
         return **all_map_indices;
@@ -210,6 +209,6 @@ namespace Balltze::Engine {
     }
     
     const char *get_map_name() noexcept {
-        return get_engine_type() == ENGINE_TYPE_DEMO ? get_demo_map_header().name : get_map_header().name;
+        return get_engine_edition() == ENGINE_TYPE_DEMO ? get_demo_map_header().name : get_map_header().name;
     }
 }

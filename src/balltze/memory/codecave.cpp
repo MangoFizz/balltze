@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <windows.h>
-#include <balltze/memory/codecave.hpp>
+#include "codecave.hpp"
 
 namespace Balltze::Memory {
     

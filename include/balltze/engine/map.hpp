@@ -6,7 +6,8 @@
 #include <cstdint>
 #include <cstddef>
 
-#include <balltze/memory/struct.hpp>
+#include "../memory.hpp"
+#include "../api.hpp"
 
 namespace Balltze::Engine {
     /** This is the type of map */
@@ -75,7 +76,7 @@ namespace Balltze::Engine {
         /** Must be equal to 0x666F6F74 */
         std::uint32_t foot;
         
-        bool is_valid() const noexcept;
+        BALLTZE_API bool is_valid() const noexcept;
     };
     static_assert(sizeof(MapHeader) == 0x800);
 
@@ -125,7 +126,7 @@ namespace Balltze::Engine {
 
         PADDING(0x20C);
         
-        bool is_valid() const noexcept;
+        BALLTZE_API bool is_valid() const noexcept;
     };
     static_assert(sizeof(MapHeaderDemo) == 0x800);
 
@@ -133,8 +134,8 @@ namespace Balltze::Engine {
      * Get the map header of the currently loaded map
      * @return reference to the map header of the currently loaded map
      */
-    MapHeader &get_map_header() noexcept;
-    MapHeaderDemo &get_demo_map_header() noexcept;
+    BALLTZE_API MapHeader &get_map_header() noexcept;
+    BALLTZE_API MapHeaderDemo &get_demo_map_header() noexcept;
 
     /** This is an individual map index */
     struct MapIndex {
@@ -170,18 +171,18 @@ namespace Balltze::Engine {
      * Get the map list
      * @return map list
      */
-    MapList &get_map_list() noexcept;
+    BALLTZE_API MapList &get_map_list() noexcept;
 
     /**
      * Get whether the map is protected
      */
-    bool map_is_protected() noexcept;
+    BALLTZE_API bool map_is_protected() noexcept;
     
     /**
      * Get the name of the currently loaded map
      * @return name of currently loaded map
      */
-    const char *get_map_name() noexcept;
+    BALLTZE_API const char *get_map_name() noexcept;
 }
 
 #endif

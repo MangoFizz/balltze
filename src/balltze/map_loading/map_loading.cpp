@@ -12,15 +12,12 @@
 #include <balltze/engine/map.hpp>
 #include <balltze/engine/path.hpp>
 #include <balltze/engine/tag.hpp>
-#include <balltze/engine/tag_definitions/definitions.hpp>
-#include <balltze/engine/tag_class.hpp>
-#include <balltze/map_loading/laa.hpp>
-#include <balltze/memory/hook.hpp>
-#include <balltze/memory/memory.hpp>
-#include <balltze/output/message_box.hpp>
-#include <balltze/balltze.hpp>
-#include <balltze/map_loading/map.hpp>
-#include <balltze/map_loading/map_loading.hpp>
+#include <balltze/output.hpp>
+#include <balltze/memory.hpp>
+#include "../memory/hook.hpp"
+#include "laa.hpp"
+#include "map.hpp"
+#include "map_loading.hpp"
 
 namespace Balltze {
     using namespace Engine;
@@ -348,23 +345,20 @@ namespace Balltze {
     }
 
     void set_up_map_loading() {
-        auto &balltze = Balltze::get();
-        auto &sig_manager = balltze.signature_manager();
-
         // Hook loading normal maps
-        static auto *load_map_path_sig = sig_manager.get("map_load_path");
+        static auto *load_map_path_sig = Memory::get_signature("map_load_path");
         static Memory::Hook load_map_path_hook;
         load_map_path_hook.initialize(load_map_path_sig->data(), reinterpret_cast<void *>(map_loading_asm));
         load_map_path_hook.hook();
 
         // Handle this
-        static auto *read_cache_file_data_sig = sig_manager.get("read_map_file_data");
+        static auto *read_cache_file_data_sig = Memory::get_signature("read_map_file_data");
         static Memory::Hook read_cache_file_data_hook;
         read_cache_file_data_hook.initialize(read_cache_file_data_sig->data(), reinterpret_cast<void *>(on_read_map_file_data_asm));
         read_cache_file_data_hook.hook();
 
         // Hook model data buffer allocation
-        static auto *model_data_buffer_alloc_sig = sig_manager.get("model_data_buffer_alloc");
+        static auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
         static Memory::Hook model_data_buffer_alloc_hook;
         model_data_buffer_alloc_hook.initialize(model_data_buffer_alloc_sig->data(), reinterpret_cast<void *>(on_model_data_buffer_alloc_asm));
         model_data_buffer_alloc_hook.hook();

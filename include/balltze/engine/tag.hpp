@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__ENGINE__TAG_HPP
-#define BALLTZE__ENGINE__TAG_HPP
+#ifndef BALLTZE_API__ENGINE__TAG_HPP
+#define BALLTZE_API__ENGINE__TAG_HPP
 
 #include <string>
 #include <functional>
@@ -9,7 +9,7 @@
 #include <cstring>
 #include <cstddef>
 
-#include "../memory/struct.hpp"
+#include "../memory.hpp"
 #include "data_types.hpp"
 #include "tag_class.hpp"
 #include "tag_definitions/definitions.hpp"
@@ -52,13 +52,13 @@ namespace Balltze::Engine {
          * @param new_data_address              New data address for tag data
          * @param external_data_offset_resolver Function to resolve external data offsets
          */
-        void fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
+        BALLTZE_API void fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
 
         /**
          * Fix tag dependencies
          * @param dependency_resolver Dependency resolver
          */
-        void fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver);
+        BALLTZE_API void fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver);
     };
     static_assert(sizeof(Tag) == 0x20);
 
@@ -102,33 +102,25 @@ namespace Balltze::Engine {
      * Get the tag data address
      * @return tag data address
      */
-    std::byte *get_tag_data_address() noexcept;
+    BALLTZE_API std::byte *get_tag_data_address() noexcept;
 
     inline TagDataHeader &get_tag_data_header() noexcept {
         return *reinterpret_cast<TagDataHeader *>(get_tag_data_address());
     }
 
     /**
-     * Get tag ID
-     * @param  path      path of the tag
-     * @param  tag_class class of the tag
-     * @return           ID of tag
-     */
-    extern "C" TagHandle get_tag_id(const char *path, std::uint32_t tag_class) noexcept;
-
-    /**
      * Get the tag
      * @param  tag_id id of the tag
      * @return        pointer to the tag if found, nullptr if not
      */
-    Tag *get_tag(TagHandle tag_id) noexcept;
+    BALLTZE_API Tag *get_tag(TagHandle tag_id) noexcept;
 
     /**
      * Get the tag
      * @param  tag_index index of the tag
      * @return           pointer to the tag if found, nullptr if not
      */
-    Tag *get_tag(std::size_t tag_index) noexcept;
+    BALLTZE_API Tag *get_tag(std::size_t tag_index) noexcept;
 
     /**
      * Get the tag
@@ -136,7 +128,7 @@ namespace Balltze::Engine {
      * @param  tag_class class of the tag
      * @return           pointer to the tag if found, nullptr if not
      */
-    Tag *get_tag(std::string path, std::uint32_t tag_class) noexcept;
+    BALLTZE_API Tag *get_tag(std::string path, std::uint32_t tag_class) noexcept;
 }
 
 #endif

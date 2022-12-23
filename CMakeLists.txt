@@ -17,6 +17,9 @@ include(lua/code_gen/tag_definitions.cmake)
 # Set include path
 include_directories(include/)
 
+# Define Balltze export macro
+add_definitions(-DBALLTZE_EXPORTS)
+
 add_library(balltze MODULE
     src/balltze/config/ini.cpp
     src/balltze/engine/map.cpp

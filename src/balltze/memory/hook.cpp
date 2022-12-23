@@ -4,9 +4,9 @@
 #include <memory>
 #include <exception>
 #include <windows.h>
-#include <balltze/output/message_box.hpp>
-#include <balltze/memory/memory.hpp>
-#include <balltze/memory/hook.hpp>
+#include <balltze/output.hpp>
+#include <balltze/memory.hpp>
+#include "hook.hpp"
 
 namespace Balltze::Memory {
     /** ASM memes */

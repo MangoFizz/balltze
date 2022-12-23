@@ -40,7 +40,7 @@ local function generateCHeader(tagDefinition)
 #ifndef BALLTZE__ENGINE__TAG_DEFINITION__]] .. definitionName:upper() .. [[_HPP
 #define BALLTZE__ENGINE__TAG_DEFINITION__]] .. definitionName:upper() .. [[_HPP
 
-#include "../../memory/struct.hpp"
+#include "../../memory.hpp"
 #include "../data_types.hpp"
 #include "enum.hpp"
 #include "bitfield.hpp"

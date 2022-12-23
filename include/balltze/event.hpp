@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__EVENT__EVENT_HPP
-#define BALLTZE__EVENT__EVENT_HPP
+#ifndef BALLTZE_API__EVENT_HPP
+#define BALLTZE_API__EVENT_HPP
 
 #include <functional>
+#include "api.hpp"
 
-namespace Balltze {
+namespace Balltze::Event {
     enum EventPriority {
         EVENT_PRIORITY_LOWEST,
         EVENT_PRIORITY_DEFAULT,
@@ -33,13 +34,13 @@ namespace Balltze {
     template <typename T>
     class EventHandler {
     public:
-        static void init();
-        static std::size_t add_listener(NonCancellableEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
-        static std::size_t add_listener_const(NonCancellableConstEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
-        static std::size_t add_listener(CancellableEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
-        static std::size_t add_listener_const(CancellableConstEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
-        static void remove_listener(std::size_t handle);
-        static void dispatch(T &event);
+        BALLTZE_API static void init();
+        BALLTZE_API static std::size_t add_listener(NonCancellableEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
+        BALLTZE_API static std::size_t add_listener_const(NonCancellableConstEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
+        BALLTZE_API static std::size_t add_listener(CancellableEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
+        BALLTZE_API static std::size_t add_listener_const(CancellableConstEventDelegate<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT);
+        BALLTZE_API static void remove_listener(std::size_t handle);
+        BALLTZE_API static void dispatch(T &event);
     };
 
     template <typename T>
@@ -102,8 +103,22 @@ namespace Balltze {
             listener.remove();
         }
     };
+
+    struct TickEventArguments {
+        std::size_t delta_time_ms;
+        std::size_t tick_count;
+    };
+
+    class TickEvent : public EventData<TickEvent> {
+    public:
+        TickEventArguments args;
+
+        static bool cancellable() {
+            return false;
+        }
+
+        TickEvent(EventTime time, TickEventArguments args) : EventData(time, false), args(args) {}
+    };
 }
 
 #endif
-
-#include "tick_event.hpp"

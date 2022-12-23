@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/memory/codefinder.hpp>
+#include "codefinder.hpp"
 #define WIN32_MEAN_AND_LEAN
 #include <windows.h>
 

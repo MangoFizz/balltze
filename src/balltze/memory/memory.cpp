@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <windows.h>
-#include <balltze/memory/memory.hpp>
+#include <balltze/memory.hpp>
 
 namespace Balltze::Memory {
     void write_code(void *pointer, const std::uint16_t *data, std::size_t length) noexcept {

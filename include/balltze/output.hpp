@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__OUTPUT___MESSAGE_BOX_HPP
-#define BALLTZE__OUTPUT___MESSAGE_BOX_HPP
+#ifndef BALLTZE_API__MESSAGE_BOX_HPP
+#define BALLTZE_API__MESSAGE_BOX_HPP
 
 #include <windows.h>
 #include <cstdio>
+#include "api.hpp"
 
 namespace Balltze {
     /**
      * Create a dialog with a given message
      * @param message   Message to display
      */
-    void show_message_box_raw(unsigned int type, const char *message) noexcept;
+    BALLTZE_API void show_message_box_raw(unsigned int type, const char *message) noexcept;
 
     /**
      * Create a dialog with a given message

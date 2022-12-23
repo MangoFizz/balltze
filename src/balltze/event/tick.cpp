@@ -2,11 +2,11 @@
 
 #include <chrono>
 #include <balltze/engine/tick.hpp>
-#include <balltze/memory/hook.hpp>
-#include <balltze/balltze.hpp>
-#include <balltze/event/event.hpp>
+#include <balltze/event.hpp>
+#include <balltze/memory.hpp>
+#include "../memory/hook.hpp"
 
-namespace Balltze {
+namespace Balltze::Event {
     static Memory::Hook tick_event_hook;
     static Memory::Hook tick_event_after_chimera_hook;
     static bool first_tick = true;
@@ -47,9 +47,7 @@ namespace Balltze {
         }
         enabled = true;
 
-        static auto &balltze = Balltze::get();
-        static auto &sig_manager = balltze.signature_manager();
-        static auto *tick_event_sig = sig_manager.get("on_tick");
+        static auto *tick_event_sig = Memory::get_signature("on_tick");
         if(!tick_event_sig) {
             throw std::runtime_error("Could not find signature for tick event");
         }

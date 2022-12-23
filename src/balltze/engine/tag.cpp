@@ -5,10 +5,12 @@
 #include <balltze/engine/tag.hpp>
 
 namespace Balltze::Engine {
+    extern "C" TagHandle get_tag_id(const char *path, std::uint32_t tag_class) noexcept;
+
     std::byte *get_tag_data_address() noexcept {
         static std::optional<std::byte *> address;
         if(!address.has_value()) {
-            switch(get_engine_type()) {
+            switch(get_engine_edition()) {
                 case ENGINE_TYPE_DEMO:
                     address = reinterpret_cast<std::byte *>(0x4BF10000);
                 default:

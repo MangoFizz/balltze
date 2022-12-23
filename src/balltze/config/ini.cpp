@@ -7,8 +7,8 @@
 #include <locale>
 #include <codecvt>
 #include <cstring>
-#include <balltze/output/message_box.hpp>
-#include <balltze/config/ini.hpp>
+#include <balltze/output.hpp>
+#include "ini.hpp"
 
 namespace Balltze {
     #define BOOL_TO_STR(boolean) (boolean ? "true" : "false")

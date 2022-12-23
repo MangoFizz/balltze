@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/map_loading/laa.hpp>
 #include <cstddef>
 #include <windows.h>
+#include "laa.hpp"
 
 namespace Balltze {
     bool current_exe_is_laa_patched() {
