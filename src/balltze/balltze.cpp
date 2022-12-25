@@ -36,7 +36,7 @@ namespace Balltze {
         find_signatures();
         set_up_events();
         set_up_map_loading();
-        firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);
+        //firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);
     }
 }
 
