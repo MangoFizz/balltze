@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <string>
 #include <vector>
+#include <stdexcept>
 #include <cstddef>
 #include "api.hpp"
 
@@ -69,6 +70,30 @@ namespace Balltze::Memory {
      * Fill a code chunk with NOPs
      */
     BALLTZE_API void fill_with_nops(void *address, std::size_t length) noexcept;
+
+    /**
+     * Calculate a 32-bit offset between two pointers.
+     * @param origin        Jump origin.
+     * @param destination   Jump destination.
+     * @return              Offset.
+     */
+    BALLTZE_API std::uint32_t calculate_32bit_offset(const void *origin, const void *destination) noexcept;
+
+    /**
+     * Follow a 32-bit offset.
+     * @param offset    Offset to follow.
+     * @return          Pointer to the offset destination.
+     */
+    BALLTZE_API std::byte *follow_32bit_offset(std::uint32_t *offset) noexcept;
+
+    /**
+     * Follow a 32-bit jump instruction.
+     * @param jmp   Jump instruction.
+     * @return      Pointer to the jump destination.
+     */
+    template<typename T> inline std::byte *follow_32bit_jump(T *jmp) noexcept {
+        return follow_32bit_offset(reinterpret_cast<std::uint32_t *>(reinterpret_cast<std::byte *>(jmp) + 1));
+    }
 
     /**
      * Class for signatures

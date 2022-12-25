@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__CONFIG__INI_HPP
-#define BALLTZE__CONFIG__INI_HPP
-
-/**
- * From Chimera
- * https://github.com/SnowyMouse/chimera/blob/master/src/chimera/config/ini.hpp
- */
+#ifndef BALLTZE_API__CONFIG_HPP
+#define BALLTZE_API__CONFIG_HPP
 
 #include <variant>
 #include <string>
@@ -14,9 +9,14 @@
 #include <utility>
 #include <istream>
 #include <optional>
+#include "api.hpp"
 
-namespace Balltze {
-    class Ini {
+namespace Balltze::Config {
+    /**
+     * From Chimera
+     * https://github.com/SnowyMouse/chimera/blob/master/src/chimera/config/ini.hpp
+     */
+    class BALLTZE_API Ini {
     public:
         /**
          * Get the value by name

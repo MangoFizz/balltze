@@ -35,14 +35,11 @@ add_library(balltze MODULE
     src/balltze/map_loading/map.cpp
     src/balltze/map_loading/map_loading.cpp
     src/balltze/map_loading/map_loading.S
-    src/balltze/memory/codecave.cpp
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp
-    src/balltze/memory/signature.cpp
-    src/balltze/output/message_box.cpp
+    src/balltze/output/messaging.cpp
     src/balltze/balltze.cpp
-    src/balltze/main.cpp
 )
 
 # Set Balltze output properties

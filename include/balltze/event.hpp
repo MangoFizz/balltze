@@ -19,19 +19,19 @@ namespace Balltze::Event {
         EVENT_TIME_AFTER
     };
 
-    template <typename T>
+    template<typename T>
     using NonCancellableEventDelegate = std::function<void(T &)>;
 
-    template <typename T>
+    template<typename T>
     using NonCancellableConstEventDelegate = std::function<void(T const &)>;
 
-    template <typename T>
+    template<typename T>
     using CancellableEventDelegate = std::function<bool(T &)>;
 
-    template <typename T>
+    template<typename T>
     using CancellableConstEventDelegate = std::function<bool(T const &)>;
 
-    template <typename T>
+    template<typename T>
     class EventHandler {
     public:
         BALLTZE_API static void init();
@@ -43,7 +43,7 @@ namespace Balltze::Event {
         BALLTZE_API static void dispatch(T &event);
     };
 
-    template <typename T>
+    template<typename T>
     class EventListenerHandle {
     private:
         std::size_t m_handle;
@@ -61,7 +61,7 @@ namespace Balltze::Event {
         }
     };
 
-    template <typename T>
+    template<typename T>
     class EventData {
     private:
         bool m_cancelled = false;
@@ -69,7 +69,7 @@ namespace Balltze::Event {
     public:
         const EventTime time;
 
-        EventData(EventTime time, bool cancellable) : time(time) {}
+        EventData(EventTime time) : time(time) {}
 
         inline void dispatch() {
             EventHandler<T>::dispatch(*(T *)this);
@@ -103,22 +103,8 @@ namespace Balltze::Event {
             listener.remove();
         }
     };
-
-    struct TickEventArguments {
-        std::size_t delta_time_ms;
-        std::size_t tick_count;
-    };
-
-    class TickEvent : public EventData<TickEvent> {
-    public:
-        TickEventArguments args;
-
-        static bool cancellable() {
-            return false;
-        }
-
-        TickEvent(EventTime time, TickEventArguments args) : EventData(time, false), args(args) {}
-    };
 }
 
 #endif
+
+#include "events/tick.hpp"

@@ -2,11 +2,10 @@
 
 #include <cstring>
 
+#include <balltze/config.hpp>
 #include <balltze/engine/map.hpp>
 #include <balltze/engine/path.hpp>
 #include <balltze/engine/version.hpp>
-#include "../config/ini.hpp"
-#include "../balltze.hpp"
 #include "map.hpp"
 
 namespace Balltze {
@@ -25,8 +24,7 @@ namespace Balltze {
     }
 
     const std::filesystem::path get_map_path() noexcept {
-        static auto &balltze = Balltze::get();
-        static auto &chimera_ini = balltze.chimera_ini();
+        static auto chimera_ini = Config::Ini("chimera.ini");
         static std::optional<std::filesystem::path> path;
 
         if(!path.has_value()) {
@@ -43,8 +41,7 @@ namespace Balltze {
     }
 
     const std::filesystem::path get_download_map_path() noexcept {
-        static auto &balltze = Balltze::get();
-        static auto &chimera_ini = balltze.chimera_ini();
+        static auto chimera_ini = Config::Ini("chimera.ini");
         static std::optional<std::filesystem::path> path;
 
         if(!path.has_value()) {

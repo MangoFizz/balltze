@@ -14,7 +14,7 @@
 #include <balltze/engine/tag.hpp>
 #include <balltze/output.hpp>
 #include <balltze/memory.hpp>
-#include "../memory/hook.hpp"
+#include <balltze/hook.hpp>
 #include "laa.hpp"
 #include "map.hpp"
 #include "map_loading.hpp"
@@ -345,22 +345,13 @@ namespace Balltze {
     }
 
     void set_up_map_loading() {
-        // Hook loading normal maps
-        static auto *load_map_path_sig = Memory::get_signature("map_load_path");
-        static Memory::Hook load_map_path_hook;
-        load_map_path_hook.initialize(load_map_path_sig->data(), reinterpret_cast<void *>(map_loading_asm));
-        load_map_path_hook.hook();
+        auto *load_map_path_sig = Memory::get_signature("map_load_path");
+        auto *load_map_path_hook = Memory::hook_function(load_map_path_sig->data(), map_loading_asm);
 
-        // Handle this
-        static auto *read_cache_file_data_sig = Memory::get_signature("read_map_file_data");
-        static Memory::Hook read_cache_file_data_hook;
-        read_cache_file_data_hook.initialize(read_cache_file_data_sig->data(), reinterpret_cast<void *>(on_read_map_file_data_asm));
-        read_cache_file_data_hook.hook();
+        auto *read_cache_file_data_sig = Memory::get_signature("read_map_file_data");
+        auto *read_cache_file_data_hook = Memory::hook_function(read_cache_file_data_sig->data(), on_read_map_file_data_asm);
 
-        // Hook model data buffer allocation
-        static auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
-        static Memory::Hook model_data_buffer_alloc_hook;
-        model_data_buffer_alloc_hook.initialize(model_data_buffer_alloc_sig->data(), reinterpret_cast<void *>(on_model_data_buffer_alloc_asm));
-        model_data_buffer_alloc_hook.hook();
+        auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
+        auto *model_data_buffer_alloc_hook = Memory::hook_function(model_data_buffer_alloc_sig->data(), on_model_data_buffer_alloc_asm);
     }
 }

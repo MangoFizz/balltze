@@ -1,35 +1,29 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <iostream>
+#include <windows.h>
 #include <balltze/event.hpp>
-#include <balltze/memory.hpp>
 #include <balltze/output.hpp>
-#include "config/ini.hpp"
-#include "event/event.hpp"
 #include "map_loading/map_loading.hpp"
-#include "memory/signature.hpp"
-#include "balltze.hpp"
 
 namespace Balltze {
+    namespace Memory {
+        /**
+         * Find all signatures
+         */
+        void find_signatures();
+    }
+
+    namespace Event {
+        /**
+         * Set up events
+         */
+        void set_up_events();
+    }
+
     using namespace Event;
     using namespace Memory;
 
-    static void first_tick(TickEvent const &context) noexcept;
     static EventListenerHandle<TickEvent> firstTickListener;
-    Balltze *Balltze::m_instance;
-
-    Ini &Balltze::chimera_ini() noexcept {
-        return *m_chimera_ini;
-    }
-
-    Balltze::Balltze() noexcept {
-        m_instance = this;
-        find_signatures();
-        m_chimera_ini = std::make_unique<Ini>("chimera.ini");
-        set_up_map_loading();
-        set_up_events();
-        firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);
-    }
 
     static void first_tick(TickEvent const &context) noexcept {
         show_message_box("[%s] Tick #%d in %d milliseconds", context.time == EVENT_TIME_BEFORE ? "Before" : "After", context.args.tick_count, context.args.delta_time_ms);
@@ -38,7 +32,22 @@ namespace Balltze {
         }
     }
 
-    Balltze &Balltze::get() noexcept {
-        return *m_instance;
+    static void initialize_balltze() noexcept {
+        find_signatures();
+        set_up_events();
+        set_up_map_loading();
+        firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);
     }
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+    switch(fdwReason) {
+        case DLL_PROCESS_ATTACH:
+            Balltze::initialize_balltze();
+            break;
+
+        default:
+            break;
+    }
+    return TRUE;
 }

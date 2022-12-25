@@ -4,11 +4,9 @@
 #include <balltze/engine/tick.hpp>
 #include <balltze/event.hpp>
 #include <balltze/memory.hpp>
-#include "../memory/hook.hpp"
+#include <balltze/hook.hpp>
 
 namespace Balltze::Event {
-    static Memory::Hook tick_event_hook;
-    static Memory::Hook tick_event_after_chimera_hook;
     static bool first_tick = true;
     static std::chrono::time_point<std::chrono::steady_clock> last_tick;
     static std::chrono::milliseconds tick_duration = std::chrono::milliseconds(0);
@@ -51,13 +49,10 @@ namespace Balltze::Event {
         if(!tick_event_sig) {
             throw std::runtime_error("Could not find signature for tick event");
         }
+        auto *tick_event_hook = Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
 
         // Workaround for Chimera hook (NEEDS TO BE FIXED)
-        std::byte *ptr = Memory::Hook::follow_jump(tick_event_sig->data()) + 23;
-        tick_event_after_chimera_hook.initialize(ptr, reinterpret_cast<void *>(tick_event_after_dispatcher));
-        tick_event_after_chimera_hook.hook();
-
-        tick_event_hook.initialize(tick_event_sig->data(), reinterpret_cast<void *>(tick_event_before_dispatcher));
-        tick_event_hook.hook();
+        std::byte *ptr = Memory::follow_32bit_jump(tick_event_sig->data()) + 23;
+        auto *tick_event_after_chimera_hook = Memory::hook_function(ptr, tick_event_after_dispatcher);
     }
 }

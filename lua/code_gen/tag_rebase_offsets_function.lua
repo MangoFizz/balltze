@@ -54,7 +54,7 @@ add([[
 namespace Balltze::Engine {
     using namespace TagDefinitions;
 
-    template <typename T>
+    template<typename T>
     static void displace_offset(T &value, std::ptrdiff_t offset) {
         if(value == nullptr) {
             return;

@@ -7,7 +7,7 @@
 #include <balltze/event.hpp>
 
 namespace Balltze::Event {
-    template <typename T>
+    template<typename T>
     struct EventListener {
         inline static std::size_t next_handle = 0;
         
@@ -55,12 +55,12 @@ namespace Balltze::Event {
         }
     };
 
-    template <typename T>
+    template<typename T>
     static std::list<EventListener<T>> listeners;
 
     static std::any listeners_iterator_aux;
 
-    template <typename T>
+    template<typename T>
     std::size_t EventHandler<T>::add_listener(NonCancellableEventDelegate<T> callback, EventPriority priority) {
         if(T::cancellable()) {
             throw std::invalid_argument("Event is cancellable, use CancellableEventDelegate instead");
@@ -72,7 +72,7 @@ namespace Balltze::Event {
         return listener.handle;
     }
 
-    template <typename T>
+    template<typename T>
     std::size_t EventHandler<T>::add_listener_const(NonCancellableConstEventDelegate<T> callback, EventPriority priority) {
         if(T::cancellable()) {
             throw std::invalid_argument("Event is cancellable, use CancellableEventDelegate instead");
@@ -84,7 +84,7 @@ namespace Balltze::Event {
         return listener.handle;
     }
     
-    template <typename T>
+    template<typename T>
     std::size_t EventHandler<T>::add_listener(CancellableEventDelegate<T> callback, EventPriority priority) {
         if(!T::cancellable()) {
             throw std::invalid_argument("Event is not cancellable, use NonCancellableEventDelegate instead");
@@ -96,7 +96,7 @@ namespace Balltze::Event {
         return listener.handle;
     }
 
-    template <typename T>
+    template<typename T>
     std::size_t EventHandler<T>::add_listener_const(CancellableConstEventDelegate<T> callback, EventPriority priority) {
         if(!T::cancellable()) {
             throw std::invalid_argument("Event is not cancellable, use NonCancellableEventDelegate instead");
@@ -108,7 +108,7 @@ namespace Balltze::Event {
         return listener.handle;
     }
 
-    template <typename T>
+    template<typename T>
     void EventHandler<T>::remove_listener(std::size_t handle) {
         for(auto it = listeners<T>.begin(); it != listeners<T>.end(); ++it) {
             if(it->handle == handle) {
@@ -118,7 +118,7 @@ namespace Balltze::Event {
         }
     }
 
-    template <typename T>
+    template<typename T>
     void EventHandler<T>::dispatch(T &event) {
         auto call_by_priority = [&](EventPriority priority) {
             auto listener = listeners<T>.begin();

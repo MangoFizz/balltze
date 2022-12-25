@@ -8,9 +8,9 @@
 #include <codecvt>
 #include <cstring>
 #include <balltze/output.hpp>
-#include "ini.hpp"
+#include <balltze/config.hpp>
 
-namespace Balltze {
+namespace Balltze::Config {
     #define BOOL_TO_STR(boolean) (boolean ? "true" : "false")
     #define STR_TO_BOOL(str) (std::strcmp(str, "1") == 0 || std::strcmp(str, "true") == 0)
 
@@ -180,7 +180,7 @@ namespace Balltze {
         auto show_error = [&line_number, &data]() {
             // We can't feasibly continue from this without causing undefined behavior. Abort the process after showing an error message.
             char error[1024];
-            std::snprintf(error, sizeof(error), "chimera.INI error (line #%zu):\n\n%s\n\nThis line could not be parsed.\n", line_number, data);
+            std::snprintf(error, sizeof(error), "INI file error (line #%zu):\n\n%s\n\nThis line could not be parsed.\n", line_number, data);
             Balltze::show_error_box("INI error", error);
             std::exit(136);
         };
@@ -212,11 +212,11 @@ namespace Balltze {
             value = std::string(data + equals_offset + 1, line_length - equals_offset - 1);
             // Use ACK (0x06) for replacing invalid chars since it will be rendered as a box character in the error message
             if (!utf8_to_ansi(value, '\x06')){
-                Balltze::show_error_box("INI error", (std::string() + "Failed to decode value of '" + key + "' in chimera.ini.\n\nMake sure the file is encoded using UTF-8.").data());
+                Balltze::show_error_box("INI error", (std::string() + "Failed to decode value of '" + key + "' in INI file.\n\nMake sure the file is encoded using UTF-8.").data());
                 std::exit(136);
             }
             else if (value.find('\x06') != std::string::npos){
-                Balltze::show_error_box("INI error", (std::string() + "Invalid character in the value of '" + key + "' in chimera.ini:\n\n" + value + "\n\nOnly characters your system can encode in ANSI are valid.").data());
+                Balltze::show_error_box("INI error", (std::string() + "Invalid character in the value of '" + key + "' in INI file:\n\n" + value + "\n\nOnly characters your system can encode in ANSI are valid.").data());
                 std::exit(136);
             }
             return std::pair(key, value);
@@ -248,7 +248,7 @@ namespace Balltze {
         std::size_t no = 0;
 
         if(!stream.good()) {
-            Balltze::show_error_box("INI error", "chimera.ini could not be opened.\n\nMake sure it exists and you have permission to it.");
+            Balltze::show_error_box("INI error", "INI file could not be opened.\n\nMake sure it exists and you have permission to it.");
             std::exit(1);
         }
 
