@@ -73,11 +73,21 @@ namespace Balltze::Memory {
 
     /**
      * Calculate a 32-bit offset between two pointers.
-     * @param origin        Jump origin.
-     * @param destination   Jump destination.
+     * @param origin        Offset origin address.
+     * @param destination   Destination address.
      * @return              Offset.
      */
-    BALLTZE_API std::uint32_t calculate_32bit_offset(const void *origin, const void *destination) noexcept;
+    BALLTZE_API std::int32_t calculate_32bit_offset(const void *origin, const void *destination) noexcept;
+
+    /**
+     * Calculate a 32-bit jump to a destination address.
+     * @param origin        Jump origin.
+     * @param destination   Jump destination.
+     * @return              Jump offset
+     */
+    template<typename T1, typename T2> inline std::int32_t calculate_32bit_jump(T1 *jump, const T2 *destination) noexcept {
+        return calculate_32bit_offset(reinterpret_cast<const void *>(reinterpret_cast<std::byte *>(jump) + 5), reinterpret_cast<const void *>(destination));
+    }
 
     /**
      * Follow a 32-bit offset.

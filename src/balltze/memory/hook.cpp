@@ -11,8 +11,11 @@
 namespace Balltze::Memory {
     std::vector<std::unique_ptr<Hook>> hooks;
 
-    std::byte &Codecave::top() const noexcept {
-        return m_data[m_top];
+    std::byte &Codecave::top() const {
+        if(m_top == 0) {
+            throw std::runtime_error("Codecave is empty");
+        }
+        return m_data[m_top - 1];
     }
 
     std::byte *Codecave::data() const noexcept {
@@ -61,18 +64,16 @@ namespace Balltze::Memory {
     }
 
     void Hook::hook() noexcept {
-        if(!m_cave.empty() && m_hooked) {
+        if(m_cave.empty() || m_hooked) {
             return;
         }
         m_hooked = true;
         m_cave.enable_execute_access();
 
         // Overwrite original code with jmp to cave
-        for(std::size_t i = 0; i < m_original_code.size(); i++) {
-            overwrite(m_instruction + i, static_cast<std::byte>(0x90));
-        }
+        fill_with_nops(m_instruction, m_original_code.size());
         overwrite(m_instruction, static_cast<std::byte>(0xE9));
-        overwrite(m_instruction + 1, calculate_32bit_offset(m_instruction, &m_cave.data()[0]));
+        overwrite(m_instruction + 1, calculate_32bit_jump(m_instruction, m_cave.data()));
     }
 
     void Hook::release() noexcept {
@@ -93,7 +94,7 @@ namespace Balltze::Memory {
         }
 
         m_cave.insert(0xE8); // call
-        auto fn_offset = calculate_32bit_offset(reinterpret_cast<const void *>(&m_cave.top()), function);
+        auto fn_offset = calculate_32bit_jump(&m_cave.top(), function);
         m_cave.insert_address(fn_offset);
 
         if(save_result) {
@@ -125,7 +126,7 @@ namespace Balltze::Memory {
 
                     // offset
                     auto original_offset = *reinterpret_cast<const std::uint32_t *>(&instruction[1]);
-                    auto offset = original_offset + calculate_32bit_offset(&m_cave.top(), &instruction[5]);
+                    auto offset = original_offset + calculate_32bit_jump(&m_cave.top(), &instruction[5]);
                     m_cave.insert_address(offset);
                     
                     instruction_size = 5;
@@ -384,7 +385,7 @@ namespace Balltze::Memory {
 
     void Hook::write_cave_return_jmp() noexcept {
         m_cave.insert(0xE9);
-        auto offset = calculate_32bit_offset(&m_cave.top(), m_instruction + m_original_code.size());
+        auto offset = calculate_32bit_jump(&m_cave.top(), m_instruction + m_original_code.size());
         m_cave.insert_address(offset);
     }
 
@@ -397,7 +398,7 @@ namespace Balltze::Memory {
 
         Hook *hook = hooks.emplace_back(std::make_unique<Hook>()).get();
         hook->m_instruction = reinterpret_cast<std::byte *>(instruction);
-        hook->m_skip_original_code = std::make_unique<bool>(true);
+        hook->m_skip_original_code = std::make_unique<bool>(false);
 
         bool skipable_instruction = std::holds_alternative<std::function<bool()>>(function_before);
         if(skipable_instruction) {
@@ -405,22 +406,22 @@ namespace Balltze::Memory {
             if(!function) {
                 throw std::invalid_argument("function_before must be a valid function");
             }
-            hook->write_function_call(function.target<const void *>(), save_registers, true);
+            hook->write_function_call(*reinterpret_cast<void **>(function.target<bool(*)()>()), save_registers, true);
         }
         else {
             auto function = std::get<std::function<void()>>(function_before);
             if(!function) {
                 throw std::invalid_argument("function_before must be a valid function");
             }
-            hook->write_function_call(function.target<const void *>(), save_registers, false);
+            hook->write_function_call(*reinterpret_cast<void **>(function.target<void(*)()>()), save_registers, false);
         }
 
-        // cmp byte ptr [flag], 0
+        // cmp byte ptr [flag], 1
         hook->m_cave.insert(0x80);
         hook->m_cave.insert(0x3D);
         auto flag_address = reinterpret_cast<std::uint32_t>(hook->m_skip_original_code.get());
         hook->m_cave.insert_address(flag_address);
-        hook->m_cave.insert(0); // false
+        hook->m_cave.insert(1);
 
         // je instruction_size
         hook->m_cave.insert(0x74);
@@ -438,10 +439,11 @@ namespace Balltze::Memory {
         jmp_offset = instruction_size;
 
         if(function_after) {
-            hook->write_function_call(function_after.target<const void *>(), save_registers);
+            hook->write_function_call(*reinterpret_cast<void **>(function_after.target<void(*)()>()), save_registers);
         }
 
         hook->write_cave_return_jmp();
+        hook->hook();
         return hook;
     }
 
@@ -460,7 +462,7 @@ namespace Balltze::Memory {
         hook->m_instruction = reinterpret_cast<std::byte *>(instruction);
 
         hook->m_cave.insert(0xE9);
-        hook->m_cave.insert_address(calculate_32bit_offset(&hook->m_cave.top(), function.target<const void *>()));
+        hook->m_cave.insert_address(calculate_32bit_jump(&hook->m_cave.top(), reinterpret_cast<const void *>(function.target<void(*)()>())));
         original_instruction = &hook->m_cave.top() + 1;
 
         std::uint8_t instruction_size;

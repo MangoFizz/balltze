@@ -39,8 +39,8 @@ namespace Balltze::Memory {
         }
     }
 
-    std::uint32_t calculate_32bit_offset(const void *origin, const void *destination) noexcept {
-        auto offset = reinterpret_cast<std::uint32_t>(destination) - reinterpret_cast<std::uint32_t>(origin);
+    std::int32_t calculate_32bit_offset(const void *origin, const void *destination) noexcept {
+        std::int32_t offset = reinterpret_cast<std::uint32_t>(destination) - reinterpret_cast<std::uint32_t>(origin);
         return offset;
     }
 

@@ -49,10 +49,11 @@ namespace Balltze::Event {
         if(!tick_event_sig) {
             throw std::runtime_error("Could not find signature for tick event");
         }
-        auto *tick_event_hook = Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
 
         // Workaround for Chimera hook (NEEDS TO BE FIXED)
         std::byte *ptr = Memory::follow_32bit_jump(tick_event_sig->data()) + 23;
         auto *tick_event_after_chimera_hook = Memory::hook_function(ptr, tick_event_after_dispatcher);
+
+        auto *tick_event_hook = Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
     }
 }

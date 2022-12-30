@@ -55,9 +55,9 @@ namespace Balltze {
     static std::size_t tag_data_cursor = 0;
 
     extern "C" {
-        void map_loading_asm() noexcept;
-        void on_read_map_file_data_asm() noexcept;
-        void on_model_data_buffer_alloc_asm() noexcept;
+        void map_loading_asm();
+        void on_read_map_file_data_asm();
+        void on_model_data_buffer_alloc_asm();
     }
 
     static std::byte *read_tag_data(LoadedMap &map) noexcept {

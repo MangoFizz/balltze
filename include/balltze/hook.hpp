@@ -29,7 +29,7 @@ namespace Balltze::Memory {
         /**
          * Get cave top
          */
-        std::byte &top() const noexcept;
+        std::byte &top() const;
 
         /**
          * Get data
