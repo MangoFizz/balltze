@@ -416,12 +416,12 @@ namespace Balltze::Memory {
             hook->write_function_call(*reinterpret_cast<void **>(function.target<void(*)()>()), save_registers, false);
         }
 
-        // cmp byte ptr [flag], 1
+        // cmp byte ptr [flag], 0
         hook->m_cave.insert(0x80);
         hook->m_cave.insert(0x3D);
         auto flag_address = reinterpret_cast<std::uint32_t>(hook->m_skip_original_code.get());
         hook->m_cave.insert_address(flag_address);
-        hook->m_cave.insert(1);
+        hook->m_cave.insert(0);
 
         // je instruction_size
         hook->m_cave.insert(0x74);
