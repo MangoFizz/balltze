@@ -123,6 +123,7 @@ namespace Balltze::Memory {
     static void find_engine_signatures() {
         auto engine_type = Engine::ENGINE_TYPE_CUSTOM_EDITION;
 
+        FIND_SIGNATURE("halo_path", 0x1, 0, {0xBF, -1, -1, -1, -1, 0xF3, 0xAB, 0xAA, 0xE8});
         FIND_SIGNATURE("tick_counter", 0x1, 0, {0xA1, -1, -1, -1, -1, 0x8B, 0x50, 0x14, 0x8B, 0x48, 0x0C, 0x83, 0xC4, 0x04, 0x42, 0x41, 0x4E, 0x4F});
 
         /** Events */
