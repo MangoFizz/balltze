@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <balltze/event.hpp>
 #include <balltze/output.hpp>
+#include "features/features.hpp"
 #include "map_loading/map_loading.hpp"
 
 namespace Balltze {
@@ -26,17 +27,24 @@ namespace Balltze {
     static EventListenerHandle<TickEvent> firstTickListener;
 
     static void first_tick(TickEvent const &context) noexcept {
-        show_message_box("[%s] Tick #%d in %d milliseconds", context.time == EVENT_TIME_BEFORE ? "Before" : "After", context.args.tick_count, context.args.delta_time_ms);
+        // show_message_box("[%s] Tick #%d in %d milliseconds", context.time == EVENT_TIME_BEFORE ? "Before" : "After", context.args.tick_count, context.args.delta_time_ms);
         if(context.time == EVENT_TIME_AFTER) {
             firstTickListener.remove();
         }
     }
 
     static void initialize_balltze() noexcept {
-        find_signatures();
-        set_up_events();
-        set_up_map_loading();
-        //firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);
+        try {
+            find_signatures();
+            set_up_events();
+            set_up_map_loading();
+            set_up_features();
+        }
+        catch(std::runtime_error &e) {
+            show_message_box("Balltze failed to initialize: %s", e.what());
+            std::terminate();
+        }
+        firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);
     }
 }
 

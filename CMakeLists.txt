@@ -21,16 +21,25 @@ include_directories(include/)
 add_definitions(-DBALLTZE_EXPORTS)
 
 add_library(balltze MODULE
+    src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
+    src/balltze/engine/hud.cpp
+    src/balltze/engine/hud.S
     src/balltze/engine/map.cpp
     src/balltze/engine/path.cpp
+    src/balltze/engine/resolution.cpp
     src/balltze/engine/tag.cpp
     src/balltze/engine/tag.S
     src/balltze/engine/tick.cpp
     src/balltze/engine/version.cpp
+    src/balltze/engine/widget.cpp
+    src/balltze/engine/widget.S
     src/balltze/engine/window.cpp
     src/balltze/event/event.cpp
+    src/balltze/event/hud_hold_to_action_message.cpp
+    src/balltze/event/hud_hold_to_action_message.S
     src/balltze/event/tick.cpp
+    src/balltze/features/hud_button_prompts.cpp
     src/balltze/map_loading/laa.cpp
     src/balltze/map_loading/map.cpp
     src/balltze/map_loading/map_loading.cpp

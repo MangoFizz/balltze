@@ -70,6 +70,7 @@ namespace Balltze::Event {
         const EventTime time;
 
         EventData(EventTime time) : time(time) {}
+        EventData(EventData const &) = delete;
 
         inline void dispatch() {
             EventHandler<T>::dispatch(*(T *)this);
@@ -108,3 +109,4 @@ namespace Balltze::Event {
 #endif
 
 #include "events/tick.hpp"
+#include "events/hud_hold_to_action_message.hpp"

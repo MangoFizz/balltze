@@ -18,7 +18,7 @@ namespace Balltze::Engine {
     /**
      * Tags are the building block of a map
      */
-    struct Tag {
+    struct BALLTZE_API Tag {
         /** Primary tag class; this value is only read for a few tags as well as any indexed tags */
         TagClassInt primary_class;
 
@@ -48,17 +48,27 @@ namespace Balltze::Engine {
         PADDING(0x4);
 
         /**
+         * Get tag data as a specific type
+         * @tparam T Type to get tag data as
+         * @return   Tag data as type T
+         */
+        template<typename T>
+        T *get_data() noexcept {
+            return reinterpret_cast<T *>(this->data);
+        }
+
+        /**
          * Fix tag offsets with a new data address 
          * @param new_data_address              New data address for tag data
          * @param external_data_offset_resolver Function to resolve external data offsets
          */
-        BALLTZE_API void fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
+        void fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
 
         /**
          * Fix tag dependencies
          * @param dependency_resolver Dependency resolver
          */
-        BALLTZE_API void fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver);
+        void fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver);
     };
     static_assert(sizeof(Tag) == 0x20);
 

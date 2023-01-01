@@ -3,15 +3,174 @@
 #ifndef BALLTZE_API__CONFIG_HPP
 #define BALLTZE_API__CONFIG_HPP
 
-#include <variant>
 #include <string>
 #include <vector>
 #include <utility>
 #include <istream>
 #include <optional>
+#include <filesystem>
+#include <nlohmann/json.hpp>
 #include "api.hpp"
 
 namespace Balltze::Config {
+    class BALLTZE_API Config {
+    private:
+        /** Path to the config file */
+        std::filesystem::path filepath;
+
+        /** JSON object for config */
+        nlohmann::json config;
+
+        /** 
+         * Create config file if it doesn't exist 
+         * @throws std::runtime_error if config file cannot be created
+         */
+        void create_file();
+
+        /**
+         * Split key into vector of keys
+         * @param key Dotted key to split
+         * @return Vector of keys
+         */
+        std::vector<std::string> split_key(std::string key);
+        
+    public:
+        /**
+         * Constructor for Config class
+         * @param filepath Path to config file
+         * @throws std::runtime_error if config file cannot be created
+         */
+        Config(std::filesystem::path filepath, bool create = true);
+
+        /**
+         * Destructor for Config class
+         * @throws std::runtime_error if config file cannot be saved
+         */
+        ~Config();
+
+        /**
+         * Load config file
+         * @throws std::runtime_error if config file cannot be loaded
+         */
+        void load();
+
+        /**
+         * Save config file
+         * @throws std::runtime_error if config file cannot be saved
+         */
+        void save();
+
+        /**
+         * Get value from config
+         * @param key Key to get value from
+         * @return Value if key exists, std::nullopt otherwise
+         */
+        std::optional<std::string> get(std::string key);
+
+        /**
+         * Get array from config
+         * @param key Key to get array from
+         * @return Array if key exists, std::nullopt otherwise
+         * @tparam T Type of array
+         */
+        template<typename T>
+        std::optional<std::vector<T>> get_array(std::string key) {
+            auto keys = split_key(key);
+            nlohmann::json *slice = &config;
+            for(std::string key : keys) {
+                if(slice->contains(key)) {
+                    slice = &(*slice)[key];
+                }
+                else {
+                    return std::nullopt;
+                }
+            }
+            if(slice->is_array()) {
+                std::vector<T> array;
+                for(auto &item : *slice) {
+                    array.push_back(item.get<T>());
+                }
+                return std::move(array);
+            }
+            else {
+                return std::nullopt;
+            }
+        }
+
+        /**
+         * Set value in config
+         * @param key Key to set value for
+         * @param value Value to set
+         */
+        void set(std::string key, std::string value);
+
+        /**
+         * Set array in config
+         * @param key Key to set array for
+         * @param array Array to set
+         * @tparam T Type of array
+         */
+        template<typename T>
+        void set_array(std::string key, std::vector<T> array) {
+            auto keys = split_key(key);
+            nlohmann::json *slice = &config;
+            for(std::string key : keys) {
+                if(slice->contains(key)) {
+                    slice = &(*slice)[key];
+                }
+                else {
+                    (*slice)[key] = nlohmann::json::object();
+                    slice = &(*slice)[key];
+                }
+            }
+            *slice = nlohmann::json::array();
+            for(T item : array) {
+                (*slice).push_back(item);
+            }
+        }
+
+        /**
+         * Delete key from config
+         * @param key Key to delete
+         */
+        void remove(std::string key);
+
+        /**
+         * Check if key exists in config
+         * @param key Key to check
+         * @return True if key exists, false otherwise
+         */
+        bool exists(std::string key);
+
+        /**
+         * Add value to array in config
+         * @param key Key to add value to
+         * @param value Value to add
+         * @tparam T Type of value
+         */
+        template<typename T>
+        void add_array_value(std::string key, T value) {
+            auto keys = split_key(key);
+            nlohmann::json *slice = &config;
+            for(std::string key : keys) {
+                if(slice->contains(key)) {
+                    slice = &(*slice)[key];
+                }
+                else {
+                    (*slice)[key] = nlohmann::json::object();
+                    slice = &(*slice)[key];
+                }
+            }
+            if(slice->is_array()) {
+                (*slice).push_back(value);
+            }
+            else {
+                *slice = nlohmann::json::array();
+                (*slice).push_back(value);
+            }
+        }
+    };
+
     /**
      * From Chimera
      * https://github.com/SnowyMouse/chimera/blob/master/src/chimera/config/ini.hpp

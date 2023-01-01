@@ -103,6 +103,15 @@ namespace Balltze::Engine {
 		float red;
 		float green;
 		float blue;
+
+		ColorARGBInt to_int() const noexcept {
+			return {
+				static_cast<std::uint8_t>(this->blue * 255.0F),
+				static_cast<std::uint8_t>(this->green * 255.0F),
+				static_cast<std::uint8_t>(this->red * 255.0F),
+				static_cast<std::uint8_t>(this->alpha * 255.0F)
+			};
+		}
 	};
     static_assert(sizeof(ColorARGB) == 0x10);
 
