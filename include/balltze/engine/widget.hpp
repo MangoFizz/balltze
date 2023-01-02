@@ -65,6 +65,12 @@ namespace Balltze::Engine {
         }
     };
 
+    enum InputDevice {
+        INPUT_DEVICE_KEYBOARD = 1,
+        INPUT_DEVICE_MOUSE,
+        INPUT_DEVICE_GAMEPAD
+    };
+
     enum GamepadButton : std::int8_t {
         GAMEPAD_BUTTON_A = 0,
         GAMEPAD_BUTTON_B,

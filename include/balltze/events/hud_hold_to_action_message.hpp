@@ -25,7 +25,9 @@ namespace Balltze::Event {
     struct HudHoldForActionMessageArguments {
         HudHoldForActionMessageSlice slice;
         Engine::Point2DInt offset;
+        Engine::ColorARGBInt color;
         std::wstring text;
+        std::optional<Engine::InputDevice> input_source;
         std::optional<std::size_t> gamepad_pressed_button_index;
     };
 

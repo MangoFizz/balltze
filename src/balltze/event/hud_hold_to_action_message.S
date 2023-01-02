@@ -6,35 +6,43 @@
 
 .globl _hold_for_action_hud_message_before_event_button_name
 _hold_for_action_hud_message_before_event_button_name:
-    mov ebx, [esp + 0x28]
-    mov ecx, dword ptr [esp + 0xB0]
-    shr ecx, 0x10
+    lea ebx, [esp + 0x28]
+    movsx ecx, word ptr [esp + 0xAC]
+    mov edx, dword ptr [esp + 0xB0]
+    shr edx, 0x10
+    mov esi, dword ptr [esp + 0x6C]
+    push edx
     push ecx
-    push 3 ;# 3 = button name
+    push esi
     push eax
     push ebx
-    call _dispatch_hold_for_action_hud_message_before_event
-    add esp, 0x10
+    call _dispatch_hold_for_action_hud_message_before_event_button_slice
+    add esp, 0x14
     ret
 
 .globl _hold_for_action_hud_message_after_event_button_name
 _hold_for_action_hud_message_after_event_button_name:
     lea eax, [esp + 0x4C]
-    mov ebx, [esp + 0x28]
-    movsx ecx, word ptr [esp + 0xB0]
+    lea ebx, [esp + 0x28]
+    movsx ecx, word ptr [esp + 0xAC]
+    mov edx, dword ptr [esp + 0xB0]
+    shr edx, 0x10
+    mov esi, dword ptr [esp + 0x6C]
+    push edx
     push ecx
-    push 3 ;# 3 = button name
+    push esi
     push eax
     push ebx
-    call _dispatch_hold_for_action_hud_message_after_event
-    add esp, 0x10
+    call _dispatch_hold_for_action_hud_message_after_event_button_slice
+    add esp, 0x14
     ret
 
 .globl _hold_for_action_hud_message_before_event_button_name_left_quote
 _hold_for_action_hud_message_before_event_button_name_left_quote:
-    mov ebx, [esp + 0x28]
-    push -1
+    lea ebx, [esp + 0x28]
+    mov esi, dword ptr [esp + 0x64]
     push 1 ;# 1 = left quote
+    push esi
     push eax
     push ebx
     call _dispatch_hold_for_action_hud_message_before_event
@@ -44,9 +52,10 @@ _hold_for_action_hud_message_before_event_button_name_left_quote:
 .globl _hold_for_action_hud_message_after_event_button_name_left_quote
 _hold_for_action_hud_message_after_event_button_name_left_quote:
     lea eax, [esp + 0x4C]
-    mov ebx, [esp + 0x28]
-    push -1
+    lea ebx, [esp + 0x28]
+    mov esi, dword ptr [esp + 0x64]
     push 1 ;# 1 = left quote
+    push esi
     push eax
     push ebx
     call _dispatch_hold_for_action_hud_message_after_event
@@ -55,9 +64,10 @@ _hold_for_action_hud_message_after_event_button_name_left_quote:
 
 .globl _hold_for_action_hud_message_before_event_button_name_right_quote
 _hold_for_action_hud_message_before_event_button_name_right_quote:
-    mov ebx, [esp + 0x28]
-    push -1
+    lea ebx, [esp + 0x28]
+    mov esi, dword ptr [esp + 0x74]
     push 2 ;# 2 = right quote
+    push esi
     push eax
     push ebx
     call _dispatch_hold_for_action_hud_message_before_event
@@ -67,9 +77,10 @@ _hold_for_action_hud_message_before_event_button_name_right_quote:
 .globl _hold_for_action_hud_message_after_event_button_name_right_quote
 _hold_for_action_hud_message_after_event_button_name_right_quote:
     lea eax, [esp + 0x4C]
-    mov ebx, [esp + 0x28]
-    push -1
+    lea ebx, [esp + 0x28]
+    mov esi, dword ptr [esp + 0x74]
     push 2 ;# 2 = right quote
+    push esi
     push eax
     push ebx
     call _dispatch_hold_for_action_hud_message_after_event

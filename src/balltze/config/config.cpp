@@ -139,4 +139,27 @@ namespace Balltze::Config {
         std::filesystem::create_directories(path);
         return path;
     }
+
+    Config get_config() {
+        auto balltze_path = get_balltze_directory();
+        return Config(balltze_path / "config" / "config.json");
+    }
+
+    Engine::GamepadButton get_gamepad_mapped_button(std::size_t button_index) {
+        try {
+            auto balltze_path = get_balltze_directory();
+            auto controller_config = Config(balltze_path / "config" / "controller.json", false);
+            auto mapped_button_index = controller_config.get("buttons_map.button_" + std::to_string(button_index));
+            if(mapped_button_index) {
+                auto translated_button_index = std::atoi(mapped_button_index->c_str());
+                return static_cast<Engine::GamepadButton>(translated_button_index);
+            }
+            else {
+                return static_cast<Engine::GamepadButton>(button_index);
+            }
+        }
+        catch(std::runtime_error) {
+            return static_cast<Engine::GamepadButton>(button_index);
+        }
+    }
 }

@@ -3,10 +3,12 @@
 #include <balltze/memory.hpp>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/hud.hpp>
+#include <balltze/engine/widget.hpp>
 
 namespace Balltze::Engine {
     extern "C" {
         void hud_draw_bitmap_sprite(Point2DInt position, ColorARGBInt color, TagDefinitions::BitmapData *bitmap_data, TagDefinitions::BitmapGroupSprite *sprite);
+        void get_string_name_for_button(InputDevice input_device, std::size_t button_index, wchar_t *buffer);
     }
 
     HudGlobals &get_hud_globals() {
@@ -63,5 +65,11 @@ namespace Balltze::Engine {
         offset.y += sprite_height * 0.75f;
 
         hud_draw_bitmap_sprite(offset, color, &bitmap_data, &sprite);
+    }
+
+    std::wstring get_button_name(InputDevice input_device, std::size_t button_index) {
+        wchar_t button_name[64];
+        get_string_name_for_button(input_device, button_index, button_name);
+        return button_name;
     }
 }

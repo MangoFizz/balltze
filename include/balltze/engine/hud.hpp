@@ -6,6 +6,7 @@
 #include <utility>
 #include "../api.hpp"
 #include "data_types.hpp"
+#include "widget.hpp"
 #include "tag_definitions/hud_globals.hpp"
 
 namespace Balltze::Engine {
@@ -41,6 +42,14 @@ namespace Balltze::Engine {
      * @throws std::runtime_error   If the sprite index is invalid.
      */
     BALLTZE_API void draw_hud_message_sprite(TagHandle bitmap_tag_handle, std::size_t sequence_index, std::size_t sprite_index, Point2DInt position, ColorARGBInt color);
+
+    /**
+     * Get the name of a button.
+     * @param input_device          The input device.
+     * @param button_index          The button index.
+     * @return                      The name of the button.
+     */
+    BALLTZE_API std::wstring get_button_name(Engine::InputDevice input_device, std::size_t button_index);
 }
 
 #endif

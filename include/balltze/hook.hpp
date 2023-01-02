@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <vector>
 #include <functional>
+#include <optional>
 #include <variant>
 #include "api.hpp"
 
@@ -195,8 +196,8 @@ namespace Balltze::Memory {
          */
         Hook() = default;
 
-        // we're friends :')
-        friend Hook *hook_function(void *, std::variant<std::function<void()>, std::function<bool()>>, std::function<void()>, bool);
+        // just friends :')
+        friend Hook *hook_function(void *, std::optional<std::variant<std::function<void()>, std::function<bool()>>>, std::optional<std::function<void()>>, bool);
         friend Hook *override_function(void *, std::function<void()>, void *&);
     };
 
@@ -211,7 +212,7 @@ namespace Balltze::Memory {
      * @throws std::runtime_error   If instruction is not supported or is already hooked
      * @note                        If the instruction to hook can't be skipped, use the proper function type.
      */
-    BALLTZE_API Hook *hook_function(void *instruction, std::variant<std::function<void()>, std::function<bool()>> function_before, std::function<void()> function_after = {}, bool save_registers = true);
+    BALLTZE_API Hook *hook_function(void *instruction, std::optional<std::variant<std::function<void()>, std::function<bool()>>> function_before, std::optional<std::function<void()>> function_after = {}, bool save_registers = true);
 
     /**
      * Override a given function.
