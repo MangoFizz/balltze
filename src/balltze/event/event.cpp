@@ -149,11 +149,13 @@ namespace Balltze::Event {
 
     template class EventHandler<TickEvent>;
     template class EventHandler<HudHoldForActionMessageEvent>;
+    template class EventHandler<GameInputEvent>;
 
     void set_up_events() {
         try {
             EventHandler<TickEvent>::init();
             EventHandler<HudHoldForActionMessageEvent>::init();
+            EventHandler<GameInputEvent>::init();
         }
         catch(std::runtime_error) {
             throw;

@@ -109,4 +109,5 @@ namespace Balltze::Event {
 #endif
 
 #include "events/tick.hpp"
+#include "events/game_input.hpp"
 #include "events/hud_hold_to_action_message.hpp"

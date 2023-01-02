@@ -9,6 +9,11 @@ namespace Balltze {
          * Set up the HUD button prompts
          */
         void set_up_hud_button_prompts();
+
+        /**
+         * Set up the gamepad pause button
+         */
+        void set_up_gamepad_pause_button();
     }
 
     /**
@@ -16,6 +21,7 @@ namespace Balltze {
      */
     inline void set_up_features() {
         try {
+            Features::set_up_gamepad_pause_button();
             Features::set_up_hud_button_prompts();
         }
         catch(...) {

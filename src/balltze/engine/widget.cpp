@@ -3,8 +3,8 @@
 #include <functional>
 #include <d3d9.h>
 #include <cmath>
-#include <balltze/engine/resolution.hpp>
 #include <balltze/memory.hpp>
+#include <balltze/engine/multiplayer.hpp>
 #include <balltze/engine/widget.hpp>
 
 namespace Balltze::Engine {
@@ -127,7 +127,9 @@ namespace Balltze::Engine {
             return open_widget_asm(current_root_widget, widget_definition);
         }
         else {
-            free_widget_asm(current_root_widget);
+            if(current_root_widget) {
+                free_widget_asm(current_root_widget);
+            }
             return create_widget_asm(widget_definition);
         }
     }
@@ -231,6 +233,28 @@ namespace Balltze::Engine {
         // fool proof
         if(widget->parent_widget) {
             focus_widget_asm(widget->parent_widget, widget);
+        }
+    }
+
+    void open_pause_menu() noexcept {
+        if(get_widget_globals()->root_widget) {
+            return;
+        }
+        auto server_type = get_server_type();
+        const char *tag_path = nullptr;
+        if(server_type == SERVER_NONE) {
+            auto *singleplayer_pause_menu_tag_path_sig = Memory::get_signature("singleplayer_pause_menu_tag_path");
+            tag_path = *reinterpret_cast<const char **>(singleplayer_pause_menu_tag_path_sig->data());
+        }
+        else {
+            auto *multiplayer_pause_menu_tag_path_sig = Memory::get_signature("multiplayer_pause_menu_tag_path");
+            tag_path = *reinterpret_cast<const char **>(multiplayer_pause_menu_tag_path_sig->data());
+        }
+        if(tag_path) {
+            auto *tag = get_tag(tag_path, TAG_CLASS_UI_WIDGET_DEFINITION);
+            if(tag) {
+                open_widget(tag->id, false);
+            }
         }
     }
 

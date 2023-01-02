@@ -596,6 +596,11 @@ namespace Balltze::Engine {
      * @param widget    Widget to be focused
      */
     BALLTZE_API void focus_widget(Widget *widget) noexcept;
+
+    /**
+     * Open the pause menu
+     */
+    BALLTZE_API void open_pause_menu() noexcept;
 }
 
 #endif

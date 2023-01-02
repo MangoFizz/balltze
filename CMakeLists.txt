@@ -26,6 +26,7 @@ add_library(balltze MODULE
     src/balltze/engine/hud.cpp
     src/balltze/engine/hud.S
     src/balltze/engine/map.cpp
+    src/balltze/engine/multiplayer.cpp
     src/balltze/engine/path.cpp
     src/balltze/engine/resolution.cpp
     src/balltze/engine/tag.cpp
@@ -36,9 +37,12 @@ add_library(balltze MODULE
     src/balltze/engine/widget.S
     src/balltze/engine/window.cpp
     src/balltze/event/event.cpp
+    src/balltze/event/game_input.cpp
+    src/balltze/event/game_input.S
     src/balltze/event/hud_hold_to_action_message.cpp
     src/balltze/event/hud_hold_to_action_message.S
     src/balltze/event/tick.cpp
+    src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
     src/balltze/map_loading/laa.cpp
     src/balltze/map_loading/map.cpp

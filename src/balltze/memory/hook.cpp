@@ -225,13 +225,17 @@ namespace Balltze::Memory {
                     break;
                 }
 
-                // movsx 
+                // movsx / sete
                 case 0x0F: {
                     if(instruction[1] == 0xB6 && instruction[2] == 0x47) { // eax, byte ptr [edi + disp8]
                         m_cave.insert(&instruction[0], 4);
                         instruction_size = 4;
                     }
                     else if(instruction[1] == 0xBF && instruction[2] == 0xC0) { // eax, ax
+                        m_cave.insert(&instruction[0], 3);
+                        instruction_size = 3;
+                    }
+                    else if(instruction[1] == 0x94 && instruction[2] == 0xC1) { // sete cl
                         m_cave.insert(&instruction[0], 3);
                         instruction_size = 3;
                     }
@@ -250,6 +254,10 @@ namespace Balltze::Memory {
                     else if(instruction[1] == 0xFF && instruction[2] == 0x05) { // inc word ptr [imm32]
                         m_cave.insert(&instruction[0], 7);
                         instruction_size = 7;
+                    }
+                    else if(instruction[1] == 0xC7 && instruction[2] == 0x00) { // cmp word ptr [r32], imm16
+                        m_cave.insert(&instruction[0], 5);
+                        instruction_size = 5;
                     }
                     else {
                         throw std::runtime_error("Unsupported cmp instruction.");
@@ -317,6 +325,10 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 3);
                         instruction_size = 3;
                     }
+                    else if(instruction[1] == 0xC9) {
+                        m_cave.insert(&instruction[0], 2);
+                        instruction_size = 2;
+                    }
                     else {
                         throw std::runtime_error("Unsupported lea / mov instruction.");
                     }
@@ -346,9 +358,13 @@ namespace Balltze::Memory {
                     break;
                 }
 
-                // sub
+                // sub / cmp
                 case 0x81: {
                     if(instruction[1] == 0xEC) { // sub esp, imm32
+                        m_cave.insert(&instruction[0], 6);
+                        instruction_size = 6;
+                    }
+                    else if(instruction[1] == 0xFD) { // cmp ebp, imm32
                         m_cave.insert(&instruction[0], 6);
                         instruction_size = 6;
                     }
@@ -389,7 +405,7 @@ namespace Balltze::Memory {
         m_cave.insert_address(offset);
     }
 
-    Hook *hook_function(void *instruction, std::variant<std::function<void()>, std::function<bool()>> function_before, std::function<void()> function_after, bool save_registers) {
+    Hook *hook_function(void *instruction, std::optional<std::variant<std::function<void()>, std::function<bool()>>> function_before, std::optional<std::function<void()>> function_after, bool save_registers) {
         for(auto &hook : hooks) {
             if(hook->m_instruction == instruction) {
                 throw std::runtime_error("address already hooked");
@@ -400,20 +416,23 @@ namespace Balltze::Memory {
         hook->m_instruction = reinterpret_cast<std::byte *>(instruction);
         hook->m_skip_original_code = std::make_unique<bool>(false);
 
-        bool skipable_instruction = std::holds_alternative<std::function<bool()>>(function_before);
-        if(skipable_instruction) {
-            auto function = std::get<std::function<bool()>>(function_before);
-            if(!function) {
-                throw std::invalid_argument("function_before must be a valid function");
+        if(function_before) {
+            auto function_variant = *function_before;
+            bool skipable_instruction = std::holds_alternative<std::function<bool()>>(function_variant);
+            if(skipable_instruction) {
+                auto function = std::get<std::function<bool()>>(function_variant);
+                if(!function) {
+                    throw std::invalid_argument("function_before must be a valid function");
+                }
+                hook->write_function_call(*reinterpret_cast<void **>(function.target<bool(*)()>()), save_registers, true);
             }
-            hook->write_function_call(*reinterpret_cast<void **>(function.target<bool(*)()>()), save_registers, true);
-        }
-        else {
-            auto function = std::get<std::function<void()>>(function_before);
-            if(!function) {
-                throw std::invalid_argument("function_before must be a valid function");
+            else {
+                auto function = std::get<std::function<void()>>(function_variant);
+                if(!function) {
+                    throw std::invalid_argument("function_before must be a valid function");
+                }
+                hook->write_function_call(*reinterpret_cast<void **>(function.target<void(*)()>()), save_registers, false);
             }
-            hook->write_function_call(*reinterpret_cast<void **>(function.target<void(*)()>()), save_registers, false);
         }
 
         // cmp byte ptr [flag], 1
@@ -439,7 +458,10 @@ namespace Balltze::Memory {
         jmp_offset = instruction_size;
 
         if(function_after) {
-            hook->write_function_call(*reinterpret_cast<void **>(function_after.target<void(*)()>()), save_registers);
+            if(!*function_after) {
+                throw std::invalid_argument("function_after must be a valid function");
+            }
+            hook->write_function_call(*reinterpret_cast<void **>(function_after.value().target<void(*)()>()), save_registers);
         }
 
         hook->write_cave_return_jmp();
