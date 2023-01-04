@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/path.hpp>
 #include <fstream>
+#include <balltze/engine/path.hpp>
+#include <balltze/output.hpp>
 #include <balltze/config.hpp>
 #include "config.hpp"
 
@@ -23,7 +24,7 @@ namespace Balltze::Config {
     }
 
     Config::~Config() {
-        save();
+        //save();
     }
 
     void Config::create_file() {
@@ -72,6 +73,7 @@ namespace Balltze::Config {
         file.close();
     }
 
+    
     std::optional<std::string> Config::get(std::string key) {
         auto keys = split_key(key);
         nlohmann::json *slice = &config;
@@ -141,25 +143,28 @@ namespace Balltze::Config {
     }
 
     Config get_config() {
-        auto balltze_path = get_balltze_directory();
-        return Config(balltze_path / "config" / "config.json");
+        static auto balltze_path = get_balltze_directory();
+        static auto config = Config(balltze_path / "settings.json");
+        return config;
     }
 
-    Engine::GamepadButton get_gamepad_mapped_button(std::size_t button_index) {
-        try {
-            auto balltze_path = get_balltze_directory();
-            auto controller_config = Config(balltze_path / "config" / "controller.json", false);
-            auto mapped_button_index = controller_config.get("buttons_map.button_" + std::to_string(button_index));
-            if(mapped_button_index) {
-                auto translated_button_index = std::atoi(mapped_button_index->c_str());
-                return static_cast<Engine::GamepadButton>(translated_button_index);
+    std::optional<Config> get_gamepad_config() {
+        static std::optional<Config> gamepad_config;
+        if(gamepad_config) {
+            return gamepad_config;
+        }
+        auto config = get_config();
+        auto gamepad = config.get("gamepad");
+        if(gamepad) {
+            try {
+                auto balltze_path = get_balltze_directory();
+                gamepad_config = Config(balltze_path / "gamepad" / (*gamepad + ".json"), false);
+                return gamepad_config;
             }
-            else {
-                return static_cast<Engine::GamepadButton>(button_index);
+            catch(std::runtime_error) {
+                return std::nullopt;
             }
         }
-        catch(std::runtime_error) {
-            return static_cast<Engine::GamepadButton>(button_index);
-        }
+        return std::nullopt;
     }
 }

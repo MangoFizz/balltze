@@ -65,7 +65,7 @@ namespace Balltze::Engine {
         }
     };
 
-    enum InputDevice {
+    enum InputDevice : std::uint16_t {
         INPUT_DEVICE_KEYBOARD = 1,
         INPUT_DEVICE_MOUSE,
         INPUT_DEVICE_GAMEPAD

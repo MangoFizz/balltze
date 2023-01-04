@@ -43,6 +43,11 @@ namespace Balltze::Config {
         Config(std::filesystem::path filepath, bool create = true);
 
         /**
+         * Default constructor for Config class
+         */
+        Config() = default;
+
+        /**
          * Destructor for Config class
          * @throws std::runtime_error if config file cannot be saved
          */
@@ -62,8 +67,34 @@ namespace Balltze::Config {
 
         /**
          * Get value from config
-         * @param key Key to get value from
-         * @return Value if key exists, std::nullopt otherwise
+         * @param key   Key to get value from
+         * @return      Value if key exists, std::nullopt otherwise
+         * @tparam T    Type of value
+         */
+        template<typename T>
+        std::optional<T> get(std::string key) {
+            auto keys = split_key(key);
+            nlohmann::json *slice = &config;
+            for(std::string key : keys) {
+                if(slice->contains(key)) {
+                    slice = &(*slice)[key];
+                }
+                else {
+                    return std::nullopt;
+                }
+            }
+            if(slice->is_primitive()) {
+                return slice->get<T>();
+            }
+            else {
+                return std::nullopt;
+            }
+        }
+
+        /**
+         * Get value from config
+         * @param key   Key to get value from
+         * @return      Value if key exists, std::nullopt otherwise
          */
         std::optional<std::string> get(std::string key);
 

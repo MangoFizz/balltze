@@ -3,9 +3,10 @@
 #include <chrono>
 #include <optional>
 #include <balltze/config.hpp>
-#include <balltze/output.hpp>
 #include <balltze/memory.hpp>
+#include <balltze/output.hpp>
 #include <balltze/engine/hud.hpp>
+#include <balltze/engine/map.hpp>
 #include <balltze/engine/widget.hpp>
 #include <balltze/event.hpp>
 #include "../config/config.hpp"
@@ -13,89 +14,122 @@
 using namespace Balltze::Event;
 
 namespace Balltze::Features {
-    struct ButtonIconAnimation {
-        Engine::GamepadButton button;
-        std::chrono::time_point<std::chrono::steady_clock> last_frame;
-        std::size_t frame_index;
-
-        ButtonIconAnimation(Engine::GamepadButton button) : button(button), last_frame(std::chrono::steady_clock::now()), frame_index(0) {}
+    struct ButtonIconCache {
+        HudHoldToActionMessageButton button;
+        Engine::GamepadButton icon_index;
+        Engine::TagDefinitions::Bitmap *bitmap;
+        std::size_t sequence_index;
+        std::size_t sprites_count;
+        std::size_t animation_current_sprite_index;
+        std::chrono::time_point<std::chrono::steady_clock> last_animation_frame;
+        std::pair<std::uint16_t, std::uint16_t> sprite_size;
+        std::optional<Engine::ColorARGBInt> color_override;
     };
 
-    static std::vector<ButtonIconAnimation> button_icon_animations;
+    static Config::Config gamepad_config;
+    static std::vector<ButtonIconCache> button_icons;
+    static std::string last_map_name;
 
-    static ButtonIconAnimation *get_button_icon_animation(Engine::GamepadButton button) {
-        for(auto &button_icon_animation : button_icon_animations) {
-            if(button_icon_animation.button == button) {
-                return &button_icon_animation;
+    static std::optional<Engine::GamepadButton> get_icon(HudHoldToActionMessageButton &button) {
+        static auto gamepad_config = Config::get_gamepad_config();
+        if(gamepad_config) {
+            if(button.type == HudHoldToActionMessageButton::BUTTON) {
+                auto button_icon = gamepad_config->get<int>("icons.button_" + std::to_string(button.index));
+                if(button_icon) {
+                    return static_cast<Engine::GamepadButton>(*button_icon);
+                }
+            }
+            else if(button.type == HudHoldToActionMessageButton::AXIS) {
+                auto button_icon = gamepad_config->get<int>("icons.axis_" + std::to_string(button.index) + (button.axis_direction == HudHoldToActionMessageButton::POSITIVE ? "+" : "-"));
+                if(button_icon) {
+                    return static_cast<Engine::GamepadButton>(*button_icon);
+                }
             }
         }
-        return nullptr;
+        return std::nullopt;
     }
 
-    static std::size_t get_bitmap_sequence_sprites_count(Engine::TagHandle bitmap_tag_handle, std::size_t sequence_index) {
-        auto *bitmap_tag = Engine::get_tag(bitmap_tag_handle);
-        auto *bitmap = bitmap_tag->get_data<Engine::TagDefinitions::Bitmap>();
-        if(sequence_index >= bitmap->bitmap_group_sequence.count) {
-            throw std::runtime_error("Invalid sequence index");
+    static ButtonIconCache *find_button_icon(HudHoldToActionMessageButton &button) {
+        auto icon = get_icon(button);
+        if(!icon) {
+            return nullptr;
         }
-        auto &sequence = bitmap->bitmap_group_sequence.offset[sequence_index];
-        return sequence.sprites.count;
-    }
 
-    static bool draw_button_icon(Engine::Point2DInt &offset, std::size_t button_index, Engine::ColorARGBInt color) noexcept {
         auto &hud_globals = Engine::get_hud_globals();
-        auto message_icons = hud_globals.icon_bitmap.tag_id;
+        auto &hud_icon = hud_globals.button_icons.offset[*icon];
+        auto message_icons_tag_handle = hud_globals.icon_bitmap.tag_id;
+        auto *message_icons_tag = Engine::get_tag(message_icons_tag_handle);
+        auto *message_icons = message_icons_tag->get_data<Engine::TagDefinitions::Bitmap>();
+        auto *bitmap = message_icons;
 
-        std::size_t translated_button_index = Config::get_gamepad_mapped_button(button_index);
-
-        // Get button icon
-        if(translated_button_index >= hud_globals.button_icons.count) {
-            return false;
+        ButtonIconCache &button_icon = button_icons.emplace_back();
+        button_icon.button = button;
+        button_icon.icon_index = *icon;
+        button_icon.bitmap = bitmap;
+        button_icon.sequence_index = hud_icon.sequence_index;
+        button_icon.sprites_count = bitmap->bitmap_group_sequence.offset[button_icon.sequence_index].sprites.count;
+        button_icon.animation_current_sprite_index = 0;
+        button_icon.last_animation_frame = std::chrono::steady_clock::now();
+        button_icon.sprite_size = Engine::get_bitmap_sequence_size(bitmap, hud_icon.sequence_index);
+        
+        if(hud_icon.flags.override_default_color) {
+            button_icon.color_override = hud_icon.override_icon_color;
         }
-        auto button = static_cast<Engine::GamepadButton>(translated_button_index);
-        auto &button_icon = hud_globals.button_icons.offset[translated_button_index];
 
-        // Get the sprite index
-        std::size_t sprite_index = 0;
-        try {
-            auto icon_sprites_count = get_bitmap_sequence_sprites_count(message_icons, button_icon.sequence_index);
-            if(icon_sprites_count > 1) {
-                auto icon_anim = get_button_icon_animation(button);
-                if(icon_anim) {
-                    auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - icon_anim->last_frame).count();
-                    float frame_duration = 1000.0f / icon_sprites_count;
-                    if(elapsed_time > frame_duration) {
-                        if(elapsed_time > 1000) {
-                            sprite_index = 0;
-                        }
-                        else {
-                            sprite_index = (icon_anim->frame_index + 1) % icon_sprites_count;
-                        }
-                        icon_anim->last_frame = std::chrono::steady_clock::now();
-                        icon_anim->frame_index = sprite_index;
-                    }
-                    else {
-                        sprite_index = icon_anim->frame_index;
-                    }
-                }
-                else {
-                    button_icon_animations.emplace_back(button);
+        return &button_icon;
+    }
+    
+    static bool map_changed() {
+        auto &map = Engine::get_map_header();
+        if(last_map_name != map.name) {
+            last_map_name = map.name;
+            return true;
+        }
+        return false;
+    }
+
+    static ButtonIconCache *get_button_icon(HudHoldToActionMessageButton &button) {
+        if(map_changed()) {
+            button_icons.clear();
+        }
+        else {
+            for(auto &button_icon : button_icons) {
+                if(button_icon.button.index == button.index) {
+                    return &button_icon;
                 }
             }
         }
-        catch(std::runtime_error) {
+        return find_button_icon(button);
+    }
+
+    static bool draw_button_icon(Engine::Point2DInt &offset, HudHoldToActionMessageButton button, Engine::ColorARGBInt color) noexcept {
+        auto *button_icon = get_button_icon(button);
+        if(!button_icon) {
             return false;
         }
 
-        // Draw the button icon
-        auto final_color = color;
-        if(button_icon.flags.override_default_color) {
-            final_color = button_icon.override_icon_color;
+        // Update animation sprite
+        auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - button_icon->last_animation_frame).count();
+        float frame_duration = 1000.0f / button_icon->sprites_count;
+        if(elapsed_time > frame_duration) {
+            if(elapsed_time > 1000) {
+                button_icon->animation_current_sprite_index = 0;
+            }
+            else {
+                button_icon->animation_current_sprite_index = (button_icon->animation_current_sprite_index + 1) % button_icon->sprites_count;
+            }
+            button_icon->last_animation_frame = std::chrono::steady_clock::now();
         }
-        Engine::draw_hud_message_sprite(message_icons, button_icon.sequence_index, sprite_index, offset, final_color);
+
+        auto final_color = color;
+        if(button_icon->color_override) {
+            final_color = *button_icon->color_override;
+        }
+
+        Engine::draw_hud_message_sprite(button_icon->bitmap, button_icon->sequence_index, button_icon->animation_current_sprite_index, offset, final_color);
 
         // bump up the offset for the next slice
-        auto [sprite_width, sprite_height] = Engine::get_bitmap_sprite_size(message_icons, button_icon.sequence_index, sprite_index);
+        auto [sprite_width, sprite_height] = button_icon->sprite_size;
         offset.x += sprite_width;
 
         return true;
@@ -109,15 +143,15 @@ namespace Balltze::Features {
 
             auto slice = event.args.slice;
             if(slice == HudHoldForActionMessageSlice::BUTTON_NAME) {
-                if(event.args.input_source == Engine::INPUT_DEVICE_GAMEPAD && event.args.gamepad_pressed_button_index) {
-                    auto button_index = event.args.gamepad_pressed_button_index.value();
+                if(event.args.button->device == Engine::INPUT_DEVICE_GAMEPAD) {
+                    auto &button = *event.args.button;
                     auto &offset = event.args.offset;
                     auto &color = event.args.color;
-                    bool success = draw_button_icon(offset, button_index, color);
+                    bool success = draw_button_icon(offset, button, color);
                     allow = !success;
                 }
                 if(allow) {
-                    event.args.text = left_quote + Engine::get_button_name(event.args.input_source.value(), event.args.gamepad_pressed_button_index.value()) + right_quote;
+                    event.args.text = left_quote + event.args.text + right_quote;
                     allow = true;
                 }
             }

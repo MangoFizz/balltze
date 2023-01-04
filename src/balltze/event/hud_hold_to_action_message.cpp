@@ -44,14 +44,13 @@ namespace Balltze::Event {
             event.dispatch();
         }
 
-        bool dispatch_hold_for_action_hud_message_before_event_button_slice(const wchar_t **button_name, HudHoldForActionMessageSliceOffset *offset, Engine::ColorARGBInt color, Engine::InputDevice input_source, std::size_t button_index) {
+        bool dispatch_hold_for_action_hud_message_before_event_button_slice(const wchar_t **button_name, HudHoldForActionMessageSliceOffset *offset, Engine::ColorARGBInt color, HudHoldToActionMessageButton *button) {
             HudHoldForActionMessageArguments args;
             args.slice = HudHoldForActionMessageSlice::BUTTON_NAME;
             args.offset = {offset->x, offset->y};
             args.text = *button_name;
             args.color = color;
-            args.input_source = input_source;
-            args.gamepad_pressed_button_index = button_index;
+            args.button = *button;
             HudHoldForActionMessageEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             offset->x = event.args.offset.x;
@@ -63,14 +62,13 @@ namespace Balltze::Event {
             return event.cancelled();
         }
 
-        void dispatch_hold_for_action_hud_message_after_event_button_slice(const wchar_t **button_name, Engine::Point2DInt *offset, Engine::ColorARGBInt color, Engine::InputDevice input_source, std::size_t button_index) {
+        void dispatch_hold_for_action_hud_message_after_event_button_slice(const wchar_t **button_name, Engine::Point2DInt *offset, Engine::ColorARGBInt color, HudHoldToActionMessageButton *button) {
             HudHoldForActionMessageArguments args;
             args.slice = HudHoldForActionMessageSlice::BUTTON_NAME;
             args.offset = {offset->x, offset->y};
             args.text = *button_name;
             args.color = color;
-            args.input_source = input_source;
-            args.gamepad_pressed_button_index = button_index;
+            args.button = *button;
             HudHoldForActionMessageEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }

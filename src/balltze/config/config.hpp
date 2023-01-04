@@ -23,11 +23,9 @@ namespace Balltze::Config {
     Config get_config();
 
     /**
-     * Translate a key code to a xbox gamepad button
-     * @param button_index  Index of the button
-     * @return              Xbox gamepad button
+     * Get the Balltze gamepad configs.
      */
-    Engine::GamepadButton get_gamepad_mapped_button(std::size_t button_index);
+    std::optional<Config> get_gamepad_config();
 }
 
 #endif

@@ -23,6 +23,8 @@ add_definitions(-DBALLTZE_EXPORTS)
 add_library(balltze MODULE
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
+    src/balltze/engine/console.cpp
+    src/balltze/engine/console.S
     src/balltze/engine/hud.cpp
     src/balltze/engine/hud.S
     src/balltze/engine/map.cpp

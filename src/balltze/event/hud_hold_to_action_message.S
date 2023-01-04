@@ -7,34 +7,28 @@
 .globl _hold_for_action_hud_message_before_event_button_name
 _hold_for_action_hud_message_before_event_button_name:
     lea ebx, [esp + 0x28]
-    movsx ecx, word ptr [esp + 0xAC]
-    mov edx, dword ptr [esp + 0xB0]
-    shr edx, 0x10
+    lea ecx, [esp + 0xAC]
     mov esi, dword ptr [esp + 0x6C]
-    push edx
     push ecx
     push esi
     push eax
     push ebx
     call _dispatch_hold_for_action_hud_message_before_event_button_slice
-    add esp, 0x14
+    add esp, 0x10
     ret
 
 .globl _hold_for_action_hud_message_after_event_button_name
 _hold_for_action_hud_message_after_event_button_name:
     lea eax, [esp + 0x4C]
     lea ebx, [esp + 0x28]
-    movsx ecx, word ptr [esp + 0xAC]
-    mov edx, dword ptr [esp + 0xB0]
-    shr edx, 0x10
+    lea ecx, [esp + 0xAC]
     mov esi, dword ptr [esp + 0x6C]
-    push edx
     push ecx
     push esi
     push eax
     push ebx
     call _dispatch_hold_for_action_hud_message_after_event_button_slice
-    add esp, 0x14
+    add esp, 0x10
     ret
 
 .globl _hold_for_action_hud_message_before_event_button_name_left_quote

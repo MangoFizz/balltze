@@ -1,0 +1,17 @@
+{
+    "icons": {
+        "button_0": 0,
+        "button_1": 1,
+        "button_2": 2,
+        "button_3": 3,
+        "button_4": 4,
+        "button_5": 5,
+        "button_6": 13,
+        "button_7": 12,
+        "button_8": 14,
+        "button_9": 15,
+        "axis_4+": 6,
+        "axis_4-": 7
+    },
+    "pause_button": 7
+}

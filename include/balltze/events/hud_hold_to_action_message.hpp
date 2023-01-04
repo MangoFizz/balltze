@@ -22,13 +22,31 @@ namespace Balltze::Event {
         std::int16_t x;
     };
 
+    struct HudHoldToActionMessageButton {
+        enum Type : std::uint16_t {
+            BUTTON,
+            AXIS
+        };
+
+        enum AxisDirection : std::uint16_t {
+            POSITIVE,
+            NEGATIVE
+        };
+
+        Engine::InputDevice device;
+        PADDING(2);
+        Type type;
+        std::uint16_t index;
+        AxisDirection axis_direction;
+        PADDING(2);
+    };
+
     struct HudHoldForActionMessageArguments {
         HudHoldForActionMessageSlice slice;
         Engine::Point2DInt offset;
         Engine::ColorARGBInt color;
         std::wstring text;
-        std::optional<Engine::InputDevice> input_source;
-        std::optional<std::size_t> gamepad_pressed_button_index;
+        std::optional<HudHoldToActionMessageButton> button;
     };
 
     class HudHoldForActionMessageEvent : public EventData<HudHoldForActionMessageEvent> {
