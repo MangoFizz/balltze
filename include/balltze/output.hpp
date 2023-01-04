@@ -5,9 +5,12 @@
 
 #include <windows.h>
 #include <cstdio>
+#include "engine/console.hpp"
 #include "api.hpp"
 
 namespace Balltze {
+    using ConsoleColor = Engine::ColorARGB;
+
     /**
      * Create a dialog with a given message
      * @param message   Message to display
@@ -34,6 +37,27 @@ namespace Balltze {
         char message[256];
         std::snprintf(message, sizeof(message), format, args...);
         show_message_box_raw(MB_OK | MB_ICONERROR, message);
+    }
+
+        /**
+     * Display a message of a color
+     * @param color  Color to use in the message
+     * @param format String format (passed to snprintf)
+     * @param args   Additional arguments to pass
+     */
+    template<typename... Args> void console_printf(const ConsoleColor &color, const char *format, Args... args) noexcept {
+        char message[256];
+        std::snprintf(message, sizeof(message), format, args...);
+        Engine::console_print(message, color);
+    }
+
+    /**
+     * Display a message (white)
+     * @param format String format (passed to snprintf)
+     * @param args   Additional arguments to pass
+     */
+    template<typename... Args> void console_printf(const char *format, Args... args) noexcept {
+        console_printf(ConsoleColor{1.0, 1.0, 1.0, 1.0}, format, args...);
     }
 }
 
