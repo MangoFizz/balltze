@@ -3,7 +3,7 @@
 #ifndef BALLTZE__MAP_LOADING__LAA_HPP
 #define BALLTZE__MAP_LOADING__LAA_HPP
 
-namespace Balltze {
+namespace Balltze::Features {
     bool current_exe_is_laa_patched();
 }
 

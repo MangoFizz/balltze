@@ -8,7 +8,7 @@
 #include <balltze/engine/version.hpp>
 #include "map.hpp"
 
-namespace Balltze {
+namespace Balltze::Features {
     using namespace Engine;
 
     static constexpr const char *tmp_format = "tmp_%zu.map";

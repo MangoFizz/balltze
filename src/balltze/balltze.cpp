@@ -4,7 +4,6 @@
 #include <balltze/event.hpp>
 #include <balltze/output.hpp>
 #include "features/features.hpp"
-#include "map_loading/map_loading.hpp"
 
 namespace Balltze {
     namespace Memory {
@@ -37,7 +36,6 @@ namespace Balltze {
         try {
             find_signatures();
             set_up_events();
-            set_up_map_loading();
             set_up_features();
         }
         catch(std::runtime_error &e) {

@@ -19,7 +19,7 @@
 #include "map.hpp"
 #include "map_loading.hpp"
 
-namespace Balltze {
+namespace Balltze::Features {
     using namespace Engine;
     using namespace Engine::TagDefinitions;
 

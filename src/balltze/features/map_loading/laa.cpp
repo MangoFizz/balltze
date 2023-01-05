@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "laa.hpp"
 
-namespace Balltze {
+namespace Balltze::Features {
     bool current_exe_is_laa_patched() {
         for(const std::byte *i = reinterpret_cast<std::byte *>(0x400000) ;; i++) {
             if(memcmp(i, "PE\x00\x00", 4) == 0) {

@@ -8,17 +8,12 @@
 #include <optional>
 #include <filesystem>
 
-namespace Balltze {    
+namespace Balltze::Features {    
     /**
      * Load the map
      * @param map_name map to load
      */
     void append_map(const char *map_name);
-
-    /**
-     * Set up loading maps outside of the maps directory
-     */
-    void set_up_map_loading();
 }
 
 #endif

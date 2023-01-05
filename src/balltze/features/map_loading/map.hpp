@@ -8,7 +8,7 @@
 #include <filesystem>
 #include <balltze/engine/map.hpp>
 
-namespace Balltze {
+namespace Balltze::Features {
     struct MapEntry {
         bool multiplayer;
         std::optional<std::uint32_t> crc32;

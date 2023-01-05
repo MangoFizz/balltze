@@ -20,6 +20,12 @@ include_directories(include/)
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
 
+# Turn on experimental features
+option(BALLTZE_ENABLE_EXPERIMENTAL "enable experimental features" OFF)
+if(BALLTZE_ENABLE_EXPERIMENTAL)
+    add_definitions(-DBALLTZE_ENABLE_EXPERIMENTAL)
+endif()
+
 add_library(balltze MODULE
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
@@ -46,10 +52,10 @@ add_library(balltze MODULE
     src/balltze/event/tick.cpp
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
-    src/balltze/map_loading/laa.cpp
-    src/balltze/map_loading/map.cpp
-    src/balltze/map_loading/map_loading.cpp
-    src/balltze/map_loading/map_loading.S
+    src/balltze/features/map_loading/laa.cpp
+    src/balltze/features/map_loading/map.cpp
+    src/balltze/features/map_loading/map_loading.cpp
+    src/balltze/features/map_loading/map_loading.S
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp

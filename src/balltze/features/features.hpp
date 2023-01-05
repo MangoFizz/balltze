@@ -14,6 +14,11 @@ namespace Balltze {
          * Set up the gamepad pause button
          */
         void set_up_gamepad_pause_button();
+
+        /**
+         * Set up loading maps outside of the maps directory
+         */
+        void set_up_map_loading();
     }
 
     /**
@@ -23,6 +28,10 @@ namespace Balltze {
         try {
             Features::set_up_gamepad_pause_button();
             Features::set_up_hud_button_prompts();
+
+#ifdef BALLTZE_ENABLE_EXPERIMENTAL
+            Features::set_up_map_loading();
+#endif
         }
         catch(...) {
             throw;
