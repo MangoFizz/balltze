@@ -54,8 +54,8 @@ Depending on your system, you may need to modify the toolchain file to match you
 environment.
 
 NOTE: If you want to build the project with the experimental features, you need to
-define the `BALLTZE_EXPERIMENTAL` CMake variable to `ON` when generating the build
-files.
+define the `BALLTZE_ENABLE_EXPERIMENTAL` CMake variable to `ON` when generating the 
+build files.
 
 ## Features
 At the moment, Balltze still under development, but currently it has two experimental 
