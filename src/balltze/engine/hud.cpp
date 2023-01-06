@@ -25,6 +25,9 @@ namespace Balltze::Engine {
             throw std::runtime_error("Invalid sequence index");
         }
         auto &sequence = bitmap->bitmap_group_sequence.offset[sequence_index];
+        if(sequence.sprites.count == 0) {
+            throw std::runtime_error("Sequence has no sprites");
+        }
         auto &sprite = sequence.sprites.offset[0];
         auto &bitmap_data = bitmap->bitmap_data.offset[sprite.bitmap_index];
 

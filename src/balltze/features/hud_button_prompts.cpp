@@ -24,6 +24,7 @@ namespace Balltze::Features {
         std::chrono::time_point<std::chrono::steady_clock> last_animation_frame;
         std::pair<std::uint16_t, std::uint16_t> sprite_size;
         std::optional<Engine::ColorARGBInt> color_override;
+        bool found = false;
     };
 
     static Config::Config gamepad_config;
@@ -50,32 +51,38 @@ namespace Balltze::Features {
     }
 
     static ButtonIconCache *find_button_icon(HudHoldToActionMessageButton &button) {
-        auto icon = get_icon(button);
-        if(!icon) {
-            return nullptr;
-        }
-
-        auto &hud_globals = Engine::get_hud_globals();
-        auto &hud_icon = hud_globals.button_icons.offset[*icon];
-        auto message_icons_tag_handle = hud_globals.icon_bitmap.tag_id;
-        auto *message_icons_tag = Engine::get_tag(message_icons_tag_handle);
-        auto *message_icons = message_icons_tag->get_data<Engine::TagDefinitions::Bitmap>();
-        auto *bitmap = message_icons;
-
         ButtonIconCache &button_icon = button_icons.emplace_back();
-        button_icon.button = button;
-        button_icon.icon_index = *icon;
-        button_icon.bitmap = bitmap;
-        button_icon.sequence_index = hud_icon.sequence_index;
-        button_icon.sprites_count = bitmap->bitmap_group_sequence.offset[button_icon.sequence_index].sprites.count;
-        button_icon.animation_current_sprite_index = 0;
-        button_icon.last_animation_frame = std::chrono::steady_clock::now();
-        button_icon.sprite_size = Engine::get_bitmap_sequence_size(bitmap, hud_icon.sequence_index);
-        
-        if(hud_icon.flags.override_default_color) {
-            button_icon.color_override = hud_icon.override_icon_color;
+        auto icon = get_icon(button);
+        auto &hud_globals = Engine::get_hud_globals();
+        if(icon && *icon < hud_globals.button_icons.count) {
+            auto &hud_icon = hud_globals.button_icons.offset[*icon];
+            if(!hud_globals.icon_bitmap.tag_id.is_null()) {
+                auto message_icons_tag_handle = hud_globals.icon_bitmap.tag_id;
+                auto *message_icons_tag = Engine::get_tag(message_icons_tag_handle);
+                if(message_icons_tag) {
+                    auto *message_icons = message_icons_tag->get_data<Engine::TagDefinitions::Bitmap>();
+                    auto *bitmap = message_icons;
+                    if(hud_icon.sequence_index < bitmap->bitmap_group_sequence.count) {
+                        auto &sequence = bitmap->bitmap_group_sequence.offset[hud_icon.sequence_index];
+                        if(sequence.sprites.count > 0) {
+                            button_icon.button = button;
+                            button_icon.icon_index = *icon;
+                            button_icon.bitmap = bitmap;
+                            button_icon.sequence_index = hud_icon.sequence_index;
+                            button_icon.sprites_count = bitmap->bitmap_group_sequence.offset[button_icon.sequence_index].sprites.count;
+                            button_icon.animation_current_sprite_index = 0;
+                            button_icon.last_animation_frame = std::chrono::steady_clock::now();
+                            button_icon.sprite_size = Engine::get_bitmap_sequence_size(bitmap, hud_icon.sequence_index);
+                            button_icon.found = true;
+                            
+                            if(hud_icon.flags.override_default_color) {
+                                button_icon.color_override = hud_icon.override_icon_color;
+                            }
+                        }
+                    }
+                }
+            }
         }
-
         return &button_icon;
     }
     
@@ -104,7 +111,7 @@ namespace Balltze::Features {
 
     static bool draw_button_icon(Engine::Point2DInt &offset, HudHoldToActionMessageButton button, Engine::ColorARGBInt color) noexcept {
         auto *button_icon = get_button_icon(button);
-        if(!button_icon) {
+        if(!button_icon || !button_icon->found) {
             return false;
         }
 
