@@ -4,7 +4,8 @@
 #define BALLTZE__ENGINE__DATA_TYPES_HPP
 
 #include <cstdint> 
-#include <cstddef> 
+#include <cstddef>
+#include "../memory.hpp"
 
 namespace Balltze::Engine {
 	using Angle = float;

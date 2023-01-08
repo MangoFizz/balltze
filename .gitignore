@@ -1,3 +1,4 @@
 .vscode/
 build/
 include/balltze/engine/tag_definitions/
+include/balltze/hek/tag_definitions/

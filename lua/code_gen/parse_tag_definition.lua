@@ -1,5 +1,7 @@
 -- SPDX-License-Identifier: GPL-3.0-only
 
+local inspect = require "inspect"
+
 ---@class DefinitionElement
 ---@field name string
 ---@field class string
@@ -47,8 +49,7 @@
 ---@field template boolean
 
 ---@type table<string, DataType>
-local dataTypes = {
-    -- Engine types
+local commonStructs = {
     tag_handle = {width = 0x4},
     tag_reflexive = {width = 0xC, template = true},
     point2_d = {width = 0x8},
@@ -74,9 +75,10 @@ local dataTypes = {
     matrix = {width = 0x24},
     plane3_d = {width = 0x10},
     plane2_d = {width = 0xC},
-    scenario_script_node_value = {width = 0x4},
+    scenario_script_node_value = {width = 0x4}
+}
 
-    -- Enums
+local commonEnums = {
     framebuffer_blend_function = {width = 0x2},
     framebuffer_fade_mode = {width = 0x2},
     function_out = {width = 0x2},
@@ -87,14 +89,16 @@ local dataTypes = {
     function_scale_by = {width = 0x2},
     function_name_nullable = {width = 0x2},
     grenade_type = {width = 0x2},
-    vertex_type = {width = 0x2},
+    vertex_type = {width = 0x2}
+}
 
-    -- Bitfields
+local commonBitfields = {
     is_unused_flag = {width = 0x4},
     is_unfiltered_flag = {width = 0x4},
-    color_interpolation_flags = {width = 0x4},
+    color_interpolation_flags = {width = 0x4}
+}
 
-    -- Atomic types
+local primitiveTypes = {
     byte = {width = 0x1},
     float = {width = 0x4},
     char = {width = 0x1},
@@ -104,407 +108,6 @@ local dataTypes = {
     int32 = {width = 0x4},
     int16 = {width = 0x2},
     int8 = {width = 0x1}
-}
-
--- Dirty workaround for resolve dependencies between tags definitions
-local dependencies = {
-    antenna = {
-        {
-            name = "unit",
-            types = {
-                unit = {width = 0x2F0},
-            }
-        }
-    },
-    actor_variant = {
-        {
-            name = "unit",
-            types = {
-                metagame_type = {width = 0x2},
-                metagame_class = {width = 0x2}
-            }
-        }
-    },
-    biped = {
-        {
-            name = "unit",
-            types = {
-                unit = {width = 0x2F0},
-            }
-        }
-    },
-    continuous_damage_effect = {
-        {
-            name = "damage_effect",
-            types = {
-                damage_effect_side_effect = {width = 0x2},
-                damage_effect_category = {width = 0x2},
-                damage_effect_damage_flags = {width = 0x4}
-            }
-        }
-    },
-    contrail = {
-        {
-            name = "particle",
-            types = {
-                particle_shader_flags = {width = 0x2},
-                particle_anchor = {width = 0x2}
-            }
-        }
-    },
-    device = {
-        {
-            name = "object",
-            types = {
-                object = {width = 0x17C},
-            }
-        }
-    },
-    device_control = {
-        {
-            name = "device",
-            types = {
-                device = {width = 0x290},
-            }
-        }
-    },
-    device_light_fixture = {
-        {
-            name = "device",
-            types = {
-                device = {width = 0x290},
-            }
-        }
-    },
-    device_machine = {
-        {
-            name = "device",
-            types = {
-                device = {width = 0x290},
-            }
-        }
-    },
-    equipment = {
-        {
-            name = "item",
-            types = {
-                item = {width = 0x308},
-            }
-        }
-    },
-    garbage = {
-        {
-            name = "item",
-            types = {
-                item = {width = 0x308},
-            }
-        }
-    },
-    gbxmodel = {
-        {
-            name = "model",
-            types = {
-                model_flags = {width = 0x4},
-                model_marker = {width = 0x40},
-                model_node = {width = 0x9C},
-                model_region = {width = 0x4C},
-                model_shader_reference = {width = 0x4},
-                model_geometry_part = {width = 0x68}
-            }
-        }
-    },
-    grenade_hud_interface = {
-        {
-            name = "hud_interface_types",
-            types = {
-                h_u_d_interface_scaling_flags = {width = 0x2},
-                h_u_d_interface_flash_flags = {width = 0x2},
-                h_u_d_interface_overlay_flash_flags = {width = 0x2},
-                h_u_d_interface_anchor = {width = 0x2},
-                h_u_d_interface_multitexture_overlay = {width = 0x1E0},
-                h_u_d_interface_number_flags = {width = 0x2},
-                h_u_d_interface_messaging_flags = {width = 0x2}
-            }
-        }
-    },
-    hud_globals = {
-        {
-            name = "hud_interface_types",
-            types = {
-                h_u_d_interface_messaging_flags = {width = 0x2},
-                h_u_d_interface_anchor = {width = 0x2},
-                h_u_d_interface_scaling_flags = {width = 0x2},
-                h_u_d_interface_flash_flags = {width = 0x2}
-            }
-        }
-    },
-    item = {
-        {
-            name = "object",
-            types = {
-                object = {width = 0x17C},
-                object_function_in = {width = 0x2}
-            }
-        }
-    },
-    lightning = {
-        {
-            name = "particle",
-            types = {
-                particle_shader_flags = {width = 0x2}
-            }
-        }
-    },
-    object = {
-        {
-            name = "object",
-            types = {
-                object = {width = 0x17C}
-            }
-        }
-    },
-    particle_system = {
-        {
-            name = "particle",
-            types = {
-                particle_shader_flags = {width = 0x2},
-                particle_anchor = {width = 0x2}
-            }
-        }
-    },
-    placeholder = {
-        {
-            name = "object",
-            types = {
-                basic_object = {width = 0x17C}
-            }
-        }
-    },
-    projectile = {
-        {
-            name = "object",
-            types = {
-                object = {width = 0x2},
-                object_noise = {width = 0x2}
-            }
-        }
-    },
-    scenario = {
-        {
-            name = "object",
-            types = {
-                object_type = {width = 0x2},
-                predicted_resource = {width = 0x2}
-            }
-        },
-        {
-            name = "actor",
-            types = {
-                actor_type = {width = 0x2},
-            }
-        }
-    },
-    scenario_structure_bsp = {
-        {
-            name = "object",
-            types = {
-                predicted_resource = {width = 0x2}
-            }
-        },
-        {
-            name = "model_collision_geometry",
-            types = {
-                model_collision_geometry_b_s_p = {width = 0x60}
-            }
-        }
-    },
-    scenery = {
-        {
-            name = "object",
-            types = {
-                basic_object = {width = 0x17C}
-            }
-        }
-    },
-    shader_environment = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28},
-                shader_detail_function = {width = 0x2}
-            }
-        }
-    },
-    shader_model = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28},
-                shader_detail_function = {width = 0x2}
-            }
-        }
-    },
-    shader_transparent_chicago = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28},
-                shader_color_function_type = {width = 0x2},
-                shader_first_map_type = {width = 0x2},
-                shader_transparent_extra_layer = {width = 0x10},
-            }
-        },
-        {
-            name = "shader_transparent_generic",
-            types = {
-                shader_transparent_generic_flags = {width = 0x8}
-            }
-        }
-    },
-    shader_transparent_chicago_extended = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28},
-                shader_color_function_type = {width = 0x2},
-                shader_first_map_type = {width = 0x2},
-                shader_transparent_extra_layer = {width = 0x10},
-            }
-        },
-        {
-            name = "shader_transparent_generic",
-            types = {
-                shader_transparent_generic_flags = {width = 0x8}
-            }
-        },
-        {
-            name = "shader_transparent_chicago",
-            types = {
-                shader_transparent_chicago_map = {width = 0xDC},
-                shader_transparent_chicago_extra_flags = {width = 0x2}
-            }
-        }
-    },
-    shader_transparent_generic = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28},
-                shader_first_map_type = {width = 0x2},
-                shader_transparent_extra_layer = {width = 0x10}
-            }
-        }
-    },
-    shader_transparent_glass = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28}
-            }
-        }
-    },
-    shader_transparent_meter = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28}
-            }
-        }
-    },
-    shader_transparent_plasma = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28}
-            }
-        }
-    },
-    shader_transparent_water = {
-        {
-            name = "shader",
-            types = {
-                shader = {width = 0x28}
-            }
-        }
-    },
-    sound_scenery = {
-        {
-            name = "object",
-            types = {
-                basic_object = {width = 0x17C}
-            }
-        }
-    },
-    unit = {
-        {
-            name = "object",
-            types = {
-                object = {width = 0x2},
-                object_noise = {width = 0x2},
-            }
-        }
-    },
-    unit_hud_interface = {
-        {
-            name = "hud_interface_types",
-            types = {
-                h_u_d_interface_scaling_flags = {width = 0x2},
-                h_u_d_interface_flash_flags = {width = 0x2},
-                h_u_d_interface_multitexture_overlay = {width = 0x1E0},
-                h_u_d_interface_meter_flags = {width = 0x8},
-                h_u_d_interface_anchor = {width = 0x2}
-            }
-        }
-    },
-    weapon = {
-        {
-            name = "object",
-            types = {
-                object_noise = {width = 0x2},
-                predicted_resource = {width = 0x2}
-            }
-        },
-        {
-            name = "item",
-            types = {
-                item = {width = 0x308},
-            }
-        }
-    },
-    weapon_hud_interface = {
-        {
-            name = "hud_interface_types",
-            types = {
-                h_u_d_interface_child_anchor = {width = 0x2},
-                h_u_d_interface_scaling_flags = {width = 0x2},
-                h_u_d_interface_flash_flags = {width = 0x2},
-                h_u_d_interface_multitexture_overlay = {width = 0x1E0},
-                h_u_d_interface_meter_flags = {width = 0x8},
-                h_u_d_interface_number_flags = {width = 0x2},
-                h_u_d_interface_overlay_flash_flags = {width = 0x2},
-                h_u_d_interface_anchor = {width = 0x2},
-                h_u_d_interface_messaging_flags = {width = 0x2}
-            }
-        }
-    },
-    weather_particle_system = {
-        {
-            name = "particle",
-            types = {
-                particle_orientation = {width = 0x2},
-                particle_shader_flags = {width = 0x2},
-                particle_anchor = {width = 0x2}
-            }
-        }
-    },
-    vehicle = {
-        {
-            name = "unit",
-            types = {
-                unit = {width = 0x2F0},
-            }
-        }
-    }
 }
 
 local function camelCaseToSnakeCase(str)
@@ -544,6 +147,7 @@ local function snakeCaseToCamelCase(str)
         new = new:sub(1, 1):upper() .. new:sub(2)
         return new
     end
+    return nil
 end
 
 ---Parse a struct definition
@@ -551,7 +155,7 @@ end
 ---@return Struct
 local function parseStruct(structDefinition)
     local struct = {
-        name = structDefinition.class or structDefinition.name,
+        name = snakeCaseToCamelCase(structDefinition.class) or structDefinition.name,
         width = structDefinition.size,
         fields = {}
     }
@@ -659,72 +263,107 @@ local function parseDefinition(definitionName, definition)
         end
     end
 
-    
-    local typeExists = function(typeName)
-        if typeName == "pad" then
-            return true
-        elseif dataTypes["" .. camelCaseToSnakeCase(typeName)] then
-            return true
-        elseif(dependencies[definitionName]) then
-            for _, dependency in ipairs(dependencies[definitionName]) do
-                if dependency.types[camelCaseToSnakeCase(typeName)] then
-                    return true
-                end
-            end
-        end
-
-        for _, enum in ipairs(enums) do
-            if enum.name == typeName then
-                return true
-            end
-        end
-
-        for _, bitfield in ipairs(bitfields) do
-            if bitfield.name == typeName then
-                return true
-            end
-        end
-
-        for _, struct in ipairs(structs) do
-            if struct.name == typeName then
-                return true
-            end
-        end
-
-        return false
-    end
-
-    -- Check if everything is ok
-    for _, struct in ipairs(structs) do
-        if struct.inherits then
-            if not typeExists(struct.inherits) then
-                error("Struct " .. struct.name .. " inherits from " .. struct.inherits .. " which does not exist")
-            end
-        end
-        for _, field in pairs(struct.fields) do
-            if field.type == "tag_reflexive" then
-                if not typeExists(field.struct) then
-                    error("Struct " .. struct.name .. " has a reflexive field with an unknown struct type: " .. field.struct)
-                end
-            else
-                if not typeExists(field.type) then
-                    error("Struct " .. struct.name .. " has a field with an unknown type: " .. field.type)
-                end
-            end
-        end
-    end
-
     return {enums = enums, bitfields = bitfields, structs = structs}
 end
 
+local function getDependencies(definitions)
+    local dependencies = {}
+
+    local findType = function(typeName)
+        if typeName == "pad" then
+            return true, nil, "pad"
+        elseif commonStructs["" .. camelCaseToSnakeCase(typeName)] then
+            return true, "common", "struct"
+        elseif commonEnums["" .. camelCaseToSnakeCase(typeName)] then
+            return true, "common", "enum"
+        elseif commonBitfields["" .. camelCaseToSnakeCase(typeName)] then
+            return true, "common", "bitfield"
+        elseif primitiveTypes["" .. camelCaseToSnakeCase(typeName)] then
+            return true, nil, "primitive"
+        end
+        
+        for definitionName, definition in pairs(definitions) do
+            for _, enum in ipairs(definition.enums) do
+                if enum.name == typeName then
+                    return true, definitionName, "enum"
+                end
+            end
+    
+            for _, bitfield in ipairs(definition.bitfields) do
+                if bitfield.name == typeName then
+                    return true, definitionName, "bitfield"
+                end
+            end
+    
+            for _, struct in ipairs(definition.structs) do
+                if struct.name == typeName then
+                    return true, definitionName, "struct"
+                end
+            end
+        end
+        return false, nil, nil
+    end
+
+    -- Check if everything is ok
+    for definitionName, definition in pairs(definitions) do
+        for _, struct in ipairs(definition.structs) do
+            if struct.inherits then
+                local exists, dependency, dependencyType = findType(struct.inherits)
+                if not exists or dependencyType ~= "struct" then
+                    error("Struct " .. struct.name .. " inherits from " .. struct.inherits .. " which does not exist or is not a struct")
+                end
+                if dependency then
+                    if not dependencies[definitionName] then
+                        dependencies[definitionName] = {}
+                    end
+                    if not dependencies[definitionName][dependency] then
+                        dependencies[definitionName][dependency] = {}
+                    end
+                    dependencies[definitionName][dependency][struct.inherits] = dependencyType
+                end
+            end
+            for _, field in pairs(struct.fields) do
+                if field.type == "tag_reflexive" then
+                    local exists, dependency, dependencyType = findType(field.struct)
+                    if not exists or dependencyType ~= "struct" then
+                        error("Struct " .. struct.name .. " has a reflexive field with an unknown struct type: " .. field.struct)
+                    end
+                    if dependency then
+                        if not dependencies[definitionName] then
+                            dependencies[definitionName] = {}
+                        end
+                        if not dependencies[definitionName][dependency] then
+                            dependencies[definitionName][dependency] = {}
+                        end
+                        dependencies[definitionName][dependency][field.struct] = dependencyType
+                    end
+                else
+                    local exists, dependency, dependencyType = findType(field.type)
+                    if not exists then
+                        error("Struct " .. struct.name .. " has a field with an unknown type: " .. field.type)
+                    end
+                    if dependency then
+                        if not dependencies[definitionName] then
+                            dependencies[definitionName] = {}
+                        end
+                        if not dependencies[definitionName][dependency] then
+                            dependencies[definitionName][dependency] = {}
+                        end
+                        dependencies[definitionName][dependency][field.type] = dependencyType
+                    end
+                end
+            end
+        end
+    end
+
+    return dependencies
+end
+
 return {
-    parseDefinition = parseDefinition,
-    snakeCaseToCamelCase = snakeCaseToCamelCase,
     camelCaseToSnakeCase = camelCaseToSnakeCase,
-    dashAndSentenceToSnakeCase = dashAndSentenceToSnakeCase,
     normalToSnakeCase = normalToSnakeCase,
-    dependencies = dependencies,
-    dataTypes = dataTypes
+    snakeCaseToCamelCase = snakeCaseToCamelCase,
+    dashAndSentenceToSnakeCase = dashAndSentenceToSnakeCase,
+    parseDefinition = parseDefinition,
+    getDependencies = getDependencies
 }
-
-
