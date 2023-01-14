@@ -51,7 +51,7 @@ namespace Balltze::Features {
                 std::filesystem::create_directory(*path);
             }
             else {
-                path = std::filesystem::path("maps");
+                path = Engine::get_path() / "chimera" / std::filesystem::path("maps");
             }
         }
         return *path;
