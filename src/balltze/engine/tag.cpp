@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <optional>
-#include <balltze/engine/version.hpp>
+#include <balltze/engine/core.hpp>
 #include <balltze/engine/tag.hpp>
 
 namespace Balltze::Engine {

@@ -18,7 +18,7 @@ namespace Balltze {
         /**
          * Set up loading maps outside of the maps directory
          */
-        void set_up_map_loading();
+        void set_up_tag_data_importing();
     }
 
     /**

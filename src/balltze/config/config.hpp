@@ -3,12 +3,10 @@
 #ifndef BALLTZE__CONFIG__CONFIG_HPP
 #define BALLTZE__CONFIG__CONFIG_HPP
 
-#include <nlohmann/json.hpp>
 #include <string>
 #include <optional>
 #include <filesystem>
 #include <balltze/config.hpp>
-#include <balltze/engine/widget.hpp>
 
 namespace Balltze::Config {
     /**

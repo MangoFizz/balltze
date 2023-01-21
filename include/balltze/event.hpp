@@ -111,3 +111,4 @@ namespace Balltze::Event {
 #include "events/tick.hpp"
 #include "events/game_input.hpp"
 #include "events/hud_hold_to_action_message.hpp"
+#include "events/map_file_load.hpp"

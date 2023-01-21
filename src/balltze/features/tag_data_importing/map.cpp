@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <cstring>
-
 #include <balltze/config.hpp>
-#include <balltze/engine/map.hpp>
-#include <balltze/engine/path.hpp>
-#include <balltze/engine/version.hpp>
+#include <balltze/engine.hpp>
 #include "map.hpp"
 
 namespace Balltze::Features {

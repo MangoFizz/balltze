@@ -49,13 +49,13 @@ add_library(balltze MODULE
     src/balltze/event/game_input.S
     src/balltze/event/hud_hold_to_action_message.cpp
     src/balltze/event/hud_hold_to_action_message.S
+    src/balltze/event/map_file_load.cpp
     src/balltze/event/tick.cpp
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
-    src/balltze/features/map_loading/laa.cpp
-    src/balltze/features/map_loading/map.cpp
-    src/balltze/features/map_loading/map_loading.cpp
-    src/balltze/features/map_loading/map_loading.S
+    src/balltze/features/tag_data_importing/map.cpp
+    src/balltze/features/tag_data_importing/tag_data_importing.cpp
+    src/balltze/features/tag_data_importing/tag_data_importing.S
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp

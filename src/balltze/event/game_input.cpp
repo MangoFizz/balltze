@@ -3,7 +3,7 @@
 #ifndef BALLTZE__EVENT__GAME_INPUT_HPP
 #define BALLTZE__EVENT__GAME_INPUT_HPP
 
-#include <balltze/engine/widget.hpp>
+#include <balltze/engine/user_interface.hpp>
 #include <balltze/event.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>

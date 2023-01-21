@@ -8,7 +8,7 @@
 _map_loading_asm:
     push dword ptr [esp+0x38]
     push dword ptr [esp+0x2C]
-    call _do_map_loading_handling
+    call _dispatch_map_file_load_event_before
     add esp, 8
     ret
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__MAP_LOADING__MAP_HPP
-#define BALLTZE__MAP_LOADING__MAP_HPP
+#ifndef BALLTZE__TAG_DATA_IMPORTING__MAP_HPP
+#define BALLTZE__TAG_DATA_IMPORTING__MAP_HPP
 
 #include <cstdint>
 #include <optional>

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <windows.h>
-#include <balltze/engine/window.hpp>
+#include <balltze/engine/core.hpp>
 #include <balltze/output.hpp>
 
 namespace Balltze {

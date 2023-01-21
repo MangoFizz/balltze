@@ -5,9 +5,7 @@
 #include <balltze/config.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/output.hpp>
-#include <balltze/engine/hud.hpp>
-#include <balltze/engine/map.hpp>
-#include <balltze/engine/widget.hpp>
+#include <balltze/engine.hpp>
 #include <balltze/event.hpp>
 #include "../config/config.hpp"
 

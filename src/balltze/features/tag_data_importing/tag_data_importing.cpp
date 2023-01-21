@@ -9,15 +9,13 @@
 #include <functional>
 #include <numeric>
 
-#include <balltze/engine/map.hpp>
-#include <balltze/engine/path.hpp>
-#include <balltze/engine/tag.hpp>
+#include <balltze/engine.hpp>
 #include <balltze/output.hpp>
+#include <balltze/event.hpp>
+#include <balltze/feature.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
-#include "laa.hpp"
 #include "map.hpp"
-#include "map_loading.hpp"
 
 namespace Balltze::Features {
     using namespace Engine;
@@ -29,6 +27,7 @@ namespace Balltze::Features {
         MapHeader header;
         TagDataHeader tag_data_header;
         bool secondary = false;
+        std::vector<std::pair<std::string, Engine::TagClassInt>> tags_to_load;
 
         std::size_t tag_data_size() {
             return this->header.tag_data_size;
@@ -55,7 +54,6 @@ namespace Balltze::Features {
     static std::size_t tag_data_cursor = 0;
 
     extern "C" {
-        void map_loading_asm();
         void on_read_map_file_data_asm();
         void on_model_data_buffer_alloc_asm();
     }
@@ -257,22 +255,20 @@ namespace Balltze::Features {
         tag_data_header.tag_array = tag_array.data();
     }
 
-    void append_map_tags(const char *map_name) {
+    void import_tag_from_map(std::string map_name, std::string tag_path, Engine::TagClassInt tag_class) {
         for(auto &map : loaded_maps) {
             if(map.name == map_name) {
+                map.tags_to_load.emplace_back(tag_path, tag_class);
                 return;
             }
         }
-        loaded_maps.emplace_back(map_name, true);
+        auto &map = loaded_maps.emplace_back(map_name, true);
+        map.tags_to_load.emplace_back(tag_path, tag_class);
     }
 
-    extern "C" void do_map_loading_handling(char *map_path, const char *map_name) {
-        // Clear loaded maps and load the map we're loading
+    void on_map_file_load(Event::MapFileLoadEvent const &event) {
         loaded_maps.clear();
-        loaded_maps.emplace_front(map_name, false);
-
-        // Load ui.map tags by default
-        append_map_tags("ui");
+        loaded_maps.emplace_back(event.args.map_name, false);
     }
 
     extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {        
@@ -344,9 +340,9 @@ namespace Balltze::Features {
         }
     }
 
-    void set_up_map_loading() {
-        auto *load_map_path_sig = Memory::get_signature("map_load_path");
-        auto *load_map_path_hook = Memory::hook_function(load_map_path_sig->data(), map_loading_asm);
+    void set_up_tag_data_importing() {
+        Event::NonCancellableConstEventDelegate<Event::MapFileLoadEvent> on_map_file_load_delegate = on_map_file_load;
+        Event::MapFileLoadEvent::subscribe_const(on_map_file_load_delegate);
 
         auto *read_cache_file_data_sig = Memory::get_signature("read_map_file_data");
         auto *read_cache_file_data_hook = Memory::hook_function(read_cache_file_data_sig->data(), on_read_map_file_data_asm);

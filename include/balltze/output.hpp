@@ -5,7 +5,7 @@
 
 #include <windows.h>
 #include <cstdio>
-#include "engine/console.hpp"
+#include "engine/core.hpp"
 #include "api.hpp"
 
 namespace Balltze {
