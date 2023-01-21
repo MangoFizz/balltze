@@ -1,1 +1,2 @@
 lua/modules/** linguist-vendored
+src/lua/** linguist-vendored

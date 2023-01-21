@@ -13,6 +13,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Include stuff
 include(lua/code_gen/tag_definitions.cmake)
+include(src/lua/lua.cmake)
 
 # Set include path
 include_directories(include/)
@@ -70,7 +71,7 @@ set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -sta
 
 add_dependencies(balltze tag-definitions-headers tag-functions)
 
-target_link_libraries(balltze tag-functions)
+target_link_libraries(balltze tag-functions lua53)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
