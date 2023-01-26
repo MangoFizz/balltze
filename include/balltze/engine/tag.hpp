@@ -225,6 +225,12 @@ namespace Balltze::Engine {
      * @return           pointer to the tag if found, nullptr if not
      */
     BALLTZE_API Tag *get_tag(std::string path, std::uint32_t tag_class) noexcept;
+
+    /**
+     * Get tag class from a given string
+     * @return  A tag class int
+    */
+    TagClassInt tag_class_from_string(std::string tag_class_name) noexcept;
 }
 
 #endif

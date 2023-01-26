@@ -6,7 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <balltze/memory.hpp>
-#include <balltze/engine/version.hpp>
+#include <balltze/engine/core.hpp>
 #include "codefinder.hpp"
 
 namespace Balltze::Memory {

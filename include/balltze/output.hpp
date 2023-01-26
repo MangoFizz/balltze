@@ -11,6 +11,8 @@
 namespace Balltze {
     using ConsoleColor = Engine::ColorARGB;
 
+    #define CONSOLE_COLOR_ERROR ConsoleColor{1.0, 0.0, 0.0, 1.0}
+
     /**
      * Create a dialog with a given message
      * @param message   Message to display

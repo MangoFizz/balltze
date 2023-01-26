@@ -243,8 +243,13 @@ namespace Balltze::Features {
                 tag_array.reserve(tag_array.size() + map_tag_data_header.tag_count);
 
                 // Load tags
-                for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
-                    load_tag(tag_array_raw + i, false);
+                for(auto &tag : map.tags_to_load) {
+                    for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
+                        std::string path = translate_address(tag_array_raw[i].path);
+                        if(path == tag.first && tag_array_raw[i].primary_class == tag.second) {
+                            load_tag(tag_array_raw + i, true);
+                        }
+                    }
                 }
             }
 
@@ -258,6 +263,11 @@ namespace Balltze::Features {
     void import_tag_from_map(std::string map_name, std::string tag_path, Engine::TagClassInt tag_class) {
         for(auto &map : loaded_maps) {
             if(map.name == map_name) {
+                for(auto &tag : map.tags_to_load) {
+                    if(tag.first == tag_path && tag.second == tag_class) {
+                        return;
+                    }
+                }
                 map.tags_to_load.emplace_back(tag_path, tag_class);
                 return;
             }

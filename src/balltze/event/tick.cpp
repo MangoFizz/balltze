@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <chrono>
-#include <balltze/engine/tick.hpp>
+#include <balltze/engine/core.hpp>
 #include <balltze/event.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>

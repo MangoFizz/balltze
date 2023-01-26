@@ -30,7 +30,7 @@ namespace Balltze {
             Features::set_up_hud_button_prompts();
 
 #ifdef BALLTZE_ENABLE_EXPERIMENTAL
-            Features::set_up_map_loading();
+            Features::set_up_tag_data_importing();
 #endif
         }
         catch(...) {

@@ -17,6 +17,7 @@ include(src/lua/lua.cmake)
 
 # Set include path
 include_directories(include/)
+include_directories(src/lua)
 
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
@@ -30,21 +31,14 @@ endif()
 add_library(balltze MODULE
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
-    src/balltze/engine/console.cpp
-    src/balltze/engine/console.S
-    src/balltze/engine/hud.cpp
-    src/balltze/engine/hud.S
+    src/balltze/engine/core.cpp
+    src/balltze/engine/core.S
     src/balltze/engine/map.cpp
     src/balltze/engine/multiplayer.cpp
-    src/balltze/engine/path.cpp
-    src/balltze/engine/resolution.cpp
     src/balltze/engine/tag.cpp
     src/balltze/engine/tag.S
-    src/balltze/engine/tick.cpp
-    src/balltze/engine/version.cpp
-    src/balltze/engine/widget.cpp
-    src/balltze/engine/widget.S
-    src/balltze/engine/window.cpp
+    src/balltze/engine/user_interface.cpp
+    src/balltze/engine/user_interface.S
     src/balltze/event/event.cpp
     src/balltze/event/game_input.cpp
     src/balltze/event/game_input.S
@@ -57,6 +51,7 @@ add_library(balltze MODULE
     src/balltze/features/tag_data_importing/map.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.S
+    src/balltze/lua_library/library.cpp
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp
