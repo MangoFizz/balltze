@@ -1,7 +1,5 @@
 -- SPDX-License-Identifier: GPL-3.0-only
 
-local inspect = require "inspect"
-
 ---@class DefinitionElement
 ---@field name string
 ---@field class string

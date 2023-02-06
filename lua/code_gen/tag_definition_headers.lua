@@ -13,8 +13,6 @@ local args = argsParser:parse()
 local files = args.files
 local outputDirectory = args.output_directory
 
-local inspect = require("inspect")
-
 ---Generate a header file for a tag definition
 ---@param definitionName string
 ---@param tagDefinition TagDefinition
