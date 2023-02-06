@@ -51,7 +51,7 @@ namespace Balltze::Engine {
      * @param color   Color to use in the message
      * @param message Message to use
      */
-    BALLTZE_API void console_print(std::string message, ColorARGB color) noexcept;
+    BALLTZE_API void console_print(std::string message, ColorARGB color = {1.0f, 1.0f, 1.0f, 1.0f}) noexcept;
 
     /**
      * Get the Halo profile path

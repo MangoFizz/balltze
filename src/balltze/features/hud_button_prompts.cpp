@@ -99,7 +99,7 @@ namespace Balltze::Features {
         }
         else {
             for(auto &button_icon : button_icons) {
-                if(button_icon.button.index == button.index) {
+                if(button_icon.button.index == button.index && button_icon.button.type == button.type && button_icon.button.axis_direction == button.axis_direction) {
                     return &button_icon;
                 }
             }

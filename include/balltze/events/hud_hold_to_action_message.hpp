@@ -29,7 +29,7 @@ namespace Balltze::Event {
         };
 
         enum AxisDirection : std::uint16_t {
-            POSITIVE,
+            POSITIVE = 1,
             NEGATIVE
         };
 
