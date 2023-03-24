@@ -28,7 +28,7 @@ if(BALLTZE_ENABLE_EXPERIMENTAL)
     add_definitions(-DBALLTZE_ENABLE_EXPERIMENTAL)
 endif()
 
-add_library(balltze MODULE
+add_library(balltze SHARED
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
     src/balltze/engine/core.cpp
@@ -52,6 +52,7 @@ add_library(balltze MODULE
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.S
     src/balltze/lua_library/library.cpp
+    src/balltze/math/geometry.cpp
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp

@@ -7,21 +7,20 @@
 
 namespace Balltze {
     namespace Memory {
-        /**
-         * Find all signatures
-         */
         void find_signatures();
     }
 
     namespace Event {
-        /**
-         * Set up events
-         */
         void set_up_events();
+    }
+
+    namespace PluginsLoader {
+        void load_plugins();
     }
 
     using namespace Event;
     using namespace Memory;
+    using namespace PluginsLoader;
 
     static EventListenerHandle<TickEvent> firstTickListener;
 
@@ -37,6 +36,7 @@ namespace Balltze {
             find_signatures();
             set_up_events();
             set_up_features();
+            load_plugins();
         }
         catch(std::runtime_error &e) {
             show_message_box("Balltze failed to initialize: %s", e.what());
