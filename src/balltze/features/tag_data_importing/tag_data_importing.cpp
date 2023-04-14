@@ -10,9 +10,9 @@
 #include <numeric>
 
 #include <balltze/engine.hpp>
-#include <balltze/output.hpp>
+#include <balltze/utils.hpp>
 #include <balltze/event.hpp>
-#include <balltze/feature.hpp>
+#include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
 #include "map.hpp"

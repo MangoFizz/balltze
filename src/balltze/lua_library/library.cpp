@@ -8,8 +8,8 @@
 #include <balltze/api.hpp>
 #include <balltze/engine.hpp>
 #include <balltze/event.hpp>
-#include <balltze/feature.hpp>
-#include <balltze/output.hpp>
+#include <balltze/features.hpp>
+#include <balltze/utils.hpp>
 #include "../version.hpp"
 
 namespace Balltze::LuaLibrary {

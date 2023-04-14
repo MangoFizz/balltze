@@ -46,12 +46,35 @@ namespace Balltze::Engine {
         ENGINE_TYPE_DEMO
     };
 
+    #define CONSOLE_COLOR_ERROR Balltze::Engine::ColorARGB{1.0, 0.0, 0.0, 1.0}
+
     /**
      * Display a message of a color
      * @param color   Color to use in the message
      * @param message Message to use
      */
     BALLTZE_API void console_print(std::string message, ColorARGB color = {1.0f, 1.0f, 1.0f, 1.0f}) noexcept;
+
+    /**
+     * Display a message of a color
+     * @param color  Color to use in the message
+     * @param format String format (passed to snprintf)
+     * @param args   Additional arguments to pass
+     */
+    template<typename... Args> void console_printf(const ColorARGB &color, const char *format, Args... args) noexcept {
+        char message[256];
+        std::snprintf(message, sizeof(message), format, args...);
+        console_print(message, color);
+    }
+
+    /**
+     * Display a message (white)
+     * @param format String format (passed to snprintf)
+     * @param args   Additional arguments to pass
+     */
+    template<typename... Args> void console_printf(const char *format, Args... args) noexcept {
+        console_printf(ColorARGB{1.0, 1.0, 1.0, 1.0}, format, args...);
+    }
 
     /**
      * Get the Halo profile path

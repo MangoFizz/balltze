@@ -7,7 +7,6 @@
 #define BALLTZE_API __declspec(dllexport)
 #else
 #define BALLTZE_API __declspec(dllimport)
-#define BALLTZE_PLUGIN_API extern "C" __declspec(dllexport)
 #endif
 
 #endif

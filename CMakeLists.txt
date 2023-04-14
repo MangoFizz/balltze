@@ -57,8 +57,10 @@ add_library(balltze SHARED
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp
+    src/balltze/output/logger.cpp
     src/balltze/output/messaging.cpp
-    src/balltze/plugins_loader/loader.cpp
+    src/balltze/plugins/loader.cpp
+    src/balltze/plugins/plugin.cpp
     src/balltze/balltze.cpp
 )
 

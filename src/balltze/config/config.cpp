@@ -4,7 +4,6 @@
 #include <nlohmann/json.hpp>
 #include <balltze/config.hpp>
 #include <balltze/engine.hpp>
-#include <balltze/output.hpp>
 #include "config.hpp"
 
 namespace fs = std::filesystem;

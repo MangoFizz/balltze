@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <stdexcept>
-#include <balltze/output.hpp>
+#include <balltze/utils.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/event.hpp>

@@ -8,7 +8,7 @@
 #include <locale>
 #include <codecvt>
 #include <cstring>
-#include <balltze/output.hpp>
+#include <balltze/utils.hpp>
 #include <balltze/config.hpp>
 
 namespace Balltze::Config {

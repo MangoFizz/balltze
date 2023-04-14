@@ -2,7 +2,7 @@
 
 #include <windows.h>
 #include <balltze/engine/core.hpp>
-#include <balltze/output.hpp>
+#include <balltze/utils.hpp>
 
 namespace Balltze {
     void show_message_box_raw(unsigned int type, const char *message) noexcept {

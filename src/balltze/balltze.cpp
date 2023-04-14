@@ -2,44 +2,40 @@
 
 #include <windows.h>
 #include <balltze/event.hpp>
-#include <balltze/output.hpp>
+#include <balltze/logger.hpp>
+#include <balltze/utils.hpp>
 #include "features/features.hpp"
+#include "event/event.hpp"
+#include "memory/memory.hpp"
+#include "plugins/loader.hpp"
 
 namespace Balltze {
-    namespace Memory {
-        void find_signatures();
-    }
-
-    namespace Event {
-        void set_up_events();
-    }
-
-    namespace PluginsLoader {
-        void load_plugins();
-    }
-
     using namespace Event;
-    using namespace Memory;
-    using namespace PluginsLoader;
-
+    
+    Logger logger("Balltze");
+    
     static EventListenerHandle<TickEvent> firstTickListener;
 
     static void first_tick(TickEvent const &context) noexcept {
-        // show_message_box("[%s] Tick #%d in %d milliseconds", context.time == EVENT_TIME_BEFORE ? "Before" : "After", context.args.tick_count, context.args.delta_time_ms);
         if(context.time == EVENT_TIME_AFTER) {
+            logger.debug("First tick");
             firstTickListener.remove();
         }
     }
 
     static void initialize_balltze() noexcept {
+        logger.info << logger.endl;
+
         try {
-            find_signatures();
-            set_up_events();
-            set_up_features();
-            load_plugins();
+            Memory::find_signatures();
+            Event::set_up_events();
+            Features::set_up_features();
+            Plugins::load_plugins();
+
+            logger.info("initialized successfully!");
         }
         catch(std::runtime_error &e) {
-            show_message_box("Balltze failed to initialize: %s", e.what());
+            logger.fatal("failed to initialize: %s", e.what());
             std::terminate();
         }
         firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);

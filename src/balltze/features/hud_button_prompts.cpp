@@ -4,7 +4,7 @@
 #include <optional>
 #include <balltze/config.hpp>
 #include <balltze/memory.hpp>
-#include <balltze/output.hpp>
+#include <balltze/utils.hpp>
 #include <balltze/engine.hpp>
 #include <balltze/event.hpp>
 #include "../config/config.hpp"
