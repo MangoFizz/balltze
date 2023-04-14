@@ -6,6 +6,7 @@
 #include <string>
 #include <filesystem>
 #include <windows.h>
+#include <lua.hpp>
 #include <balltze/plugin.hpp>
 
 namespace Balltze::Plugins {
@@ -31,6 +32,7 @@ namespace Balltze::Plugins {
         std::string author() const;
         VersionNumber version() const;
         VersionNumber balltze_version() const;
+        bool reloadable() const;
         std::filesystem::path directory() const;
 
         virtual PluginInitResult init() = 0;
@@ -48,6 +50,19 @@ namespace Balltze::Plugins {
         PluginInitResult init();
         void load();
         DLLPlugin(std::filesystem::path dlL_file);
+    };
+
+    class LuaPlugin : public Plugin {
+    private:
+        lua_State *m_state;
+
+        void read_metadata();
+
+    public:
+        lua_State *state();
+        PluginInitResult init();
+        void load();
+        LuaPlugin(std::filesystem::path lua_file);
     };
 
     std::filesystem::path get_plugins_path() noexcept;
