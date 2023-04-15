@@ -7,6 +7,7 @@
 
 namespace Balltze::Plugins {
     void load_plugins() noexcept;
+    LuaPlugin *get_lua_plugin(lua_State *state) noexcept;
 }
 
 #endif

@@ -27,13 +27,13 @@ namespace Balltze::Plugins {
         virtual void read_metadata() = 0;
 
     public:
-        std::string filename() const;
-        std::string name() const;
-        std::string author() const;
-        VersionNumber version() const;
-        VersionNumber balltze_version() const;
-        bool reloadable() const;
-        std::filesystem::path directory() const;
+        std::string filename() const noexcept;
+        std::string name() const noexcept;
+        std::string author() const noexcept;
+        VersionNumber version() const noexcept;
+        VersionNumber balltze_version() const noexcept;
+        bool reloadable() const noexcept;
+        std::filesystem::path directory() const noexcept;
 
         virtual PluginInitResult init() = 0;
         virtual void load() = 0;
@@ -55,11 +55,15 @@ namespace Balltze::Plugins {
     class LuaPlugin : public Plugin {
     private:
         lua_State *m_state;
+        std::vector<std::unique_ptr<Logger>> m_loggers;
 
         void read_metadata();
 
     public:
-        lua_State *state();
+        lua_State *state() noexcept;
+        void add_logger(std::string name);
+        void remove_logger(std::string name);
+        Logger *get_logger(std::string name) noexcept;
         PluginInitResult init();
         void load();
         LuaPlugin(std::filesystem::path lua_file);

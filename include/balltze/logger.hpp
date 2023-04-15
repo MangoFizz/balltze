@@ -76,13 +76,15 @@ namespace Balltze {
         LoggerStream error;
         LoggerStream fatal;
 
+        std::string name() const noexcept;
+
         void lock();
         void try_lock();
         void unlock();
 
         Logger(std::string name = {}) noexcept;
         
-        inline void set_file(std::optional<std::string> file_path, bool append = true) {
+        inline void set_file(std::optional<std::filesystem::path> file_path, bool append = true) {
             try {
                 if(file_path) {
                     set_file_impl(get_current_module(), *file_path, append);
@@ -110,7 +112,7 @@ namespace Balltze {
         std::optional<std::filesystem::path> m_file_path;
         std::mutex m_mutex;
 
-        void set_file_impl(HMODULE module, std::string file_path, bool append);
+        void set_file_impl(HMODULE module, std::filesystem::path file_path, bool append);
 
         static void endl_impl(HMODULE module, LoggerStream &ls);
     };

@@ -45,6 +45,10 @@ namespace Balltze {
         : m_logger(logger), m_level(level), m_prefix(prefix), m_console_format(console_format), m_file_format(file_format), m_ingame_format(ingame_format), m_console_style(console_style) {
     }
 
+    std::string Logger::name() const noexcept {
+        return m_name;
+    }
+
     void Logger::lock() {
         m_mutex.lock();
     }
@@ -70,7 +74,7 @@ namespace Balltze {
         #undef CREATE_LOGGER_STREAM
     }
 
-    void Logger::set_file_impl(HMODULE module, std::string file_path, bool append) {
+    void Logger::set_file_impl(HMODULE module, std::filesystem::path file_path, bool append) {
         
     }
 

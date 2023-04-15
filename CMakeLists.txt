@@ -61,6 +61,11 @@ add_library(balltze SHARED
     src/balltze/output/messaging.cpp
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
+    src/balltze/plugins/lua/api.cpp
+    src/balltze/plugins/lua/helpers.cpp
+    src/balltze/plugins/lua/lfmt.cpp
+    src/balltze/plugins/lua/lfmt.c
+    src/balltze/plugins/lua/logger.cpp
     src/balltze/balltze.cpp
 )
 
