@@ -81,9 +81,8 @@ namespace Balltze::Plugins {
                 if(llogger) {
                     auto plugin_dir = plugin->directory();
                     auto file_path = plugin_dir / file;
-                    auto absolute_path = std::filesystem::absolute(file_path);
-                    if(absolute_path.string().find(plugin_dir.string()) == 0) {
-                        llogger->set_file(absolute_path, append);
+                    if(plugin->path_is_valid(file_path)) {
+                        llogger->set_file(file_path, append);
                     }
                     else {
                         logger.warning("Could not set logger file to {} for plugin {} because it is not in the plugin directory.", file, plugin->filename());

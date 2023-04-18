@@ -81,4 +81,15 @@ namespace Balltze::Plugins {
         }
         return nullptr;
     }
+
+    DLLPlugin *get_dll_plugin(HMODULE handle) noexcept {
+        for(auto &plugin : plugins) {
+            if(auto dll_plugin = dynamic_cast<DLLPlugin *>(plugin.get())) {
+                if(dll_plugin->handle() == handle) {
+                    return dll_plugin;
+                }
+            }
+        }
+        return nullptr;
+    }
 }

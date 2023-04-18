@@ -5,8 +5,10 @@
 
 #include <string>
 #include <filesystem>
+#include <vector>
 #include <windows.h>
 #include <lua.hpp>
+#include <balltze/logger.hpp>
 #include <balltze/plugin.hpp>
 
 namespace Balltze::Plugins {
@@ -34,6 +36,8 @@ namespace Balltze::Plugins {
         VersionNumber balltze_version() const noexcept;
         bool reloadable() const noexcept;
         std::filesystem::path directory() const noexcept;
+        bool path_is_valid(std::filesystem::path path) const noexcept;
+        void init_data_directory();
 
         virtual PluginInitResult init() = 0;
         virtual void load() = 0;

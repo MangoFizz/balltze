@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <balltze/logger.hpp>
+#include <balltze/engine/core.hpp>
 #include <fmt/chrono.h>
 #include <fmt/core.h>
 #include <fmt/os.h>
 #include <fmt/printf.h>
+#include "../plugins/loader.hpp"
 
 namespace Balltze {
     static std::string name_for_log_level(Logger::LogLevel level) noexcept {
@@ -41,6 +43,23 @@ namespace Balltze {
         }
     }
 
+    static Engine::ColorARGB color_for_log_level(Logger::LogLevel level) noexcept {
+        switch(level) {
+            case Logger::LOG_LEVEL_DEBUG:
+                return {0.65, 1.0, 1.0, 1.0};
+            case Logger::LOG_LEVEL_INFO:
+                return {1.0, 1.0, 1.0, 1.0};
+            case Logger::LOG_LEVEL_WARNING:
+                return {1.0, 1.0, 1.0, 0.125};
+            case Logger::LOG_LEVEL_ERROR:
+                return {1.0, 1.0, 0.25, 0.25};
+            case Logger::LOG_LEVEL_FATAL:
+                return {1.0, 1.0, 0.35, 0.35};
+            default:
+                return {1.0, 1.0, 1.0, 1.0};
+        }
+    }
+
     Logger::LoggerStream::LoggerStream(Logger *logger, LogLevel level, std::string prefix, std::string console_format, std::string file_format, std::string ingame_format, fmt::text_style console_style) noexcept
         : m_logger(logger), m_level(level), m_prefix(prefix), m_console_format(console_format), m_file_format(file_format), m_ingame_format(ingame_format), m_console_style(console_style) {
     }
@@ -63,7 +82,7 @@ namespace Balltze {
 
     Logger::Logger(std::string name) noexcept : m_name(name) {
         #define CREATE_LOGGER_STREAM(name, level) \
-            name = LoggerStream(this, Logger::level, name_for_log_level(Logger::level), "{} {} {} {}\n", "[{:%Y-%m-%d %H:%M:%S} {}]{} {}\n", "[{}{}]{} {}\n", style_for_log_level(Logger::level))
+            name = LoggerStream(this, Logger::level, name_for_log_level(Logger::level), "{:%H:%M:%S} {} [{}] {}\n", "{:%Y-%m-%d %H:%M:%S} {} [{}] {}\n", "[{}] {}\n", style_for_log_level(Logger::level))
 
         CREATE_LOGGER_STREAM(debug, LOG_LEVEL_DEBUG);
         CREATE_LOGGER_STREAM(info, LOG_LEVEL_INFO);
@@ -75,17 +94,55 @@ namespace Balltze {
     }
 
     void Logger::set_file_impl(HMODULE module, std::filesystem::path file_path, bool append) {
-        
+        auto balltze_module = get_current_module();
+        if(module == balltze_module) {
+            m_file_path = file_path;
+        }
+        else {
+            auto *plugin = Plugins::get_dll_plugin(module);
+            if(plugin) {
+                if(plugin->path_is_valid(file_path)) {
+                    try {
+                        plugin->init_data_directory();
+                    }
+                    catch(std::exception &e) {
+                        throw;
+                    }
+                    m_file_path = file_path;
+                }
+                else {
+                    throw std::runtime_error("Invalid file path");
+                }
+            }
+            else {
+                m_file_path = file_path;
+            }
+        }
+        m_append = append;
+
+        m_file.open(*m_file_path, std::ios::out | (m_append ? std::ios::app : std::ios::trunc));
+        if(!m_file.is_open()) {
+            throw std::runtime_error("Failed to create/open file");
+        }
     }
 
     void Logger::endl_impl(HMODULE module, LoggerStream &stream) {
+        if(stream.m_level == LOG_LEVEL_DEBUG && stream.m_logger->m_mute_debug) {
+            return;
+        }
+
+        print_console(stream);
+        print_file(stream);
+        print_ingame(stream);
+
+        stream.m_stream.str("");
+        stream.m_stream.clear();
+    }
+
+    void Logger::print_console(LoggerStream &stream) {
         auto name = stream.m_logger->m_name;
         auto content = stream.m_stream.str();
         auto time = fmt::format("{:%H:%M:%S}", fmt::localtime(std::time(nullptr)));
-        
-        if(!name.empty()) {
-            name = "[" + name + "]";
-        }
 
         auto apply_format = [&](fmt::text_style style, std::string text) {
             fmt::basic_memory_buffer<char> buffer;
@@ -124,8 +181,35 @@ namespace Balltze {
         else {
             fmt::print("\n");
         }
+    }
 
-        stream.m_stream.str("");
-        stream.m_stream.clear();
+    void Logger::print_file(LoggerStream &stream) {
+        auto *logger = stream.m_logger;
+
+        if(logger->m_file.is_open()) {
+            auto name = logger->m_name;
+            auto content = stream.m_stream.str();
+            auto time = fmt::localtime(std::time(nullptr));
+
+            if(!content.empty()) {
+                logger->m_file << fmt::format(stream.m_file_format, time, stream.m_prefix, name, content);
+                logger->m_file.flush();
+            }
+        }
+    }
+
+    void Logger::print_ingame(LoggerStream &stream) {
+        if(stream.m_logger->m_mute_ingame) {
+            return;
+        }
+
+        auto name = stream.m_logger->m_name;
+        auto content = stream.m_stream.str();
+
+        if(!content.empty()) {
+            auto color = color_for_log_level(stream.m_level);
+            auto text = fmt::format(stream.m_ingame_format, name, content);
+            Engine::console_print(text, color);
+        }
     }
 }

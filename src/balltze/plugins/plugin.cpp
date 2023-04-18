@@ -43,6 +43,16 @@ namespace Balltze::Plugins {
         return m_directory;
     }
 
+    bool Plugin::path_is_valid(std::filesystem::path path) const noexcept {
+        return std::filesystem::absolute(path).string().find(m_directory.string()) != std::string::npos;
+    }
+
+    void Plugin::init_data_directory() {
+        if(!std::filesystem::exists(m_directory)) {
+            std::filesystem::create_directory(m_directory);
+        }
+    }
+
     void DLLPlugin::read_metadata() {
         auto metadata_proc = GetProcAddress(m_handle, "plugin_metadata");
         if(metadata_proc) {
@@ -199,7 +209,7 @@ namespace Balltze::Plugins {
         throw std::runtime_error("Logger does not exist.");
     }
 
-    Logger* LuaPlugin::get_logger(std::string name) noexcept {
+    Logger *LuaPlugin::get_logger(std::string name) noexcept {
         for(auto& logger : m_loggers) {
             if(logger->name() == name) {
                 return logger.get();

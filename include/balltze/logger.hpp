@@ -5,6 +5,7 @@
 
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <filesystem>
 #include <mutex>
 #include <optional>
@@ -77,12 +78,15 @@ namespace Balltze {
         LoggerStream fatal;
 
         std::string name() const noexcept;
+        std::optional<std::filesystem::path> file() const noexcept;
+        bool mute_ingame(bool setting) noexcept;
+        bool mute_debug(bool setting) noexcept;
 
         void lock();
         void try_lock();
         void unlock();
 
-        Logger(std::string name = {}) noexcept;
+        Logger(std::string name) noexcept;
         
         inline void set_file(std::optional<std::filesystem::path> file_path, bool append = true) {
             try {
@@ -111,10 +115,17 @@ namespace Balltze {
         std::string m_name;
         std::optional<std::filesystem::path> m_file_path;
         std::mutex m_mutex;
+        bool m_append;
+        bool m_mute_ingame;
+        bool m_mute_debug;
+        std::ofstream m_file;
 
         void set_file_impl(HMODULE module, std::filesystem::path file_path, bool append);
 
-        static void endl_impl(HMODULE module, LoggerStream &ls);
+        static void endl_impl(HMODULE module, LoggerStream &stream);
+        static void print_console(LoggerStream &stream);
+        static void print_file(LoggerStream &stream);
+        static void print_ingame(LoggerStream &stream);
     };
 }
 
