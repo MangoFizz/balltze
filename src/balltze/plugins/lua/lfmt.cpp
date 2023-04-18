@@ -12,7 +12,7 @@ namespace Balltze::Plugins {
         { nullptr, nullptr }
     };
 
-    void lua_set_fmt_functions(lua_State *state) noexcept {
+    void lua_set_fmt_table(lua_State *state) noexcept {
         lua_create_functions_table(state, "fmt", fmt_functions);
     }
 }

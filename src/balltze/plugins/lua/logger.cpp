@@ -45,7 +45,7 @@ namespace Balltze::Plugins {
                 } \
                 else { \
                     logger.warning("Invalid number of arguments for logger." #name "."); \
-                    return luaL_error(state, "Invalid number of arguments."); \
+                    return luaL_error(state, "Invalid number of arguments for logger print function."); \
                 } \
             } \
             else { \
@@ -96,7 +96,7 @@ namespace Balltze::Plugins {
             }
             else {
                 logger.warning("Invalid number of arguments for logger.set_file.");
-                return luaL_error(state, "Invalid number of arguments.");
+                return luaL_error(state, "Invalid number of arguments for logger.set_file.");
             }
         }
         else {
@@ -126,6 +126,11 @@ namespace Balltze::Plugins {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             auto *logger_name = luaL_checkstring(state, 1);
+
+            if(std::strlen(logger_name) == 0) {
+                return luaL_error(state, "Invalid logger name: name is empty.");
+            }
+
             try {
                 plugin->add_logger(logger_name);
 
@@ -175,7 +180,7 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void lua_set_logger_functions(lua_State *state) noexcept {
+    void lua_set_logger_table(lua_State *state) noexcept {
         lua_create_functions_table(state, "logger", logger_functions);
     }
 }

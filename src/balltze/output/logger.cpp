@@ -68,6 +68,14 @@ namespace Balltze {
         return m_name;
     }
 
+    void Logger::mute_debug(bool setting) noexcept {
+        m_mute_debug = setting;
+    }
+
+    void Logger::mute_ingame(bool setting) noexcept {
+        m_mute_ingame = setting;
+    }
+
     void Logger::lock() {
         m_mutex.lock();
     }
@@ -82,7 +90,7 @@ namespace Balltze {
 
     Logger::Logger(std::string name) noexcept : m_name(name) {
         #define CREATE_LOGGER_STREAM(name, level) \
-            name = LoggerStream(this, Logger::level, name_for_log_level(Logger::level), "{:%H:%M:%S} {} [{}] {}\n", "{:%Y-%m-%d %H:%M:%S} {} [{}] {}\n", "[{}] {}\n", style_for_log_level(Logger::level))
+            name = LoggerStream(this, Logger::level, name_for_log_level(Logger::level), "{} {} [{}] {}\n", "{} {} [{}] {}\n", "[{}] {}\n", style_for_log_level(Logger::level))
 
         CREATE_LOGGER_STREAM(debug, LOG_LEVEL_DEBUG);
         CREATE_LOGGER_STREAM(info, LOG_LEVEL_INFO);
@@ -189,7 +197,7 @@ namespace Balltze {
         if(logger->m_file.is_open()) {
             auto name = logger->m_name;
             auto content = stream.m_stream.str();
-            auto time = fmt::localtime(std::time(nullptr));
+            auto time = fmt::format("{:%Y-%m-%d %H:%M:%S}", fmt::localtime(std::time(nullptr)));
 
             if(!content.empty()) {
                 logger->m_file << fmt::format(stream.m_file_format, time, stream.m_prefix, name, content);

@@ -2,6 +2,7 @@
 
 #include "../logger.hpp"
 #include "lua/api.hpp"
+#include "lua/helpers.hpp"
 #include "plugin.hpp"
 
 namespace Balltze::Plugins {
@@ -116,31 +117,6 @@ namespace Balltze::Plugins {
         }
     }
 
-    static VersionNumber lua_to_version_number(lua_State* state, int index) {
-        VersionNumber version;
-        lua_getfield(state, index, "major");
-        if(lua_isnumber(state, -1)) {
-            version.major = lua_tointeger(state, -1);
-        }
-        lua_pop(state, 1);
-        lua_getfield(state, index, "minor");
-        if(lua_isnumber(state, -1)) {
-            version.minor = lua_tointeger(state, -1);
-        }
-        lua_pop(state, 1);
-        lua_getfield(state, index, "patch");
-        if(lua_isnumber(state, -1)) {
-            version.patch = lua_tointeger(state, -1);
-        }
-        lua_pop(state, 1);
-        lua_getfield(state, index, "build");
-        if(lua_isnumber(state, -1)) {
-            version.build = lua_tointeger(state, -1);
-        }
-        lua_pop(state, 1);
-        return version;
-    }
-
     void LuaPlugin::read_metadata() {
         lua_getglobal(m_state, "plugin_metadata");
         if(lua_isfunction(m_state, -1)) {
@@ -150,29 +126,46 @@ namespace Balltze::Plugins {
                 if(lua_isstring(m_state, -1)) {
                     m_metadata.name = lua_tostring(m_state, -1);
                 }
+                else {
+                    logger.warning("Could not read name in plugin {}.", m_filename);
+                    m_metadata.name = m_filepath.stem().string();
+                }
                 lua_pop(m_state, 1);
                 
                 lua_getfield(m_state, -1, "author");
                 if(lua_isstring(m_state, -1)) {
                     m_metadata.author = lua_tostring(m_state, -1);
                 }
-                lua_pop(m_state, 1);
-                
-                lua_getfield(m_state, -1, "version");
-                if(lua_istable(m_state, -1)) {
-                    m_metadata.version = lua_to_version_number(m_state, -1);
+                else {
+                    logger.warning("Could not read author in plugin {}.", m_filename);
+                    m_metadata.author = "Unknown";
                 }
                 lua_pop(m_state, 1);
                 
-                lua_getfield(m_state, -1, "balltze_version");
-                if(lua_istable(m_state, -1)) {
-                    m_metadata.balltze_version = lua_to_version_number(m_state, -1);
+                try {
+                    lua_getfield(m_state, -1, "version");
+                    if(lua_istable(m_state, -1)) {
+                        m_metadata.version = lua_check_version_number(m_state, -1);
+                    }
+                    lua_pop(m_state, 1);
+                    
+                    lua_getfield(m_state, -1, "balltze_version");
+                    if(lua_istable(m_state, -1)) {
+                        m_metadata.balltze_version = lua_check_version_number(m_state, -1);
+                    }
+                    lua_pop(m_state, 1);
                 }
-                lua_pop(m_state, 1);
+                catch(std::runtime_error& e) {
+                    Balltze::logger.warning("Could not read version number in plugin {}.", m_filename);
+                }
 
                 lua_getfield(m_state, -1, "reloadable");
                 if(lua_isboolean(m_state, -1)) {
                     m_metadata.reloadable = lua_toboolean(m_state, -1);
+                }
+                else {
+                    Balltze::logger.warning("Could not read reloadable in plugin {}.", m_filename);
+                    m_metadata.reloadable = false;
                 }
                 lua_pop(m_state, 1);
             }

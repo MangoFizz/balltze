@@ -79,8 +79,8 @@ namespace Balltze {
 
         std::string name() const noexcept;
         std::optional<std::filesystem::path> file() const noexcept;
-        bool mute_ingame(bool setting) noexcept;
-        bool mute_debug(bool setting) noexcept;
+        void mute_ingame(bool setting) noexcept;
+        void mute_debug(bool setting) noexcept;
 
         void lock();
         void try_lock();

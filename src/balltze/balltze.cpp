@@ -24,6 +24,7 @@ namespace Balltze {
     }
 
     static void initialize_balltze() noexcept {
+        logger.mute_ingame(true);
         logger.info << logger.endl;
 
         try {
@@ -35,7 +36,7 @@ namespace Balltze {
             logger.info("initialized successfully!");
         }
         catch(std::runtime_error &e) {
-            logger.fatal("failed to initialize: %s", e.what());
+            logger.fatal("failed to initialize: {}", e.what());
             std::terminate();
         }
         firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);

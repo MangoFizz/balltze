@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <balltze/memory.hpp>
 #include <balltze/engine/core.hpp>
+#include "../logger.hpp"
 #include "codefinder.hpp"
 
 namespace Balltze::Memory {
@@ -80,6 +81,7 @@ namespace Balltze::Memory {
                 return &signature;
             }
         }
+        logger.warning("Could not find signature \"{}\"", name);
         return nullptr;
     }
 
@@ -125,6 +127,7 @@ namespace Balltze::Memory {
         auto engine_type = Engine::ENGINE_TYPE_CUSTOM_EDITION;
 
         FIND_SIGNATURE("halo_path", 0x1, 0, {0xBF, -1, -1, -1, -1, 0xF3, 0xAB, 0xAA, 0xE8});
+        FIND_SIGNATURE("resolution", 0x4, 0, { 0x75, 0x0A, 0x66, 0xA1, -1, -1, -1, -1, 0x66, 0x89, 0x42, 0x04, 0x83, 0xC4, 0x10, 0xC3 });
         FIND_SIGNATURE("tick_counter", 0x1, 0, {0xA1, -1, -1, -1, -1, 0x8B, 0x50, 0x14, 0x8B, 0x48, 0x0C, 0x83, 0xC4, 0x04, 0x42, 0x41, 0x4E, 0x4F});
         FIND_SIGNATURE("server_type", 0x0, 0, {0x0F, 0xBF, 0x2D, -1, -1, -1, -1, 0xE8, -1, -1, -1, -1, 0x39, 0x1D, -1, -1, -1, -1, 0x75, 0x05});
         FIND_SIGNATURE("current_gametype", 0x0, 0, {0x83, 0x3D, -1, -1, -1, -1, 0x04, 0x8B, 0x4F, 0x6C, 0x89, 0x4C, 0x24, 0x34, 0x75});
