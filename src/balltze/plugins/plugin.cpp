@@ -220,6 +220,7 @@ namespace Balltze::Plugins {
                 if(lua_isboolean(m_state, -1)) {
                     bool result = lua_toboolean(m_state, -1);
                     if(result) {
+                        Balltze::logger.debug("Plugin {} initialized successfully.", m_filename);
                         return PluginInitResult::PLUGIN_INIT_SUCCESS;
                     }
                 }
@@ -232,7 +233,6 @@ namespace Balltze::Plugins {
                 Balltze::logger.error("Error while initializing plugin {}: {}", m_filename, err);
                 lua_pop(m_state, 1);
             }
-            lua_pop(m_state, 1);
             return PluginInitResult::PLUGIN_INIT_FAILURE;
         }
         else {
@@ -265,15 +265,24 @@ namespace Balltze::Plugins {
             luaL_openlibs(m_state);
             lua_open_balltze_api(m_state);
             if(luaL_loadfile(m_state, lua_file.string().c_str()) == LUA_OK) {
-                lua_pcall(m_state, 0, 0, 0);
+                int res = lua_pcall(m_state, 0, 0, 0);
+                if(res != LUA_OK) {
+                    const char *err = lua_tostring(m_state, -1);
+                    Balltze::logger.error("Error while loading plugin {}: {}", m_filename, err);
+                    lua_pop(m_state, 1);
+                    lua_close(m_state);
+                    throw std::runtime_error("Could not load Lua plugin.");
+                }
                 read_metadata();
                 get_directory();
             }
             else {
+                lua_close(m_state);
                 throw std::runtime_error("Could not load Lua plugin.");
             }
         }
         else {
+            lua_close(m_state);
             throw std::runtime_error("Could not create Lua state.");
         }
     }

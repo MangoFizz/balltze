@@ -23,7 +23,6 @@ namespace Balltze::Plugins {
                 }
                 else {
                     auto *error = "Expected number for version number field.";
-                    luaL_error(state, error);
                     throw std::runtime_error(error);
                 }
                 lua_pop(state, 1);
@@ -43,7 +42,6 @@ namespace Balltze::Plugins {
         }
         else {
             auto *error = "Expected table for version number.";
-            luaL_error(state, error);
             throw std::runtime_error(error);
         }
     }
@@ -211,6 +209,72 @@ namespace Balltze::Plugins {
         }
         else {
             throw std::runtime_error("Invalid map game type.");
+        }
+    }
+
+    std::string server_type_to_string(Engine::ServerType type) {
+        switch(type) {
+            case Engine::SERVER_NONE:
+                return "none";
+            case Engine::SERVER_DEDICATED:
+                return "dedicated";
+            case Engine::SERVER_LOCAL:
+                return "local";
+            default:
+                return "unknown";
+        }
+    }
+
+    Engine::ServerType server_type_from_string(const std::string &type) {
+        if(type == "none") {
+            return Engine::SERVER_NONE;
+        }
+        else if(type == "dedicated") {
+            return Engine::SERVER_DEDICATED;
+        }
+        else if(type == "local") {
+            return Engine::SERVER_LOCAL;
+        }
+        else {
+            throw std::runtime_error("Invalid server type.");
+        }
+    }
+
+    std::string server_game_type_to_string(Engine::Gametype gametype) {
+        switch(gametype) {
+            case Engine::GAMETYPE_CTF:
+                return "ctf";
+            case Engine::GAMETYPE_SLAYER:
+                return "slayer";
+            case Engine::GAMETYPE_ODDBALL:
+                return "oddball";
+            case Engine::GAMETYPE_KING:
+                return "king";
+            case Engine::GAMETYPE_RACE:
+                return "race";
+            default:
+                return "none";
+        }
+    }
+
+    Engine::Gametype server_game_type_from_string(std::string gametype) {
+        if(gametype == "ctf") {
+            return Engine::GAMETYPE_CTF;
+        }
+        else if(gametype == "slayer") {
+            return Engine::GAMETYPE_SLAYER;
+        }
+        else if(gametype == "oddball") {
+            return Engine::GAMETYPE_ODDBALL;
+        }
+        else if(gametype == "king") {
+            return Engine::GAMETYPE_KING;
+        }
+        else if(gametype == "race") {
+            return Engine::GAMETYPE_RACE;
+        }
+        else {
+            throw std::runtime_error("Invalid server game type.");
         }
     }
 }

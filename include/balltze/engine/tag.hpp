@@ -231,6 +231,8 @@ namespace Balltze::Engine {
      * @return  A tag class int
     */
     TagClassInt tag_class_from_string(std::string tag_class_name) noexcept;
+
+    std::string tag_class_to_string(TagClassInt tag_class);
 }
 
 #endif

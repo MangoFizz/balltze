@@ -17,6 +17,10 @@ namespace Balltze::Plugins {
     Engine::CacheFileEngine cache_file_engine_from_string(const std::string &engine);
     std::string map_game_type_to_string(Engine::MapGameType type);
     Engine::MapGameType map_game_type_from_string(const std::string &type);
+    std::string server_type_to_string(Engine::ServerType type);
+    Engine::ServerType server_type_from_string(const std::string &type);
+    std::string server_game_type_to_string(Engine::Gametype gametype);
+    Engine::Gametype server_game_type_from_string(std::string gametype);
 }   
 
 #endif
