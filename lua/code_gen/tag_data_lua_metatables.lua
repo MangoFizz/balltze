@@ -755,8 +755,9 @@ for enumName, enum in pairs(enums) do
     for _, value in pairs(enum.values) do
         local sneakCaseValue = value
         local camelCaseValue = definitionParser.snakeCaseToCamelCase(sneakCaseValue)
+        local clean = definitionParser.camelCaseToSnakeCase(camelCaseValue)
         indent(3)
-        add("case " .. camelCaseName .. "::" .. value:upper() .. ": return \"" .. sneakCaseValue .. "\"; \n");
+        add("case " .. camelCaseName .. "::" .. value:upper() .. ": return \"" .. clean .. "\"; \n");
     end
     indent(3)
     add("default: return \"unknown\"; \n");
@@ -776,8 +777,9 @@ for enumName, enum in pairs(enums) do
     for _, value in pairs(enum.values) do
         local sneakCaseValue = value
         local camelCaseValue = definitionParser.snakeCaseToCamelCase(sneakCaseValue)
+        local clean = definitionParser.camelCaseToSnakeCase(camelCaseValue)
         indent(2)
-        add("if(str == \"" .. sneakCaseValue .. "\") { \n");
+        add("if(str == \"" .. clean .. "\") { \n");
         indent(3)
         add("return " .. camelCaseName .. "::" .. value:upper() .. "; \n");
         indent(2)
