@@ -11,8 +11,15 @@
 #include <balltze/features.hpp>
 #include <balltze/utils.hpp>
 #include "../version.hpp"
+#include "../logger.hpp"
+
+namespace Balltze::Plugins {
+    extern int lua_populate_chimera_table(lua_State *state) noexcept;
+}
 
 namespace Balltze::LuaLibrary {
+    lua_State *balltze_chimera_script = nullptr;
+
     enum struct CallbackTargetedEvent {
         MAP_FILE_LOAD
     };
@@ -148,6 +155,16 @@ namespace Balltze::LuaLibrary {
     }
 
     extern "C" BALLTZE_API int luaopen_mods_balltze(lua_State *state) noexcept {
+        lua_getglobal(state, "script_name");
+        if(lua_isstring(state, -1)) {
+            std::string script_name = lua_tostring(state, -1);
+            if(script_name == "balltze.lua") {
+                balltze_chimera_script = state;
+                lua_register(LuaLibrary::balltze_chimera_script, "load_balltze_chimera_table", Plugins::lua_populate_chimera_table);
+                return 0;
+            }
+        }
+
         lua_newtable(state);
 
         // Set balltze version

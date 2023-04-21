@@ -6,6 +6,7 @@ namespace Balltze::Plugins {
     void lua_set_logger_table(lua_State *state) noexcept;
     void lua_set_fmt_table(lua_State *state) noexcept;
     void lua_set_engine_table(lua_State *state) noexcept;
+    void lua_set_chimera_table(lua_State *state) noexcept;
 
     void lua_open_balltze_api(lua_State *state) {
         lua_newtable(state);

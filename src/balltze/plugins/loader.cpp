@@ -71,6 +71,16 @@ namespace Balltze::Plugins {
         firstTickListener = TickEvent::subscribe_const(load_plugins_first_tick, EVENT_PRIORITY_HIGHEST);
     }
 
+    std::vector<LuaPlugin *> get_lua_plugins() noexcept {
+        std::vector<LuaPlugin *> lua_plugins;
+        for(auto &plugin : plugins) {
+            if(auto lua_plugin = dynamic_cast<LuaPlugin *>(plugin.get())) {
+                lua_plugins.push_back(lua_plugin);
+            }
+        }
+        return lua_plugins;
+    }
+
     LuaPlugin *get_lua_plugin(lua_State *state) noexcept {
         for(auto &plugin : plugins) {
             if(auto lua_plugin = dynamic_cast<LuaPlugin *>(plugin.get())) {
