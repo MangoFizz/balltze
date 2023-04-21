@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <balltze/engine/data_types.hpp>
 #include "../../logger.hpp"
 #include "../loader.hpp"
 #include "helpers.hpp"
@@ -257,7 +258,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    Engine::Gametype server_game_type_from_string(std::string gametype) {
+    Engine::Gametype server_game_type_from_string(const std::string &gametype) {
         if(gametype == "ctf") {
             return Engine::GAMETYPE_CTF;
         }
@@ -276,5 +277,1046 @@ namespace Balltze::Plugins {
         else {
             throw std::runtime_error("Invalid server game type.");
         }
+    }
+
+    void lua_push_engine_matrix(lua_State *state, Engine::Matrix &matrix) noexcept {
+        lua_newtable(state);
+        for(std::size_t i = 0; i < 3; i++) {
+            lua_newtable(state);
+            for(std::size_t j = 0; j < 3; j++) {
+                lua_pushnumber(state, matrix[i][j]);
+                lua_rawseti(state, -2, j + 1);
+            }
+            lua_rawseti(state, -2, i + 1);
+        }
+    }
+
+    std::shared_ptr<Engine::Matrix> lua_to_engine_matrix(lua_State *state, int index) noexcept {
+        auto matrix_ptr = new Engine::Matrix();
+        std::shared_ptr<Engine::Matrix> matrix(matrix_ptr);
+        for(std::size_t i = 0; i < 3; i++) {
+            lua_rawgeti(state, index, i + 1);
+            for(std::size_t j = 0; j < 3; j++) {
+                lua_rawgeti(state, -1, j + 1);
+                matrix[i][j] = luaL_checknumber(state, -1);
+                lua_pop(state, 1);
+            }
+            lua_pop(state, 1);
+        }
+        return matrix;
+    }
+
+    static int lua_engine_color_a_r_g_b_int__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto color = static_cast<Engine::ColorARGBInt *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "red") { 
+            lua_pushinteger(state, color->red); 
+            return 1; 
+        }
+        else if(field == "green") { 
+            lua_pushinteger(state, color->green); 
+            return 1; 
+        }
+        else if(field == "blue") { 
+            lua_pushinteger(state, color->blue); 
+            return 1; 
+        }
+        else if(field == "alpha") { 
+            lua_pushinteger(state, color->alpha); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_color_a_r_g_b_int__newindex(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto color = static_cast<Engine::ColorARGBInt *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "red") { 
+            color->red = static_cast<std::uint8_t>(luaL_checkinteger(state, 3)); 
+        }
+        else if(field == "green") { 
+            color->green = static_cast<std::uint8_t>(luaL_checkinteger(state, 3)); 
+        }
+        else if(field == "blue") { 
+            color->blue = static_cast<std::uint8_t>(luaL_checkinteger(state, 3)); 
+        }
+        else if(field == "alpha") { 
+            color->alpha = static_cast<std::uint8_t>(luaL_checkinteger(state, 3)); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept {
+        lua_push_meta_object(state, color, lua_engine_color_a_r_g_b_int__index, lua_engine_color_a_r_g_b_int__newindex); 
+    }
+
+    static int lua_engine_tag_dependency__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto dependency = static_cast<Engine::TagDependency *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "id") { 
+            lua_pushinteger(state, dependency->tag_id.whole_id); 
+            return 1; 
+        }
+        else if(field == "class") {
+            auto tag_class = Engine::tag_class_to_string(*reinterpret_cast<Engine::TagClassInt *>(dependency->tag_fourcc)); 
+            lua_pushstring(state, tag_class.c_str()); 
+            return 1; 
+        }
+        else if(field == "path") { 
+            char path[dependency->path_size + 1];
+            std::memcpy(path, reinterpret_cast<char *>(dependency->path_pointer), dependency->path_size);
+            path[dependency->path_size] = '\0';
+            lua_pushstring(state, path);
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_tag_dependency__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto dependency = static_cast<Engine::TagDependency *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        }
+
+        std::string field = key;
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "id") { 
+            dependency->tag_id.whole_id = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "class") {
+            auto *tag_class = lua_tostring(state, 3);
+            if(tag_class == nullptr) {
+                return luaL_error(state, "Invalid tag class");
+            }
+            *reinterpret_cast<Engine::TagClassInt *>(dependency->tag_fourcc) = Engine::tag_class_from_string(tag_class);
+        }
+        else if(field == "path") { 
+            auto *path = lua_tostring(state, 3);
+            if(path == nullptr) {
+                return luaL_error(state, "Invalid path");
+            }
+            if(dependency->path_size < std::strlen(path)) {
+                return luaL_error(state, "Path is too long");
+            }
+            std::memcpy(reinterpret_cast<char *>(dependency->path_pointer), path, std::strlen(path));
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept {
+        lua_push_meta_object(state, dependency, lua_engine_tag_dependency__index, lua_engine_tag_dependency__newindex); 
+    }
+
+    static int lua_engine_point2_d__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto point = static_cast<Engine::Point2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "x") { 
+            lua_pushnumber(state, point->x); 
+            return 1; 
+        }
+        else if(field == "y") { 
+            lua_pushnumber(state, point->y); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_point2_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto point = static_cast<Engine::Point2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "x") { 
+            point->x = luaL_checknumber(state, 3); 
+        }
+        else if(field == "y") { 
+            point->y = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point) noexcept {
+        lua_push_meta_object(state, point, lua_engine_point2_d__index, lua_engine_point2_d__newindex); 
+    }
+
+    static int lua_engine_point3_d__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto point = static_cast<Engine::Point3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "x") { 
+            lua_pushinteger(state, point->x); 
+            return 1; 
+        }
+        else if(field == "y") { 
+            lua_pushinteger(state, point->y); 
+            return 1; 
+        }
+        else if(field == "z") { 
+            lua_pushinteger(state, point->z); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_point3_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto point = static_cast<Engine::Point3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "x") { 
+            point->x = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "y") { 
+            point->y = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "z") { 
+            point->z = luaL_checkinteger(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_point3_d(lua_State *state, Engine::Point3D &point) noexcept {
+        lua_push_meta_object(state, point, lua_engine_point3_d__index, lua_engine_point3_d__newindex); 
+    }
+
+    static int lua_engine_tag_data_offset__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto offset = static_cast<Engine::TagDataOffset *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "size") { 
+            lua_pushinteger(state, offset->size); 
+            return 1; 
+        }
+        else if(field == "external") { 
+            lua_pushboolean(state, offset->external);
+            return 1; 
+        }
+        else if(field == "file_offset") { 
+            auto file_offset = offset->file_offset;
+            if(file_offset == 0) {
+                lua_pushnil(state);
+            }
+            else {
+                lua_pushinteger(state, file_offset);
+            }
+            return 1; 
+        }
+        else if(field == "pointer") {
+            auto pointer = offset->pointer;
+            if(pointer) {
+                lua_pushinteger(state, reinterpret_cast<std::uintptr_t>(pointer));
+            }
+            else {
+                lua_pushnil(state);
+            }
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_tag_data_offset__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto offset = static_cast<Engine::TagDataOffset *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "size") { 
+            offset->size = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "external") { 
+            offset->external = lua_toboolean(state, 3);
+        }
+        else if(field == "file_offset") { 
+            offset->file_offset = luaL_checkinteger(state, 3);
+        }
+        else if(field == "pointer") {
+            offset->pointer = reinterpret_cast<std::byte *>(luaL_checkinteger(state, 3));
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset) noexcept {
+        lua_push_meta_object(state, offset, lua_engine_tag_data_offset__index, lua_engine_tag_data_offset__newindex); 
+    }
+
+    static int lua_engine_color_a_r_g_b__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto color = static_cast<Engine::ColorARGB *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "alpha") { 
+            lua_pushnumber(state, color->alpha); 
+            return 1; 
+        }
+        else if(field == "red") { 
+            lua_pushnumber(state, color->red); 
+            return 1; 
+        }
+        else if(field == "green") { 
+            lua_pushnumber(state, color->green); 
+            return 1; 
+        }
+        else if(field == "blue") { 
+            lua_pushnumber(state, color->blue); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_color_a_r_g_b__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto color = static_cast<Engine::ColorARGB *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "alpha") { 
+            color->alpha = luaL_checknumber(state, 3); 
+        }
+        else if(field == "red") { 
+            color->red = luaL_checknumber(state, 3); 
+        }
+        else if(field == "green") { 
+            color->green = luaL_checknumber(state, 3); 
+        }
+        else if(field == "blue") { 
+            color->blue = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color) noexcept {
+        lua_push_meta_object(state, color, lua_engine_color_a_r_g_b__index, lua_engine_color_a_r_g_b__newindex); 
+    }
+
+    static int lua_engine_rectangle2_d__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto rectangle = static_cast<Engine::Rectangle2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "top") { 
+            lua_pushinteger(state, rectangle->top); 
+            return 1; 
+        }
+        else if(field == "left") { 
+            lua_pushinteger(state, rectangle->left); 
+            return 1; 
+        }
+        else if(field == "bottom") { 
+            lua_pushinteger(state, rectangle->bottom); 
+            return 1; 
+        }
+        else if(field == "right") { 
+            lua_pushinteger(state, rectangle->right); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_rectangle2_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto rectangle = static_cast<Engine::Rectangle2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "top") { 
+            rectangle->top = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "left") { 
+            rectangle->left = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "bottom") { 
+            rectangle->bottom = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "right") { 
+            rectangle->right = luaL_checkinteger(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle) noexcept {
+        lua_push_meta_object(state, rectangle, lua_engine_rectangle2_d__index, lua_engine_rectangle2_d__newindex); 
+    }
+
+    static int lua_engine_point2_d_int__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto point = static_cast<Engine::Point2DInt *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "x") { 
+            lua_pushinteger(state, point->x); 
+            return 1; 
+        }
+        else if(field == "y") { 
+            lua_pushinteger(state, point->y); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_point2_d_int__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto point = static_cast<Engine::Point2DInt *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "x") { 
+            point->x = luaL_checkinteger(state, 3); 
+        }
+        else if(field == "y") { 
+            point->y = luaL_checkinteger(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point) noexcept {
+        lua_push_meta_object(state, point, lua_engine_point2_d_int__index, lua_engine_point2_d_int__newindex); 
+    }
+
+    static int lua_engine_euler2_d__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto euler = static_cast<Engine::Euler2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "yaw") { 
+            lua_pushnumber(state, euler->yaw); 
+            return 1; 
+        }
+        else if(field == "pitch") { 
+            lua_pushnumber(state, euler->pitch); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_euler2_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto euler = static_cast<Engine::Euler2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "yaw") { 
+            euler->yaw = luaL_checknumber(state, 3); 
+        }
+        else if(field == "pitch") { 
+            euler->pitch = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler) noexcept {
+        lua_push_meta_object(state, euler, lua_engine_euler2_d__index, lua_engine_euler2_d__newindex); 
+    }
+
+    static int lua_engine_euler3_d__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto euler = static_cast<Engine::Euler3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "yaw") { 
+            lua_pushnumber(state, euler->yaw); 
+            return 1; 
+        }
+        else if(field == "pitch") { 
+            lua_pushnumber(state, euler->pitch); 
+            return 1; 
+        }
+        else if(field == "roll") { 
+            lua_pushnumber(state, euler->roll); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_euler3_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto euler = static_cast<Engine::Euler3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "yaw") { 
+            euler->yaw = luaL_checknumber(state, 3); 
+        }
+        else if(field == "pitch") { 
+            euler->pitch = luaL_checknumber(state, 3); 
+        }
+        else if(field == "roll") { 
+            euler->roll = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler) noexcept {
+        lua_push_meta_object(state, euler, lua_engine_euler3_d__index, lua_engine_euler3_d__newindex); 
+    }
+
+    static int lua_engine_vector2_d__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto vector = static_cast<Engine::Vector2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "i") { 
+            lua_pushnumber(state, vector->i); 
+            return 1; 
+        }
+        else if(field == "j") { 
+            lua_pushnumber(state, vector->j); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_vector2_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto vector = static_cast<Engine::Vector2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "i") { 
+            vector->i = luaL_checknumber(state, 3); 
+        }
+        else if(field == "j") { 
+            vector->j = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector) noexcept {
+        lua_push_meta_object(state, vector, lua_engine_vector2_d__index, lua_engine_vector2_d__newindex); 
+    }
+
+    static int lua_engine_vector3_d__index(lua_State *state) {
+        lua_getfield(state, 1, "_data"); 
+        auto vector = static_cast<Engine::Vector3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "i") { 
+            lua_pushnumber(state, vector->i); 
+            return 1; 
+        }
+        else if(field == "j") { 
+            lua_pushnumber(state, vector->j); 
+            return 1; 
+        }
+        else if(field == "k") { 
+            lua_pushnumber(state, vector->k); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_vector3_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto vector = static_cast<Engine::Vector3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "i") { 
+            vector->i = luaL_checknumber(state, 3); 
+        }
+        else if(field == "j") { 
+            vector->j = luaL_checknumber(state, 3); 
+        }
+        else if(field == "k") { 
+            vector->k = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector) noexcept {
+        lua_push_meta_object(state, vector, lua_engine_vector3_d__index, lua_engine_vector3_d__newindex); 
+    }
+
+    static int lua_engine_color_r_g_b__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto color = static_cast<Engine::ColorRGB *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "red") { 
+            lua_pushnumber(state, color->red); 
+            return 1; 
+        }
+        else if(field == "green") { 
+            lua_pushnumber(state, color->green); 
+            return 1; 
+        }
+        else if(field == "blue") { 
+            lua_pushnumber(state, color->blue); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_color_r_g_b__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto color = static_cast<Engine::ColorRGB *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "red") { 
+            color->red = luaL_checknumber(state, 3); 
+        }
+        else if(field == "green") { 
+            color->green = luaL_checknumber(state, 3); 
+        }
+        else if(field == "blue") { 
+            color->blue = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color) noexcept {
+        lua_push_meta_object(state, color, lua_engine_color_r_g_b__index, lua_engine_color_r_g_b__newindex); 
+    }
+
+    static int lua_engine_quaternion__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto quaternion = static_cast<Engine::Quaternion *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "i") { 
+            lua_pushnumber(state, quaternion->i); 
+            return 1; 
+        }
+        else if(field == "j") { 
+            lua_pushnumber(state, quaternion->j); 
+            return 1; 
+        }
+        else if(field == "k") { 
+            lua_pushnumber(state, quaternion->k); 
+            return 1; 
+        }
+        else if(field == "w") { 
+            lua_pushnumber(state, quaternion->w); 
+            return 1; 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_quaternion__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto quaternion = static_cast<Engine::Quaternion *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "i") { 
+            quaternion->i = luaL_checknumber(state, 3); 
+        }
+        else if(field == "j") { 
+            quaternion->j = luaL_checknumber(state, 3); 
+        }
+        else if(field == "k") { 
+            quaternion->k = luaL_checknumber(state, 3); 
+        }
+        else if(field == "w") { 
+            quaternion->w = luaL_checknumber(state, 3); 
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion) noexcept {
+        lua_push_meta_object(state, quaternion, lua_engine_quaternion__index, lua_engine_quaternion__newindex); 
+    }
+
+    static int lua_engine_plane3_d__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto plane = static_cast<Engine::Plane3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "vector") { 
+            lua_push_meta_engine_vector3_d(state, plane->vector);
+            return 1;
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_plane3_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto plane = static_cast<Engine::Plane3D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "vector") { 
+            return luaL_error(state, "Invalid operation");
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane) noexcept {
+        lua_push_meta_object(state, plane, lua_engine_plane3_d__index, lua_engine_plane3_d__newindex); 
+    }
+
+    static int lua_engine_plane2_d__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto plane = static_cast<Engine::Plane2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            lua_pushnil(state); 
+            return 1; 
+        }
+        else if(field == "vector") { 
+            lua_push_meta_engine_vector2_d(state, plane->vector);
+            return 1;
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_plane2_d__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto plane = static_cast<Engine::Plane2D *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "_data") { 
+            return luaL_error(state, "Cannot set _data"); 
+        }
+        else if(field == "vector") { 
+            return luaL_error(state, "Invalid operation");
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept {
+        lua_push_meta_object(state, plane, lua_engine_plane2_d__index, lua_engine_plane2_d__newindex); 
     }
 }

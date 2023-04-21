@@ -14,6 +14,10 @@
 #include "tag_definitions/definitions.hpp"
 
 namespace Balltze::Engine {
+    namespace TagDefinitions {
+        using UiWidgetCollection = TagCollection;
+    }
+
     enum TagClassInt : std::uint32_t {
         TAG_CLASS_ACTOR = 0x61637472,
         TAG_CLASS_ACTOR_VARIANT = 0x61637476,

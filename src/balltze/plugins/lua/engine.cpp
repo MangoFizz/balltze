@@ -13,7 +13,7 @@ extern "C" {
 
 namespace Balltze::Plugins {
     static int lua_engine_console_print(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 1 || args == 2) {
@@ -38,7 +38,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_console_printf(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args >= 1) {
@@ -84,7 +84,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_resolution(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -107,7 +107,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_tick_count(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -125,7 +125,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_engine_edition(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -157,7 +157,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_current_map_header(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -240,7 +240,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_map_list(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -283,7 +283,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_server_type(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -303,7 +303,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_server_gametype(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -328,7 +328,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_current_game_is_team(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -347,7 +347,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_engine_get_tag_data_header(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
@@ -388,8 +388,8 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_get_tag_entry(lua_State *state) noexcept {
-        auto plugin = get_lua_plugin(state);
+    static int lua_engine_get_tag(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 1) {
@@ -459,6 +459,68 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Unknown plugin.");
         }
     }
+    
+    void lua_attach_tag_data_metatable(lua_State *state) noexcept;
+    
+    static int lua_engine_get_tag_data(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 1 || args == 2) {
+                Engine::Tag *tag_entry = nullptr;
+                if(lua_isstring(state, 1)) {
+                    const char *tag_path = lua_tostring(state, 1);
+                    const char *tag_class_str = lua_tostring(state, 2);
+                    auto tag_class = Engine::tag_class_from_string(tag_class_str);
+                    if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
+                        tag_entry = Engine::get_tag(tag_path, tag_class);
+                    }
+                    else {
+                        return luaL_error(state, "Invalid tag class.");
+                    }
+                }
+                else {
+                    std::uint32_t tag_id_or_index;
+                    if(lua_istable(state, 1)) {
+                        lua_getfield(state, 1, "id");
+                        tag_id_or_index = lua_tointeger(state, -1);
+                        lua_pop(state, 1);
+                    }
+                    else {
+                        tag_id_or_index = lua_tointeger(state, 1);
+                    }
+
+                    if(tag_id_or_index < 0xFFFF) {
+                        tag_entry = Engine::get_tag(tag_id_or_index);
+                    }
+                    else {
+                        Engine::TagHandle tag_handle;
+                        tag_handle.whole_id = tag_id_or_index;
+                        tag_entry = Engine::get_tag(tag_handle);
+                    }
+                }
+
+                lua_newtable(state);
+                lua_pushlightuserdata(state, tag_entry->data);
+                lua_setfield(state, -2, "_tag_data");
+                lua_pushinteger(state, tag_entry->primary_class);
+                lua_setfield(state, -2, "_tag_class");
+                lua_pushinteger(state, tag_entry->id.whole_id);
+                lua_setfield(state, -2, "_tag_id");
+
+                lua_attach_tag_data_metatable(state);
+
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_tag_data.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
 
     static const luaL_Reg engine_functions[] = {
         {"console_print", lua_engine_console_print},
@@ -472,7 +534,8 @@ namespace Balltze::Plugins {
         {"get_server_gametype", lua_engine_get_server_gametype},
         {"current_game_is_team", lua_engine_current_game_is_team},
         {"get_tag_data_header", lua_engine_get_tag_data_header},
-        {"get_tag_entry", lua_engine_get_tag_entry},
+        {"get_tag", lua_engine_get_tag},
+        {"get_tag_data", lua_engine_get_tag_data},
         {nullptr, nullptr}
     };
 
