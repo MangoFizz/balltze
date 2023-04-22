@@ -19,7 +19,7 @@ namespace Balltze::Engine {
         console_print_asm(color, message.c_str());
     }
 
-    std::filesystem::path get_path() noexcept {
+    std::filesystem::path get_path() {
         static std::optional<std::filesystem::path> path;
         if(!path) {
             auto chimera_init = Config::get_chimera_ini();
@@ -47,6 +47,10 @@ namespace Balltze::Engine {
                     if(res == S_OK) {
                         path = std::filesystem::path(documents_folder_path) / "My Games" / "Halo CE";
                         return path.value();
+                    }
+                    else {
+                        logger.error("Could not get documents folder path");
+                        throw std::runtime_error("Could not get documents folder path");
                     }
                 }
             }

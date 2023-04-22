@@ -299,7 +299,14 @@ namespace Balltze::Plugins {
     }
 
     std::filesystem::path get_plugins_path() noexcept {
-        return Engine::get_path() / "plugins";
+        try {
+            return Engine::get_path() / "plugins";
+        }
+        catch(std::runtime_error &e) {
+            logger.warning("Could not get data directory path.");
+            logger.warning("Using current path as plugins path (may not work due to permissions).");
+            return std::filesystem::current_path() / "plugins";
+        }
     }
 
     void init_plugins_path() {

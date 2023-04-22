@@ -80,7 +80,7 @@ namespace Balltze::Engine {
      * Get the Halo profile path
      * @return Halo profile path
      */
-    BALLTZE_API std::filesystem::path get_path() noexcept;
+    BALLTZE_API std::filesystem::path get_path();
 
     /**
      * Get the current resolution of Halo.
