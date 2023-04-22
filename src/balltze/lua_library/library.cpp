@@ -160,7 +160,17 @@ namespace Balltze::LuaLibrary {
             std::string script_name = lua_tostring(state, -1);
             if(script_name == "balltze.lua") {
                 balltze_chimera_script = state;
-                lua_register(LuaLibrary::balltze_chimera_script, "load_balltze_chimera_table", Plugins::lua_populate_chimera_table);
+                lua_register(state, "load_balltze_chimera_table", Plugins::lua_populate_chimera_table);
+                lua_getglobal(state, "set_callback");
+                lua_pushstring(state, "map load");
+                lua_pushstring(state, "load_balltze_chimera_table");
+                int res = lua_pcall(state, 2, 0, 0);
+                if(res != LUA_OK) {
+                    const char *err = lua_tostring(state, -1);
+                    logger.debug("Error loading Chimera Lua hijacker script: {}", err);
+                    lua_pop(state, 1);
+                }
+                Plugins::lua_populate_chimera_table(state);
                 return 0;
             }
         }

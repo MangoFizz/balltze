@@ -49,7 +49,7 @@ namespace Balltze::Engine {
                         return path.value();
                     }
                     else {
-                        logger.error("Could not get documents folder path");
+                        logger.debug("Could not get documents folder path");
                         throw std::runtime_error("Could not get documents folder path");
                     }
                 }
