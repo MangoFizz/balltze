@@ -170,6 +170,7 @@ namespace Balltze::LuaLibrary {
                     logger.debug("Error loading Chimera Lua hijacker script: {}", err);
                     lua_pop(state, 1);
                 }
+                lua_pop(state, 1);
                 Plugins::lua_populate_chimera_table(state);
                 return 0;
             }
