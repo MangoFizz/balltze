@@ -3,8 +3,12 @@
 #include <string>
 #include <optional>
 #include <cstring>
+#include <shlobj.h>
 #include <balltze/memory.hpp>
+#include <balltze/config.hpp>
 #include <balltze/engine/core.hpp>
+#include "../config/config.hpp"
+#include "../logger.hpp"
 
 namespace Balltze::Engine {
     extern "C" {
@@ -16,12 +20,38 @@ namespace Balltze::Engine {
     }
 
     std::filesystem::path get_path() noexcept {
-        static auto *halo_path_sig = Memory::get_signature("halo_path");
-        static const char *path = nullptr;
+        static std::optional<std::filesystem::path> path;
         if(!path) {
-            path = *reinterpret_cast<const char **>(halo_path_sig->data());
+            auto chimera_init = Config::get_chimera_ini();
+            auto ini_path = chimera_init.get_value_string("halo.path");
+            if(ini_path) {
+                path = *ini_path;
+            }
+            else {
+                auto cmd = GetCommandLineW();
+                int argc;
+                auto argv = CommandLineToArgvW(cmd, &argc);
+                bool found = false;
+                for(int i = 0; i < argc; i++) {
+                    auto arg = argv[i];
+                    if(std::wcscmp(arg, L"-path") == 0) {
+                        path = argv[i + 1];
+                        found = true;
+                        break;
+                    }
+                }
+
+                if(!found) {
+                    char documents_folder_path[MAX_PATH];
+                    HRESULT res = SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, documents_folder_path);
+                    if(res == S_OK) {
+                        path = std::filesystem::path(documents_folder_path) / "My Games" / "Halo CE";
+                        return path.value();
+                    }
+                }
+            }
         }
-        return std::filesystem::path(path);
+        return path.value();
     }
 
     Resolution &get_resolution() noexcept {

@@ -25,7 +25,7 @@ namespace Balltze::Plugins {
         std::filesystem::path m_filepath;
         std::filesystem::path m_directory;
 
-        void get_directory();
+        virtual void get_directory() = 0;
         virtual void read_metadata() = 0;
 
     public:
@@ -47,6 +47,7 @@ namespace Balltze::Plugins {
     private:
         HMODULE m_handle;
 
+        void get_directory();
         void read_metadata();
 
     public:
@@ -61,6 +62,7 @@ namespace Balltze::Plugins {
         lua_State *m_state;
         std::vector<std::unique_ptr<Logger>> m_loggers;
 
+        void get_directory();
         void read_metadata();
 
     public:

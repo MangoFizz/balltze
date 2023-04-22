@@ -167,4 +167,9 @@ namespace Balltze::Config {
         }
         return std::nullopt;
     }
+
+    Ini get_chimera_ini() noexcept {
+        static auto ini = Ini("chimera.ini");
+        return ini;
+    }
 }

@@ -82,7 +82,14 @@ namespace Balltze::Plugins {
                     auto plugin_dir = plugin->directory();
                     auto file_path = plugin_dir / file;
                     if(plugin->path_is_valid(file_path)) {
-                        llogger->set_file(file_path, append);
+                        try {
+                            plugin->init_data_directory();
+                            llogger->set_file(file_path, append);
+                        }
+                        catch(std::runtime_error &e) {
+                            logger.warning("Could not set logger file to {} for plugin {} because of an exception: {}", file_path.string(), plugin->filename(), e.what());
+                            return luaL_error(state, "Could not set logger file.");
+                        }
                     }
                     else {
                         logger.warning("Could not set logger file to {} for plugin {} because it is not in the plugin directory.", file, plugin->filename());

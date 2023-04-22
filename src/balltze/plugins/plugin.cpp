@@ -3,6 +3,7 @@
 #include "../logger.hpp"
 #include "lua/api.hpp"
 #include "lua/helpers.hpp"
+#include "../config/config.hpp"
 #include "plugin.hpp"
 
 namespace Balltze::Plugins {
@@ -10,10 +11,6 @@ namespace Balltze::Plugins {
         char filename[MAX_PATH];
         GetModuleFileNameA(dll, filename, MAX_PATH);
         return std::filesystem::path(filename);
-    }
-
-    void Plugin::get_directory() {
-        m_directory = get_plugins_path() / m_metadata.name;
     }
 
     std::string Plugin::filename() const noexcept {
@@ -45,12 +42,18 @@ namespace Balltze::Plugins {
     }
 
     bool Plugin::path_is_valid(std::filesystem::path path) const noexcept {
-        return std::filesystem::absolute(path).string().find(m_directory.string()) != std::string::npos;
+        return std::filesystem::absolute(path).string().find(std::filesystem::absolute(m_directory).string()) != std::string::npos;
     }
 
     void Plugin::init_data_directory() {
         if(!std::filesystem::exists(m_directory)) {
-            std::filesystem::create_directory(m_directory);
+            try {
+                std::filesystem::create_directories(m_directory);
+            }
+            catch(std::filesystem::filesystem_error& e) {
+                logger.error("Could not create plugin data directory: {}", e.what());
+                throw;
+            }
         }
     }
 
@@ -64,6 +67,10 @@ namespace Balltze::Plugins {
             logger.warning("Could not find plugin_metadata function in plugin {}.", m_filename);
             m_metadata.name = m_filepath.stem().string();
         }
+    }
+
+    void DLLPlugin::get_directory() {
+        m_directory = get_plugins_path() / m_metadata.name;
     }
 
     HMODULE DLLPlugin::handle() {
@@ -181,6 +188,10 @@ namespace Balltze::Plugins {
         }
     }
 
+    void LuaPlugin::get_directory() {
+        m_directory =  get_plugins_path() / ("lua_" + m_metadata.name);
+    }
+
     lua_State* LuaPlugin::state() noexcept {
         return m_state;
     }
@@ -288,7 +299,7 @@ namespace Balltze::Plugins {
     }
 
     std::filesystem::path get_plugins_path() noexcept {
-        return std::filesystem::current_path() / "plugins";
+        return Engine::get_path() / "plugins";
     }
 
     void init_plugins_path() {

@@ -8,6 +8,7 @@
 #include "event/event.hpp"
 #include "memory/memory.hpp"
 #include "plugins/loader.hpp"
+#include "config/config.hpp"
 
 namespace Balltze {
     using namespace Event;
@@ -25,6 +26,12 @@ namespace Balltze {
 
     static void initialize_balltze() noexcept {
         logger.mute_ingame(true);
+        try {
+            logger.set_file(Config::get_balltze_directory() / "balltze.log");
+        }
+        catch(std::runtime_error &e) {
+            logger.error("failed to set log file: {}", e.what());
+        }
         logger.info << logger.endl;
 
         try {
