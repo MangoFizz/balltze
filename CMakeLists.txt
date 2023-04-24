@@ -64,6 +64,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/lua/chimera.cpp
     src/balltze/plugins/lua/engine.cpp
+    src/balltze/plugins/lua/event.cpp
     src/balltze/plugins/lua/helpers.cpp
     src/balltze/plugins/lua/lfmt.cpp
     src/balltze/plugins/lua/lfmt.c

@@ -80,7 +80,7 @@ namespace Balltze::Event {
             m_cancelled = true;
         }
 
-        inline bool cancelled() {
+        inline bool cancelled() const {
             return m_cancelled;
         }
 

@@ -107,6 +107,7 @@ namespace Balltze::Features {
                 auto *tag_array_raw = reinterpret_cast<const Tag *>(map_tag_data + cursor);
                 tag_array = std::vector<Tag>(tag_array_raw, tag_array_raw + tag_data_header.tag_count);
                 tag_data_header.tag_array = tag_array.data();
+                cursor += sizeof(Tag) * tag_data_header.tag_count;
 
                 // rest of tag data
                 std::memcpy(get_tag_data_address() + cursor, map_tag_data + cursor, map.header.tag_data_size - cursor);
