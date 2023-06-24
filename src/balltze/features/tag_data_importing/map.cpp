@@ -55,7 +55,11 @@ namespace Balltze::Features {
     }
 
     std::filesystem::path path_for_map_local(const char *map_name) {
-        return get_map_entry(map_name)->get_file_path();
+        auto map_entry = get_map_entry(map_name);
+        if(!map_entry) {
+            throw std::runtime_error("Map not found");
+        }
+        return map_entry->get_file_path();
     }
 
     std::filesystem::path path_for_tmp(std::size_t tmp) noexcept {

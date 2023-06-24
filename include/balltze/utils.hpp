@@ -4,6 +4,7 @@
 #define BALLTZE_API__MESSAGE_BOX_HPP
 
 #include <windows.h>
+#include <intrin.h>
 #include <cstdio>
 #include "engine/core.hpp"
 #include "api.hpp"
@@ -44,6 +45,17 @@ namespace Balltze {
     inline HMODULE get_current_module() {
         HMODULE hModule = NULL;
         GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)get_current_module, &hModule);
+        return hModule;
+    }
+
+    /**
+     * Get the module handle of the caller
+     * https://stackoverflow.com/a/557774
+     */
+    inline HMODULE get_caller_module() {
+        auto return_address = reinterpret_cast<std::uintptr_t>(_ReturnAddress());
+        HMODULE hModule = NULL;
+        GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)return_address, &hModule);
         return hModule;
     }
 }

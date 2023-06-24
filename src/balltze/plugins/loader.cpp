@@ -35,8 +35,8 @@ namespace Balltze::Plugins {
                 try {
                     plugins.emplace_back(std::make_unique<LuaPlugin>(lua.path()));
                 }
-                catch(std::runtime_error &) {
-                    logger.error("Failed to read Lua script {}", lua.path().filename().string());
+                catch(std::runtime_error &e) {
+                    logger.error("Failed to read Lua script {}: {}", lua.path().filename().string(), e.what());
                 }
             }
         }

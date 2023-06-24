@@ -392,67 +392,68 @@ namespace Balltze::Plugins {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
+            Engine::Tag *tag_entry = nullptr;
             if(args == 1) {
-                Engine::Tag *tag_entry = nullptr;
-                if(lua_isstring(state, 1)) {
-                    const char *tag_path = lua_tostring(state, 1);
-                    const char *tag_class_str = lua_tostring(state, 2);
-                    auto tag_class = Engine::tag_class_from_string(tag_class_str);
-                    if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
-                        tag_entry = Engine::get_tag(tag_path, tag_class);
-                    }
-                    else {
-                        return luaL_error(state, "Invalid tag class.");
-                    }
+                auto tag_number_thing = lua_tointeger(state, 1);
+                if(tag_number_thing < 0xFFFF) {
+                    tag_entry = Engine::get_tag(tag_number_thing);
                 }
                 else {
-                    auto tag_number_thing = lua_tointeger(state, 1);
-                    if(tag_number_thing < 0xFFFF) {
-                        tag_entry = Engine::get_tag(tag_number_thing);
-                    }
-                    else {
-                        Engine::TagHandle tag_handle;
-                        tag_handle.whole_id = tag_number_thing;
-                        tag_entry = Engine::get_tag(tag_handle);
-                    }
+                    Engine::TagHandle tag_handle;
+                    tag_handle.whole_id = tag_number_thing;
+                    tag_entry = Engine::get_tag(tag_handle);
                 }
-
-                if(tag_entry) {
-                    lua_newtable(state);
-
-                    auto primary_class = Engine::tag_class_to_string(tag_entry->primary_class);
-                    lua_pushstring(state, primary_class.c_str());
-                    lua_setfield(state, -2, "primary_class");
-
-                    auto secondary_class = Engine::tag_class_to_string(tag_entry->secondary_class);
-                    lua_pushstring(state, secondary_class.c_str());
-                    lua_setfield(state, -2, "secondary_class");
-
-                    auto tertiary_class = Engine::tag_class_to_string(tag_entry->tertiary_class);
-                    lua_pushstring(state, tertiary_class.c_str());
-                    lua_setfield(state, -2, "tertiary_class");
-
-                    lua_pushinteger(state, tag_entry->id.whole_id);
-                    lua_setfield(state, -2, "id");
-
-                    lua_pushstring(state, tag_entry->path);
-                    lua_setfield(state, -2, "path");
-
-                    lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag_entry->data));
-                    lua_setfield(state, -2, "data");
-
-                    lua_pushboolean(state, tag_entry->indexed);
-                    lua_setfield(state, -2, "indexed");
+            }
+            else if(args == 2) {
+                const char *tag_path = luaL_checkstring(state, 1);
+                const char *tag_class_str = luaL_checkstring(state, 2);
+                auto tag_class = Engine::tag_class_from_string(tag_class_str);
+                if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
+                    tag_entry = Engine::get_tag(tag_path, tag_class);
                 }
                 else {
-                    lua_pushnil(state);
+                    return luaL_error(state, "Invalid tag class.");
                 }
-
-                return 1;
             }
             else {
                 return luaL_error(state, "Invalid number of arguments in function engine.get_tag_entry.");
             }
+
+            logger.debug("Tag entry: {}", reinterpret_cast<void *>(tag_entry));
+
+            if(tag_entry) {
+                lua_newtable(state);
+
+                auto primary_class = Engine::tag_class_to_string(tag_entry->primary_class);
+                lua_pushstring(state, primary_class.c_str());
+                lua_setfield(state, -2, "primary_class");
+
+                auto secondary_class = Engine::tag_class_to_string(tag_entry->secondary_class);
+                lua_pushstring(state, secondary_class.c_str());
+                lua_setfield(state, -2, "secondary_class");
+
+                auto tertiary_class = Engine::tag_class_to_string(tag_entry->tertiary_class);
+                lua_pushstring(state, tertiary_class.c_str());
+                lua_setfield(state, -2, "tertiary_class");
+
+                lua_pushinteger(state, tag_entry->id.whole_id);
+                lua_setfield(state, -2, "id");
+
+                lua_pushstring(state, tag_entry->path);
+                lua_setfield(state, -2, "path");
+
+                lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag_entry->data));
+                lua_setfield(state, -2, "data");
+
+                lua_pushboolean(state, tag_entry->indexed);
+                lua_setfield(state, -2, "indexed");
+            }
+            else {
+                lua_pushnil(state);
+            }
+
+            return 1;
+            
         }
         else {
             logger.warning("Could not get plugin for lua state.");

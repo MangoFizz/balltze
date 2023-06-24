@@ -15,6 +15,8 @@
 #include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
+#include "../../plugins/loader.hpp"
+#include "../../logger.hpp"
 #include "map.hpp"
 
 namespace Balltze::Features {
@@ -28,15 +30,39 @@ namespace Balltze::Features {
         TagDataHeader tag_data_header;
         bool secondary = false;
         std::vector<std::pair<std::string, Engine::TagClassInt>> tags_to_load;
+        bool load_all_tags = false;
 
         std::size_t tag_data_size() {
             return this->header.tag_data_size;
         }
 
-        LoadedMap(const std::string name, bool secondary) noexcept {
+        LoadedMap(const std::string name, bool secondary) {
             this->name = name;
-            this->path = path_for_map_local(name.c_str());
             this->secondary = secondary;
+
+            try {
+                this->path = path_for_map_local(name.c_str());
+            }
+            catch (std::runtime_error &e) {
+                throw;
+            }
+
+            // Read map data
+            std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
+            std::fread(&header, sizeof(MapHeader), 1, file);
+            std::fseek(file, header.tag_data_offset, SEEK_SET);
+            std::fread(&tag_data_header, sizeof(TagDataHeader), 1, file);
+            std::fclose(file);
+        }
+
+        LoadedMap(std::filesystem::path path, bool secondary) {
+            this->name = path.stem().string();
+            this->path = path;
+            this->secondary = secondary;
+
+            if(!std::filesystem::exists(path)) {
+                throw std::runtime_error("Map file does not exist");
+            }
 
             // Read map data
             std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
@@ -242,12 +268,20 @@ namespace Balltze::Features {
                 // Reserve space for tags to AVOID REALLOCATIONS
                 tag_array.reserve(tag_array.size() + map_tag_data_header.tag_count);
 
-                // Load tags
-                for(auto &tag : map.tags_to_load) {
+                if(map.load_all_tags) {
+                    // Load all tags
                     for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
-                        std::string path = translate_address(tag_array_raw[i].path);
-                        if(path == tag.first && tag_array_raw[i].primary_class == tag.second) {
-                            load_tag(tag_array_raw + i, true);
+                        load_tag(tag_array_raw + i, false);
+                    }
+                }
+                else {
+                    // Load tags
+                    for(auto &tag : map.tags_to_load) {
+                        for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
+                            std::string path = translate_address(tag_array_raw[i].path);
+                            if(path == tag.first && tag_array_raw[i].primary_class == tag.second) {
+                                load_tag(tag_array_raw + i, true);
+                            }
                         }
                     }
                 }
@@ -261,19 +295,62 @@ namespace Balltze::Features {
     }
 
     void import_tag_from_map(std::string map_name, std::string tag_path, Engine::TagClassInt tag_class) {
-        for(auto &map : loaded_maps) {
-            if(map.name == map_name) {
-                for(auto &tag : map.tags_to_load) {
-                    if(tag.first == tag_path && tag.second == tag_class) {
-                        return;
+        try {
+            for(auto &map : loaded_maps) {
+                if(map.name == map_name) {
+                    for(auto &tag : map.tags_to_load) {
+                        if(tag.first == tag_path && tag.second == tag_class) {
+                            return;
+                        }
                     }
+                    map.tags_to_load.emplace_back(tag_path, tag_class);
+                    return;
                 }
-                map.tags_to_load.emplace_back(tag_path, tag_class);
-                return;
             }
+            auto &map = loaded_maps.emplace_back(map_name, true);
+            map.tags_to_load.emplace_back(tag_path, tag_class);
         }
-        auto &map = loaded_maps.emplace_back(map_name, true);
-        map.tags_to_load.emplace_back(tag_path, tag_class);
+        catch(std::exception &e) {
+            logger.error("Failed to import tag {} from map {}: {}", tag_path, map_name, e.what());
+        }
+    }
+
+    void import_tag_from_map(std::filesystem::path map_file, std::string tag_path, Engine::TagClassInt tag_class) {
+        try {
+            for(auto &map : loaded_maps) {
+                if(map.path == map_file) {
+                    for(auto &tag : map.tags_to_load) {
+                        if(tag.first == tag_path && tag.second == tag_class) {
+                            return;
+                        }
+                    }
+                    map.tags_to_load.emplace_back(tag_path, tag_class);
+                    return;
+                }
+            }
+            auto &map = loaded_maps.emplace_back(map_file, true);
+            map.tags_to_load.emplace_back(tag_path, tag_class);
+        }
+        catch(std::exception &e) {
+            logger.debug("Failed to import tag {} from map {}: {}", tag_path, map_file.string(), e.what());
+            throw;
+        }
+    }
+
+    void import_tags_from_map(std::filesystem::path map_file) {
+        try {
+            for(auto &map : loaded_maps) {
+                if(map.path == map_file) {
+                    return;
+                }
+            }
+            auto &map = loaded_maps.emplace_back(map_file, true);
+            map.load_all_tags = true;
+        }
+        catch(std::runtime_error &e) {
+            logger.debug("Failed to import tags from map {}: {}", map_file.string(), e.what());
+            throw;
+        }
     }
 
     void on_map_file_load(Event::MapFileLoadEvent const &event) {

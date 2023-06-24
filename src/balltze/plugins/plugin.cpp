@@ -222,6 +222,27 @@ namespace Balltze::Plugins {
         return nullptr;
     }
 
+    void LuaPlugin::add_tag_import(std::string map_name_or_path, std::string tag_path, Engine::TagClassInt tag_class) {
+        if(m_tag_imports.find(map_name_or_path) == m_tag_imports.end()) {
+            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, Engine::TagClassInt>>();
+        }
+        m_tag_imports[map_name_or_path].push_back(std::make_pair(tag_path, tag_class));
+    }
+
+    void LuaPlugin::import_all_tags(std::string map_name_or_path) {
+        if(m_tag_imports.find(map_name_or_path) == m_tag_imports.end()) {
+            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, Engine::TagClassInt>>();
+        }
+    }
+
+    void LuaPlugin::clear_tag_imports() noexcept {
+        m_tag_imports.clear();
+    }
+
+    std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &LuaPlugin::imported_tags() const noexcept {
+        return m_tag_imports;
+    }
+
     PluginInitResult LuaPlugin::init() {
         Balltze::logger.info("Initializing plugin {}...", m_filename);
         lua_getglobal(m_state, "plugin_init");
@@ -282,7 +303,7 @@ namespace Balltze::Plugins {
                     Balltze::logger.error("Error while loading plugin {}: {}", m_filename, err);
                     lua_pop(m_state, 1);
                     lua_close(m_state);
-                    throw std::runtime_error("Could not load Lua plugin.");
+                    throw std::runtime_error("Could not execute Lua plugin.");
                 }
                 read_metadata();
                 get_directory();
