@@ -309,7 +309,7 @@ local function generateHeaderCollection(files)
 ]]
     for _, file in ipairs(files) do
         local fileName = file:match("([^/]+)$")
-        header = header .. "#include \"" .. fileName .. "\"\n"
+        header = header .. "#include \"tag_definitions/" .. fileName .. "\"\n"
     end
 
     if(args.guard) then
@@ -354,5 +354,5 @@ for _, file in ipairs(files) do
     table.insert(headers_list, definitionName .. ".hpp")
 end
 local collection = generateHeaderCollection(headers_list)
-glue.writefile(outputDirectory .. "/engine/tag_definitions/definitions.hpp", collection, "t")
-glue.writefile(outputDirectory .. "/hek/tag_definitions/definitions.hpp", collection, "t")
+glue.writefile(outputDirectory .. "/engine/tag_definitions.hpp", collection, "t")
+glue.writefile(outputDirectory .. "/hek/tag_definitions.hpp", collection, "t")

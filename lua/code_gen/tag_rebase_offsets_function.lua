@@ -50,6 +50,7 @@ add([[
 // This file is auto-generated. DO NOT EDIT!
 
 #include <balltze/engine/tag.hpp>
+#include <balltze/engine/tag_definitions.hpp>
 
 namespace Balltze::Engine {
     using namespace TagDefinitions;

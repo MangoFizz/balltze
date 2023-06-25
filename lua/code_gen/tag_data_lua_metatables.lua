@@ -53,6 +53,7 @@ add([[
 #include <memory>
 #include <lua.hpp>
 #include <balltze/engine/tag.hpp>
+#include <balltze/engine/tag_definitions.hpp>
 
 namespace Balltze::Plugins {
     using namespace Engine;
@@ -225,9 +226,9 @@ for structName, struct in pairs(structs) do
                     end
                 end
             elseif(sneakCaseFieldType == "tag_string") then
-                add("lua_pushlstring(state, data->" .. field.name .. ", sizeof(data->" .. field.name .. ")); \n");
+                add("lua_pushlstring(state, data->" .. field.name .. ".string, sizeof(data->" .. field.name .. ")); \n");
             elseif(sneakCaseFieldType == "tag_four_c_c") then
-                add("auto tag_class = tag_class_to_string(*reinterpret_cast<Engine::TagClassInt *>(data->".. field.name .. ")); \n");
+                add("auto tag_class = tag_class_to_string(data->".. field.name .. "); \n");
                 indent(3)
                 add("lua_pushstring(state, tag_class.c_str()); \n");
             elseif(sneakCaseFieldType == "matrix") then
@@ -437,29 +438,11 @@ for structName, struct in pairs(structs) do
                 indent(3)
                 add("} \n");
                 indent(3)
-                add("strcpy(data->" .. field.name .. ", value); \n");
+                add("strcpy(data->" .. field.name .. ".string, value); \n");
             elseif(sneakCaseFieldType == "tag_four_c_c") then
                 add("const char *value = luaL_checkstring(state, 3); \n");
                 indent(3)
-                add("try { \n");
-                indent(4)
-                add("auto tag_class_int = tag_class_from_string(value); \n");
-                indent(4)
-                add("auto *tag_four_cc = reinterpret_cast<char *>(&tag_class_int); \n");
-                indent(4)
-                add("for(int i = 0; i < 4; i++) { \n");
-                indent(5)
-                add("data->" .. field.name .. "[i] = tag_four_cc[i]; \n");
-                indent(4)
-                add("} \n");
-                indent(3)
-                add("} \n");
-                indent(3)
-                add("catch(const std::runtime_error &e) { \n");
-                indent(4)
-                add("return luaL_error(state, e.what()); \n");
-                indent(3)
-                add("} \n");
+                add("data->" .. field.name .. " = *reinterpret_cast<TagClassInt const *>(value); \n");
             elseif(sneakCaseFieldType == "matrix") then
                 add("auto matrix = lua_to_engine_matrix(state, 3); \n");
                 indent(3)

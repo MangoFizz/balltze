@@ -6,15 +6,21 @@
 #include <cstdint> 
 #include <cstddef>
 #include "../memory.hpp"
+#include "tag_classes.hpp"
 
 namespace Balltze::Engine {
 	using Angle = float;
 	using Fraction = float;
 	using Index = std::uint16_t;
 	using TagEnum = std::uint16_t;
-	using TagString = char[32];
-	using TagFourCC = char[4];
+	using TagFourCC = TagClassInt;
 	using Matrix = float[3][3];
+
+	struct TagString {
+        char string[0x20] = {};
+
+        TagString() = default;
+    };
 
     union ElementHandle {
         std::uint32_t whole_id;

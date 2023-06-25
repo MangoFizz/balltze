@@ -13,7 +13,6 @@
 #include "../api.hpp"
 #include "../memory.hpp"
 #include "../engine/data_types.hpp"
-#include "tag_definitions/definitions.hpp"
 
 namespace Balltze::HEK {
     using Angle = Memory::BigEndian<float>;
@@ -88,8 +87,12 @@ namespace Balltze::HEK {
 
     template<typename T> struct TagReflexive {
         Memory::BigEndian<std::uint32_t> count;
-        Memory::BigEndian<T> *offset;
+        Memory::BigEndian<std::uint32_t> offset;
 		std::byte pad_3[4];
+
+		T *data() {
+			return reinterpret_cast<T *>(reinterpret_cast<std::byte *>(this) + sizeof(TagReflexive<T>) + offset);
+		}
 	};
 	static_assert(sizeof(TagReflexive<void>) == 0xC);
 
