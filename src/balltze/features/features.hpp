@@ -20,6 +20,11 @@ namespace Balltze::Features {
     void set_up_tag_data_importing();
 
     /**
+     * Set up sound subtitles
+     */
+    void set_up_sound_subtitles() noexcept;
+
+    /**
      * Set up all features.
      */
     inline void set_up_features() {
@@ -28,6 +33,7 @@ namespace Balltze::Features {
             Features::set_up_hud_button_prompts();
 
 #ifdef BALLTZE_ENABLE_EXPERIMENTAL
+            Features::set_up_sound_subtitles();
             Features::set_up_tag_data_importing();
 #endif
         }

@@ -52,6 +52,7 @@ add_library(balltze SHARED
     src/balltze/event/tick.cpp
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
+    src/balltze/features/sound_subtitles.cpp
     src/balltze/features/tag_data_importing/map.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.S
