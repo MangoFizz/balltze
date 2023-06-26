@@ -107,20 +107,24 @@ namespace Balltze::Plugins {
         for(auto &plugin : plugins) {
             auto map_imports = plugin->imported_tags();
             for(auto &[path, tags] : map_imports) {
+                auto map_path = Features::path_for_map_local(path.c_str());
                 if(!tags.empty()) {
                     for(auto &[tag_path, tag_class] : tags) {
                         try {
-                            std::filesystem::path map_path = path;
                             Features::import_tag_from_map(map_path, tag_path, tag_class);
                         }
                         catch(std::runtime_error &e) {
-                            logger.warning("Could not import tag from map: {}", tag_path);
+                            logger.warning("Could not import tag {} from map: {}", tag_path, path);
                         }
                     }
                 }
                 else {
-                    std::filesystem::path map_path = path;
-                    Features::import_tags_from_map(map_path);
+                    try {
+                        Features::import_tags_from_map(map_path);
+                    }
+                    catch(std::runtime_error &e) {
+                        logger.warning("Could not import tags from map: {}", path);
+                    }
                 }
             }
         }

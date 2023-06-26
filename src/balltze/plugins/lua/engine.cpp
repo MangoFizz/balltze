@@ -419,8 +419,6 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid number of arguments in function engine.get_tag_entry.");
             }
 
-            logger.debug("Tag entry: {}", reinterpret_cast<void *>(tag_entry));
-
             if(tag_entry) {
                 lua_newtable(state);
 
