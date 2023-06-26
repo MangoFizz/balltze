@@ -151,6 +151,7 @@ namespace Balltze::Event {
     template class EventHandler<HudHoldForActionMessageEvent>;
     template class EventHandler<GameInputEvent>;
     template class EventHandler<MapFileLoadEvent>;
+    template class EventHandler<SoundPlaybackEvent>;
 
     void set_up_events() {
         try {
@@ -158,6 +159,7 @@ namespace Balltze::Event {
             EventHandler<HudHoldForActionMessageEvent>::init();
             EventHandler<GameInputEvent>::init();
             EventHandler<MapFileLoadEvent>::init();
+            EventHandler<SoundPlaybackEvent>::init();
         }
         catch(std::runtime_error) {
             throw;

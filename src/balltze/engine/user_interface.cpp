@@ -125,6 +125,12 @@ namespace Balltze::Engine {
          * @param buffer            Buffer to write the name to
          */
         void get_string_name_for_button(InputDevice input_device, std::size_t button_index, wchar_t *buffer);
+
+        /**
+         * Play a sound from a given tag
+         * @param sound     Tag ID of the sound
+         */
+        void play_sound_asm(TagHandle sound);
     }
 
     Widget *find_widget(TagHandle widget_definition, Widget *widget_base) noexcept {
@@ -325,6 +331,13 @@ namespace Balltze::Engine {
         wchar_t button_name[64];
         get_string_name_for_button(input_device, button_index, button_name);
         return button_name;
+    }
+
+    void play_sound(TagHandle tag_sound) {
+        if(tag_sound.is_null() || !get_tag(tag_sound)) {
+            throw std::runtime_error("Invalid sound tag");
+        }
+        play_sound_asm(tag_sound);
     }
 
     std::string get_gamepad_button_name(GamepadButton button) noexcept {

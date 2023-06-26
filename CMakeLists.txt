@@ -15,6 +15,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(lua/code_gen/tag_definitions.cmake)
 include(src/lua/lua.cmake)
 include(src/fmt/fmt.cmake)
+include(src/sound-subtitles-stapler/sss.cmake)
 
 # Set include path
 include_directories(include/)
@@ -46,6 +47,8 @@ add_library(balltze SHARED
     src/balltze/event/hud_hold_to_action_message.cpp
     src/balltze/event/hud_hold_to_action_message.S
     src/balltze/event/map_file_load.cpp
+    src/balltze/event/sound_playback.cpp
+    src/balltze/event/sound_playback.S
     src/balltze/event/tick.cpp
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp

@@ -329,6 +329,10 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 2);
                         instruction_size = 2;
                     }
+                    else if(instruction[1] == 0x0D) {
+                        m_cave.insert(&instruction[0], 6);
+                        instruction_size = 6;
+                    }
                     else {
                         throw std::runtime_error("Unsupported lea / mov instruction.");
                     }
@@ -484,7 +488,7 @@ namespace Balltze::Memory {
         hook->m_instruction = reinterpret_cast<std::byte *>(instruction);
 
         hook->m_cave.insert(0xE9);
-        hook->m_cave.insert_address(calculate_32bit_jump(&hook->m_cave.top(), reinterpret_cast<const void *>(function.target<void(*)()>())));
+        hook->m_cave.insert_address(calculate_32bit_jump(&hook->m_cave.top(), *reinterpret_cast<void **>(function.target<void(*)()>())));
         original_instruction = &hook->m_cave.top() + 1;
 
         std::uint8_t instruction_size;

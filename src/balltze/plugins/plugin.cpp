@@ -280,6 +280,9 @@ namespace Balltze::Plugins {
             auto res = lua_pcall(m_state, 0, 0, 0);
             if(res != LUA_OK) {
                 const char *err = lua_tostring(m_state, -1);
+                if(err == nullptr) {
+                    err = "Unknown error.";
+                }
                 Balltze::logger.error("Error while loading plugin {}: {}", m_filename, err);
                 lua_pop(m_state, 1);
             }

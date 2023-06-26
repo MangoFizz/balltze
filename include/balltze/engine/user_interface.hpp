@@ -643,6 +643,12 @@ namespace Balltze::Engine {
      * @return                      The name of the button.
      */
     BALLTZE_API std::wstring get_button_name(Engine::InputDevice input_device, std::size_t button_index);
+
+    /**
+     * Play a sound from a given tag
+     * @param sound     Tag ID of the sound
+     */
+    BALLTZE_API void play_sound(TagHandle tag_sound);
 }
 
 #endif
