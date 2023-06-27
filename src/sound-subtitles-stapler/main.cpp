@@ -2,9 +2,14 @@
 
 #include <windows.h>
 #include <iostream>
+#include <cstdio>
 #include <fstream>
-#include <locale>
-#include <codecvt>
+#include <sstream>
+#include <utility>
+#include <optional>
+#include <filesystem>
+#include <algorithm>
+#include <uchar.h>
 #include <balltze/hek/tag_definitions/sound.hpp>
 
 using namespace Balltze;
@@ -36,18 +41,23 @@ void write_struct_to_file(std::fstream &file, T *data, std::size_t data_size) {
     file.write(reinterpret_cast<char *>(data), data_size);
 }
 
-std::fstream open_file(std::string path) {  
+std::optional<std::fstream> open_file(std::filesystem::path path) {  
     std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary);
     if(!file.is_open()) {
-        std::cout << "Failed to open file: " << path << std::endl;
-        exit(1);
+        return std::nullopt;
     }
     return file;
 }
 
-void append_subtitle_data(std::string tag_path, std::wstring subtitle_data) {
+void append_subtitles_to_tag(std::filesystem::path tag_file, std::wstring subtitle_data) {
+    auto result = open_file(tag_file);
+    if(!result) {
+        std::cout << "Notice: Failed to open file " << tag_file.string() << std::endl;
+        return;
+    }
+
     auto subtitle_data_size = (subtitle_data.length() + 1) * 2;
-    auto file = open_file(tag_path);
+    auto &file = result.value();
     auto *tag = read_struct_from_file<Balltze::HEK::TagDefinitions::Sound>(file, subtitle_data_size);
     if(tag->data.pitch_ranges.count > 0) {
         if(tag->data.pitch_ranges.count > 1) {
@@ -79,27 +89,143 @@ void append_subtitle_data(std::string tag_path, std::wstring subtitle_data) {
             // Save file
             filesize += subtitle_data_size;
             write_struct_to_file(file, tag, filesize);
+            VirtualFree(tag, 0, MEM_RELEASE);
             file.flush();
+
+            std::cout << "Info: Subtitle data appended." << std::endl;
 
             return;
         }
     } 
-    std::cout << "Error: No subtitle data appended." << std::endl;
+    std::cout << "Info: No subtitle data appended." << std::endl;
 }
 
+std::vector<std::pair<std::wstring, std::wstring>> parse_subtitles_file(std::string path) {
+    std::fstream subtitles_file(path, std::ios::in);
+    if(!subtitles_file.is_open()) {
+        std::cout << "Error: Failed to open subtitles file " << path << std::endl;
+        exit(1);
+    }
+
+    // Read the file into a vector.
+    std::vector<char16_t> subtitles_data;
+    auto filesize = get_file_size(subtitles_file);
+    subtitles_data.resize(filesize);
+    subtitles_file.seekg(2, std::ios::beg); // Skip the BOM
+    subtitles_file.read(reinterpret_cast<char *>(subtitles_data.data()), subtitles_data.size());
+
+    // Split the subtitles into lines
+    std::wstring line;
+    std::wstringstream subtitles_stream(std::wstring(subtitles_data.begin(), subtitles_data.end()));
+    std::vector<std::wstring> lines;
+    while(getline(subtitles_stream, line)) {
+        if(line.length() > 0) {
+            line.erase(0, line.find_first_not_of(L" \t\r\n"));
+            lines.push_back(line);
+        }
+    }
+
+    std::cout << "Info: Found " << lines.size() << " subtitles lines." << std::endl;
+
+    std::vector<std::pair<std::wstring, std::wstring>> subtitles;
+    for(std::size_t line_number = 0; line_number < lines.size(); line_number++) {
+        auto &line = lines[line_number];
+        std::wstring tag_path;
+        std::wstring subtitle;
+        if(line[0] == L'"') {
+            auto first_quote = line.find(L'"');
+            auto second_quote = line.find(L'"', first_quote + 1);
+            if(first_quote == std::wstring::npos || second_quote == std::wstring::npos) {
+                std::wcout << "Error: Invalid subtitles file (1). Line " << line_number << ". (" << line << ")" << std::endl;
+                exit(1);
+            }
+            if(first_quote == second_quote - 1) {
+                continue;
+            }
+            tag_path = line.substr(first_quote + 1, second_quote - first_quote - 1);
+
+            auto third_quote = line.find(L'"', second_quote + 1);
+            auto fourth_quote = line.find(L'"', third_quote + 1);
+            if(third_quote == std::wstring::npos || fourth_quote == std::wstring::npos) {
+                std::wcout << "Error: Invalid subtitles file (2). Line " << line_number << ". (" << line << ")" << std::endl;
+                exit(1);
+            }
+            if(third_quote == fourth_quote - 1) {
+                std::cout << "Warning: Skipping empty subtitle (line " << line_number << ")." << std::endl;
+                continue;
+            }
+            subtitle = line.substr(third_quote + 1, fourth_quote - third_quote - 1);
+        }
+        else {
+            auto first_tab = line.find(L'\t');
+            if(first_tab == std::wstring::npos) {
+                std::wcout << "Error: Invalid subtitles file (3). Line " << line_number << ". (" << line << ")" << std::endl;
+                exit(1);
+            }
+            tag_path = line.substr(0, first_tab);
+
+            auto first_quote = line.find(L'"');
+            auto second_quote = line.find(L'"', first_quote + 1);
+            if(first_quote == std::wstring::npos || second_quote == std::wstring::npos) {
+                std::wcout << "Error: Invalid subtitles file (4). Line " << line_number << ". (" << line << ")" << std::endl;
+                exit(1);
+            }
+            if(first_quote == second_quote - 1) {
+                std::cout << "Warning: Skipping empty subtitle (line " << line_number << ")." << std::endl;
+                continue;
+            }
+            subtitle = line.substr(first_quote + 1, second_quote - first_quote - 1);
+        }
+
+        // replace every double backslash with a single backslash
+        auto tag_path_it = tag_path.begin();
+        while(tag_path_it != tag_path.end()) {
+            if(*tag_path_it == L'\\' && tag_path_it + 1 != tag_path.end() && *(tag_path_it + 1) == L'\\') {
+                tag_path_it = tag_path.erase(tag_path_it);
+            }
+            else {
+                tag_path_it++;
+            }
+        }
+
+        subtitles.push_back({tag_path, subtitle});
+    }
+
+    std::cout << "Notice: Parsed " << subtitles.size() << " subtitles." << std::endl;
+
+    return subtitles;
+}
 
 int main(int argc, char* argv[]) {
     if(argc < 3) {
-        std::cout << "Usage: " << argv[0] << " <tag file> <subtitle>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <subtitles-file> <tag-directory>" << std::endl;
         return 1;
     }
 
-    std::wstring subtitle = L"";
-    for(int i = 2; i < argc; i++) {
-        subtitle += std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(argv[i]);
+    if(!std::filesystem::exists(argv[1])) {
+        std::cout << "Error: Subtitles file does not exist." << std::endl;
+        return 1;
     }
-    
-    append_subtitle_data(argv[1], subtitle);
+
+    if(!std::filesystem::exists(argv[2]) || !std::filesystem::is_directory(argv[2])) {
+        std::cout << "Error: Tag directory does not exist." << std::endl;
+        return 1;
+    }
+
+    std::cout << "Info: Parsing subtitles file..." << std::endl;
+
+    auto subtitles = parse_subtitles_file(argv[1]);
+    auto tags_directory = std::filesystem::path(argv[2]);
+    for(auto &[tag_path, subtitle] : subtitles) {
+        auto tag_file = tags_directory / (tag_path + L".sound");
+        if(std::filesystem::exists(tag_file)) {
+            std::cout << "Info: Appending subtitle to " << tag_file << std::endl;
+            append_subtitles_to_tag(tag_file, subtitle);
+        }
+        else {
+            std::cout << "Warning: Tag file " << tag_file << " does not exist." << std::endl;
+        }
+    }
 
     return 0;
 }
