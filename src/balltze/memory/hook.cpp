@@ -503,4 +503,32 @@ namespace Balltze::Memory {
         hook->hook();
         return hook;
     }
+
+    Hook *replace_function_call(void *instruction, std::function<void()> function) {
+        for(auto &hook : hooks) {
+            if(hook->m_instruction == instruction) {
+                throw std::runtime_error("address already hooked");
+            }
+        }
+
+        Hook *hook = hooks.emplace_back(std::make_unique<Hook>()).get();
+        hook->m_instruction = reinterpret_cast<std::byte *>(instruction);
+
+        hook->m_cave.insert(0xE8);
+        hook->m_cave.insert_address(calculate_32bit_jump(&hook->m_cave.top(), *reinterpret_cast<void **>(function.target<void(*)()>())));
+
+        hook->m_cave.lock();
+        std::uint8_t instruction_size;
+        try {
+            hook->copy_instructions(instruction, instruction_size);
+        }
+        catch(std::runtime_error) {
+            throw;
+        }
+        hook->m_cave.unlock();
+
+        hook->write_cave_return_jmp();
+        hook->hook();
+        return hook;
+    }
 }

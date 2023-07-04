@@ -52,6 +52,10 @@ namespace Balltze::Engine {
         return nullptr;
     }
 
+    extern "C" Tag *get_tag_address_from_id(TagHandle tag_id) noexcept {
+        return get_tag(tag_id);
+    }
+
     Tag *get_tag(std::string path, std::uint32_t tag_class) noexcept {
         auto tag_id = get_tag_id(path.c_str(), tag_class);
         return get_tag(tag_id);

@@ -199,6 +199,7 @@ namespace Balltze::Memory {
         // just friends :')
         friend Hook *hook_function(void *, std::optional<std::variant<std::function<void()>, std::function<bool()>>>, std::optional<std::function<void()>>, bool);
         friend Hook *override_function(void *, std::function<void()>, void *&);
+        friend Hook *replace_function_call(void *, std::function<void()>);
     };
 
     /**
@@ -223,6 +224,15 @@ namespace Balltze::Memory {
      * @throws std::runtime_error   If instruction is not supported or is already hooked
      */
     BALLTZE_API Hook *override_function(void *instruction, std::function<void()> function, void *&original_instruction);
+
+    /**
+     * Replace a function call with another function.
+     * @param instruction   Address of the instruction to hook
+     * @param function      Function to be called instead of original code
+     * @return              Hook object
+     * @throws std::runtime_error   If instruction is not supported or is already hooked
+     */
+    BALLTZE_API Hook *replace_function_call(void *instruction, std::function<void()> function);
 }
 
 #endif
