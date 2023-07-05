@@ -7,6 +7,7 @@
 #include "features/features.hpp"
 #include "event/event.hpp"
 #include "memory/memory.hpp"
+#include "output/draw_text.hpp"
 #include "plugins/loader.hpp"
 #include "config/config.hpp"
 
@@ -16,13 +17,6 @@ namespace Balltze {
     Logger logger("Balltze");
     
     static EventListenerHandle<TickEvent> firstTickListener;
-
-    static void first_tick(TickEvent const &context) noexcept {
-        if(context.time == EVENT_TIME_AFTER) {
-            logger.debug("First tick");
-            firstTickListener.remove();
-        }
-    }
 
     static void initialize_balltze() noexcept {
         logger.mute_ingame(true);
@@ -46,7 +40,15 @@ namespace Balltze {
             logger.fatal("failed to initialize: {}", e.what());
             std::terminate();
         }
-        firstTickListener = TickEvent::subscribe_const(first_tick, EVENT_PRIORITY_HIGHEST);
+
+        firstTickListener = TickEvent::subscribe_const(+[](TickEvent const &context) {
+            logger.debug("First tick");
+
+            // Initialize stuff
+            setup_text_hook();
+
+            firstTickListener.remove();
+        }, EVENT_PRIORITY_HIGHEST);
     }
 }
 

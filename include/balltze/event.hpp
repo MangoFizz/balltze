@@ -106,10 +106,14 @@ namespace Balltze::Event {
     };
 }
 
-#endif
-
+#include "events/d3d9_end_scene.hpp"
+#include "events/d3d9_device_reset.hpp"
+#include "events/frame.hpp"
 #include "events/tick.hpp"
 #include "events/game_input.hpp"
 #include "events/hud_hold_to_action_message.hpp"
 #include "events/map_file_load.hpp"
 #include "events/sound_playback.hpp"
+
+#endif
+

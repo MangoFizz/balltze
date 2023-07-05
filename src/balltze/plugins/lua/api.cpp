@@ -16,6 +16,6 @@ namespace Balltze::Plugins {
         lua_set_engine_table(state);
         lua_set_event_table(state);
         lua_set_features_table(state);
-        lua_setglobal(state, "balltze");   
+        lua_setglobal(state, "balltze");
     }
 }

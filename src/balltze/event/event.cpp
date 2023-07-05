@@ -152,6 +152,11 @@ namespace Balltze::Event {
     template class EventHandler<GameInputEvent>;
     template class EventHandler<MapFileLoadEvent>;
     template class EventHandler<SoundPlaybackEvent>;
+    template class EventHandler<D3D9EndSceneEvent>;
+    template class EventHandler<D3D9DeviceResetEvent>;
+    template class EventHandler<FrameEvent>;
+
+    static EventListenerHandle<TickEvent> first_tick_listener;
 
     void set_up_events() {
         try {
@@ -160,6 +165,13 @@ namespace Balltze::Event {
             EventHandler<GameInputEvent>::init();
             EventHandler<MapFileLoadEvent>::init();
             EventHandler<SoundPlaybackEvent>::init();
+            EventHandler<FrameEvent>::init();
+            
+            first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
+                EventHandler<D3D9EndSceneEvent>::init();
+                EventHandler<D3D9DeviceResetEvent>::init();
+                first_tick_listener.remove();
+            });
         }
         catch(std::runtime_error) {
             throw;

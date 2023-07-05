@@ -378,6 +378,13 @@ namespace Balltze::Memory {
                     break;
                 }
 
+                // mov
+                case 0xA0: {
+                    m_cave.insert(&instruction[0], 5);
+                    instruction_size = 5;
+                    break;
+                }
+
                 default: {
                     char message[256];
                     snprintf(message, sizeof(message), "Unable to build cave: unsupported instruction. \nOpcode: 0x%.2X at 0x%p", instruction[0], instruction);

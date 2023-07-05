@@ -41,7 +41,12 @@ add_library(balltze SHARED
     src/balltze/engine/tag.S
     src/balltze/engine/user_interface.cpp
     src/balltze/engine/user_interface.S
+    src/balltze/event/d3d9_device_reset.cpp
+    src/balltze/event/d3d9_device_reset.S
+    src/balltze/event/d3d9_end_scene.cpp
+    src/balltze/event/d3d9_end_scene.S
     src/balltze/event/event.cpp
+    src/balltze/event/frame.cpp
     src/balltze/event/game_input.cpp
     src/balltze/event/game_input.S
     src/balltze/event/hud_hold_to_action_message.cpp
@@ -61,8 +66,11 @@ add_library(balltze SHARED
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp
+    src/balltze/output/draw_text.cpp
+    src/balltze/output/draw_text.S
     src/balltze/output/logger.cpp
     src/balltze/output/messaging.cpp
+    src/balltze/output/subtitles.cpp
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
     src/balltze/plugins/lua/api.cpp
