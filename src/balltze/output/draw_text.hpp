@@ -92,7 +92,7 @@ namespace Balltze {
     /**
      * Set up the text hook for showing text.
      */
-    void setup_text_hook() noexcept;
+    void set_up_text_hook() noexcept;
 
     /**
      * Get the number of pixels a string takes up given a font.

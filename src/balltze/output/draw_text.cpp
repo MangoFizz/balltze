@@ -471,10 +471,6 @@ namespace Balltze {
         return *reinterpret_cast<std::uint16_t *>(tag_data + 0x4) + *reinterpret_cast<std::uint16_t *>(tag_data + 0x6);
     }
 
-    template <typename C> static void get_dimensions_template(std::int32_t &width, std::int32_t &height, const C *text) {
-
-    }
-
     template<typename T> std::int16_t text_pixel_length_t(const T *text, const std::variant<Engine::TagHandle, GenericFont> &font) {
         // Find the font
         Engine::TagHandle font_tag = get_generic_font_if_generic(font);
@@ -768,7 +764,7 @@ namespace Balltze {
         }
     }
 
-    void setup_text_hook() noexcept {
+    void set_up_text_hook() noexcept {
         auto *text_hook_sig = Memory::get_signature("text_hook");
         auto *draw_text_8_bit_sig = Memory::get_signature("draw_8_bit_text");
         auto *draw_text_16_bit_sig = Memory::get_signature("draw_16_bit_text");

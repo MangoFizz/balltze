@@ -7,11 +7,13 @@
 #include <cstdint>
 #include <limits>
 #include <utility>
+#include <chrono>
 #include "../memory.hpp"
 #include "../math.hpp"
 #include "../api.hpp"
 #include "tag_definitions/hud_globals.hpp"
 #include "tag_definitions/bitmap.hpp"
+#include "tag_definitions/sound.hpp"
 #include "tag.hpp"
 
 namespace Balltze::Engine {
@@ -649,6 +651,14 @@ namespace Balltze::Engine {
      * @param sound     Tag ID of the sound
      */
     BALLTZE_API void play_sound(TagHandle tag_sound);
+
+    /**
+     * Get the duration of a sound permutation
+     * @param sound                 Pointer to sound tag data
+     * @param permutation           Pointer to sound permutation 
+     * @return                      Duration of the sound permutation in milliseconds
+     */
+    BALLTZE_API std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::Sound *sound, TagDefinitions::SoundPermutation *permutation);
 }
 
 #endif

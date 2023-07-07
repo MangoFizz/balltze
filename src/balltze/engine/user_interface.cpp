@@ -3,9 +3,11 @@
 #include <functional>
 #include <d3d9.h>
 #include <cmath>
+#include <invader/sound/sound_reader.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/engine/multiplayer.hpp>
 #include <balltze/engine/user_interface.hpp>
+#include "../logger.hpp"
 
 namespace Balltze::Engine {
     WidgetEventGlobals *get_widget_event_globals() {
@@ -338,6 +340,79 @@ namespace Balltze::Engine {
             throw std::runtime_error("Invalid sound tag");
         }
         play_sound_asm(tag_sound);
+    }
+
+    std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::Sound *sound, TagDefinitions::SoundPermutation *permutation) {
+        if(!sound || !permutation) {
+            throw std::runtime_error("Invalid sound or permutation");
+        }
+        
+        bool found = false;
+        for(std::size_t i = 0; i < sound->pitch_ranges.count; i++) {
+            auto &pitch_range = sound->pitch_ranges.offset[i];
+            if(pitch_range.permutations.count > 0) {
+                if(permutation >= pitch_range.permutations.offset && permutation < pitch_range.permutations.offset + pitch_range.permutations.count) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if(!found) {
+            throw std::runtime_error("Permutation not found in sound");
+        }
+
+        std::size_t channel_count;
+        switch(sound->channel_count) {
+            case TagDefinitions::SoundChannelCount::MONO:
+                channel_count = 1;
+                break;
+
+            case TagDefinitions::SoundChannelCount::STEREO:
+                channel_count = 2;
+                break;
+
+            default:
+                throw std::runtime_error("Invalid channel count in sound");
+        }
+
+        std::size_t sample_rate;
+        switch(sound->sample_rate) {
+            case TagDefinitions::SoundSampleRate::_22050__HZ:
+                sample_rate = 22050;
+                break;
+
+            case TagDefinitions::SoundSampleRate::_44100__HZ:
+                sample_rate = 44100;
+                break;
+
+            default:
+                throw std::runtime_error("Invalid sample rate in sound");
+        }
+
+        if(!permutation->samples_pointer) {
+            throw std::runtime_error("Samples not loaded yet");
+        }
+
+        auto *samples_pointer = reinterpret_cast<const std::byte *>(permutation->samples_pointer);
+        Invader::SoundReader::Sound sound_data;
+        switch(permutation->format) {
+            case TagDefinitions::SoundFormat::_16_BIT_PCM: 
+                sound_data = Invader::SoundReader::sound_from_16_bit_pcm_big_endian(samples_pointer, permutation->samples.size, channel_count, sample_rate);
+                break;
+
+            case TagDefinitions::SoundFormat::XBOX_ADPCM:
+                sound_data = Invader::SoundReader::sound_from_xbox_adpcm(samples_pointer, permutation->samples.size, channel_count, sample_rate);
+                break;
+
+            case TagDefinitions::SoundFormat::OGG_VORBIS: 
+                sound_data = Invader::SoundReader::sound_from_ogg(samples_pointer, permutation->samples.size);
+                break;
+
+            default:
+                throw std::runtime_error("Invalid sound format");
+        }
+
+        return std::chrono::milliseconds(static_cast<std::size_t>(std::ceil(static_cast<float>(sound_data.pcm.size()) / (sound_data.bits_per_sample / 8.0f) / channel_count * 1000.0f / sound_data.sample_rate)));
     }
 
     std::string get_gamepad_button_name(GamepadButton button) noexcept {

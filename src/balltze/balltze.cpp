@@ -8,6 +8,7 @@
 #include "event/event.hpp"
 #include "memory/memory.hpp"
 #include "output/draw_text.hpp"
+#include "output/subtitles.hpp"
 #include "plugins/loader.hpp"
 #include "config/config.hpp"
 
@@ -45,7 +46,8 @@ namespace Balltze {
             logger.debug("First tick");
 
             // Initialize stuff
-            setup_text_hook();
+            set_up_text_hook();
+            set_up_subtitles();
 
             firstTickListener.remove();
         }, EVENT_PRIORITY_HIGHEST);
