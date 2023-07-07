@@ -15,11 +15,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(lua/code_gen/tag_definitions.cmake)
 include(src/lua/lua.cmake)
 include(src/fmt/fmt.cmake)
+include(src/invader/invader.cmake)
 include(src/sound-subtitles-stapler/sss.cmake)
 
 # Set include path
-include_directories(include/)
-include_directories(src/lua)
+include_directories(include src/lua src/)
 
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
@@ -92,7 +92,7 @@ set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -sta
 
 add_dependencies(balltze tag-definitions-headers tag-functions)
 
-target_link_libraries(balltze tag-functions lua53 fmt)
+target_link_libraries(balltze tag-functions lua53 fmt invader)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
