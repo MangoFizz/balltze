@@ -15,7 +15,7 @@ namespace Balltze::Features {
     }
 
     static bool show_subtitles(Event::SoundPlaybackEvent const &event) noexcept {
-        if(event.time == Event::EVENT_TIME_AFTER) {
+        if(event.time == Event::EVENT_TIME_AFTER && !event.cancelled()) {
             auto &args = event.args;
             auto *subtitles = get_sound_subtitles(args.permutation);
             if(subtitles) {
