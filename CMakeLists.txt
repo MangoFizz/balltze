@@ -51,6 +51,8 @@ add_library(balltze SHARED
     src/balltze/event/game_input.S
     src/balltze/event/hud_hold_to_action_message.cpp
     src/balltze/event/hud_hold_to_action_message.S
+    src/balltze/event/map_file_data_read.cpp
+    src/balltze/event/map_file_data_read.S
     src/balltze/event/map_file_load.cpp
     src/balltze/event/sound_playback.cpp
     src/balltze/event/sound_playback.S
