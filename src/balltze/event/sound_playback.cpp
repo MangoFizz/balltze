@@ -9,53 +9,32 @@
 #include "../logger.hpp"
 
 namespace Balltze::Event {
-    static std::stack<std::pair<Engine::TagDefinitions::Sound *, std::uint16_t>> permutations_stack;
-
     extern "C" {
-        void *original_play_sound_function = nullptr; 
-        void sound_playback_event();
-        void get_next_sound_permutation_index_hook();
+        void sound_playback_event_before();
+        void sound_playback_event_after();
 
-        void push_sound_permutation(Engine::TagDefinitions::Sound *sound, std::uint16_t permutation_index) {
-            permutations_stack.push(std::make_pair(sound, permutation_index));
-        }
-
-        std::uint16_t pop_sound_permutation(Engine::TagDefinitions::Sound *sound) {
-            if(!permutations_stack.empty()) {
-                auto &top = permutations_stack.top();
-                if(top.first == sound) {
-                    auto permutation_index = top.second;
-                    permutations_stack.pop();
-                    // logger.debug("Found permutation index for sound ({} == {})", reinterpret_cast<uint32_t>(top.first), reinterpret_cast<uint32_t>(sound));
-                    return permutation_index;
-                }
-                logger.debug("Could not find permutation index for sound ({} != {})", reinterpret_cast<uint32_t>(top.first), reinterpret_cast<uint32_t>(sound));
-            }
-            return -1;
-        }
-
-        bool dispatch_sound_playback_event_before(Engine::TagHandle sound_tag, Engine::TagDefinitions::Sound *sound, std::uint16_t permutation_index) {
-            if(permutation_index == -1 && sound->pitch_ranges.count == 0 || permutation_index >= sound->pitch_ranges.offset[0].actual_permutation_count) {
+        bool dispatch_sound_playback_event_before(Engine::TagDefinitions::SoundPermutation *permutation) {
+            auto *tag = Engine::get_tag(permutation->tag_id_1);
+            if(!tag) {
+                logger.debug("Could not find tag for permutation {} in dispatch_sound_playback_event_before", permutation->name.string);
                 return false;
             }
-
-            auto *permutation = &sound->pitch_ranges.offset[0].permutations.offset[permutation_index]; 
-
-            SoundPlaybackEventArgs args(sound_tag, sound, permutation_index, permutation);
+            auto *sound = reinterpret_cast<Engine::TagDefinitions::Sound *>(tag->data);
+            SoundPlaybackEventArgs args(sound, permutation);
             SoundPlaybackEvent sound_playback_event(EVENT_TIME_BEFORE, args);
             sound_playback_event.dispatch();
             return sound_playback_event.cancelled();
         }
 
-        void dispatch_sound_playback_event_after(Engine::TagHandle sound_tag, Engine::TagDefinitions::Sound *sound, std::uint16_t permutation_index) {
-            if(permutation_index == -1 && sound->pitch_ranges.count == 0 || sound->pitch_ranges.offset[0].actual_permutation_count >= permutation_index) {
+        void dispatch_sound_playback_event_after(Engine::TagDefinitions::SoundPermutation *permutation) {
+            auto *tag = Engine::get_tag(permutation->tag_id_1);
+            if(!tag) {
+                logger.debug("Could not find tag for permutation {} in dispatch_sound_playback_event_before", permutation->name.string);
                 return;
             }
-
-            auto *permutation = &sound->pitch_ranges.offset[0].permutations.offset[permutation_index]; 
-
-            SoundPlaybackEventArgs args(sound_tag, sound, permutation_index, permutation);
-            SoundPlaybackEvent sound_playback_event(EVENT_TIME_BEFORE, args);
+            auto *sound = reinterpret_cast<Engine::TagDefinitions::Sound *>(tag->data);
+            SoundPlaybackEventArgs args(sound, permutation);
+            SoundPlaybackEvent sound_playback_event(EVENT_TIME_AFTER, args);
             sound_playback_event.dispatch();
         }
     }
@@ -68,17 +47,20 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        static auto *play_sound_function_sig = Memory::get_signature("play_sound_function");
-        if(!play_sound_function_sig) {
-            throw std::runtime_error("Could not find signature for sound playback event");
+        auto *enqueue_sound_permutation_call_1_sig = Memory::get_signature("enqueue_sound_permutation_call_1");
+        auto *enqueue_sound_permutation_call_2_sig = Memory::get_signature("enqueue_sound_permutation_call_2");
+        auto *enqueue_sound_permutation_call_3_sig = Memory::get_signature("enqueue_sound_permutation_call_3");
+        if(!enqueue_sound_permutation_call_1_sig || !enqueue_sound_permutation_call_2_sig || !enqueue_sound_permutation_call_3_sig) {
+            throw std::runtime_error("Could not find signatures for sound playback event");
         }
 
-        static auto *get_next_sound_permutation_index_sig = Memory::get_signature("get_next_sound_permutation_function_play_sound_call");
-        if(!get_next_sound_permutation_index_sig) {
-            throw std::runtime_error("Could not find signature for get_next_sound_permutation_index");
+        try {
+            Memory::hook_function(enqueue_sound_permutation_call_1_sig->data(), sound_playback_event_before, sound_playback_event_after);
+            Memory::hook_function(enqueue_sound_permutation_call_2_sig->data(), sound_playback_event_before, sound_playback_event_after);
+            Memory::hook_function(enqueue_sound_permutation_call_3_sig->data(), sound_playback_event_before, sound_playback_event_after);
         }
-
-        Memory::override_function(play_sound_function_sig->data(), sound_playback_event, original_play_sound_function);
-        Memory::replace_function_call(get_next_sound_permutation_index_sig->data(), get_next_sound_permutation_index_hook);
+        catch(const std::exception &e) {
+            logger.error("Could not hook sound playback event: {}", e.what());
+        }
     }
 }

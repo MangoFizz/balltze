@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__EVENT__MAP_FILE_LOAD_HPP
-#define BALLTZE__EVENT__MAP_FILE_LOAD_HPP
-
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
 
@@ -32,5 +29,3 @@ namespace Balltze::Event {
         auto *load_map_path_hook = Memory::hook_function(load_map_path_sig->data(), map_loading_asm);
     }
 }
-
-#endif

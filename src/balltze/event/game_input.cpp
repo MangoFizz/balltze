@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__EVENT__GAME_INPUT_HPP
-#define BALLTZE__EVENT__GAME_INPUT_HPP
-
 #include <balltze/engine/user_interface.hpp>
 #include <balltze/event.hpp>
 #include <balltze/memory.hpp>
@@ -56,5 +53,3 @@ namespace Balltze::Event {
         auto *gamepad_hook = Memory::hook_function(gamepad_input_sig->data(), dispatcher, std::nullopt, false);
     }
 }
-
-#endif
