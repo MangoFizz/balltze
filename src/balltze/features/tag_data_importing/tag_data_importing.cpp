@@ -358,12 +358,7 @@ namespace Balltze::Features {
         loaded_maps.emplace_back(event.args.map_name, false);
     }
 
-    extern void sound_permutation_samples_loaded(std::byte *buffer, std::size_t offset, std::size_t size);
-
     extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {        
-
-        sound_permutation_samples_loaded(output, overlapped->Offset, size);
-
         std::size_t file_offset = overlapped->Offset;
         
         // Get the name of the file we're reading from

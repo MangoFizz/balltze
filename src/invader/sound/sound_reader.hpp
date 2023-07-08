@@ -47,6 +47,22 @@ namespace Invader::SoundReader {
     Sound sound_from_ogg(const std::byte *data, std::size_t data_length);
 
     /**
+     * Get the number of PCM samples in an Ogg Vorbis stream
+     * @param  data        pointer to data
+     * @param  data_length data size
+     * @return             number of samples
+     */
+    std::size_t ogg_vorbis_sample_count(const std::byte *data, std::size_t data_length);
+
+    /**
+     * Get the duration of an Ogg Vorbis stream
+     * @param  data        pointer to data
+     * @param  data_length data size
+     * @return             duration in seconds
+     */
+    double ogg_vorbis_samples_duration(const std::byte *data, std::size_t data_size);
+
+    /**
      * Get the sound from Xbox ADPCM data
      * @param  data          pointer to data
      * @param  data_length   data size

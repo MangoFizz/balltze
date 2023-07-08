@@ -393,26 +393,31 @@ namespace Balltze::Engine {
             throw std::runtime_error("Samples not loaded yet");
         }
 
-        auto *samples_pointer = reinterpret_cast<const std::byte *>(permutation->samples_pointer);
-        Invader::SoundReader::Sound sound_data;
-        switch(permutation->format) {
-            case TagDefinitions::SoundFormat::_16_BIT_PCM: 
-                sound_data = Invader::SoundReader::sound_from_16_bit_pcm_big_endian(samples_pointer, permutation->samples.size, channel_count, sample_rate);
-                break;
+        try {
+            auto *samples_pointer = reinterpret_cast<const std::byte *>(permutation->samples_pointer);
+            Invader::SoundReader::Sound sound_data;
+            switch(permutation->format) {
+                case TagDefinitions::SoundFormat::_16_BIT_PCM: 
+                    sound_data = Invader::SoundReader::sound_from_16_bit_pcm_big_endian(samples_pointer, permutation->samples.size, channel_count, sample_rate);
+                    break;
 
-            case TagDefinitions::SoundFormat::XBOX_ADPCM:
-                sound_data = Invader::SoundReader::sound_from_xbox_adpcm(samples_pointer, permutation->samples.size, channel_count, sample_rate);
-                break;
+                case TagDefinitions::SoundFormat::XBOX_ADPCM:
+                    sound_data = Invader::SoundReader::sound_from_xbox_adpcm(samples_pointer, permutation->samples.size, channel_count, sample_rate);
+                    break;
 
-            case TagDefinitions::SoundFormat::OGG_VORBIS: 
-                sound_data = Invader::SoundReader::sound_from_ogg(samples_pointer, permutation->samples.size);
-                break;
+                case TagDefinitions::SoundFormat::OGG_VORBIS: {
+                    auto duration_seconds = Invader::SoundReader::ogg_vorbis_samples_duration(samples_pointer, permutation->samples.size);
+                    return std::chrono::milliseconds(static_cast<std::size_t>(std::ceil(duration_seconds * 1000.0f)));
+                }
 
-            default:
-                throw std::runtime_error("Invalid sound format");
+                default:
+                    throw std::runtime_error("Invalid sound format");
+            }
+            return std::chrono::milliseconds(static_cast<std::size_t>(std::ceil(static_cast<float>(sound_data.pcm.size()) / (sound_data.bits_per_sample / 8.0f) / channel_count * 1000.0f / sound_data.sample_rate)));
         }
-
-        return std::chrono::milliseconds(static_cast<std::size_t>(std::ceil(static_cast<float>(sound_data.pcm.size()) / (sound_data.bits_per_sample / 8.0f) / channel_count * 1000.0f / sound_data.sample_rate)));
+        catch(const std::runtime_error &e) {
+            throw std::runtime_error("Could not get sound duration: " + std::string(e.what()));
+        }
     }
 
     std::string get_gamepad_button_name(GamepadButton button) noexcept {
