@@ -13,11 +13,10 @@
 
 namespace Balltze {
     static std::variant<Engine::TagHandle, GenericFont> subtitle_font;
-    static std::size_t subtitle_padding;
+    static std::size_t screen_width;
     static std::size_t subtitle_margin;
     static std::size_t subtitle_line_margin;
     static std::size_t subtitle_width;
-    static std::size_t subtitle_x_offset;
     static std::size_t subtitle_y_base_offset;
     static std::size_t bottom_margin;
     static std::size_t font_height;
@@ -25,41 +24,88 @@ namespace Balltze {
     static std::vector<std::string> split_string(std::string text) {
         std::string buffer(text);
         std::string line;
+        std::string word;
         std::vector<std::string> lines;
         line.reserve(buffer.size());
 
-        while(!buffer.empty()) {
-            while(!buffer.empty() && text_pixel_length(line.c_str(), subtitle_font) < (subtitle_width - subtitle_padding * 2)) {
-                line += buffer.front();
-                buffer.erase(buffer.begin());
+        for(auto c : text) {
+            if (c == ' ') {
+                if(text_pixel_length(line.c_str(), subtitle_font) < subtitle_width) {
+                    if(!line.empty()) {
+                        line += ' ';
+                    }
+                    line += word;
+                    word.clear();
+                } 
+                else {
+                    lines.push_back(line);
+                    line = word;
+                    word.clear();
+                }
+            } 
+            else {
+                word += c;
             }
-            lines.push_back(line);
-            line.clear();
         }
 
-        return lines;
+        if(!word.empty()) {
+            if(!line.empty()) {
+                line += ' ';
+            }
+            line += word;
+        }
+
+        if(!line.empty()) {
+            lines.push_back(line);
+        }
+
+        return std::move(lines);
     }
 
     static std::vector<std::wstring> split_string(std::wstring text) {
         std::wstring buffer(text);
         std::wstring line;
+        std::wstring word;
         std::vector<std::wstring> lines;
         line.reserve(buffer.size());
 
-        while(!buffer.empty()) {
-            while(!buffer.empty() && text_pixel_length(line.c_str(), subtitle_font) < (subtitle_width - subtitle_padding * 2)) {
-                line += buffer.front();
-                buffer.erase(buffer.begin());
+        for(auto c : text) {
+            if (c == L' ') {
+                if(text_pixel_length(line.c_str(), subtitle_font) < subtitle_width) {
+                    if(!line.empty()) {
+                        line += L' ';
+                    }
+                    line += word;
+                    word.clear();
+                } 
+                else {
+                    lines.push_back(line);
+                    line = word;
+                    word.clear();
+                }
+            } 
+            else {
+                word += c;
             }
-            lines.push_back(line);
-            line.clear();
         }
 
-        return lines;
+        if(!word.empty()) {
+            if(!line.empty()) {
+                line += L' ';
+            }
+            line += word;
+        }
+
+        if(!line.empty()) {
+            lines.push_back(line);
+        }
+
+        return std::move(lines);
     }
 
     struct Subtitle {
-        std::variant<std::vector<std::string>, std::vector<std::wstring>> lines;
+        std::variant<std::string, std::wstring> text;
+        std::size_t lines_count;
         std::chrono::steady_clock::time_point start_time;
         std::chrono::milliseconds duration;
         Engine::ColorARGB color;
@@ -73,27 +119,30 @@ namespace Balltze {
         }
 
         std::size_t lines_height() {
-            if(std::holds_alternative<std::vector<std::string>>(lines)) {
-                auto lines_count = std::get<std::vector<std::string>>(lines).size();
-                auto total_padding = subtitle_line_margin * (lines_count - 1);
-                return lines_count * font_pixel_height(subtitle_font) + total_padding;
-            } 
-            else {
-                auto lines_count = std::get<std::vector<std::wstring>>(lines).size();
-                auto total_padding = subtitle_line_margin * (lines_count - 1);
-                return lines_count * font_pixel_height(subtitle_font) + total_padding;
-            }
+            return lines_count * font_pixel_height(subtitle_font);
         }
 
         Subtitle(std::string text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
-            lines = split_string(text);
+            auto lines = split_string(text);
+            this->lines_count = lines.size();
+            std::stringstream ss;
+            for(auto line : lines) {
+                ss << line << "|n";
+            }
+            this->text = ss.str();
             this->color = color;
             this->duration = duration;
             start_time = std::chrono::steady_clock::now();
         }
 
         Subtitle(std::wstring text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
-            lines = split_string(text);
+            auto lines = split_string(text);
+            this->lines_count = lines.size();
+            std::wstringstream wss;
+            for(auto line : lines) {
+                wss << line << L"|n";
+            }
+            this->text = wss.str();
             this->color = color;
             this->duration = duration;
             start_time = std::chrono::steady_clock::now();
@@ -103,11 +152,11 @@ namespace Balltze {
     std::deque<Subtitle> subtitles;
 
     void add_subtitle(std::string text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
-        subtitles.push_front(Subtitle(text, color, duration));
+        subtitles.emplace_front(text, color, duration);
     }
 
     void add_subtitle(std::wstring text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
-        subtitles.push_front(Subtitle(text, color, duration));
+        subtitles.emplace_front(text, color, duration);
     }
 
     static void draw_subtitles(Event::FrameEvent const &) {
@@ -116,25 +165,9 @@ namespace Balltze {
         while(it != subtitles.end()) {
             auto &subtitle = *it;
             if(subtitle.time_elapsed() < subtitle.duration) {
-                if(std::holds_alternative<std::vector<std::string>>(subtitle.lines)) {
-                    auto lines = std::get<std::vector<std::string>>(subtitle.lines);
-                    std::size_t line_offset = subtitles_offset;
-                    for(size_t i = lines.size() - 1; i <= 0; i--) {
-                        auto line = lines[i];
-                        apply_text(line, subtitle_x_offset, line_offset - font_height, subtitle_width, font_height, subtitle.color, subtitle_font, FontAlignment::ALIGN_CENTER, TextAnchor::ANCHOR_TOP_LEFT, false);
-                        line_offset -= font_height + subtitle_line_margin; 
-                    }
-                } 
-                else {
-                    auto lines = std::get<std::vector<std::wstring>>(subtitle.lines);
-                    std::size_t line_offset = subtitles_offset;
-                    for(size_t i = lines.size() - 1; i <= 0; i--) {
-                        auto line = lines[i];
-                        apply_text(line, subtitle_x_offset, line_offset - font_height, subtitle_width, font_height, subtitle.color, subtitle_font, FontAlignment::ALIGN_CENTER, TextAnchor::ANCHOR_TOP_LEFT, false);
-                        line_offset -= font_height + subtitle_line_margin; 
-                    }
-                }
-                subtitles_offset -= subtitle.lines_height() + subtitle_margin;
+                auto lines_height = subtitle.lines_height();
+                apply_text(subtitle.text, 0, subtitles_offset - lines_height, screen_width, lines_height, subtitle.color, subtitle_font, FontAlignment::ALIGN_CENTER, TextAnchor::ANCHOR_TOP_LEFT, false);
+                subtitles_offset -= lines_height + subtitle_margin;
                 it++;
             }
             else {
@@ -145,29 +178,17 @@ namespace Balltze {
 
     void set_up_subtitles() {
         subtitle_font = GenericFont::FONT_SMALL;
-        subtitle_padding = 5;
         subtitle_margin = 7;
         subtitle_line_margin = 5;
         bottom_margin = 65;
         
         auto res = Engine::get_resolution();
         float screen_height = 480;
-        float screen_width = static_cast<float>(res.width) / res.height * screen_height;
-        float width = screen_width * 0.9;
-        subtitle_width = std::round(width);
-        subtitle_x_offset = std::round((screen_width - width) / 2);
+        float width = static_cast<float>(res.width) / res.height * screen_height;
+        screen_width = std::round(width);
+        subtitle_width = std::round(width * 0.8);
         subtitle_y_base_offset = screen_height - bottom_margin;
-
         font_height = font_pixel_height(subtitle_font);
-
-        logger.debug("res.width: {}", res.width);
-        logger.debug("res.height: {}", res.height);
-        logger.debug("screen_height: {}", screen_height);
-        logger.debug("screen_width: {}", screen_width);
-        logger.debug("subtitle_width: {}", subtitle_width);
-        logger.debug("subtitle_x_offset: {}", subtitle_x_offset);
-        logger.debug("subtitle_y_base_offset: {}", subtitle_y_base_offset);
-
 
         Event::FrameEvent::subscribe(draw_subtitles);
     }
