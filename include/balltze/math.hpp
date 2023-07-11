@@ -62,6 +62,15 @@ namespace Balltze::Math {
          * Default constructor
          */
         QuadraticBezier() {}
+
+        /**
+         * Generic curves
+         */
+        static QuadraticBezier flat() noexcept;
+        static QuadraticBezier linear() noexcept;
+        static QuadraticBezier ease_in() noexcept;
+        static QuadraticBezier ease_out() noexcept;
+        static QuadraticBezier ease_in_out() noexcept;
         
     private:
         /** Nodes */

@@ -25,7 +25,6 @@ namespace Balltze::Features {
                 }
                 else {
                     auto duration = Engine::get_sound_permutation_samples_duration(args.sound, args.permutation);
-                    logger.debug("Showing subtitles for sound {} ({} ms)", args.permutation->name.string, duration.count());
                     add_subtitle(wstr, {1.0f, 1.0f, 1.0f, 1.0f}, duration);
                 }
             }

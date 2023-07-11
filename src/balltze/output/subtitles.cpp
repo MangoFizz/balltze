@@ -3,9 +3,11 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <queue>
 #include <deque>
 #include <variant>
 #include <chrono>
+#include <balltze/math.hpp>
 #include <balltze/engine/core.hpp>
 #include <balltze/events/frame.hpp>
 #include "../output/draw_text.hpp"
@@ -20,6 +22,10 @@ namespace Balltze {
     static std::size_t subtitle_y_base_offset;
     static std::size_t bottom_margin;
     static std::size_t font_height;
+
+    static Math::QuadraticBezier curve;
+    static auto fade_in_duration_ms = std::chrono::milliseconds(120);
+    static auto fade_out_duration_ms = std::chrono::milliseconds(250);
 
     static std::vector<std::string> split_string(std::string text) {
         std::string buffer(text);
@@ -115,7 +121,7 @@ namespace Balltze {
         }
 
         std::chrono::milliseconds time_remaining() {
-            return duration - time_elapsed();
+            return (duration + fade_in_duration_ms + fade_out_duration_ms) - time_elapsed();
         }
 
         std::size_t lines_height() {
@@ -132,7 +138,6 @@ namespace Balltze {
             this->text = ss.str();
             this->color = color;
             this->duration = duration;
-            start_time = std::chrono::steady_clock::now();
         }
 
         Subtitle(std::wstring text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
@@ -145,28 +150,67 @@ namespace Balltze {
             this->text = wss.str();
             this->color = color;
             this->duration = duration;
-            start_time = std::chrono::steady_clock::now();
         }
     };
 
-    std::deque<Subtitle> subtitles;
+    static std::deque<Subtitle> subtitles;
+    static std::queue<Subtitle> subtitles_queue;
 
     void add_subtitle(std::string text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
-        subtitles.emplace_front(text, color, duration);
+        subtitles_queue.emplace(text, color, duration);
     }
 
     void add_subtitle(std::wstring text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
-        subtitles.emplace_front(text, color, duration);
+        subtitles_queue.emplace(text, color, duration);
     }
 
     static void draw_subtitles(Event::FrameEvent const &) {
         std::size_t subtitles_offset = subtitle_y_base_offset;
+        bool is_fading_in = false;
+        std::size_t slide_offset = 0;
+        float fade_in_alpha = 1.0f;
         auto it = subtitles.begin();
+        
+        if(!subtitles_queue.empty() && (subtitles.empty() || it->time_elapsed() > fade_in_duration_ms)) {
+            it = subtitles.insert(it, subtitles_queue.front());
+            subtitles_queue.pop();
+            it->start_time = std::chrono::steady_clock::now();
+        }
+
+        if(it->time_elapsed() < fade_in_duration_ms) {
+            is_fading_in = true;
+            auto fade_in_progress = static_cast<float>(it->time_elapsed().count()) / fade_in_duration_ms.count();
+            fade_in_alpha -= curve.get_point(fade_in_progress).y;
+            
+            // Slide only when there's more than one subtitle
+            if(subtitles.size() > 1) {
+                slide_offset = std::round(curve.get_point(fade_in_progress, true).y * ((font_height + subtitle_margin) * 0.5f));
+                subtitles_offset += slide_offset;
+            }
+        }
+
         while(it != subtitles.end()) {
             auto &subtitle = *it;
-            if(subtitle.time_elapsed() < subtitle.duration) {
+            if(subtitle.time_remaining() > std::chrono::milliseconds(0)) {
+                auto color = subtitle.color;
+                if(it == subtitles.begin() && is_fading_in) {
+                    color.alpha -= fade_in_alpha;
+                }
+                else if(subtitle.time_remaining() <= fade_out_duration_ms) {
+                    auto fade_out_elapsed = fade_out_duration_ms - subtitle.time_remaining();
+                    auto fade_out_progress = static_cast<float>(fade_out_elapsed.count()) / fade_out_duration_ms.count();
+                    color.alpha -= curve.get_point(fade_out_progress).y; 
+                }
+
+                if(color.alpha < 0.0f) {
+                    color.alpha = 0.0f;
+                }
+                else if(color.alpha > 1.0f) {
+                    color.alpha = 1.0f;
+                }
+
                 auto lines_height = subtitle.lines_height();
-                apply_text(subtitle.text, 0, subtitles_offset - lines_height, screen_width, lines_height, subtitle.color, subtitle_font, FontAlignment::ALIGN_CENTER, TextAnchor::ANCHOR_TOP_LEFT, false);
+                apply_text(subtitle.text, 0, subtitles_offset - lines_height, screen_width, lines_height, color, subtitle_font, FontAlignment::ALIGN_CENTER, TextAnchor::ANCHOR_TOP_LEFT, false);
                 subtitles_offset -= lines_height + subtitle_margin;
                 it++;
             }
@@ -189,6 +233,8 @@ namespace Balltze {
         subtitle_width = std::round(width * 0.8);
         subtitle_y_base_offset = screen_height - bottom_margin;
         font_height = font_pixel_height(subtitle_font);
+
+        curve = Math::QuadraticBezier::ease_out();
 
         Event::FrameEvent::subscribe(draw_subtitles);
     }

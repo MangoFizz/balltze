@@ -47,4 +47,24 @@ namespace Balltze::Math {
         this->p1 = p1;
         this->p2 = p2;
     }
+
+    QuadraticBezier QuadraticBezier::flat() noexcept {
+        return QuadraticBezier({0.0f, 0.0f}, {0.0f, 0.0f});
+    }
+
+    QuadraticBezier QuadraticBezier::linear() noexcept {
+        return QuadraticBezier({0.0f, 0.0f}, {1.0f, 1.0f});
+    }
+
+    QuadraticBezier QuadraticBezier::ease_in() noexcept {
+        return QuadraticBezier({0.4f, 0.0f}, {1.0f, 1.0f});
+    }
+
+    QuadraticBezier QuadraticBezier::ease_out() noexcept {
+        return QuadraticBezier({0.0f, 0.0f}, {0.6f, 1.0f});
+    }
+
+    QuadraticBezier QuadraticBezier::ease_in_out() noexcept {
+        return QuadraticBezier({0.4f, 0.0f}, {0.6f, 1.0f});
+    }
 }
