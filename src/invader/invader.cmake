@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 add_library(invader STATIC
+    src/invader/crc/crc32.c
     src/invader/sound/adpcm_xq/adpcm-lib.c
     src/invader/sound/sound_encoder.cpp
     src/invader/sound/sound_reader_16_bit_pcm_big_endian.cpp

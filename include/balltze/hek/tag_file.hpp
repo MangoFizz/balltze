@@ -82,7 +82,6 @@ namespace Balltze::HEK {
         TagFileHeader(const TagFileHeader &copy) = default;
         ~TagFileHeader() = default;
     };
-
     static_assert(sizeof(TagFileHeader) == 0x40);
 
     template<typename T> struct TagReflexive {
