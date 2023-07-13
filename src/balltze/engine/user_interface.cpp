@@ -363,11 +363,11 @@ namespace Balltze::Engine {
 
         std::size_t channel_count;
         switch(sound->channel_count) {
-            case TagDefinitions::SoundChannelCount::MONO:
+            case TagDefinitions::SOUND_CHANNEL_COUNT_MONO:
                 channel_count = 1;
                 break;
 
-            case TagDefinitions::SoundChannelCount::STEREO:
+            case TagDefinitions::SOUND_CHANNEL_COUNT_STEREO:
                 channel_count = 2;
                 break;
 
@@ -377,11 +377,11 @@ namespace Balltze::Engine {
 
         std::size_t sample_rate;
         switch(sound->sample_rate) {
-            case TagDefinitions::SoundSampleRate::_22050__HZ:
+            case TagDefinitions::SOUND_SAMPLE_RATE_22050__HZ:
                 sample_rate = 22050;
                 break;
 
-            case TagDefinitions::SoundSampleRate::_44100__HZ:
+            case TagDefinitions::SOUND_SAMPLE_RATE_44100__HZ:
                 sample_rate = 44100;
                 break;
 
@@ -397,15 +397,15 @@ namespace Balltze::Engine {
             auto *samples_pointer = reinterpret_cast<const std::byte *>(permutation->samples_pointer);
             Invader::SoundReader::Sound sound_data;
             switch(permutation->format) {
-                case TagDefinitions::SoundFormat::_16_BIT_PCM: 
+                case TagDefinitions::SOUND_FORMAT_16_BIT_PCM: 
                     sound_data = Invader::SoundReader::sound_from_16_bit_pcm_big_endian(samples_pointer, permutation->samples.size, channel_count, sample_rate);
                     break;
 
-                case TagDefinitions::SoundFormat::XBOX_ADPCM:
+                case TagDefinitions::SOUND_FORMAT_XBOX_ADPCM:
                     sound_data = Invader::SoundReader::sound_from_xbox_adpcm(samples_pointer, permutation->samples.size, channel_count, sample_rate);
                     break;
 
-                case TagDefinitions::SoundFormat::OGG_VORBIS: {
+                case TagDefinitions::SOUND_FORMAT_OGG_VORBIS: {
                     auto duration_seconds = Invader::SoundReader::ogg_vorbis_samples_duration(samples_pointer, permutation->samples.size);
                     return std::chrono::milliseconds(static_cast<std::size_t>(std::ceil(duration_seconds * 1000.0f)));
                 }

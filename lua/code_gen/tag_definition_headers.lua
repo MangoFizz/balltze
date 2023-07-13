@@ -64,7 +64,7 @@ namespace Balltze::Engine::TagDefinitions {
     
     for _, enum in ipairs(tagDefinition.enums) do
         ident(1)
-        add("enum class " .. parser.snakeCaseToCamelCase(enum.name) .. " : std::uint16_t {\n")
+        add("enum " .. parser.snakeCaseToCamelCase(enum.name) .. " : std::uint16_t {\n")
         for index, value in ipairs(enum.values) do
             ident(2)
             local valueName = value:upper()
@@ -213,7 +213,7 @@ namespace Balltze::HEK::TagDefinitions {
     
     for _, enum in ipairs(tagDefinition.enums) do
         ident(1)
-        add("enum class " .. parser.snakeCaseToCamelCase(enum.name) .. " : std::uint16_t {\n")
+        add("enum " .. parser.snakeCaseToCamelCase(enum.name) .. " : std::uint16_t {\n")
         for index, value in ipairs(enum.values) do
             ident(2)
             local valueName = value:upper()

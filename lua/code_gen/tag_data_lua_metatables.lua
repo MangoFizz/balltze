@@ -313,16 +313,26 @@ for structName, struct in pairs(structs) do
             end
         end
 
-        indent(3)
-        add("return 1; \n");
         indent(2)
         add("} \n");
         
         ::continue_index_fields::
     end
-    
+
     indent(2)
-    add("return luaL_error(state, \"Unknown field %s\", key); \n");
+    add("else { \n")
+    if(struct.inherits) then
+        indent(3)
+        add("return lua_engine_" .. definitionParser.camelCaseToSnakeCase(struct.inherits) .. "__index(state); \n");
+    else
+        indent(3)
+        add("return luaL_error(state, \"Unknown field %s\", key); \n");
+    end
+    indent(2)
+    add("} \n");
+
+    indent(2)
+    add("return 1; \n");
     indent(1)
     add("} \n");
 
@@ -605,8 +615,6 @@ for structName, struct in pairs(structs) do
             end
         end
 
-        indent(3)
-        add("return 1; \n");
         indent(2)
         add("} \n");
 
@@ -614,7 +622,19 @@ for structName, struct in pairs(structs) do
     end
 
     indent(2)
-    add("return luaL_error(state, \"Unknown field %s\", key); \n");
+    add("else { \n")
+    if(struct.inherits) then
+        indent(3)
+        add("return lua_engine_" .. definitionParser.camelCaseToSnakeCase(struct.inherits) .. "__newindex(state); \n");
+    else
+        indent(3)
+        add("return luaL_error(state, \"Unknown field %s\", key); \n");
+    end
+    indent(2)
+    add("} \n");
+
+    indent(2)
+    add("return 1; \n");
     indent(1)
     add("} \n");
 
@@ -740,7 +760,7 @@ for enumName, enum in pairs(enums) do
         local camelCaseValue = definitionParser.snakeCaseToCamelCase(sneakCaseValue)
         local clean = definitionParser.camelCaseToSnakeCase(camelCaseValue)
         indent(3)
-        add("case " .. camelCaseName .. "::" .. value:upper() .. ": return \"" .. clean .. "\"; \n");
+        add("case " .. value:upper() .. ": return \"" .. clean .. "\"; \n");
     end
     indent(3)
     add("default: return \"unknown\"; \n");
@@ -754,7 +774,7 @@ for enumName, enum in pairs(enums) do
     indent(2)
     add("if(str == \"unknown\") { \n");
     indent(3)
-    add("throw std::runtime_error(\"Unknown value\"); \n");
+    add("throw std::runtime_error(\"Unknown value for " .. camelCaseName .. " enum\"); \n");
     indent(2)
     add("} \n");
     for _, value in pairs(enum.values) do
@@ -764,12 +784,12 @@ for enumName, enum in pairs(enums) do
         indent(2)
         add("if(str == \"" .. clean .. "\") { \n");
         indent(3)
-        add("return " .. camelCaseName .. "::" .. value:upper() .. "; \n");
+        add("return " .. value:upper() .. "; \n");
         indent(2)
         add("} \n");
     end
     indent(2)
-    add("throw std::runtime_error(\"Unknown value\"); \n");
+    add("throw std::runtime_error(\"Unknown value for " .. camelCaseName .. " enum\"); \n");
     indent(1)
     add("} \n");
 end

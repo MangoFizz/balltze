@@ -289,15 +289,7 @@ local function parseEnum(enumDefinition)
     local enum = {name = enumDefinition.name, values = {}}
     if enumDefinition.options then
         for index, value in pairs(enumDefinition.options) do
-            -- prevent name conflicts with C memes
-            if value == "null" or value == "passthrough" or value == "void" then
-                value = value .. " value"
-            elseif value == "double click" then
-                value = "double click event"
-            elseif value:find("%d") == 1 then
-                value = "_" .. value
-            end
-            enum.values[index] = dashAndSentenceToSnakeCase(value)
+            enum.values[index] = camelCaseToSnakeCase(enumDefinition.name) .. "_" .. dashAndSentenceToSnakeCase(value)
         end
     end
     return enum
