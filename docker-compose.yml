@@ -1,0 +1,30 @@
+version: '3.1'
+services:
+  common: &common
+    image: bonk
+    stdin_open: true
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+  shell:
+    <<: *common
+    entrypoint: /bin/bash
+  build:
+    <<: *common
+    entrypoint:
+    - /bin/bash
+    - -c
+    - |
+      mkdir build
+      cd build
+      i686-w64-mingw32-cmake .. && make -j $(nproc)
+  build-release:
+    <<: *common
+    entrypoint:
+    - /bin/bash
+    - -c
+    - |
+      mkdir build
+      cd build
+      i686-w64-mingw32-cmake .. -DCMAKE_BUILD_TYPE=Release && make -j $(nproc)
+      i686-w64-mingw32-strip balltze.dll
