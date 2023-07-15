@@ -85,16 +85,18 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/lfmt.c
     src/balltze/plugins/lua/logger.cpp
     src/balltze/balltze.cpp
+
+    ${TAG_REBASE_OFFSETS_FUNCTION_CPP} 
+    ${TAG_FIX_DEPENDENCIES_FUNCTION_CPP} 
+    ${TAG_LUA_METATABLE_FUNCTION_CPP}
 )
 
 # Set Balltze output properties
 set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
-
-add_dependencies(balltze tag-definitions-headers tag-functions)
-
-target_link_libraries(balltze tag-functions lua53 fmt invader)
+add_dependencies(balltze tag-definitions-headers)
+target_link_libraries(balltze lua53 fmt invader)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")

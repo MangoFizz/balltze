@@ -9,4 +9,4 @@ add_library(invader STATIC
     src/invader/sound/sound_reader_xbox_adpcm.cpp
 )
 
-target_link_libraries(invader FLAC vorbisenc vorbisfile vorbis ogg)
+target_link_libraries(invader vorbisfile vorbis ogg)

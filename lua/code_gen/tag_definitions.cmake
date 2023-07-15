@@ -72,13 +72,5 @@ add_custom_command(
 
 set(TAG_DEFINITION_HPP_FILES ${TAG_DEFINITION_HPP_FILES} ${TAG_DEFINITIONS_HPP_COLLECTION} ${TAG_FILE_DEFINITIONS_HPP_COLLECTION})
 
-# Add tag stuff targets, so we can add them as a dependency to Balltze
-add_custom_target(tag-definitions-headers DEPENDS ${TAG_DEFINITION_HPP_FILES})
-add_library(tag-functions STATIC 
-    ${TAG_REBASE_OFFSETS_FUNCTION_CPP} 
-    ${TAG_FIX_DEPENDENCIES_FUNCTION_CPP} 
-    ${TAG_LUA_METATABLE_FUNCTION_CPP}
-)
-
-set_target_properties(tag-functions PROPERTIES LINKER_LANGUAGE CXX)
-add_dependencies(tag-functions tag-definitions-headers)
+# Add definitions headers target, so we can add them as a dependency to Balltze
+add_custom_target(tag-definitions-headers ALL DEPENDS ${TAG_DEFINITION_HPP_FILES})
