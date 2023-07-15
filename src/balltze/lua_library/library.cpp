@@ -31,14 +31,7 @@ namespace Balltze::LuaLibrary {
         lua_State *state;
     };
 
-    struct TagImport {
-        std::string map_name;
-        std::string tag_path;
-        Engine::TagClassInt tag_class;
-    };
-
     static std::vector<std::unique_ptr<Script>> scripts;
-    static std::vector<TagImport> tag_imports;
     static bool allow_tag_data_import = true;
     static std::optional<Event::EventListenerHandle<Event::MapFileLoadEvent>> map_file_load_listener_handle;
 
@@ -84,8 +77,8 @@ namespace Balltze::LuaLibrary {
     static int lua_import_tag_data(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 3) {
-            const char *map_name = luaL_checkstring(state, 1);
-            const char *tag_path = luaL_checkstring(state, 2);
+            std::string map_name = luaL_checkstring(state, 1);
+            std::string tag_path = luaL_checkstring(state, 2);
             const char *tag_class_name = luaL_checkstring(state, 3);
             auto tag_class = Engine::tag_class_from_string(tag_class_name);
 
@@ -97,18 +90,10 @@ namespace Balltze::LuaLibrary {
                 luaL_error(state, "balltze import_tag_data function is not allowed in this context");
             }
 
-            tag_imports.push_back({map_name, tag_path, tag_class});
+            Features::import_tag_from_map(map_name, tag_path, tag_class);
         }
         else {
             luaL_error(state, "invalid number of arguments in balltze import_tag_data function");
-        }
-        return 0;
-    }
-
-    static int lua_do_not_import_tag_data(lua_State *state) noexcept {
-        allow_tag_data_import = false;
-        if(!tag_imports.empty()) {
-            tag_imports.clear();
         }
         return 0;
     }
@@ -139,13 +124,6 @@ namespace Balltze::LuaLibrary {
             }
         }
         allow_tag_data_import = false;
-
-        if(tag_imports.size() > 0) {
-            for(auto &tag_import : tag_imports) {
-                Features::import_tag_from_map(tag_import.map_name, tag_import.tag_path, tag_import.tag_class);
-            }
-            tag_imports.clear();
-        }
     }
 
     static void register_function(lua_State *state, const char *name, lua_CFunction function) noexcept {
