@@ -16,31 +16,6 @@ namespace Balltze::Plugins {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
-            if(args == 1 || args == 2) {
-                const char *text = luaL_checkstring(state, 1);
-                if(args == 2) {
-                    auto color = lua_to_color_argb(state, 2);
-                    Engine::console_print(text, color);
-                }
-                else {
-                    Engine::console_print(text);
-                }
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function engine.console.print.");
-            }
-        }
-        else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
-        }
-        return 0;
-    }
-
-    static int lua_engine_console_printf(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
             if(args >= 1) {
                 bool has_color = lua_istable(state, 1);
 
@@ -503,6 +478,19 @@ namespace Balltze::Plugins {
                     return luaL_error(state, "Could not find tag.");
                 }
 
+                if(args == 2) {
+                    const char *tag_class_str = lua_tostring(state, 2);
+                    auto tag_class = Engine::tag_class_from_string(tag_class_str);
+                    if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
+                        if(tag_entry->primary_class != tag_class) {
+                            return luaL_error(state, "Tag class does not match.");
+                        }
+                    }
+                    else {
+                        return luaL_error(state, "Invalid tag class.");
+                    }
+                }
+
                 lua_newtable(state);
                 lua_pushlightuserdata(state, tag_entry->data);
                 lua_setfield(state, -2, "_tag_data");
@@ -527,7 +515,6 @@ namespace Balltze::Plugins {
 
     static const luaL_Reg engine_functions[] = {
         {"console_print", lua_engine_console_print},
-        {"console_printf", lua_engine_console_printf},
         {"get_resolution", lua_engine_get_resolution},
         {"get_tick_count", lua_engine_get_tick_count},
         {"get_engine_edition", lua_engine_get_engine_edition},
