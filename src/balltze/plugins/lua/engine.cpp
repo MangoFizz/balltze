@@ -499,6 +499,10 @@ namespace Balltze::Plugins {
                     }
                 }
 
+                if(!tag_entry) {
+                    return luaL_error(state, "Could not find tag.");
+                }
+
                 lua_newtable(state);
                 lua_pushlightuserdata(state, tag_entry->data);
                 lua_setfield(state, -2, "_tag_data");
