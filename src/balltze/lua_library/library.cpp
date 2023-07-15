@@ -39,7 +39,7 @@ namespace Balltze::LuaLibrary {
 
     static std::vector<std::unique_ptr<Script>> scripts;
     static std::vector<TagImport> tag_imports;
-    static bool allow_tag_data_import = false;
+    static bool allow_tag_data_import = true;
     static std::optional<Event::EventListenerHandle<Event::MapFileLoadEvent>> map_file_load_listener_handle;
 
     static Script *get_script(lua_State *state) noexcept {
