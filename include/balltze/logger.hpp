@@ -116,8 +116,8 @@ namespace Balltze {
         std::optional<std::filesystem::path> m_file_path;
         std::mutex m_mutex;
         bool m_append;
-        bool m_mute_ingame;
-        bool m_mute_debug;
+        bool m_mute_ingame = false;
+        bool m_mute_debug = false;
         std::ofstream m_file;
 
         void set_file_impl(HMODULE module, std::filesystem::path file_path, bool append);

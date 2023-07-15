@@ -42,7 +42,7 @@ namespace Balltze::Plugins {
                     lua_pop(state, 1); 
                 } 
                 else { 
-                    message = luaL_checkstring(state, 2); 
+                    message = luaL_checkstring(state, 1); 
                 }
 
                 Engine::console_print(message, color);

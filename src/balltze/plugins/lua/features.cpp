@@ -39,7 +39,7 @@ namespace Balltze::Plugins {
                     auto map_entry = Features::get_map_entry(map_path);
                     if(map_entry) {
                         try {
-                            plugin->add_tag_import(map_entry->get_file_path().string(), tag_path, tag_class_int);
+                            plugin->add_tag_import(map_path, tag_path, tag_class_int);
                         }
                         catch(std::runtime_error &e) {
                             return luaL_error(state, e.what());
