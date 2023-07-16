@@ -216,14 +216,31 @@ namespace Balltze::Features {
                         return new_tag_entry.indexed ? offset : offset + data_base_offset;
                     });
 
-                    new_tag_entry.fix_dependencies([&](TagDependency tag_dependency) -> TagDependency {
-                        if(tag_dependency.tag_id != -1) {
-                            tag_dependency.path_pointer = translate_address(tag_dependency.path_pointer); 
-                            auto *dependency = get_tag_from_secondary_map(tag_dependency.tag_id);
-                            auto tag_handle = load_tag(dependency, true); 
-                            tag_dependency.tag_id = tag_handle; 
+                    new_tag_entry.fix_dependencies([&](std::variant<TagDependency, TagHandle> elem) -> std::variant<TagDependency, TagHandle> {
+                        if(std::holds_alternative<TagDependency>(elem)) {
+                            auto &tag_dependency = std::get<TagDependency>(elem);
+                            if(tag_dependency.tag_id != -1) {
+                                tag_dependency.path_pointer = translate_address(tag_dependency.path_pointer); 
+                                auto *broken_tag = get_tag_from_secondary_map(tag_dependency.tag_id);
+                                auto tag_handle = load_tag(broken_tag, true); 
+                                tag_dependency.tag_id = tag_handle; 
+                            }
+                            return tag_dependency;
                         }
-                        return tag_dependency;
+                        else {
+                            auto &tag_handle = std::get<TagHandle>(elem);
+                            auto *broken_tag = get_tag_from_secondary_map(tag_handle);
+                            if(broken_tag) {
+                                auto new_tag_handle = load_tag(broken_tag, true);
+                                return new_tag_handle;
+                            }
+                            else {
+                                if(tag_handle != TagHandle::null()) {
+                                    logger.debug("Cannot resolve tag {} in map {}", tag_handle.whole_id, map.name);
+                                }
+                                return tag_handle;
+                            }
+                        }
                     });
 
                     switch(new_tag_entry.primary_class) {
@@ -286,7 +303,7 @@ namespace Balltze::Features {
                             }
                         }
                         if(!tag_found) {
-                            logger.debug("Tag {} of class {} not found in map {}", tag.first, tag.second, map.name);
+                            logger.warning("Tag {} of class {} not found in map {}", tag.first, Engine::tag_class_to_string(tag.second), map.name);
                         }
                     }
                 }

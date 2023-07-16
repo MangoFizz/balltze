@@ -50,25 +50,34 @@ namespace Balltze::Engine {
 
 for structName, _ in pairs(structs) do
     indent(1)
-    add("static void fix_dependencies_req(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::function<TagDependency(TagDependency)> dependency_resolver); \n");
+    add("static void fix_dependencies_req(" .. structName .. " &" .. definitionParser.camelCaseToSnakeCase(structName) .. ", std::function<std::variant<TagDependency, TagHandle>(std::variant<TagDependency, TagHandle>)> dependency_resolver); \n");
 end
 
 add("\n")
 
 for structName, struct in pairs(structs) do
+    local paramName = definitionParser.camelCaseToSnakeCase(structName)
+
     indent(1)
-    add("static void fix_dependencies_req(" .. definitionParser.snakeCaseToCamelCase(structName) .. " &" .. structName .. ", std::function<TagDependency(TagDependency)> dependency_resolver) {\n")
+    add("static void fix_dependencies_req(" .. structName .. " &" .. paramName .. ", std::function<std::variant<TagDependency, TagHandle>(std::variant<TagDependency, TagHandle>)> dependency_resolver) {\n")
     
     if(struct.inherits and structs[definitionParser.snakeCaseToCamelCase(struct.inherits)]) then
         indent(2)
-        add("fix_dependencies_req(static_cast<" .. definitionParser.snakeCaseToCamelCase(struct.inherits) .. " &>(" .. structName .. "), dependency_resolver);\n")
+        add("fix_dependencies_req(static_cast<" .. definitionParser.snakeCaseToCamelCase(struct.inherits) .. " &>(" .. paramName .. "), dependency_resolver);\n")
     end
     
     for _, field in ipairs(struct.fields) do
-        local fieldAccess = structName .. "." .. (field.name or "")
+        local fieldAccess = paramName .. "." .. (field.name or "")
         if(field.type == "TagDependency") then
             indent(2)
-            add(fieldAccess .. " = " .. "dependency_resolver(" .. fieldAccess .. ");\n")
+            add("auto " .. field.name .. "_result = " .. "dependency_resolver(" .. fieldAccess .. ");\n")
+            indent(2)
+            add(fieldAccess .. " = std::get<TagDependency>(" .. field.name .. "_result);\n")
+        elseif(field.type == "TagHandle") then
+            indent(2)
+            add("auto " .. field.name .. "_result = " .. "dependency_resolver(" .. fieldAccess .. ");\n")
+            indent(2)
+            add(fieldAccess .. " = std::get<TagHandle>(" .. field.name .. "_result);\n")
         elseif(field.type == "TagReflexive") then
             indent(2)
             add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
@@ -86,7 +95,7 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    void Tag::fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver) {
+    void Tag::fix_dependencies(std::function<std::variant<TagDependency, TagHandle>(std::variant<TagDependency, TagHandle>)> dependency_resolver) {
         switch(this->primary_class) {
 ]])
 

@@ -5,6 +5,7 @@
 
 #include <string>
 #include <functional>
+#include <variant>
 #include <optional>
 #include <cstring>
 #include <cstddef>
@@ -67,7 +68,7 @@ namespace Balltze::Engine {
          * Fix tag dependencies
          * @param dependency_resolver Dependency resolver
          */
-        void fix_dependencies(std::function<TagDependency(TagDependency)> dependency_resolver);
+        void fix_dependencies(std::function<std::variant<TagDependency, TagHandle>(std::variant<TagDependency, TagHandle>)> dependency_resolver);
     };
     static_assert(sizeof(Tag) == 0x20);
 
