@@ -512,6 +512,327 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Unknown plugin.");
         }
     }
+    
+    static int lua_engine_find_widget(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 1 || args == 2) {
+                Engine::TagHandle tag_handle;
+
+                if(lua_isinteger(state, 1)) {
+                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    auto *tag = Engine::get_tag(tag_handle);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
+                        return luaL_error(state, "Tag is not a widget definition.");
+                    }
+                }
+                else {
+                    const char *tag_path = luaL_checkstring(state, 1);
+                    auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    tag_handle.whole_id = tag->id.whole_id;
+                }
+
+                Engine::Widget *base_widget = nullptr;
+                if(args == 2) {
+                    base_widget = lua_from_meta_object<Engine::Widget>(state, 2);
+                    if(!base_widget) {
+                        return luaL_error(state, "Invalid base widget.");
+                    }
+                }
+
+                auto search_result = Engine::find_widgets(tag_handle, true, base_widget);
+                if(!search_result.empty()) {
+                    auto *widget = search_result[0];
+                    lua_push_meta_engine_widget(state, *widget);
+                }
+                else {
+                    lua_pushnil(state);
+                }
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.find_widget.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_engine_find_widgets(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1 || args == 2) {
+                Engine::TagHandle tag_handle;
+
+                if(lua_isinteger(state, 1)) {
+                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    auto *tag = Engine::get_tag(tag_handle);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
+                        return luaL_error(state, "Tag is not a widget definition.");
+                    }
+                }
+                else {
+                    const char *tag_path = luaL_checkstring(state, 1);
+                    auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    tag_handle.whole_id = tag->id.whole_id;
+                }
+
+                Engine::Widget *base_widget = nullptr;
+                if(args == 2) {
+                    base_widget = lua_from_meta_object<Engine::Widget>(state, 2);
+                    if(!base_widget) {
+                        return luaL_error(state, "Invalid base widget.");
+                    }
+                }
+
+                auto search_result = Engine::find_widgets(tag_handle, false, base_widget);
+                lua_newtable(state);
+                for(std::size_t i = 0; i < search_result.size(); i++) {
+                    lua_push_meta_engine_widget(state, *search_result[i]);
+                    lua_rawseti(state, -2, i + 1);
+                }
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.find_widgets.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_open_widget(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1 || args == 2) {
+                Engine::TagHandle tag_handle;
+
+                if(lua_isinteger(state, 1)) {
+                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    auto *tag = Engine::get_tag(tag_handle);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
+                        return luaL_error(state, "Tag is not a widget definition.");
+                    }
+                }
+                else {
+                    const char *tag_path = luaL_checkstring(state, 1);
+                    auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    tag_handle.whole_id = tag->id.whole_id;
+                }
+
+                bool push_history = false;
+                if(args == 2) {
+                    if(lua_isboolean(state, 2)) {
+                        push_history = lua_toboolean(state, 2);
+                    }
+                    else {
+                        return luaL_error(state, "Invalid push history argument.");
+                    }
+                }
+
+                auto *widget = Engine::open_widget(tag_handle, push_history);
+                if(widget) {
+                    lua_push_meta_engine_widget(state, *widget);
+                }
+                else {
+                    lua_pushnil(state);
+                }
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.open_widget.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_close_widget(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                Engine::close_widget();
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.close_widget.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }   
+    }
+
+    static int lua_engine_replace_widget(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 2) {
+                Engine::Widget *target_widget = lua_from_meta_object<Engine::Widget>(state, 1);
+                if(!target_widget) {
+                    return luaL_error(state, "Invalid target widget.");
+                }
+
+                Engine::TagHandle tag_handle;
+                if(lua_isinteger(state, 2)) {
+                    tag_handle.whole_id = luaL_checkinteger(state, 2);
+                    auto *tag = Engine::get_tag(tag_handle);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
+                        return luaL_error(state, "Tag is not a widget definition.");
+                    }
+                }
+                else {
+                    const char *tag_path = luaL_checkstring(state, 2);
+                    auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    tag_handle.whole_id = tag->id.whole_id;
+                }
+
+                auto *widget = Engine::replace_widget(target_widget, tag_handle);
+                if(widget) {
+                    lua_push_meta_engine_widget(state, *widget);
+                }
+                else {
+                    lua_pushnil(state);
+                }
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.replace_widget.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_engine_reload_widget(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 1) {
+                Engine::Widget *target_widget = lua_from_meta_object<Engine::Widget>(state, 1);
+                if(!target_widget) {
+                    return luaL_error(state, "Invalid target widget.");
+                }
+
+                auto *widget = Engine::reload_widget(target_widget);
+                if(widget) {
+                    lua_push_meta_engine_widget(state, *widget);
+                }
+                else {
+                    lua_pushnil(state);
+                }
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.replace_widget.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_focus_widget(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 1) {
+                Engine::Widget *target_widget = lua_from_meta_object<Engine::Widget>(state, 1);
+                if(!target_widget) {
+                    return luaL_error(state, "Invalid target widget.");
+                }
+
+                Engine::focus_widget(target_widget);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.focus_widget.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_open_pause_menu(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                Engine::open_pause_menu();
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.open_pause_menu.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }   
+    }
+
+    extern void lua_push_meta_engine_hud_globals(lua_State *state, Engine::TagDefinitions::HudGlobals &data) noexcept; 
+
+    static int lua_engine_get_hud_globals(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                auto &hud_globals = Engine::get_hud_globals();
+                lua_push_meta_engine_hud_globals(state, hud_globals);
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_hud_globals.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
 
     static const luaL_Reg engine_functions[] = {
         {"console_print", lua_engine_console_print},
@@ -526,6 +847,15 @@ namespace Balltze::Plugins {
         {"get_tag_data_header", lua_engine_get_tag_data_header},
         {"get_tag", lua_engine_get_tag},
         {"get_tag_data", lua_engine_get_tag_data},
+        {"find_widget", lua_engine_find_widget},
+        {"find_widgets", lua_engine_find_widgets},
+        {"open_widget", lua_engine_open_widget},
+        {"close_widget", lua_engine_close_widget},
+        {"replace_widget", lua_engine_replace_widget},
+        {"reload_widget", lua_engine_reload_widget},
+        {"focus_widget", lua_engine_focus_widget},
+        {"open_pause_menu", lua_engine_open_pause_menu},
+        {"get_hud_globals", lua_engine_get_hud_globals},
         {nullptr, nullptr}
     };
 

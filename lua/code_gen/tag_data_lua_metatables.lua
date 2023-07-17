@@ -119,22 +119,22 @@ namespace Balltze::Plugins {
 for structName, _ in pairs(structs) do
     local camelCaseName = definitionParser.snakeCaseToCamelCase(structName)
     indent(1)
-    add("static int lua_engine_" .. structName .. "__index(lua_State *state) noexcept; \n");
+    add("int lua_engine_" .. structName .. "__index(lua_State *state) noexcept; \n");
     indent(1)
-    add("static int lua_engine_" .. structName .. "__newindex(lua_State *state) noexcept; \n");
+    add("int lua_engine_" .. structName .. "__newindex(lua_State *state) noexcept; \n");
     indent(1)
-    add("static void lua_push_meta_engine_" .. structName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept; \n");
+    add("void lua_push_meta_engine_" .. structName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept; \n");
 end
 add("\n")
 
 for bitfieldName, _ in pairs(bitfields) do
     local camelCaseName = definitionParser.snakeCaseToCamelCase(bitfieldName)
     indent(1)
-    add("static int lua_engine_" .. bitfieldName .. "__index(lua_State *state) noexcept; \n");
+    add("int lua_engine_" .. bitfieldName .. "__index(lua_State *state) noexcept; \n");
     indent(1)
-    add("static int lua_engine_" .. bitfieldName .. "__newindex(lua_State *state) noexcept; \n");
+    add("int lua_engine_" .. bitfieldName .. "__newindex(lua_State *state) noexcept; \n");
     indent(1)
-    add("static void lua_push_meta_engine_" .. bitfieldName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept; \n");
+    add("void lua_push_meta_engine_" .. bitfieldName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept; \n");
 end
 add("\n")
 
@@ -151,7 +151,7 @@ for structName, struct in pairs(structs) do
     local sneakCaseName = definitionParser.camelCaseToSnakeCase(structName)
     local camelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
     indent(1)
-    add("static int lua_engine_" .. sneakCaseName .. "__index(lua_State *state) noexcept { \n");
+    add("int lua_engine_" .. sneakCaseName .. "__index(lua_State *state) noexcept { \n");
     indent(2)
     add("lua_getfield(state, 1, \"_data\"); \n");
     indent(2)
@@ -337,7 +337,7 @@ for structName, struct in pairs(structs) do
     add("} \n");
 
     indent(1)
-    add("static int lua_engine_" .. sneakCaseName .. "__newindex(lua_State *state) noexcept { \n");
+    add("int lua_engine_" .. sneakCaseName .. "__newindex(lua_State *state) noexcept { \n");
     indent(2)
     add("lua_getfield(state, 1, \"_data\"); \n");
     indent(2)
@@ -639,7 +639,7 @@ for structName, struct in pairs(structs) do
     add("} \n");
 
     indent(1)
-    add("static void lua_push_meta_engine_" .. structName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept { \n")
+    add("void lua_push_meta_engine_" .. structName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept { \n")
     indent(2)
     add("lua_push_meta_object(state, data, lua_engine_" .. structName .. "__index, lua_engine_" .. structName .. "__newindex); \n");
     indent(1)
@@ -650,7 +650,7 @@ for bitfieldName, bitfield in pairs(bitfields) do
     local sneakCaseName = definitionParser.camelCaseToSnakeCase(bitfieldName)
     local camelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
     indent(1)
-    add("static int lua_engine_" .. sneakCaseName .. "__index(lua_State *state) noexcept { \n");
+    add("int lua_engine_" .. sneakCaseName .. "__index(lua_State *state) noexcept { \n");
     indent(2)
     add("lua_getfield(state, 1, \"_data\"); \n");
     indent(2)
@@ -692,7 +692,7 @@ for bitfieldName, bitfield in pairs(bitfields) do
     add("} \n");
 
     indent(1)
-    add("static int lua_engine_" .. sneakCaseName .. "__newindex(lua_State *state) noexcept { \n");
+    add("int lua_engine_" .. sneakCaseName .. "__newindex(lua_State *state) noexcept { \n");
     indent(2)
     add("lua_getfield(state, 1, \"_data\"); \n");
     indent(2)
@@ -740,7 +740,7 @@ for bitfieldName, bitfield in pairs(bitfields) do
     add("} \n");
 
     indent(1)
-    add("static void lua_push_meta_engine_" .. sneakCaseName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept { \n")
+    add("void lua_push_meta_engine_" .. sneakCaseName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept { \n")
     indent(2)
     add("lua_push_meta_object(state, data, lua_engine_" .. sneakCaseName .. "__index, lua_engine_" .. sneakCaseName .. "__newindex); \n");
     indent(1)

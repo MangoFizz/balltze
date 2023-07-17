@@ -1319,4 +1319,232 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept {
         lua_push_meta_object(state, plane, lua_engine_plane2_d__index, lua_engine_plane2_d__newindex); 
     }
+
+    extern std::string lua_engine_u_i_widget_type_to_string(Engine::TagDefinitions::UIWidgetType value) noexcept; 
+    extern Engine::TagDefinitions::UIWidgetType lua_engine_u_i_widget_type_from_string(std::string str); 
+
+    static int lua_engine_widget__index(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto widget = static_cast<Engine::Widget *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key;
+        if(field == "definition_tag_id") { 
+            lua_pushinteger(state, widget->definition_tag_id.whole_id);
+            return 1;
+        }
+        else if(field == "name") {
+            lua_pushstring(state, widget->name);
+            return 1;
+        }
+        else if(field == "hidden") {
+            if(widget->hidden == 1) {
+                lua_pushboolean(state, true);
+            }
+            else {
+                lua_pushboolean(state, false);
+            }
+            return 1;
+        }
+        else if(field == "left_bound") {
+            lua_pushinteger(state, widget->left_bound);
+            return 1;
+        }
+        else if(field == "top_bound") {
+            lua_pushinteger(state, widget->top_bound);
+            return 1;
+        }
+        else if(field == "type") {
+            std::string type = lua_engine_u_i_widget_type_to_string(widget->type);
+            lua_pushstring(state, type.c_str());
+            return 1;
+        }
+        else if(field == "ms_to_close") {
+            lua_pushinteger(state, widget->ms_to_close);
+            return 1;
+        }
+        else if(field == "ms_to_close_fade_time") {
+            lua_pushinteger(state, widget->ms_to_close_fade_time);
+            return 1;
+        }
+        else if(field == "opacity") {
+            lua_pushnumber(state, widget->opacity);
+            return 1;
+        }
+        else if(field == "previous_widget") {
+            if(widget->previous_widget == nullptr) {
+                lua_pushnil(state);
+            }
+            else {
+                lua_push_meta_engine_widget(state, *widget->previous_widget);
+            }
+            return 1;
+        }
+        else if(field == "next_widget") {
+            if(widget->next_widget == nullptr) {
+                lua_pushnil(state);
+            }
+            else {
+                lua_push_meta_engine_widget(state, *widget->next_widget);
+            }
+            return 1;
+        }
+        else if(field == "parent_widget") {
+            if(widget->parent_widget == nullptr) {
+                lua_pushnil(state);
+            }
+            else {
+                lua_push_meta_engine_widget(state, *widget->parent_widget);
+            }
+            return 1;
+        }
+        else if(field == "child_widget") {
+            if(widget->child_widget == nullptr) {
+                lua_pushnil(state);
+            }
+            else {
+                lua_push_meta_engine_widget(state, *widget->child_widget);
+            }
+            return 1;
+        }
+        else if(field == "focused_child") {
+            if(widget->focused_child == nullptr) {
+                lua_pushnil(state);
+            }
+            else {
+                lua_push_meta_engine_widget(state, *widget->focused_child);
+            }
+            return 1;
+        }
+        else if(field == "text") {
+            lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<wchar_t *>(widget->text)));
+            return 1;
+        }
+        else if(field == "cursor_index") {
+            lua_pushinteger(state, widget->cursor_index);
+            return 1;
+        }
+        else if(field == "bitmap_index") {
+            lua_pushinteger(state, widget->bitmap_index);
+            return 1;
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+    }
+
+    static int lua_engine_widget__newindex(lua_State *state) noexcept {
+        lua_getfield(state, 1, "_data"); 
+        auto widget = static_cast<Engine::Widget *>(lua_touserdata(state, -1)); 
+        lua_pop(state, 1); 
+        auto *key = lua_tostring(state, 2);
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        } 
+        
+        std::string field = key; 
+        if(field == "definition_tag_id") { 
+            widget->definition_tag_id.whole_id = luaL_checkinteger(state, 3);
+        }
+        else if(field == "name") {
+            return luaL_error(state, "Unsupported operation");
+        }
+        else if(field == "hidden") {
+            widget->hidden = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
+        }
+        else if(field == "left_bound") {
+            widget->left_bound = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
+        }
+        else if(field == "top_bound") {
+            widget->top_bound = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
+        }
+        else if(field == "type") {
+            try {
+                std::string type = luaL_checkstring(state, 3);
+                widget->type = lua_engine_u_i_widget_type_from_string(type);
+            }
+            catch(...) {
+                return luaL_error(state, "Invalid value");
+            }
+        }
+        else if(field == "ms_to_close") {
+            widget->ms_to_close = luaL_checkinteger(state, 3);
+        }
+        else if(field == "ms_to_close_fade_time") {
+            widget->ms_to_close_fade_time = luaL_checkinteger(state, 3);
+        }
+        else if(field == "opacity") {
+            float opacity = luaL_checknumber(state, 3);
+            if(opacity < 0.0f || opacity > 1.0f) {
+                return luaL_error(state, "Invalid value");
+            }
+            widget->opacity = opacity;
+        }
+        else if(field == "previous_widget") {
+            auto *previous_widget = lua_from_meta_object<Engine::Widget>(state, 3);
+            if(previous_widget) {
+                widget->previous_widget = previous_widget;
+            }
+            else {
+                return luaL_error(state, "Invalid value");
+            }
+        }
+        else if(field == "next_widget") {
+            auto *next_widget = lua_from_meta_object<Engine::Widget>(state, 3);
+            if(next_widget) {
+                widget->next_widget = next_widget;
+            }
+            else {
+                return luaL_error(state, "Invalid value");
+            }
+        }
+        else if(field == "parent_widget") {
+            auto *parent_widget = lua_from_meta_object<Engine::Widget>(state, 3);
+            if(parent_widget) {
+                widget->parent_widget = parent_widget;
+            }
+            else {
+                return luaL_error(state, "Invalid value");
+            }
+        }
+        else if(field == "child_widget") {
+            auto *child_widget = lua_from_meta_object<Engine::Widget>(state, 3);
+            if(child_widget) {
+                widget->child_widget = child_widget;
+            }
+            else {
+                return luaL_error(state, "Invalid value");
+            }
+        }
+        else if(field == "focused_child") {
+            auto *focused_child = lua_from_meta_object<Engine::Widget>(state, 3);
+            if(focused_child) {
+                widget->focused_child = focused_child;
+            }
+            else {
+                return luaL_error(state, "Invalid value");
+            }
+        }
+        else if(field == "text") {
+            return luaL_error(state, "Unsupported operation");
+        }
+        else if(field == "cursor_index") {
+            widget->cursor_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
+        }
+        else if(field == "bitmap_index") {
+            widget->bitmap_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
+        }
+        else { 
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_widget(lua_State *state, Engine::Widget &widget) noexcept {
+        lua_push_meta_object(state, widget, lua_engine_widget__index, lua_engine_widget__newindex); 
+    }
 }

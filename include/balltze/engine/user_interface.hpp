@@ -13,6 +13,7 @@
 #include "../api.hpp"
 #include "tag_definitions/hud_globals.hpp"
 #include "tag_definitions/bitmap.hpp"
+#include "tag_definitions/ui_widget_definition.hpp"
 #include "tag_definitions/sound.hpp"
 #include "tag.hpp"
 
@@ -284,16 +285,6 @@ namespace Balltze::Engine {
     static_assert(sizeof(WidgetMemoryPool::ResourceHandle) == 0x10);
 
     struct Widget {
-        enum Type : std::uint16_t {
-            WIDGET_TYPE_CONTAINER = 0,
-            WIDGET_TYPE_TEXT_BOX,
-            WIDGET_TYPE_SPINNER_LIST,
-            WIDGET_TYPE_COLUMN_LIST,
-            WIDGET_TYPE_GAME_MODEL,
-            WIDGET_TYPE_MOVIE,
-            WIDGET_TYPE_CUSTOM
-        };
-
         /** ID of the widget tag */
         TagHandle definition_tag_id;
 
@@ -310,7 +301,7 @@ namespace Balltze::Engine {
         std::int16_t top_bound;
 
         /** Widget type */
-        Type type;
+        TagDefinitions::UIWidgetType type;
 
         /** Unknown flags related to the widget history */
         std::uint16_t visible;
@@ -370,13 +361,6 @@ namespace Balltze::Engine {
         inline WidgetMemoryPool::ResourceHandle &get_handle() noexcept {
             return *reinterpret_cast<WidgetMemoryPool::ResourceHandle *>(reinterpret_cast<std::uint32_t>(this) - sizeof(WidgetMemoryPool::ResourceHandle));
         }
-
-        /**
-         * Get string for a widget type
-         * @param type      Code of widget type
-         * @return          Stringified widget type
-         */
-        BALLTZE_API static std::string type_to_string(Type type) noexcept;
     }; 
     static_assert(sizeof(Widget) == 0x60);
 

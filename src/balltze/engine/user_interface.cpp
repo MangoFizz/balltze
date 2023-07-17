@@ -6,6 +6,7 @@
 #include <invader/sound/sound_reader.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/engine/multiplayer.hpp>
+#include <balltze/engine/tag_definitions/ui_widget_definition.hpp>
 #include <balltze/engine/user_interface.hpp>
 #include "../logger.hpp"
 
@@ -211,7 +212,7 @@ namespace Balltze::Engine {
             old_widget->next_widget = nullptr;
         }
 
-        if(new_widget->type == Widget::WIDGET_TYPE_COLUMN_LIST) {
+        if(new_widget->type == TagDefinitions::U_I_WIDGET_TYPE_COLUMN_LIST) {
             new_widget->focused_child = new_widget->child_widget;
         }
 
@@ -471,27 +472,6 @@ namespace Balltze::Engine {
                 return "double left";
             default:
                 return "unknown mouse button " + std::to_string(button);
-        }
-    }
-
-    std::string Widget::type_to_string(Widget::Type type) noexcept {
-        switch(type) {
-            case WIDGET_TYPE_CONTAINER:
-                return "container";
-            case WIDGET_TYPE_TEXT_BOX:
-                return "text box";
-            case WIDGET_TYPE_SPINNER_LIST:
-                return "spinner list";
-            case WIDGET_TYPE_COLUMN_LIST:
-                return "column list";
-            case WIDGET_TYPE_GAME_MODEL:
-                return "game model";
-            case WIDGET_TYPE_MOVIE:
-                return "movie";
-            case WIDGET_TYPE_CUSTOM:
-                return "custom";
-            default:
-                return "unknown widget type " + std::to_string(type);
         }
     }
 

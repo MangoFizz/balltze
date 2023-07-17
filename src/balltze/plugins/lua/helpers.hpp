@@ -4,6 +4,7 @@
 #define BALLTZE__PLUGINS__LUA__HELPERS_HPP
 
 #include <functional>
+#include <typeinfo>
 #include <lua.hpp>
 #include <balltze/plugin.hpp>
 #include <balltze/engine.hpp>
@@ -48,23 +49,43 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion) noexcept;
     void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane) noexcept;
     void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept;
+    void lua_push_meta_engine_widget(lua_State *state, Engine::Widget &widget) noexcept;
 
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex) noexcept {
-        // Create table for vector
+        // Create table 
         lua_newtable(state);
         lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<T *>(&elem)));
         lua_setfield(state, -2, "_data");
+        lua_pushinteger(state, typeid(T).hash_code());
+        lua_setfield(state, -2, "_type");
 
-        // Create metatable for vector 3D
+        // Create metatable 
         lua_newtable(state);
         lua_pushcfunction(state, index);
         lua_setfield(state, -2, "__index");
         lua_pushcfunction(state, newindex);
         lua_setfield(state, -2, "__newindex");
 
-        // Set metatable for vector
+        // Set metatable for the table
         lua_setmetatable(state, -2);
+    }
+
+    template<typename T>
+    T *lua_from_meta_object(lua_State *state, int index) noexcept {
+        if(!lua_istable(state, index)) {
+            return nullptr;
+        }
+        T *elem = nullptr;
+        lua_getfield(state, index, "_type");
+        if(lua_isinteger(state, -1) && lua_tointeger(state, -1) == typeid(T).hash_code()) {
+            lua_getfield(state, index, "_data");
+            if(lua_islightuserdata(state, -1)) {
+                elem = reinterpret_cast<T *>(lua_touserdata(state, -1));
+            }
+        }
+        lua_pop(state, 2);
+        return elem;
     }
 
     template<typename T>
