@@ -11,6 +11,7 @@
 #include "../memory.hpp"
 #include "../math.hpp"
 #include "../api.hpp"
+#include "core.hpp"
 #include "tag_definitions/hud_globals.hpp"
 #include "tag_definitions/bitmap.hpp"
 #include "tag_definitions/ui_widget_definition.hpp"
@@ -602,12 +603,13 @@ namespace Balltze::Engine {
      * Gets the size of a sprite in a bitmap.
      * @param bitmap                Bitmap tag data.
      * @param sequence_index        Sequence index of the bitmap.
-     * @return                      The size of the sprite.
+     * @param sprite_index          The index of the sprite from the sequence.
+     * @return                      Resolution of the sprite.
      * @throws std::runtime_error   If the bitmap tag handle is invalid.
      * @throws std::runtime_error   If the sequence index is invalid.
      * @throws std::runtime_error   If the sprite index is invalid.
      */
-    BALLTZE_API std::pair<std::size_t, std::size_t> get_bitmap_sequence_size(Engine::TagDefinitions::Bitmap *bitmap, std::size_t sequence_index);
+    BALLTZE_API Resolution get_bitmap_sprite_resolution(Engine::TagDefinitions::Bitmap *bitmap, std::size_t sequence_index, std::size_t sprite_index = 0);
 
     /**
      * Draws a icon bitmap on a HUD message.
@@ -642,7 +644,7 @@ namespace Balltze::Engine {
      * @param permutation           Pointer to sound permutation 
      * @return                      Duration of the sound permutation in milliseconds
      */
-    BALLTZE_API std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::Sound *sound, TagDefinitions::SoundPermutation *permutation);
+    BALLTZE_API std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::SoundPermutation *permutation);
 }
 
 #endif

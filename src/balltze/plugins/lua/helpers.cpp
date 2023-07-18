@@ -306,6 +306,121 @@ namespace Balltze::Plugins {
         return matrix;
     }
 
+    void lua_push_engine_resolution(lua_State *state, Engine::Resolution &resolution) noexcept {
+        lua_newtable(state);
+        lua_pushinteger(state, resolution.width);
+        lua_setfield(state, -2, "width");
+        lua_pushinteger(state, resolution.height);
+        lua_setfield(state, -2, "height");
+    }
+
+    Engine::Point2DInt lua_to_point2_d_int(lua_State *state, int index) {
+        Engine::Point2DInt point;
+        if(lua_istable(state, index)) {
+            auto get_field = [&state, &index](const char *field, std::int16_t &value) {
+                lua_getfield(state, index, field);
+                if(lua_isinteger(state, -1)) {
+                    value = lua_tointeger(state, -1);
+                }
+                else {
+                    auto *error = "Expected integer for Point2DInt field.";
+                    throw std::runtime_error(error);
+                }
+                lua_pop(state, 1);
+            };
+
+            try {
+                get_field("x", point.x);
+                get_field("y", point.y);
+            }
+            catch(std::runtime_error &e) {
+                throw;
+            }
+        }
+        else {
+            if(lua_gettop(state) >= index + 1) {
+                auto get_field = [&state, &index](std::int16_t &value) {
+                    if(lua_isinteger(state, index)) {
+                        value = lua_tointeger(state, index);
+                        index++;
+                    }
+                    else {
+                        auto *error = "Expected integer for Point2DInt field.";
+                        luaL_error(state, error);
+                        throw std::runtime_error(error);
+                    }
+                };
+
+                try {
+                    get_field(point.x);
+                    get_field(point.y);
+                }
+                catch(std::runtime_error &e) {
+                    throw;
+                }
+            }
+            else {
+                throw std::runtime_error("Could not get Point2DInt from table or stack.");
+            }
+        }
+        return point;
+    }
+
+    Engine::ColorARGBInt lua_to_color_a_r_g_b_int(lua_State *state, int index) {
+        Engine::ColorARGBInt color;
+        if(lua_istable(state, index)) {
+            auto get_field = [&state, &index](const char *field, std::uint8_t &value) {
+                lua_getfield(state, index, field);
+                if(lua_isinteger(state, -1)) {
+                    value = lua_tointeger(state, -1);
+                }
+                else {
+                    auto *error = "Expected integer for ColorARGBInt field.";
+                    throw std::runtime_error(error);
+                }
+                lua_pop(state, 1);
+            };
+
+            try {
+                get_field("red", color.red);
+                get_field("green", color.green);
+                get_field("blue", color.blue);
+                get_field("alpha", color.alpha);
+            }
+            catch(std::runtime_error &e) {
+                throw;
+            }
+        }
+        else {
+            if(lua_gettop(state) >= index + 1) {
+                auto get_field = [&state, &index](std::uint8_t &value) {
+                    if(lua_isinteger(state, index)) {
+                        value = lua_tointeger(state, index);
+                        index++;
+                    }
+                    else {
+                        auto *error = "Expected integer for ColorARGBInt field.";
+                        throw std::runtime_error(error);
+                    }
+                };
+
+                try {
+                    get_field(color.red);
+                    get_field(color.green);
+                    get_field(color.blue);
+                    get_field(color.alpha);
+                }
+                catch(std::runtime_error &e) {
+                    throw;
+                }
+            }
+            else {
+                throw std::runtime_error("Could not get ColorARGBInt from table or stack.");
+            }
+        }
+        return color;
+    }
+
     static int lua_engine_color_a_r_g_b_int__index(lua_State *state) {
         lua_getfield(state, 1, "_data"); 
         auto color = static_cast<Engine::ColorARGBInt *>(lua_touserdata(state, -1)); 

@@ -33,6 +33,11 @@ namespace Balltze::Plugins {
     void lua_push_engine_matrix(lua_State *state, Engine::Matrix &matrix) noexcept;
     std::shared_ptr<Engine::Matrix> lua_to_engine_matrix(lua_State *state, int index) noexcept;
 
+    void lua_push_engine_resolution(lua_State *state, Engine::Resolution &resolution) noexcept;
+
+    Engine::Point2DInt lua_to_point2_d_int(lua_State *state, int index);
+    Engine::ColorARGBInt lua_to_color_a_r_g_b_int(lua_State *state, int index);
+
     void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
     void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept;
     void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point) noexcept;

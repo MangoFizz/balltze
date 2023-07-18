@@ -834,6 +834,147 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_get_bitmap_sprite_resolution(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 3) {
+                auto *bitmap = lua_from_meta_object<Engine::TagDefinitions::Bitmap>(state, 1);
+                if(!bitmap) {
+                    return luaL_error(state, "Invalid bitmap.");
+                }
+
+                auto sequence_index = luaL_checkinteger(state, 2);
+                auto sprite_index = luaL_checkinteger(state, 3);
+
+                try {
+                    auto resolution = Engine::get_bitmap_sprite_resolution(bitmap, sequence_index, sprite_index);
+                    lua_push_engine_resolution(state, resolution);
+                    return 1;
+                }
+                catch(std::exception &e) {
+                    return luaL_error(state, e.what());
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_bitmap_sprite_resolution.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_draw_hud_message_sprite(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 4 || args == 5) {
+                auto *bitmap = lua_from_meta_object<Engine::TagDefinitions::Bitmap>(state, 1);
+                if(!bitmap) {
+                    return luaL_error(state, "Invalid bitmap.");
+                }
+
+                auto sequence_index = luaL_checkinteger(state, 2);
+                auto sprite_index = luaL_checkinteger(state, 3);
+
+                try {
+                    auto position = lua_to_point2_d_int(state, 4);
+                    Engine::ColorARGBInt color = {255, 255, 255, 255};
+                    if(args == 5) {
+                        color = lua_to_color_a_r_g_b_int(state, 5);
+                    }
+                    Engine::draw_hud_message_sprite(bitmap, sequence_index, sprite_index, position, color);
+                    return 0;
+                }
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, e.what());
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.draw_hud_message_sprite.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_play_sound(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1) {
+                Engine::TagHandle tag_handle;
+                if(lua_isinteger(state, 1)) {
+                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    auto *tag = Engine::get_tag(tag_handle);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    if(tag->primary_class != Engine::TAG_CLASS_SOUND) {
+                        return luaL_error(state, "Tag is not a sound.");
+                    }
+                }
+                else {
+                    const char *tag_path = luaL_checkstring(state, 1);
+                    auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag.");
+                    }
+                    tag_handle.whole_id = tag->id.whole_id;
+                }
+
+                try {
+                    Engine::play_sound(tag_handle);
+                }
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, e.what());
+                }
+                
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.play_sound.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_get_sound_permutation_samples_duration(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1) {
+                auto *permutation = lua_from_meta_object<Engine::TagDefinitions::SoundPermutation>(state, 1);
+                try {
+                    auto duration = Engine::get_sound_permutation_samples_duration(permutation);
+                    lua_pushinteger(state, duration.count());
+                    return 1;
+                }
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, e.what());
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_sound_permutation_samples_duration.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
     static const luaL_Reg engine_functions[] = {
         {"console_print", lua_engine_console_print},
         {"get_resolution", lua_engine_get_resolution},
@@ -856,6 +997,10 @@ namespace Balltze::Plugins {
         {"focus_widget", lua_engine_focus_widget},
         {"open_pause_menu", lua_engine_open_pause_menu},
         {"get_hud_globals", lua_engine_get_hud_globals},
+        {"get_bitmap_sprite_resolution", lua_get_bitmap_sprite_resolution},
+        {"draw_hud_message_sprite", lua_engine_draw_hud_message_sprite},
+        {"play_sound", lua_engine_play_sound},
+        {"get_sound_permutation_samples_duration", lua_engine_get_sound_permutation_samples_duration},
         {nullptr, nullptr}
     };
 

@@ -8,6 +8,7 @@
 #include <balltze/engine.hpp>
 #include <balltze/event.hpp>
 #include "../config/config.hpp"
+#include "../logger.hpp"
 
 using namespace Balltze::Event;
 
@@ -20,7 +21,7 @@ namespace Balltze::Features {
         std::size_t sprites_count;
         std::size_t animation_current_sprite_index;
         std::chrono::time_point<std::chrono::steady_clock> last_animation_frame;
-        std::pair<std::uint16_t, std::uint16_t> sprite_size;
+        Engine::Resolution sprite_resolution;
         std::optional<Engine::ColorARGBInt> color_override;
         bool found = false;
     };
@@ -70,8 +71,16 @@ namespace Balltze::Features {
                             button_icon.sprites_count = bitmap->bitmap_group_sequence.offset[button_icon.sequence_index].sprites.count;
                             button_icon.animation_current_sprite_index = 0;
                             button_icon.last_animation_frame = std::chrono::steady_clock::now();
-                            button_icon.sprite_size = Engine::get_bitmap_sequence_size(bitmap, hud_icon.sequence_index);
-                            button_icon.found = true;
+                            
+                            try {
+                                button_icon.sprite_resolution = Engine::get_bitmap_sprite_resolution(bitmap, hud_icon.sequence_index);
+                                button_icon.found = true;
+                            }
+                            catch(std::exception &e) {
+                                button_icon.sprite_resolution = {0, 0};
+                                button_icon.found = false;
+                                logger.warning("Failed to get sprite size from buttons icons bitmap: {}", e.what());
+                            }
                             
                             if(hud_icon.flags.override_default_color) {
                                 button_icon.color_override = hud_icon.override_icon_color;
@@ -131,11 +140,13 @@ namespace Balltze::Features {
             final_color = *button_icon->color_override;
         }
 
-        Engine::draw_hud_message_sprite(button_icon->bitmap, button_icon->sequence_index, button_icon->animation_current_sprite_index, offset, final_color);
+        // align position to text baseline and bump up the offset for the next slice
+        auto position = offset;
+        position.y += button_icon->sprite_resolution.height * 0.75f;
+        offset.x += button_icon->sprite_resolution.width;
 
-        // bump up the offset for the next slice
-        auto [sprite_width, sprite_height] = button_icon->sprite_size;
-        offset.x += sprite_width;
+        // draw the sprite
+        Engine::draw_hud_message_sprite(button_icon->bitmap, button_icon->sequence_index, button_icon->animation_current_sprite_index, position, final_color);
 
         return true;
     }

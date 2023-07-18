@@ -293,21 +293,26 @@ namespace Balltze::Engine {
         return **hud_globals;
     }
 
-    std::pair<std::size_t, std::size_t> get_bitmap_sequence_size(Engine::TagDefinitions::Bitmap *bitmap, std::size_t sequence_index) {
+    Resolution get_bitmap_sprite_resolution(Engine::TagDefinitions::Bitmap *bitmap, std::size_t sequence_index, std::size_t sprite_index) {
         if(sequence_index >= bitmap->bitmap_group_sequence.count) {
             throw std::runtime_error("Invalid sequence index");
         }
         auto &sequence = bitmap->bitmap_group_sequence.offset[sequence_index];
-        if(sequence.sprites.count == 0) {
-            throw std::runtime_error("Sequence has no sprites");
+        
+        if(sequence.sprites.count <= sprite_index) {
+            throw std::runtime_error("Invalid sprite index");
         }
-        auto &sprite = sequence.sprites.offset[0];
+        auto &sprite = sequence.sprites.offset[sprite_index];
+
+        if(sprite.bitmap_index >= bitmap->bitmap_data.count) {
+            throw std::runtime_error("Invalid bitmap index in sprite");
+        }
         auto &bitmap_data = bitmap->bitmap_data.offset[sprite.bitmap_index];
 
-        auto sprite_width = (sprite.right - sprite.left) * bitmap_data.width;
-        auto sprite_height = (sprite.bottom - sprite.top) * bitmap_data.height;
+        std::uint16_t sprite_width = (sprite.right - sprite.left) * bitmap_data.width;
+        std::uint16_t sprite_height = (sprite.bottom - sprite.top) * bitmap_data.height;
 
-        return {sprite_width, sprite_height};
+        return {sprite_height, sprite_width};
     }
 
     void draw_hud_message_sprite(Engine::TagDefinitions::Bitmap *bitmap, std::size_t sequence_index, std::size_t sprite_index, Point2DInt position, ColorARGBInt color) {
@@ -321,13 +326,7 @@ namespace Balltze::Engine {
         auto &sprite = sequence.sprites.offset[sprite_index];
         auto &bitmap_data = bitmap->bitmap_data.offset[sprite.bitmap_index];
 
-        auto offset = position;
-        auto [sprite_width, sprite_height] = get_bitmap_sequence_size(bitmap, sequence_index);
-
-        // align to text baseline
-        offset.y += sprite_height * 0.75f;
-
-        hud_draw_bitmap_sprite(offset, color, &bitmap_data, &sprite);
+        hud_draw_bitmap_sprite(position, color, &bitmap_data, &sprite);
     }
 
     std::wstring get_button_name(InputDevice input_device, std::size_t button_index) {
@@ -343,10 +342,16 @@ namespace Balltze::Engine {
         play_sound_asm(tag_sound);
     }
 
-    std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::Sound *sound, TagDefinitions::SoundPermutation *permutation) {
-        if(!sound || !permutation) {
-            throw std::runtime_error("Invalid sound or permutation");
+    std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::SoundPermutation *permutation) {
+        if(!permutation) {
+            throw std::runtime_error("Invalid permutation");
         }
+
+        auto *sound_tag = get_tag(permutation->sound_tag_id_0);
+        if(!sound_tag) {
+            throw std::runtime_error("Invalid sound tag in permutation");
+        }
+        TagDefinitions::Sound *sound = reinterpret_cast<TagDefinitions::Sound *>(sound_tag->data);
         
         bool found = false;
         for(std::size_t i = 0; i < sound->pitch_ranges.count; i++) {
