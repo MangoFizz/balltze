@@ -14,7 +14,7 @@ namespace Balltze::Features {
         return nullptr;
     }
 
-    static bool show_subtitles(Event::SoundPlaybackEvent const &event) noexcept {
+    static void show_subtitles(Event::SoundPlaybackEvent const &event) noexcept {
         if(event.time == Event::EVENT_TIME_AFTER && !event.cancelled()) {
             auto &args = event.args;
             auto *subtitles = get_sound_subtitles(args.permutation);
@@ -24,17 +24,15 @@ namespace Balltze::Features {
                     logger.debug("Null samples pointer for sound {}", args.permutation->name.string);
                 }
                 else {
-                    auto duration = Engine::get_sound_permutation_samples_duration(args.sound, args.permutation);
+                    auto duration = Engine::get_sound_permutation_samples_duration(args.permutation);
                     add_subtitle(wstr, {1.0f, 1.0f, 1.0f, 1.0f}, duration);
                 }
             }
         }
-        return true;
     }
 
     void set_up_sound_subtitles() noexcept {
-        Event::CancellableConstEventDelegate<Event::SoundPlaybackEvent> show_subtitles_delegate(show_subtitles);
-        Event::SoundPlaybackEvent::subscribe_const(show_subtitles_delegate);
+        Event::SoundPlaybackEvent::subscribe_const(show_subtitles);
     }
 }
 

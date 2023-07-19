@@ -14,43 +14,22 @@ namespace Balltze::Event {
         std::size_t handle;
         bool constant = false;
         EventPriority priority = EVENT_PRIORITY_DEFAULT;
-        std::optional<NonCancellableEventDelegate<T>> non_cancellable_callback;
-        std::optional<CancellableEventDelegate<T>> cancellable_callback;
-        std::optional<NonCancellableConstEventDelegate<T>> non_cancellable_const_callback;
-        std::optional<CancellableConstEventDelegate<T>> cancellable_const_callback;
+        std::optional<EventCallback<T>> ref_callback;
+        std::optional<ConstEventCallback<T>> const_callback;
 
         EventListener() {
             handle = next_handle++;
         }
 
         void operator()(T &event) {
-            if(T::cancellable()) {
-                if(constant) {
-                    if(cancellable_const_callback.has_value()) {
-                        if(!cancellable_const_callback.value()(event)) {
-                            event.cancel();
-                        }
-                    }
-                } 
-                else {
-                    if(cancellable_callback.has_value()) {
-                        if(!cancellable_callback.value()(event)) {
-                            event.cancel();
-                        }
-                    }
-                }
-            } 
+            if(constant && const_callback) {
+                const_callback.value()(event);
+            }
+            else if(ref_callback) {
+                ref_callback.value()(event);
+            }
             else {
-                if(constant) {
-                    if(non_cancellable_const_callback.has_value()) {
-                        non_cancellable_const_callback.value()(event);
-                    }
-                } 
-                else {
-                    if(non_cancellable_callback.has_value()) {
-                        non_cancellable_callback.value()(event);
-                    }
-                }
+                throw std::runtime_error("Event listener is not initialized");
             }
         }
     };
@@ -61,50 +40,20 @@ namespace Balltze::Event {
     static std::any listeners_iterator_aux;
 
     template<typename T>
-    std::size_t EventHandler<T>::add_listener(NonCancellableEventDelegate<T> callback, EventPriority priority) {
-        if(T::cancellable()) {
-            throw std::invalid_argument("Event is cancellable, use CancellableEventDelegate instead");
-        }
+    std::size_t EventHandler<T>::add_listener(EventCallback<T> callback, EventPriority priority) {
         auto &listener = listeners<T>.emplace_back();
         listener.constant = false;
         listener.priority = priority;
-        listener.non_cancellable_callback = callback;
+        listener.ref_callback = callback;
         return listener.handle;
     }
 
     template<typename T>
-    std::size_t EventHandler<T>::add_listener_const(NonCancellableConstEventDelegate<T> callback, EventPriority priority) {
-        if(T::cancellable()) {
-            throw std::invalid_argument("Event is cancellable, use CancellableEventDelegate instead");
-        }
+    std::size_t EventHandler<T>::add_listener_const(ConstEventCallback<T> callback, EventPriority priority) {
         auto &listener = listeners<T>.emplace_back();
         listener.constant = true;
         listener.priority = priority;
-        listener.non_cancellable_const_callback = callback;
-        return listener.handle;
-    }
-    
-    template<typename T>
-    std::size_t EventHandler<T>::add_listener(CancellableEventDelegate<T> callback, EventPriority priority) {
-        if(!T::cancellable()) {
-            throw std::invalid_argument("Event is not cancellable, use NonCancellableEventDelegate instead");
-        }
-        auto &listener = listeners<T>.emplace_back();
-        listener.constant = false;
-        listener.priority = priority;
-        listener.cancellable_callback = callback;
-        return listener.handle;
-    }
-
-    template<typename T>
-    std::size_t EventHandler<T>::add_listener_const(CancellableConstEventDelegate<T> callback, EventPriority priority) {
-        if(!T::cancellable()) {
-            throw std::invalid_argument("Event is not cancellable, use NonCancellableEventDelegate instead");
-        }
-        auto &listener = listeners<T>.emplace_back();
-        listener.constant = true;
-        listener.priority = priority;
-        listener.cancellable_const_callback = callback;
+        listener.const_callback = callback;
         return listener.handle;
     }
 

@@ -22,18 +22,16 @@ namespace Balltze::Features {
         return pause_button;
     }
 
-    static bool on_game_input(Event::GameInputEvent &event) {
+    static void on_game_input(Event::GameInputEvent &event) {
         if(event.args.device == Engine::INPUT_DEVICE_GAMEPAD) {
             auto pause_button = get_pause_button();
             if(pause_button && pause_button == event.args.button.gamepad_button && !event.args.mapped) {
                 Engine::open_pause_menu();
             }
         }
-        return true;
     }
 
     void set_up_gamepad_pause_button() {
-        CancellableEventDelegate<GameInputEvent> game_input_event = on_game_input;
-        GameInputEvent::subscribe(game_input_event, EVENT_PRIORITY_HIGHEST);
+        GameInputEvent::subscribe(on_game_input, EVENT_PRIORITY_HIGHEST);
     }
 }

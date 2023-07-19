@@ -176,8 +176,7 @@ namespace Balltze::LuaLibrary {
 
         // Subscribe to events
         if(!map_file_load_listener_handle) {
-            Event::NonCancellableConstEventDelegate<Event::MapFileLoadEvent> on_map_file_load_delegate = on_map_file_load;
-            map_file_load_listener_handle = Event::MapFileLoadEvent::subscribe_const(on_map_file_load_delegate);
+            map_file_load_listener_handle = Event::MapFileLoadEvent::subscribe_const(on_map_file_load);
         }
 
         auto *script = scripts.emplace_back(std::make_unique<Script>()).get();

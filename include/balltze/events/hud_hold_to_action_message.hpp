@@ -53,7 +53,7 @@ namespace Balltze::Event {
     public:
         HudHoldForActionMessageArguments args;
 
-        static bool cancellable() {
+        bool cancellable() const {
             return true;
         }
 

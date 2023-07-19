@@ -15,7 +15,7 @@ namespace Balltze::Event {
     public:
         MapFileLoadEventArgs args;
 
-        static bool cancellable() {
+        bool cancellable() const {
             return false;
         }
 

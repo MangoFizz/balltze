@@ -151,7 +151,7 @@ namespace Balltze::Features {
         return true;
     }
 
-    static bool on_hud_hold_to_action_event(HudHoldForActionMessageEvent &event) {
+    static void on_hud_hold_to_action_event(HudHoldForActionMessageEvent &event) {
         bool allow = true;
         if(event.time == EVENT_TIME_BEFORE) {
             static std::wstring left_quote;
@@ -180,11 +180,12 @@ namespace Balltze::Features {
                 allow = false;
             }
         }
-        return allow;
+        if(!allow) {
+            event.cancel();
+        }
     }
 
     void set_up_hud_button_prompts() {
-        CancellableEventDelegate<HudHoldForActionMessageEvent> event = on_hud_hold_to_action_event;
-        HudHoldForActionMessageEvent::subscribe(event, EVENT_PRIORITY_HIGHEST);
+        HudHoldForActionMessageEvent::subscribe(on_hud_hold_to_action_event, EVENT_PRIORITY_HIGHEST);
     }
 }

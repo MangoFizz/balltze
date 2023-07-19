@@ -18,7 +18,7 @@ namespace Balltze::Event {
     public:
         MapFileDataReadEventArgs args;
 
-        static bool cancellable() {
+        bool cancellable() const {
             return false;
         }
 

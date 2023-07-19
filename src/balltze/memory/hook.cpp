@@ -368,7 +368,7 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 6);
                         instruction_size = 6;
                     }
-                    else if(instruction[1] == 0xFD) { // cmp ebp, imm32
+                    else if(instruction[1] == 0xFD || instruction[1] == 0xFE) { // cmp ebp/esi, imm32
                         m_cave.insert(&instruction[0], 6);
                         instruction_size = 6;
                     }

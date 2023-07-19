@@ -20,7 +20,7 @@ namespace Balltze::Event {
     public:
         GameInputArguments args;
 
-        static bool cancellable() {
+        bool cancellable() const {
             return true;
         }
 

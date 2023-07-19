@@ -17,7 +17,7 @@ namespace Balltze::Event {
     public:
         D3D9EndSceneEventArguments args;
 
-        static bool cancellable() {
+        bool cancellable() const {
             return false;
         }
 

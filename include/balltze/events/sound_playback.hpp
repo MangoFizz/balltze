@@ -19,7 +19,7 @@ namespace Balltze::Event {
     public:
         SoundPlaybackEventArgs args;
 
-        static bool cancellable() {
+        bool cancellable() const {
             return true;
         }
 

@@ -19,7 +19,7 @@ namespace Balltze::Event {
     public:
         D3D9DeviceResetEventArguments args;
 
-        static bool cancellable() {
+        bool cancellable() const {
             return false;
         }
 

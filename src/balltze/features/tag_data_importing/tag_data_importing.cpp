@@ -450,8 +450,7 @@ namespace Balltze::Features {
     }
 
     void set_up_tag_data_importing() {
-        Event::NonCancellableConstEventDelegate<Event::MapFileLoadEvent> on_map_file_load_delegate = on_map_file_load;
-        Event::MapFileLoadEvent::subscribe_const(on_map_file_load_delegate);
+        Event::MapFileLoadEvent::subscribe_const(on_map_file_load);
 
         auto *read_cache_file_data_sig = Memory::get_signature("read_map_file_data");
         auto *read_cache_file_data_hook = Memory::hook_function(read_cache_file_data_sig->data(), on_read_map_file_data_asm);

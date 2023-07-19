@@ -8,7 +8,7 @@
 namespace Balltze::Event {
     class FrameEvent : public EventData<FrameEvent> {
     public:
-        static bool cancellable() {
+        bool cancellable() const {
             return false;
         }
 
