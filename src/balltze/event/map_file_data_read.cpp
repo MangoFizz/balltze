@@ -45,7 +45,12 @@ namespace Balltze::Event {
             throw std::runtime_error("Could not find signature for map file data read event");
         }
 
-        Memory::hook_function(read_map_file_data_call_1_sig->data(), map_file_data_read_event_before, map_file_data_read_event_after);
-        Memory::hook_function(read_map_file_data_call_2_sig->data(), map_file_data_read_event_before, map_file_data_read_event_after);
+        try {
+            Memory::hook_function(read_map_file_data_call_1_sig->data(), map_file_data_read_event_before, map_file_data_read_event_after);
+            Memory::hook_function(read_map_file_data_call_2_sig->data(), map_file_data_read_event_before, map_file_data_read_event_after);
+        }
+        catch(std::runtime_error &e) {
+            throw std::runtime_error("Could not hook map file data read event: " + std::string(e.what()));
+        }
     }
 }

@@ -38,8 +38,13 @@ namespace Balltze::Event {
             throw std::runtime_error("Could not find signature for D3D9 end scene event");
         }
 
-        // Workaround for Chimera hook (NEEDS TO BE FIXED)
-        std::byte *ptr = Memory::follow_32bit_jump(d3d9_end_scene_sig->data()) + 5;
-        Memory::hook_function(ptr, d3d9_end_scene_before_event, d3d9_end_scene_after_event, false);
+        try {
+            // Workaround for Chimera hook (NEEDS TO BE FIXED)
+            std::byte *ptr = Memory::follow_32bit_jump(d3d9_end_scene_sig->data()) + 5;
+            Memory::hook_function(ptr, d3d9_end_scene_before_event, d3d9_end_scene_after_event, false);
+        }
+        catch(std::runtime_error &e) {
+            throw std::runtime_error("Could not hook D3D9 end scene event: " + std::string(e.what()));
+        }
     }
 }

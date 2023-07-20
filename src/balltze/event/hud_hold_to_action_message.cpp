@@ -97,13 +97,18 @@ namespace Balltze::Event {
             throw std::runtime_error("Could not find signature for hold for action hud message right quote print");
         }
 
-        std::function<bool()> dispatcher = hold_for_action_hud_message_before_event_button_name;
-        auto *button_name_hook = Memory::hook_function(hold_for_weapon_hud_button_name_draw_sig->data(), dispatcher, hold_for_action_hud_message_after_event_button_name);
+        try {
+            std::function<bool()> dispatcher = hold_for_action_hud_message_before_event_button_name;
+            auto *button_name_hook = Memory::hook_function(hold_for_weapon_hud_button_name_draw_sig->data(), dispatcher, hold_for_action_hud_message_after_event_button_name);
 
-        dispatcher = hold_for_action_hud_message_before_event_button_name_left_quote;
-        auto *left_quote_hook = Memory::hook_function(hold_for_action_message_left_quote_print_sig->data(), dispatcher, hold_for_action_hud_message_after_event_button_name_left_quote);
+            dispatcher = hold_for_action_hud_message_before_event_button_name_left_quote;
+            auto *left_quote_hook = Memory::hook_function(hold_for_action_message_left_quote_print_sig->data(), dispatcher, hold_for_action_hud_message_after_event_button_name_left_quote);
 
-        dispatcher = hold_for_action_hud_message_before_event_button_name_right_quote;
-        auto *right_quote_hook = Memory::hook_function(hold_for_action_message_right_quote_print_sig->data(), dispatcher, hold_for_action_hud_message_after_event_button_name_right_quote);
+            dispatcher = hold_for_action_hud_message_before_event_button_name_right_quote;
+            auto *right_quote_hook = Memory::hook_function(hold_for_action_message_right_quote_print_sig->data(), dispatcher, hold_for_action_hud_message_after_event_button_name_right_quote);
+        }
+        catch(std::runtime_error &e) {
+            throw std::runtime_error("Could not hook hold for action hud message event: " + std::string(e.what()));
+        }
     }
 }

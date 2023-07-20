@@ -10,8 +10,8 @@
 
 namespace Balltze::Event {
     extern "C" {
-        void sound_playback_event_before();
-        void sound_playback_event_after();
+        void sound_playback_event();
+        void *sound_playback_function = nullptr;
 
         bool dispatch_sound_playback_event_before(Engine::TagDefinitions::SoundPermutation *permutation) {
             auto *tag = Engine::get_tag(permutation->sound_tag_id_0);
@@ -47,17 +47,13 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        auto *enqueue_sound_permutation_call_1_sig = Memory::get_signature("enqueue_sound_permutation_call_1");
-        auto *enqueue_sound_permutation_call_2_sig = Memory::get_signature("enqueue_sound_permutation_call_2");
-        auto *enqueue_sound_permutation_call_3_sig = Memory::get_signature("enqueue_sound_permutation_call_3");
-        if(!enqueue_sound_permutation_call_1_sig || !enqueue_sound_permutation_call_2_sig || !enqueue_sound_permutation_call_3_sig) {
+        auto *enqueue_sound_permutation_function_sig = Memory::get_signature("enqueue_sound_function");
+        if(!enqueue_sound_permutation_function_sig) {
             throw std::runtime_error("Could not find signatures for sound playback event");
         }
 
         try {
-            Memory::hook_function(enqueue_sound_permutation_call_1_sig->data(), sound_playback_event_before, sound_playback_event_after);
-            Memory::hook_function(enqueue_sound_permutation_call_2_sig->data(), sound_playback_event_before, sound_playback_event_after);
-            Memory::hook_function(enqueue_sound_permutation_call_3_sig->data(), sound_playback_event_before, sound_playback_event_after);
+            Memory::override_function(enqueue_sound_permutation_function_sig->data(), sound_playback_event, sound_playback_function);
         }
         catch(const std::exception &e) {
             logger.error("Could not hook sound playback event: {}", e.what());
