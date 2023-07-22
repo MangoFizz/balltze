@@ -73,6 +73,9 @@ namespace Balltze::Event {
 
         inline void cancel() {
             if(cancellable()) {
+                if(this->time == EVENT_TIME_AFTER) {
+                    throw std::runtime_error("Cannot cancel an event after is has been occurred");
+                }
                 m_cancelled = true;
             }
             else {
@@ -107,6 +110,7 @@ namespace Balltze::Event {
 #include "events/map_file_data_read.hpp"
 #include "events/map_file_load.hpp"
 #include "events/sound_playback.hpp"
+#include "events/console_command.hpp"
 
 #endif
 

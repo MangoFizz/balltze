@@ -55,8 +55,8 @@ namespace Balltze::Event {
         try {
             Memory::override_function(enqueue_sound_permutation_function_sig->data(), sound_playback_event, sound_playback_function);
         }
-        catch(const std::exception &e) {
-            logger.error("Could not hook sound playback event: {}", e.what());
+        catch(const std::runtime_error &e) {
+            throw std::runtime_error("Could not hook sound playback event: " + std::string(e.what()));
         }
     }
 }

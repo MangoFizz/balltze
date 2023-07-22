@@ -10,6 +10,7 @@
 #include "output/draw_text.hpp"
 #include "output/subtitles.hpp"
 #include "plugins/loader.hpp"
+#include "command/command.hpp"
 #include "config/config.hpp"
 
 namespace Balltze {
@@ -34,6 +35,7 @@ namespace Balltze {
             Event::set_up_events();
             Features::set_up_features();
             Plugins::load_plugins();
+            set_up_commands();
 
             logger.info("initialized successfully!");
         }

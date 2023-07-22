@@ -31,6 +31,7 @@ if(BALLTZE_ENABLE_EXPERIMENTAL)
 endif()
 
 add_library(balltze SHARED
+    src/balltze/command/command.cpp
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
     src/balltze/engine/core.cpp
@@ -41,6 +42,8 @@ add_library(balltze SHARED
     src/balltze/engine/tag.S
     src/balltze/engine/user_interface.cpp
     src/balltze/engine/user_interface.S
+    src/balltze/event/console_command.cpp
+    src/balltze/event/console_command.S
     src/balltze/event/d3d9_device_reset.cpp
     src/balltze/event/d3d9_device_reset.S
     src/balltze/event/d3d9_end_scene.cpp

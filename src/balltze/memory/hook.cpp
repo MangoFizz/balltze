@@ -157,6 +157,12 @@ namespace Balltze::Memory {
                             break;
                         }
 
+                        case 0x07: {
+                            m_cave.insert(&instruction[0], 2);
+                            instruction_size = 2;
+                            break;
+                        }
+
                         default: {
                             throw std::runtime_error("Unsupported mov instruction.");
                         }
