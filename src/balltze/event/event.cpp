@@ -5,6 +5,7 @@
 #include <any>
 #include <stdexcept>
 #include <balltze/event.hpp>
+#include "console_command.hpp"
 
 namespace Balltze::Event {
     template<typename T>

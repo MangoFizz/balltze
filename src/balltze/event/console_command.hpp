@@ -4,7 +4,7 @@
 #define BALLTZE_API__EVENTS__CONSOLE_COMMAND_HPP
 
 #include <string>
-#include "../event.hpp"
+#include <balltze/event.hpp>
 
 namespace Balltze::Event {
     struct ConsoleCommandEventArguments {

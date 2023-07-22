@@ -3,8 +3,8 @@
 #include <stack>
 #include <utility>
 #include <balltze/hook.hpp>
-#include <balltze/events/console_command.hpp>
 #include "../logger.hpp"
+#include "console_command.hpp"
 
 namespace Balltze::Event {
     extern "C" {

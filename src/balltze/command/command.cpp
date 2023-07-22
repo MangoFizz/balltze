@@ -4,9 +4,9 @@
 #include <map>
 #include <cstring>
 #include <balltze/command.hpp>
-#include <balltze/event.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/engine/core.hpp>
+#include "../event/console_command.hpp"
 #include "../plugins/loader.hpp"
 #include "../version.hpp"
 #include "../logger.hpp"
