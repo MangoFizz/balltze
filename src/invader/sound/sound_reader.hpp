@@ -60,7 +60,7 @@ namespace Invader::SoundReader {
      * @param  data_length data size
      * @return             duration in seconds
      */
-    double ogg_vorbis_samples_duration(const std::byte *data, std::size_t data_size);
+    double ogg_vorbis_samples_duration(const std::byte *data, std::size_t data_length);
 
     /**
      * Get the sound from Xbox ADPCM data

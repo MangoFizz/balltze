@@ -23,7 +23,7 @@ mercury install balltze
 ```
 
 NOTE: The builds available on Mercury include the experimental features, so if you want to
-use the mod without them, download the latest release from the GutHub's releases page instead.
+use the mod without them, download the latest release from the GitHub's releases page instead.
 
 ## Building
 ### Requirements

@@ -298,8 +298,10 @@ namespace Balltze::Features {
                         for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
                             std::string path = translate_address(tag_array_raw[i].path);
                             if(path == tag.first && tag_array_raw[i].primary_class == tag.second) {
-                                tag_found = true;
-                                load_tag(tag_array_raw + i, true);
+                                if(load_tag(tag_array_raw + i, false) != TagHandle::null()) {
+                                    tag_found = true;
+                                }
+                                break;
                             }
                         }
                         if(!tag_found) {
