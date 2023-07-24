@@ -36,8 +36,12 @@ add_library(balltze SHARED
     src/balltze/config/ini.cpp
     src/balltze/engine/core.cpp
     src/balltze/engine/core.S
+    src/balltze/engine/data_types.cpp
+    src/balltze/engine/game_state.cpp
+    src/balltze/engine/game_state.S
     src/balltze/engine/map.cpp
     src/balltze/engine/multiplayer.cpp
+    src/balltze/engine/multiplayer.S
     src/balltze/engine/tag.cpp
     src/balltze/engine/tag.S
     src/balltze/engine/user_interface.cpp
@@ -67,7 +71,8 @@ add_library(balltze SHARED
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.S
     src/balltze/lua_library/library.cpp
-    src/balltze/math/geometry.cpp
+    src/balltze/math/bezier.cpp
+    src/balltze/math/trig.cpp
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp

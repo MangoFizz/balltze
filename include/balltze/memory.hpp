@@ -20,6 +20,10 @@
 #define GET_GAP(bytes, line) GAP(bytes, line)
 #define PADDING(bytes) GET_GAP(bytes, __LINE__)
 
+#define BIT_GAP(type, bytes, line) type bitgap_##line : bytes
+#define GET_BIT_GAP(type, bytes, line) BIT_GAP(type, bytes, line)
+#define PADDING_BIT(type, bytes) GET_BIT_GAP(type, bytes, __LINE__)
+
 namespace Balltze::Memory {
     /**
      * Overwrite the data at the pointer with the given bytes, ignoring any wildcard bytes.

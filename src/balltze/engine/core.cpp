@@ -108,4 +108,17 @@ namespace Balltze::Engine {
         }
         return *engine_type;
     }
+
+    CameraType get_camera_type() noexcept {
+        static auto *cta = reinterpret_cast<CameraType *>(*reinterpret_cast<std::byte **>(Memory::get_signature("camera_type")->data()) + 0x56);
+        return *cta;
+    }
+
+    CameraData &get_camera_data() noexcept {
+        static std::optional<CameraData *> camera_coord_addr;
+        if(!camera_coord_addr.has_value()) {
+            camera_coord_addr = reinterpret_cast<CameraData *>(*reinterpret_cast<std::byte **>(Memory::get_signature("camera_coord")->data()) - 0x8);
+        }
+        return **camera_coord_addr;
+    }
 }

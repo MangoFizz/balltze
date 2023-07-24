@@ -426,6 +426,22 @@ namespace Balltze::Engine {
         }
     }
 
+    Controls &get_controls() noexcept {
+        static std::optional<Controls *> controls_table;
+        if(!controls_table.has_value()) {
+            controls_table = *reinterpret_cast<Controls **>(Memory::get_signature("controls_struct_address")->data());
+        }
+        return **controls_table;
+    }
+
+    KeyboardKeys &get_keyboard_keys() noexcept {
+        static KeyboardKeys *buffer = nullptr;
+        if(!buffer) {
+            buffer = *reinterpret_cast<KeyboardKeys **>(Memory::get_signature("keyboard_keys_struct_address")->data());
+        }
+        return *buffer;
+    }
+
     std::string get_gamepad_button_name(GamepadButton button) noexcept {
         switch(button) {
             case GAMEPAD_BUTTON_A:

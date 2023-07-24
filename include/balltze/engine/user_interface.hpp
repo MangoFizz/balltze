@@ -498,6 +498,95 @@ namespace Balltze::Engine {
         Corner bottom_left;
     };
 
+    struct Controls {
+        std::uint8_t jump;
+        std::uint8_t switch_grenade;
+        std::uint8_t action;
+        std::uint8_t switch_weapon;
+
+        std::uint8_t melee;
+        std::uint8_t flashlight;
+        std::uint8_t secondary_fire;
+        std::uint8_t primary_fire;
+
+        std::uint8_t menu_forward;
+        std::uint8_t menu_back;
+        std::uint8_t crouch;
+        std::uint8_t zoom;
+
+        std::uint8_t scores;
+        std::uint8_t reload;
+        std::uint8_t exchange_weapons;
+        std::uint8_t all_chat;
+
+        std::uint8_t team_chat;
+        std::uint8_t vehicle_chat;
+        PADDING(0x1);
+        PADDING(0x1);
+
+        PADDING(0x4);
+
+        PADDING(0x1);
+        PADDING(0x1);
+        PADDING(0x1);
+        std::uint8_t rules;
+
+        std::uint8_t show_player_names;
+        PADDING(0x3);
+
+        float move_forward;
+        float move_left;
+        float aim_left;
+        float aim_up;
+
+        std::uint8_t controller_aim;
+        PADDING(0x3);
+    };
+
+    struct KeyboardKeys {
+        char
+
+        // 0x0
+        escape, f1, f2, f3,
+        f4, f5, f6, f7,
+        f8, f9, f10, f11,
+        f12, print_screen, scroll_lock, pause_break,
+
+        // 0x10
+        tilde, top_1, top_2, top_3,
+        top_4, top_5, top_6, top_7,
+        top_8, top_9, top_0, top_minus,
+        top_equals, backspace, tab, q,
+
+        // 0x20
+        w, e, r, t,
+        y, u, i, o,
+        p, left_bracket, right_bracket, back_slash,
+        caps_lock, a, s, d,
+
+        // 0x30
+        f, g, h, j,
+        k, l, semicolon, apostrophe,
+        enter, left_shift, z, x,
+        c, v, b, n,
+
+        // 0x40
+        m, comma, period, forward_slash,
+        right_shift, left_control, windows, left_alt,
+        space, right_alt, unknown, menu,
+        right_control, up_arrow, down_arrow, left_arrow,
+
+        // 0x50
+        right_arrow, ins, home, page_up,
+        del, end, page_down, num_lock,
+        num_star, num_forward_slash, num_0, num_1,
+        num_2, num_3, num_4, num_5,
+
+        // 0x60
+        num_6, num_7, num_8, num_9,
+        num_minus, num_plus, num_enter, num_decimal;
+    };
+
     /**
      * Get the widget event globals
      * @return reference to the widget event globals
@@ -645,6 +734,18 @@ namespace Balltze::Engine {
      * @return                      Duration of the sound permutation in milliseconds
      */
     BALLTZE_API std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::SoundPermutation *permutation);
+
+    /**
+     * Get the controls bindings
+     * @return controls
+     */
+    BALLTZE_API Controls &get_controls() noexcept;
+
+    /**
+     * Get the keyboard keys
+     * @return keyboard keys struct
+     */
+    BALLTZE_API KeyboardKeys &get_keyboard_keys() noexcept;
 }
 
 #endif

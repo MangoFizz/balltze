@@ -8,3 +8,4 @@
 #include "engine/tag_definitions.hpp"
 #include "engine/tag_classes.hpp"
 #include "engine/user_interface.hpp"
+#include "engine/game_state.hpp"
