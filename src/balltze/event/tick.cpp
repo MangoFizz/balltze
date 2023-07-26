@@ -60,9 +60,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        else {
-            logger.info("Tick event debug: {}", handle.has_value());
-        }
+        logger.info("debug_tick_event: {}", handle.has_value());
         return true;
     }
 

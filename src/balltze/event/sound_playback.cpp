@@ -62,9 +62,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        else {
-            logger.info("debug_sound_playback_event: {}", handle.has_value());
-        }
+        logger.info("debug_sound_playback_event: {}", handle.has_value());
         return true;
     }
 

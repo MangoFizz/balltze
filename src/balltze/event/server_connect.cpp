@@ -45,9 +45,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        else {
-            logger.error("debug_server_connect_event: {}", handle.has_value());
-        }
+        logger.info("debug_server_connect_event: {}", handle.has_value());
         return true;
     }
 

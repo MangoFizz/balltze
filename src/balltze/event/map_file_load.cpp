@@ -40,9 +40,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        else {
-            logger.error("debug_map_file_load_event: {}", handle.has_value());
-        }
+        logger.info("debug_map_file_load_event: {}", handle.has_value());
         return true;
     }
 

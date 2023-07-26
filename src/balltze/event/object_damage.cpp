@@ -47,9 +47,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        else {
-            logger.error("debug_object_damage_event: {}", handle.has_value());
-        }
+        logger.info("debug_object_damage_event: {}", handle.has_value());
         return true;
     }
 

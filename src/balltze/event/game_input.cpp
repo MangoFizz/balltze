@@ -54,9 +54,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        else {
-            logger.error("debug_game_input_event: {}", handle.has_value());
-        }
+        logger.error("debug_game_input_event: {}", handle.has_value());
         return true;
     }
 

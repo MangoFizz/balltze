@@ -41,9 +41,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        else {
-            logger.error("debug_rcon_message_event: {}", handle.has_value());
-        }
+        logger.info("debug_rcon_message_event: {}", handle.has_value());
         return true;
     }
 

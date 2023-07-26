@@ -15,6 +15,10 @@ _sound_playback_event:
     
     test eax, eax
     jne sound_playback_event_exit
+
+    ;# restore registers so it won't crash
+    popad
+    pushad
     
     mov eax, [esp + 0x30]
     push eax

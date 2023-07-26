@@ -229,7 +229,9 @@ namespace Balltze {
                     auto full_command_name = to_lower(module_name + "_" + command.name());
                     auto input = to_lower(arguments_alloc[0]);
                     if(full_command_name == input) {
+                        logger.mute_ingame(false);
                         auto res = command.call(arg_count - 1, &arguments_alloc[1]);
+                        logger.mute_ingame(true);
                         if(res == CommandResult::COMMAND_RESULT_SUCCESS) {
                             cancel = true;
                         }

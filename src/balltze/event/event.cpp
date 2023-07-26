@@ -2,7 +2,6 @@
 
 #include <optional>
 #include <list>
-#include <any>
 #include <stdexcept>
 #include <balltze/event.hpp>
 #include "console_command.hpp"
@@ -17,6 +16,8 @@ namespace Balltze::Event {
         EventPriority priority = EVENT_PRIORITY_DEFAULT;
         std::optional<EventCallback<T>> ref_callback;
         std::optional<ConstEventCallback<T>> const_callback;
+
+        bool remove_on_next_dispatch = false;
 
         EventListener() {
             handle = next_handle++;
@@ -37,8 +38,6 @@ namespace Balltze::Event {
 
     template<typename T>
     static std::list<EventListener<T>> listeners;
-
-    static std::any listeners_iterator_aux;
 
     template<typename T>
     std::size_t EventHandler<T>::add_listener(EventCallback<T> callback, EventPriority priority) {
@@ -62,7 +61,7 @@ namespace Balltze::Event {
     void EventHandler<T>::remove_listener(std::size_t handle) {
         for(auto it = listeners<T>.begin(); it != listeners<T>.end(); ++it) {
             if(it->handle == handle) {
-                listeners_iterator_aux = listeners<T>.erase(it);
+                it->remove_on_next_dispatch = true;
                 break;
             }
         }
@@ -74,20 +73,13 @@ namespace Balltze::Event {
             auto listener = listeners<T>.begin();
             while(listener != listeners<T>.end()) {
                 if(listener->priority == priority) {
+                    if(listener->remove_on_next_dispatch) {
+                        listener = listeners<T>.erase(listener);
+                        continue;
+                    }
                     (*listener)(event);
                 }
-                if(listeners_iterator_aux.has_value()) {
-                    try {
-                        listener = std::any_cast<decltype(listener)>(listeners_iterator_aux);
-                        listeners_iterator_aux.reset();
-                    }
-                    catch(std::bad_any_cast) {
-                        throw std::runtime_error("Event listener iterator was modified");
-                    }
-                } 
-                else {
-                    listener++;
-                }
+                listener++;
             }
         };
 
