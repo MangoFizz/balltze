@@ -8,10 +8,10 @@
 
 namespace Balltze::Event {
     struct CameraEventArgs {
-        const Engine::CameraData *camera;
+        Engine::CameraData *const camera;
         const Engine::CameraType type;
 
-        CameraEventArgs(const Engine::CameraData *camera, const Engine::CameraType type) : camera(camera), type(type) {}
+        CameraEventArgs(Engine::CameraData *camera, const Engine::CameraType type) : camera(camera), type(type) {}
     };
 
     class CameraEvent : public EventData<CameraEvent> {
