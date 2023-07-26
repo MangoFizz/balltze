@@ -4,6 +4,7 @@
 #include <balltze/event.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
+#include <balltze/command.hpp>
 #include "../logger.hpp"
 
 namespace Balltze::Event {
@@ -30,6 +31,33 @@ namespace Balltze::Event {
             GameInputEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
+    }
+
+    static bool debug_game_input_event(int arg_count, const char **args) {
+        static std::optional<Event::EventListenerHandle<GameInputEvent>> handle;
+        if(arg_count == 1) {
+            bool new_setting = STR_TO_BOOL(args[0]);
+            if(new_setting) {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+                handle = Event::GameInputEvent::subscribe_const([](GameInputEvent const &event) {
+                    auto &arguments = event.args;
+                    logger.debug("Game input event: device: {}, key code: {}, mapped: {}", static_cast<int>(arguments.device), arguments.button.key_code, arguments.mapped);
+                });
+            }
+            else {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+            }
+        }
+        else {
+            logger.error("debug_game_input_event: {}", handle.has_value());
+        }
+        return true;
     }
 
     template <>
@@ -66,5 +94,8 @@ namespace Balltze::Event {
         catch(const std::runtime_error &e) {
             logger.error("Failed to set up input event hooks: {}", e.what());
         }
+
+        // Register debug command
+        register_command("debug_game_input_event", "debug", "Debug game input event", debug_game_input_event, true, 0, 1);
     }
 }

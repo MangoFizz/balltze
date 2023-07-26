@@ -3,6 +3,7 @@
 #include <stack>
 #include <utility>
 #include <balltze/hook.hpp>
+#include <balltze/command.hpp>
 #include <balltze/events/sound_playback.hpp>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/tag_definitions/sound.hpp>
@@ -39,6 +40,34 @@ namespace Balltze::Event {
         }
     }
 
+    static bool debug_sound_playback_event(int arg_count, const char **args) {
+        static std::optional<Event::EventListenerHandle<SoundPlaybackEvent>> handle;
+        if(arg_count == 1) {
+            bool new_setting = STR_TO_BOOL(args[0]);
+            if(new_setting) {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+                handle = Event::SoundPlaybackEvent::subscribe_const([](SoundPlaybackEvent const &event) {
+                    auto &arguments = event.args;
+                    auto tag = Engine::get_tag(arguments.permutation->sound_tag_id_0);
+                    logger.debug("Sound playback event: sound name: {}, permutation name: {}", tag->path, arguments.permutation->name.string);
+                });
+            }
+            else {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+            }
+        }
+        else {
+            logger.info("debug_sound_playback_event: {}", handle.has_value());
+        }
+        return true;
+    }
+
     template <>
     void EventHandler<SoundPlaybackEvent>::init() {
         static bool enabled = false;
@@ -58,5 +87,8 @@ namespace Balltze::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook sound playback event: " + std::string(e.what()));
         }
+
+        // Register debug command
+        register_command("debug_sound_playback_event", "debug", "Debug sound playback event", debug_sound_playback_event, true, 0, 1);
     }
 }

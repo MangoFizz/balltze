@@ -46,6 +46,7 @@ add_library(balltze SHARED
     src/balltze/engine/tag.S
     src/balltze/engine/user_interface.cpp
     src/balltze/engine/user_interface.S
+    src/balltze/event/camera.cpp
     src/balltze/event/console_command.cpp
     src/balltze/event/console_command.S
     src/balltze/event/d3d9_device_reset.cpp
@@ -61,6 +62,11 @@ add_library(balltze SHARED
     src/balltze/event/map_file_data_read.cpp
     src/balltze/event/map_file_data_read.S
     src/balltze/event/map_file_load.cpp
+    src/balltze/event/object_damage.cpp
+    src/balltze/event/object_damage.S
+    src/balltze/event/rcon_message.cpp
+    src/balltze/event/server_connect.cpp
+    src/balltze/event/server_connect.S
     src/balltze/event/sound_playback.cpp
     src/balltze/event/sound_playback.S
     src/balltze/event/tick.cpp

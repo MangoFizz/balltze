@@ -2,6 +2,8 @@
 
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
+#include <balltze/command.hpp>
+#include "../logger.hpp"
 
 namespace Balltze::Event {
     extern "C" {
@@ -17,6 +19,33 @@ namespace Balltze::Event {
         }
     }
 
+    static bool debug_map_file_load_event(int arg_count, const char **args) {
+        static std::optional<Event::EventListenerHandle<MapFileLoadEvent>> handle;
+        if(arg_count == 1) {
+            bool new_setting = STR_TO_BOOL(args[0]);
+            if(new_setting) {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+                handle = Event::MapFileLoadEvent::subscribe_const([](MapFileLoadEvent const &event) {
+                    auto &arguments = event.args;
+                    logger.debug("Map file load event: map name: {}, map path: {}", arguments.map_name, arguments.map_path);
+                });
+            }
+            else {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+            }
+        }
+        else {
+            logger.error("debug_map_file_load_event: {}", handle.has_value());
+        }
+        return true;
+    }
+
     template <>
     void EventHandler<MapFileLoadEvent>::init() {
         static bool enabled = false;
@@ -27,5 +56,8 @@ namespace Balltze::Event {
 
         auto *load_map_path_sig = Memory::get_signature("map_load_path");
         auto *load_map_path_hook = Memory::hook_function(load_map_path_sig->data(), map_loading_asm);
+
+        // Register debug command
+        register_command("debug_map_file_load_event", "debug", "Debug map file load event", debug_map_file_load_event, true, 0, 1);
     }
 }

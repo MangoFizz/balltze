@@ -2,6 +2,7 @@
 
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
+#include <balltze/command.hpp>
 #include "../logger.hpp"
 
 namespace Balltze::Event {
@@ -31,6 +32,33 @@ namespace Balltze::Event {
         }
     }
 
+    static bool debug_map_file_data_read_event(int arg_count, const char **args) {
+        static std::optional<Event::EventListenerHandle<MapFileDataReadEvent>> handle;
+        if(arg_count == 1) {
+            bool new_setting = STR_TO_BOOL(args[0]);
+            if(new_setting) {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+                handle = Event::MapFileDataReadEvent::subscribe_const([](MapFileDataReadEvent const &event) {
+                    auto &arguments = event.args;
+                    logger.debug("Map file data read event: file handle: {}, output buffer: {}, size: {}, overlapped: {}", reinterpret_cast<std::uint32_t>(arguments.file_handle), reinterpret_cast<std::uint32_t>(arguments.output_buffer), arguments.size, arguments.overlapped->Offset);
+                });
+            }
+            else {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+            }
+        }
+        else {
+            logger.error("debug_map_file_data_read_event: {}", handle.has_value());
+        }
+        return true;
+    }
+
     template <>
     void EventHandler<MapFileDataReadEvent>::init() {
         static bool enabled = false;
@@ -52,5 +80,8 @@ namespace Balltze::Event {
         catch(std::runtime_error &e) {
             throw std::runtime_error("Could not hook map file data read event: " + std::string(e.what()));
         }
+
+        // Register debug command
+        register_command("debug_map_file_data_read_event", "debug", "Debug map file data read event", debug_map_file_data_read_event, true, 0, 1);
     }
 }

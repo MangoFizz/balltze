@@ -3,8 +3,10 @@
 #include <chrono>
 #include <balltze/engine/core.hpp>
 #include <balltze/event.hpp>
+#include <balltze/command.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
+#include "../logger.hpp"
 
 namespace Balltze::Event {
     static bool first_tick = true;
@@ -37,6 +39,33 @@ namespace Balltze::Event {
         tick_event.dispatch();
     }
 
+    static bool debug_tick_event(int arg_count, const char **args) {
+        static std::optional<Event::EventListenerHandle<TickEvent>> handle;
+        if(arg_count == 1) {
+            bool new_setting = STR_TO_BOOL(args[0]);
+            if(new_setting) {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+                handle = Event::TickEvent::subscribe_const([](TickEvent const &event) {
+                    auto &arguments = event.args;
+                    logger.debug("Tick event: delta time: {}, tick count: {}", arguments.delta_time_ms, arguments.tick_count);
+                });
+            }
+            else {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+            }
+        }
+        else {
+            logger.info("Tick event debug: {}", handle.has_value());
+        }
+        return true;
+    }
+
     template <>
     void EventHandler<TickEvent>::init() {
         static bool enabled = false;
@@ -53,7 +82,9 @@ namespace Balltze::Event {
         // Workaround for Chimera hook (NEEDS TO BE FIXED)
         std::byte *ptr = Memory::follow_32bit_jump(tick_event_sig->data()) + 23;
         auto *tick_event_after_chimera_hook = Memory::hook_function(ptr, tick_event_after_dispatcher);
-
         auto *tick_event_hook = Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
+
+        // Register debug command
+        register_command("debug_tick_event", "debug", "Debug tick event", debug_tick_event, true, 0, 1);
     }
 }

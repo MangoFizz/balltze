@@ -110,6 +110,10 @@ namespace Balltze::Event {
 #include "events/map_file_data_read.hpp"
 #include "events/map_file_load.hpp"
 #include "events/sound_playback.hpp"
+#include "events/camera.hpp"
+#include "events/server_connect.hpp"
+#include "events/object_damage.hpp"
+#include "events/rcon_message.hpp"
 
 #endif
 

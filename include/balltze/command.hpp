@@ -221,7 +221,7 @@ namespace Balltze {
      * @param can_call_from_console can be called from console
      * @param is_public             is public? can be called from other plugins
      */
-    void register_command(const char *name, const char *category, const char *help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false) noexcept {
+    inline void register_command(const char *name, const char *category, const char *help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false) noexcept {
         Command command(name, category, help, function, autosave, min_args, max_args, can_call_from_console, is_public);
         command.register_command();
     }

@@ -107,6 +107,10 @@ namespace Balltze::Features {
     }
 
     static void load_tag_data() noexcept {
+        if(loaded_maps.empty()) {
+            return;
+        }
+
         auto &tag_data_header = get_tag_data_header();
         auto data_base_offset = 0;
         auto model_data_base_offset = 0;
@@ -382,7 +386,11 @@ namespace Balltze::Features {
         loaded_maps.emplace_back(event.args.map_name, false);
     }
 
-    extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {        
+    extern "C" int on_read_map_file_data(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {      
+        if(loaded_maps.empty()) {
+            return 0;
+        }
+
         std::size_t file_offset = overlapped->Offset;
         
         // Get the name of the file we're reading from

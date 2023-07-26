@@ -80,26 +80,6 @@ namespace Balltze::Engine {
         return object_table;
     }
 
-    struct DamageObjectStructThing {
-        TagHandle damage_tag_handle;
-        std::uint32_t flags = 0;
-        PlayerHandle causer_player;
-        ObjectHandle causer_object;
-
-        std::uint32_t unknown1 = 0;
-        std::uint32_t unknown2 = 0x0000FFFF;
-        std::uint32_t unknown3 = 0;
-        std::uint32_t unknown4 = 0x0000FFFF;
-        std::uint32_t unknown5 = 0x0000FFFF;
-        std::byte padding1[0x1C] = {};
-
-        float modifier = 1.0F;
-        float multiplier = 1.0F;
-
-        std::byte padding2[0x8] = {};
-    };
-    static_assert(sizeof(DamageObjectStructThing) == 0x50);
-
     extern "C" void apply_damage_asm(DamageObjectStructThing *damage, std::uint32_t object);
 
     void apply_damage(ObjectHandle object, TagHandle damage_effect, float multiplier, PlayerHandle causer_player, ObjectHandle causer_object) noexcept {

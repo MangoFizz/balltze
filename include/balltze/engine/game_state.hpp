@@ -710,6 +710,26 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(WeaponDynamicObject) == 0x2D0);
 
+    struct DamageObjectStructThing {
+        TagHandle damage_tag_handle;
+        std::uint32_t flags = 0;
+        PlayerHandle causer_player;
+        ObjectHandle causer_object;
+
+        std::uint32_t unknown1 = 0;
+        std::uint32_t unknown2 = 0x0000FFFF;
+        std::uint32_t unknown3 = 0;
+        std::uint32_t unknown4 = 0x0000FFFF;
+        std::uint32_t unknown5 = 0x0000FFFF;
+        std::byte padding1[0x1C] = {};
+
+        float modifier = 1.0F;
+        float multiplier = 1.0F;
+
+        std::byte padding2[0x8] = {};
+    };
+    static_assert(sizeof(DamageObjectStructThing) == 0x50);
+
     /**
      * Apply damage to the given object
      * @param object        object to damage

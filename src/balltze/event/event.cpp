@@ -107,6 +107,10 @@ namespace Balltze::Event {
     template class EventHandler<FrameEvent>;
     template class EventHandler<MapFileDataReadEvent>;
     template class EventHandler<ConsoleCommandEvent>;
+    template class EventHandler<CameraEvent>;
+    template class EventHandler<ServerConnectEvent>;
+    template class EventHandler<ObjectDamageEvent>;
+    template class EventHandler<RconMessageEvent>;
 
     static EventListenerHandle<TickEvent> first_tick_listener;
 
@@ -120,6 +124,10 @@ namespace Balltze::Event {
             EventHandler<FrameEvent>::init();
             EventHandler<MapFileDataReadEvent>::init();
             EventHandler<ConsoleCommandEvent>::init();
+            EventHandler<CameraEvent>::init();
+            EventHandler<ServerConnectEvent>::init();
+            EventHandler<ObjectDamageEvent>::init();
+            EventHandler<RconMessageEvent>::init();
             
             first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
                 EventHandler<D3D9EndSceneEvent>::init();
