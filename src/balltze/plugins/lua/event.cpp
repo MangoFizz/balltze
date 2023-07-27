@@ -13,62 +13,6 @@ namespace Balltze::Plugins {
 
     static std::size_t tick_event_count = 0;
 
-    static std::string event_priority_to_string(Event::EventPriority priority) {
-        switch(priority) {
-            case Event::EVENT_PRIORITY_LOWEST:
-                return "lowest";
-            case Event::EVENT_PRIORITY_DEFAULT:
-                return "default";
-            case Event::EVENT_PRIORITY_ABOVE_DEFAULT:
-                return "above_default";
-            case Event::EVENT_PRIORITY_HIGHEST:
-                return "highest";
-            default:
-                return "unknown";
-        }
-    }
-
-    static Event::EventPriority event_priority_from_string(const std::string &priority) {
-        if(priority == "lowest") {
-            return Event::EVENT_PRIORITY_LOWEST;
-        }
-        else if(priority == "default") {
-            return Event::EVENT_PRIORITY_DEFAULT;
-        }
-        else if(priority == "above_default") {
-            return Event::EVENT_PRIORITY_ABOVE_DEFAULT;
-        }
-        else if(priority == "highest") {
-            return Event::EVENT_PRIORITY_HIGHEST;
-        }
-        else {
-            throw std::invalid_argument("Invalid event priority.");
-        }
-    }
-
-    static std::string event_time_to_string(Event::EventTime time) {
-        switch(time) {
-            case Event::EVENT_TIME_BEFORE:
-                return "before";
-            case Event::EVENT_TIME_AFTER:
-                return "after";
-            default:
-                return "unknown";
-        }
-    }
-
-    static Event::EventTime event_time_from_string(const std::string &time) {
-        if(time == "before") {
-            return Event::EVENT_TIME_BEFORE;
-        }
-        else if(time == "after") {
-            return Event::EVENT_TIME_AFTER;
-        }
-        else {
-            throw std::runtime_error("Invalid event time.");
-        }
-    }
-
     static void set_up_events_registry_table(lua_State *state) noexcept {
         auto balltze_module = Balltze::get_current_module();
         lua_pushlightuserdata(state, balltze_module);
@@ -124,7 +68,7 @@ namespace Balltze::Plugins {
             lua_getfield(state, -1, name);
             lua_remove(state, -2);
             
-            auto priority_str = event_priority_to_string(priority);
+            auto priority_str = Event::event_priority_to_string(priority);
 
             // Create priority table if it doesn't exist
             lua_getfield(state, -1, priority_str.c_str());
@@ -182,7 +126,7 @@ namespace Balltze::Plugins {
                 lua_getfield(state, -1, name);
                 lua_remove(state, -2);
 
-                auto priority_str = event_priority_to_string(priority);
+                auto priority_str = Event::event_priority_to_string(priority);
                 lua_getfield(state, -1, priority_str.c_str());
                 lua_remove(state, -2);
 
@@ -235,7 +179,7 @@ namespace Balltze::Plugins {
             }
         });
         lua_setfield(state, -2, "cancel");
-        lua_pushstring(state, event_time_to_string(context.time).c_str());
+        lua_pushstring(state, Balltze::Event::event_time_to_string(context.time).c_str());
         lua_setfield(state, -2, "time");
     }
 
@@ -244,7 +188,7 @@ namespace Balltze::Plugins {
             lua_getfield(state, -1, "tick");
             lua_remove(state, -2);
 
-            auto priority_str = event_priority_to_string(priority);
+            auto priority_str = Event::event_priority_to_string(priority);
             lua_getfield(state, -1, priority_str.c_str());
             if(lua_isnil(state, -1)) {
                 lua_pop(state, 2);
@@ -312,7 +256,7 @@ namespace Balltze::Plugins {
             if(args == 2) {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
-                    auto priority = event_priority_from_string(priority_str);
+                    auto priority = Event::event_priority_from_string(priority_str);
                     return add_event_listener(state, "tick", 1, priority, lua_event_tick_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {

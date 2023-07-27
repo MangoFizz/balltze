@@ -36,8 +36,9 @@ namespace Balltze::Event {
                 }
                 handle = Event::ObjectDamageEvent::subscribe_const([](ObjectDamageEvent const &event) {
                     auto &arguments = event.args;
+                    auto time = event_time_to_string(event.time);
                     auto tag = Engine::get_tag(arguments.damage_effect);
-                    logger.debug("Object damage event: object: {}, damage tag: {}, multiplier: {}, causer player: {}, causer object: {}", arguments.object.whole_id, tag->path, arguments.multiplier, arguments.causer_player.whole_id, arguments.causer_object.whole_id);
+                    logger.debug("Object damage event ({}): object: {}, damage tag: {}, multiplier: {}, causer player: {}, causer object: {}", time, arguments.object.whole_id, tag->path, arguments.multiplier, arguments.causer_player.whole_id, arguments.causer_object.whole_id);
                 });
             }
             else {
@@ -72,6 +73,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_object_damage_event", "debug", "Debug object damage event", debug_object_damage_event, true, 0, 1);
+        register_command("debug_object_damage_event", "debug", "Debug object damage event", "[enable]", debug_object_damage_event, true, 0, 1);
     }
 }

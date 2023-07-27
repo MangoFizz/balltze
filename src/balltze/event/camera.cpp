@@ -29,12 +29,13 @@ namespace Balltze::Event {
                 }
                 handle = Event::CameraEvent::subscribe_const([](CameraEvent const &event) {
                     auto &arguments = event.args;
+                    auto time = event_time_to_string(event.time);
                     auto type = std::to_string(static_cast<int>(arguments.type));
                     auto fov = std::to_string(arguments.camera->fov);
                     auto position = fmt::format("({}, {}, {})", arguments.camera->position.x, arguments.camera->position.y, arguments.camera->position.z);
                     auto orientation_1 = fmt::format("({}, {}, {})", arguments.camera->orientation[0].x, arguments.camera->orientation[0].y, arguments.camera->orientation[0].z);
                     auto orientation_2 = fmt::format("({}, {}, {})", arguments.camera->orientation[1].x, arguments.camera->orientation[1].y, arguments.camera->orientation[1].z);
-                    logger.debug("Camera event: camera type: {}, camera fov: {}, camera position: ({}), camera orientation: ({}) ({})", type, fov, position, orientation_1, orientation_2);
+                    logger.debug("Camera event ({}): camera type: {}, camera fov: {}, camera position: ({}), camera orientation: ({}) ({})", time, type, fov, position, orientation_1, orientation_2);
                 });
             }
             else {
@@ -71,6 +72,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_camera_event", "debug", "Debug camera event", debug_camera_event, true, 0, 1);
+        register_command("debug_camera_event", "debug", "Debug camera event", "[enable]", debug_camera_event, true, 0, 1);
     }
 }

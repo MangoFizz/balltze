@@ -131,4 +131,60 @@ namespace Balltze::Event {
             throw;
         }
     }
+
+    std::string event_priority_to_string(EventPriority priority) {
+        switch(priority) {
+            case EVENT_PRIORITY_LOWEST:
+                return "lowest";
+            case EVENT_PRIORITY_DEFAULT:
+                return "default";
+            case EVENT_PRIORITY_ABOVE_DEFAULT:
+                return "above_default";
+            case EVENT_PRIORITY_HIGHEST:
+                return "highest";
+            default:
+                return "unknown";
+        }
+    }
+
+    EventPriority event_priority_from_string(const std::string &priority) {
+        if(priority == "lowest") {
+            return EVENT_PRIORITY_LOWEST;
+        }
+        else if(priority == "default") {
+            return EVENT_PRIORITY_DEFAULT;
+        }
+        else if(priority == "above_default") {
+            return EVENT_PRIORITY_ABOVE_DEFAULT;
+        }
+        else if(priority == "highest") {
+            return EVENT_PRIORITY_HIGHEST;
+        }
+        else {
+            throw std::invalid_argument("Invalid event priority.");
+        }
+    }
+
+    std::string event_time_to_string(EventTime time) {
+        switch(time) {
+            case EVENT_TIME_BEFORE:
+                return "before";
+            case EVENT_TIME_AFTER:
+                return "after";
+            default:
+                return "unknown";
+        }
+    }
+
+    EventTime event_time_from_string(const std::string &time) {
+        if(time == "before") {
+            return EVENT_TIME_BEFORE;
+        }
+        else if(time == "after") {
+            return EVENT_TIME_AFTER;
+        }
+        else {
+            throw std::runtime_error("Invalid event time.");
+        }
+    }
 }

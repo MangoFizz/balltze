@@ -99,6 +99,11 @@ namespace Balltze::Event {
             listener.remove();
         }
     };
+
+    std::string event_priority_to_string(EventPriority priority);
+    EventPriority event_priority_from_string(const std::string &priority);
+    std::string event_time_to_string(EventTime time);
+    EventTime event_time_from_string(const std::string &time);
 }
 
 #include "events/d3d9_end_scene.hpp"

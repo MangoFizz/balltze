@@ -12,7 +12,7 @@
 #include "../logger.hpp"
 
 namespace Balltze {
-    static std::map<HMODULE, std::vector<Command>> commands;
+    std::map<HMODULE, std::vector<Command>> commands;
 
     CommandResult Command::call(std::size_t arg_count, const char **args) const noexcept {
         if(arg_count > this->max_args()) {
@@ -45,11 +45,20 @@ namespace Balltze {
         return this->call(arg_count, arguments_alloc.get());
     }
 
-    Command::Command(const char *name, const char *category, const char *help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, bool is_public) : 
-        m_name(name), m_category(category), m_help(help), m_function(function), m_autosave(autosave), m_min_args(min_args), m_max_args(max_args), m_can_call_from_console(can_call_from_console), m_public(is_public) {}
+    static auto to_lower(std::string str) {
+        std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
+            return std::tolower(c);
+        });
+        return str;
+    }
 
-    Command::Command(const char *name, const char *category, const char *help, CommandFunction function, bool autosave, std::size_t args, bool can_call_from_console, bool is_public) : \
-        Command(name, category, help, function, autosave, args, args, can_call_from_console, is_public) {}
+    Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, bool is_public) : 
+        m_name(name), m_category(category), m_help(help), m_params_help(params_help), m_function(function), m_autosave(autosave), m_min_args(min_args), m_max_args(max_args), m_can_call_from_console(can_call_from_console), m_public(is_public) {
+            m_name = to_lower(m_name);
+        }
+
+    Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t args, bool can_call_from_console, bool is_public) : \
+        Command(name, category, help, params_help, function, autosave, args, args, can_call_from_console, is_public) {}
 
     void Command::register_command_impl(HMODULE module_handle) {
         if(commands.find(module_handle) == commands.end()) {
@@ -62,7 +71,26 @@ namespace Balltze {
                 }
             }
         }
+        m_module_handle = module_handle;
+        m_full_name = get_full_name();
         commands[module_handle].push_back(*this);
+    }
+
+    std::string Command::get_full_name() const noexcept {
+        std::string module_name;
+
+        if(this->m_module_handle == get_current_module()) {
+            module_name = "balltze";
+        }
+        else {
+            auto plugin = Plugins::get_dll_plugin(*m_module_handle);
+            if(!plugin) {
+                return "";
+            }
+            module_name = plugin->name();
+        }
+
+        return to_lower(module_name + "_" + this->name());
     }
 
     std::vector<std::string> split_arguments(std::string command) noexcept {
@@ -247,7 +275,7 @@ namespace Balltze {
     }
 
     void set_up_commands() {
-        register_command("version", "balltze", "Prints the version of Balltze", [](int arg_count, const char **args) -> bool {
+        register_command("version", "balltze", "Prints the version of Balltze", std::nullopt, [](int arg_count, const char **args) -> bool {
             std::string version = BALLTZE_VERSION;
             Engine::console_printf("Balltze version %s", version.c_str());
             logger.info("Balltze version {}", version);

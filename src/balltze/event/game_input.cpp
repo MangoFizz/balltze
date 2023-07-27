@@ -44,7 +44,8 @@ namespace Balltze::Event {
                 }
                 handle = Event::GameInputEvent::subscribe_const([](GameInputEvent const &event) {
                     auto &arguments = event.args;
-                    logger.debug("Game input event: device: {}, key code: {}, mapped: {}", static_cast<int>(arguments.device), arguments.button.key_code, arguments.mapped);
+                    auto time = event_time_to_string(event.time);
+                    logger.debug("Game input event ({}): device: {}, key code: {}, mapped: {}", time, static_cast<int>(arguments.device), arguments.button.key_code, arguments.mapped);
                 });
             }
             else {
@@ -54,7 +55,7 @@ namespace Balltze::Event {
                 }
             }
         }
-        logger.error("debug_game_input_event: {}", handle.has_value());
+        logger.info("debug_game_input_event: {}", handle.has_value());
         return true;
     }
 
@@ -94,6 +95,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_game_input_event", "debug", "Debug game input event", debug_game_input_event, true, 0, 1);
+        register_command("debug_game_input_event", "debug", "Debug game input event", "[enable]", debug_game_input_event, true, 0, 1);
     }
 }

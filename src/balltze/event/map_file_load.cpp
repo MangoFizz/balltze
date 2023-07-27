@@ -30,7 +30,8 @@ namespace Balltze::Event {
                 }
                 handle = Event::MapFileLoadEvent::subscribe_const([](MapFileLoadEvent const &event) {
                     auto &arguments = event.args;
-                    logger.debug("Map file load event: map name: {}, map path: {}", arguments.map_name, arguments.map_path);
+                    auto time = event_time_to_string(event.time);
+                    logger.debug("Map file load event ({}): map name: {}, map path: {}", time, arguments.map_name, arguments.map_path);
                 });
             }
             else {
@@ -56,6 +57,6 @@ namespace Balltze::Event {
         auto *load_map_path_hook = Memory::hook_function(load_map_path_sig->data(), map_loading_asm);
 
         // Register debug command
-        register_command("debug_map_file_load_event", "debug", "Debug map file load event", debug_map_file_load_event, true, 0, 1);
+        register_command("debug_map_file_load_event", "debug", "Debug map file load event", "[enable]", debug_map_file_load_event, true, 0, 1);
     }
 }

@@ -5,6 +5,7 @@
 
 namespace Balltze {
     void set_up_commands();
+    void set_up_commands_tab_completion();
 }
 
 #endif

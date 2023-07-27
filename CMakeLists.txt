@@ -32,6 +32,7 @@ endif()
 
 add_library(balltze SHARED
     src/balltze/command/command.cpp
+    src/balltze/command/tab_completion.cpp
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
     src/balltze/engine/core.cpp

@@ -31,7 +31,8 @@ namespace Balltze::Event {
                 }
                 handle = Event::RconMessageEvent::subscribe_const([](RconMessageEvent const &event) {
                     auto &arguments = event.args;
-                    logger.debug("Rcon message event: message: {}", arguments.message);
+                    auto time = event_time_to_string(event.time);
+                    logger.debug("Rcon message event ({}): message: {}", time, arguments.message);
                 });
             }
             else {
@@ -68,6 +69,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_rcon_message_event", "debug", "Debug rcon message event", debug_rcon_message_event, true, 0, 1);
+        register_command("debug_rcon_message_event", "debug", "Debug rcon message event", "[enable]", debug_rcon_message_event, true, 0, 1);
     }
 }

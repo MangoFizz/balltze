@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include <optional>
 #include "utils.hpp"
 #include "api.hpp"
 
@@ -50,31 +51,50 @@ namespace Balltze {
          * Get the name of the command
          * @return pointer to the name of the command
          */
-        const char *name() const noexcept {
-            return this->m_name;
+        inline const char *name() const noexcept {
+            return this->m_name.c_str();
+        }
+
+        /**
+         * Get the full name of the command
+         * @return pointer to the full name of the command
+         */
+        inline const char *full_name() const noexcept {
+            return this->m_full_name->c_str();
         }
 
         /**
          * Get the category of the command
          * @return pointer to the category of the command
          */
-        const char *category() const noexcept {
-            return this->m_category;
+        inline const char *category() const noexcept {
+            return this->m_category.c_str();
         }
 
         /**
          * Get the help of the command
          * @return pointer to the help of the command
          */
-        const char *help() const noexcept {
-            return this->m_help;
+        inline const char *help() const noexcept {
+            return this->m_help.c_str();
+        }
+
+        /**
+         * Get the help of the parameters of the command
+         * @return pointer to the help of the parameters of the command
+         */
+        inline const char *params_help() const noexcept {
+            if(m_params_help.has_value()) {
+                return this->m_params_help->c_str();
+            }
+            return nullptr;
         }
 
         /**
          * Get the minimum arguments of the command
          * @return minimum arguments
          */
-        std::size_t min_args() const noexcept {
+        inline std::size_t min_args() const noexcept {
             return this->m_min_args;
         }
 
@@ -82,7 +102,7 @@ namespace Balltze {
          * Get the maximum arguments of the command
          * @return maximum arguments
          */
-        std::size_t max_args() const noexcept {
+        inline std::size_t max_args() const noexcept {
             return this->m_max_args;
         }
 
@@ -90,7 +110,7 @@ namespace Balltze {
          * Return whether the command automatically saves
          * @return true if command should automatically save
          */
-        bool autosave() const noexcept {
+        inline bool autosave() const noexcept {
             return this->m_autosave;
         }
 
@@ -98,7 +118,7 @@ namespace Balltze {
          * Return whether the command can be called from console
          * @return true if command can be called from console
          */
-        bool can_call_from_console() const noexcept {
+        inline bool can_call_from_console() const noexcept {
             return this->m_can_call_from_console;
         }
 
@@ -106,7 +126,7 @@ namespace Balltze {
          * Return whether the command is public
          * @return true if command is public
          */
-        bool is_public() const noexcept {
+        inline bool is_public() const noexcept {
             return this->m_public;
         }
 
@@ -135,7 +155,7 @@ namespace Balltze {
          * @param min_args minimum arguments
          * @param max_args maximum arguments
          */
-        Command(const char *name, const char *category, const char *help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false);
+        Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false);
 
         /**
          * Instantiate a command
@@ -146,12 +166,12 @@ namespace Balltze {
          * @param autosave auto saves if successful and at least 1 arg was passed
          * @param args     required number of arguments
          */
-        Command(const char *name, const char *category, const char *help, CommandFunction function, bool autosave, std::size_t args = 0, bool can_call_from_console = true, bool is_public = false);
+        Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t args = 0, bool can_call_from_console = true, bool is_public = false);
 
         /**
          * Register the command to the command list
          */
-        void register_command() {
+        inline void register_command() {
             try {
                 this->register_command_impl(get_current_module());
             }
@@ -162,13 +182,22 @@ namespace Balltze {
 
     private:
         /** Name of the command */
-        const char *m_name;
+        std::string m_name;
+
+        /** Full name including prefix (if command is registered) */
+        std::optional<std::string> m_full_name;
+
+        /** Plugin that registered the command */
+        std::optional<HMODULE> m_module_handle;
 
         /** Category of the command */
-        const char *m_category;
+        std::string m_category;
 
         /** Help of the command */
-        const char *m_help;
+        std::string m_help;
+
+        /** Help of the parameters of the command */
+        std::optional<std::string> m_params_help;
 
         /** Function to call for the command */
         CommandFunction m_function;
@@ -193,6 +222,8 @@ namespace Balltze {
          * Saves the command to the command list.
          */
         void register_command_impl(HMODULE module_handle);
+
+        std::string get_full_name() const noexcept;
     };
 
     /** 
@@ -221,8 +252,8 @@ namespace Balltze {
      * @param can_call_from_console can be called from console
      * @param is_public             is public? can be called from other plugins
      */
-    inline void register_command(const char *name, const char *category, const char *help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false) noexcept {
-        Command command(name, category, help, function, autosave, min_args, max_args, can_call_from_console, is_public);
+    inline void register_command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false) noexcept {
+        Command command(name, category, help, params_help, function, autosave, min_args, max_args, can_call_from_console, is_public);
         command.register_command();
     }
 }

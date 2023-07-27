@@ -50,7 +50,8 @@ namespace Balltze::Event {
                 }
                 handle = Event::TickEvent::subscribe_const([](TickEvent const &event) {
                     auto &arguments = event.args;
-                    logger.debug("Tick event: delta time: {}, tick count: {}", arguments.delta_time_ms, arguments.tick_count);
+                    auto time = event_time_to_string(event.time);
+                    logger.debug("Tick event ({}): delta time: {}, tick count: {}", time, arguments.delta_time_ms, arguments.tick_count);
                 });
             }
             else {
@@ -83,6 +84,6 @@ namespace Balltze::Event {
         auto *tick_event_hook = Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
 
         // Register debug command
-        register_command("debug_tick_event", "debug", "Debug tick event", debug_tick_event, true, 0, 1);
+        register_command("debug_tick_event", "debug", "Debug tick event", "[enable]", debug_tick_event, true, 0, 1);
     }
 }

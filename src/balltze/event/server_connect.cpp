@@ -35,7 +35,8 @@ namespace Balltze::Event {
                 }
                 handle = Event::ServerConnectEvent::subscribe_const([](ServerConnectEvent const &event) {
                     auto &arguments = event.args;
-                    logger.debug("Server connect event: address: {}, port: {}, password: {}", arguments.address, arguments.port, arguments.password);
+                    auto time = event_time_to_string(event.time);
+                    logger.debug("Server connect event ({}): address: {}, port: {}, password: {}", time, arguments.address, arguments.port, arguments.password);
                 });
             }
             else {
@@ -72,6 +73,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_server_connect_event", "debug", "Debug server connect event", debug_server_connect_event, true, 0, 1);
+        register_command("debug_server_connect_event", "debug", "Debug server connect event", "[enable]", debug_server_connect_event, true, 0, 1);
     }
 }

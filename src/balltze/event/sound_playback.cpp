@@ -51,8 +51,9 @@ namespace Balltze::Event {
                 }
                 handle = Event::SoundPlaybackEvent::subscribe_const([](SoundPlaybackEvent const &event) {
                     auto &arguments = event.args;
+                    auto time = event_time_to_string(event.time);
                     auto tag = Engine::get_tag(arguments.permutation->sound_tag_id_0);
-                    logger.debug("Sound playback event: sound name: {}, permutation name: {}", tag->path, arguments.permutation->name.string);
+                    logger.debug("Sound playback event ({}): sound name: {}, permutation name: {}", time, tag->path, arguments.permutation->name.string);
                 });
             }
             else {
@@ -87,6 +88,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_sound_playback_event", "debug", "Debug sound playback event", debug_sound_playback_event, true, 0, 1);
+        register_command("debug_sound_playback_event", "debug", "Debug sound playback event", "[enable]", debug_sound_playback_event, true, 0, 1);
     }
 }

@@ -43,7 +43,8 @@ namespace Balltze::Event {
                 }
                 handle = Event::MapFileDataReadEvent::subscribe_const([](MapFileDataReadEvent const &event) {
                     auto &arguments = event.args;
-                    logger.debug("Map file data read event: file handle: {}, output buffer: {}, size: {}, overlapped: {}", reinterpret_cast<std::uint32_t>(arguments.file_handle), reinterpret_cast<std::uint32_t>(arguments.output_buffer), arguments.size, arguments.overlapped->Offset);
+                    auto time = event_time_to_string(event.time);
+                    logger.debug("Map file data read event ({}): file handle: {}, output buffer: {}, size: {}, overlapped: {}", time, reinterpret_cast<std::uint32_t>(arguments.file_handle), reinterpret_cast<std::uint32_t>(arguments.output_buffer), arguments.size, arguments.overlapped->Offset);
                 });
             }
             else {
@@ -80,6 +81,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_map_file_data_read_event", "debug", "Debug map file data read event", debug_map_file_data_read_event, true, 0, 1);
+        register_command("debug_map_file_data_read_event", "debug", "Debug map file data read event", "[enable]", debug_map_file_data_read_event, true, 0, 1);
     }
 }
