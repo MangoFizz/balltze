@@ -1,27 +1,41 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <memory>
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
 #include "../logger.hpp"
 
 namespace Balltze::Event {
+    static std::unique_ptr<ServerConnectEventArgs> server_connect_event_args;
+
     extern "C" {
         void server_connect_event_before() noexcept;
         void server_connect_event_after() noexcept;
         
-        bool dispatch_server_connect_event_before(char *address, const std::uint16_t port, char *password) {
-            ServerConnectEventArgs args(address, port, password);
-            ServerConnectEvent event(EVENT_TIME_BEFORE, args);
+        bool dispatch_server_connect_event_before(std::uint32_t &address, std::uint16_t &port, wchar_t *password) {
+            server_connect_event_args = std::make_unique<ServerConnectEventArgs>(address, port, password);
+            ServerConnectEvent event(EVENT_TIME_BEFORE, *server_connect_event_args);
             event.dispatch();
             return event.cancelled();
         }
 
-        void dispatch_server_connect_event_after(char *address, const std::uint16_t port, char *password) {
-            ServerConnectEventArgs args(address, port, password);
-            ServerConnectEvent event(EVENT_TIME_AFTER, args);
+        void dispatch_server_connect_event_after() {
+            ServerConnectEvent event(EVENT_TIME_AFTER, *server_connect_event_args);
             event.dispatch();
+            server_connect_event_args = nullptr;
         }
+    }
+
+    static std::string ip_address_int_to_string(std::uint32_t address_int) noexcept {
+        std::string address;
+        for(int i = 0; i < 4; i++) {
+            address += std::to_string((address_int >> (i * 8)) & 0xFF);
+            if(i < 3) {
+                address += ".";
+            }
+        }
+        return address;
     }
 
     static bool debug_server_connect_event(int arg_count, const char **args) {
@@ -36,7 +50,9 @@ namespace Balltze::Event {
                 handle = Event::ServerConnectEvent::subscribe_const([](ServerConnectEvent const &event) {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Server connect event ({}): address: {}, port: {}, password: {}", time, arguments.address, arguments.port, arguments.password);
+                    auto address = ip_address_int_to_string(arguments.address);
+                    auto password = std::string(arguments.password.begin(), arguments.password.end());
+                    logger.debug("Server connect event ({}): address: {}, port: {}, password: {}", time, address, arguments.port, password);
                 });
             }
             else {

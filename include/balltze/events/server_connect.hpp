@@ -9,11 +9,11 @@
 
 namespace Balltze::Event {
     struct ServerConnectEventArgs {
-        const std::string address;
+        const std::uint32_t address;
         const std::uint16_t port;
-        const std::string password;
+        const std::wstring password;
 
-        ServerConnectEventArgs(const std::string &address, const std::uint16_t port, const std::string &password) : address(address), port(port), password(password) {}
+        ServerConnectEventArgs(const std::uint32_t &address, const std::uint16_t port, wchar_t *password) : address(address), port(port), password(password) {}
     };
 
     class ServerConnectEvent : public EventData<ServerConnectEvent> {
