@@ -10,7 +10,7 @@ _keyboard_input_event:
     pushad
     pushfd
     lea ebx, [esp + 0x24]
-    cmp ebp, 0x7FFF
+    cmp esi, 0x7FFF
     jne keyboard_input_event_mapped
     push 0
     jmp keyboard_input_event_call
