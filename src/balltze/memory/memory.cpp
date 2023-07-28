@@ -6,6 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <balltze/memory.hpp>
+#include <balltze/command.hpp>
 #include <balltze/engine/core.hpp>
 #include "../logger.hpp"
 #include "codefinder.hpp"
@@ -216,6 +217,24 @@ namespace Balltze::Memory {
         // FIND_SIGNATURE("command_list_address_demo", 0x1, 0, {0xBD, -1, -1, -1, -1, 0xC7, 0x44, 0x24, 0x10, -1, -1, -1, -1, 0x8B, 0x75, 0x00, 0x8A, 0x5E, 0x18});
         // FIND_SIGNATURE("command_list_address_retail", 0x1, 0, {0xBD, -1, -1, -1, -1, 0xC7, 0x44, 0x24, 0x10, -1, -1, -1, -1, 0x8B, 0x75, 0x00, 0x8A, 0x5E, 0x18});
         FIND_SIGNATURE("command_list_address_custom_edition", 0x1, 0, {0xBB, -1, -1, -1, -1, 0xBD, -1, -1, -1, -1, 0x8B, 0xFF, 0x8B, 0x33, 0x8A, -1, 0x18});
+
+        register_command("signature", "debug", "Get address for signature", "<signature name>", +[](int arg_count, const char **args) -> bool {
+            if(arg_count == 1) {
+                auto sig = get_signature(args[0]);
+                if(sig) {
+                    char buffer[1024];
+                    sprintf_s(buffer, "0x%08X", sig->data());
+                    logger.debug("Signature {}: {}", args[0], buffer);
+                }
+                else {
+                    logger.debug("Signature %s not found", args[0]);
+                }
+            }
+            else {
+                logger.debug("Usage: signature <signature name>");
+            }
+            return true;
+        }, false, 0, 1);
     }
 
     void find_signatures() {
