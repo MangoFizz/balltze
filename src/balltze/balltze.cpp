@@ -37,6 +37,7 @@ namespace Balltze {
             Plugins::load_plugins();
             set_up_commands();
             set_up_commands_tab_completion();
+            load_commands_settings();
 
             logger.info("initialized successfully!");
         }

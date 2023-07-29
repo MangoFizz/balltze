@@ -1,18 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <memory>
-#include <map>
+#include <vector>
 #include <cstring>
 #include <balltze/command.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/engine/core.hpp>
+#include "../config/config.hpp"
 #include "../event/console_command.hpp"
 #include "../plugins/loader.hpp"
 #include "../version.hpp"
 #include "../logger.hpp"
 
 namespace Balltze {
-    std::map<HMODULE, std::vector<Command>> commands;
+    std::vector<Command> commands;
 
     CommandResult Command::call(std::size_t arg_count, const char **args) const noexcept {
         if(arg_count > this->max_args()) {
@@ -55,41 +56,98 @@ namespace Balltze {
     Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, bool is_public) : 
         m_name(name), m_category(category), m_help(help), m_params_help(params_help), m_function(function), m_autosave(autosave), m_min_args(min_args), m_max_args(max_args), m_can_call_from_console(can_call_from_console), m_public(is_public) {
             m_name = to_lower(m_name);
+            m_plugin = nullptr;
         }
 
     Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t args, bool can_call_from_console, bool is_public) : \
         Command(name, category, help, params_help, function, autosave, args, args, can_call_from_console, is_public) {}
 
     void Command::register_command_impl(HMODULE module_handle) {
-        if(commands.find(module_handle) == commands.end()) {
-            commands[module_handle] = std::vector<Command>();
+        for(const Command &command : commands) {
+            if(std::strcmp(command.name(), this->name()) == 0) {
+                throw std::runtime_error("Command " + std::string(this->name()) + " already registered!");
+            }
         }
-        else {
-            for(const Command &command : commands[module_handle]) {
-                if(std::strcmp(command.name(), this->name()) == 0) {
-                    throw std::runtime_error("Command " + std::string(this->name()) + " already registered!");
+        m_plugin = reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle));
+        m_full_name = get_full_name();
+        commands.push_back(*this);
+    }
+
+    void Command::load_commands_settings_impl(HMODULE module_handle) {
+        if(module_handle == get_current_module()) {
+            auto &config = Config::get_config();
+            for(auto &command : commands) {
+                auto command_key = std::string("commands.") + command.m_name;
+                if(command.m_plugin && command.m_plugin == nullptr) {
+                    if(config.exists(command_key)) {
+                        bool failed = false;
+                        auto command_value = config.get<std::string>(command_key);
+                        if(command_value) {
+                            auto arguments = split_arguments(command_value.value());
+                        
+                            auto arguments_alloc(std::make_unique<const char *[]>(arguments.size()));
+                            for(std::size_t i = 0; i < arguments.size(); i++) {
+                                arguments_alloc[i] = arguments[i].data();
+                            }
+
+                            bool res = command.call(arguments.size(), arguments_alloc.get());
+                            if(res != COMMAND_RESULT_SUCCESS) {
+                                failed = true;
+                            }
+                        }
+                        else {
+                            failed = true;
+                        }
+
+                        if(failed) {
+                            logger.warning("Command {} failed to load from config", command.m_name);
+                            config.remove(command_key);
+                            config.save();
+                        }
+                    }
                 }
             }
         }
-        m_module_handle = module_handle;
-        m_full_name = get_full_name();
-        commands[module_handle].push_back(*this);
+        else {
+            Plugins::Plugin *plugin = Plugins::get_dll_plugin(module_handle);
+            if(!plugin) {
+                throw std::runtime_error("Could not get plugin for module handle " + std::to_string(reinterpret_cast<std::uintptr_t>(module_handle)));
+            }
+
+            auto directory = plugin->directory();
+            auto config = Config::Config(directory / "settings.json");
+            for(auto &command : commands) {
+                auto command_key = std::string("commands.") + command.m_name;
+                if(command.m_plugin && command.m_plugin == reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle))) {
+                    if(config.exists(command_key)) {
+                        auto command_value = config.get<std::string>(command_key);
+                        auto arguments = split_arguments(command_value.value());
+                        
+                        auto arguments_alloc(std::make_unique<const char *[]>(arguments.size()));
+                        for(std::size_t i = 0; i < arguments.size(); i++) {
+                            arguments_alloc[i] = arguments[i].data();
+                        }
+
+                        bool res = command.call(arguments.size(), arguments_alloc.get());
+                        if(!res) {
+                            logger.warning("Command {} failed to load from config", command.m_name);
+                            config.remove(command_key);
+                            config.save();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     std::string Command::get_full_name() const noexcept {
         std::string module_name;
-
-        if(this->m_module_handle == get_current_module()) {
+        if(this->m_plugin == nullptr) {
             module_name = "balltze";
         }
         else {
-            auto plugin = Plugins::get_dll_plugin(*m_module_handle);
-            if(!plugin) {
-                return "";
-            }
-            module_name = plugin->name();
+            module_name = reinterpret_cast<Plugins::Plugin *>(*m_plugin)->name();
         }
-
         return to_lower(module_name + "_" + this->name());
     }
 
@@ -201,6 +259,48 @@ namespace Balltze {
         return unsplit;
     }
 
+    CommandResult Command::execute_command_impl(HMODULE module_handle, std::string command) {
+        std::vector<std::string> arguments = split_arguments(command);
+        std::size_t arg_count = arguments.size() - 1;
+        std::string command_name = arguments[0];
+        arguments.erase(arguments.begin());
+
+        auto arguments_alloc(std::make_unique<const char *[]>(arg_count));
+        for(std::size_t i = 0; i < arg_count; i++) {
+            arguments_alloc[i] = arguments[i].data();
+        }
+        
+        CommandResult res = COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
+        for(const Command &command : commands) {
+            if(command.full_name() == command_name) {
+                res = command.call(arg_count, arguments_alloc.get());
+
+                // Save if autosave is enabled
+                if(command.autosave() && res == CommandResult::COMMAND_RESULT_SUCCESS) {
+                    auto &config = Config::get_config();
+                    config.set(std::string("commands.") + command.name(), unsplit_arguments(arguments));
+                    config.save();
+                }
+            }
+        }
+
+        switch(res) {
+            case CommandResult::COMMAND_RESULT_FAILED_NOT_ENOUGH_ARGUMENTS:
+                Engine::console_printf("Command %s failed: not enough arguments", command_name.c_str());
+                break;
+            case CommandResult::COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS:
+                Engine::console_printf("Command %s failed: too many arguments", command_name.c_str());
+                break;
+            case CommandResult::COMMAND_RESULT_FAILED_ERROR:
+                Engine::console_printf("Command %s failed: error", command_name.c_str());
+                break;
+            default:
+                break;
+        }
+
+        return res;
+    }
+
     static bool restore_unknown_command_message_print = false;
 
     static void dispatch_commands(Event::ConsoleCommandEvent &event) {
@@ -212,62 +312,7 @@ namespace Balltze {
         }
 
         if(event.time == Event::EVENT_TIME_BEFORE) {
-            // Get the arguments
-            std::vector<std::string> arguments = split_arguments(event.args.command);
-
-            // Get the argument count
-            std::size_t arg_count = arguments.size();
-
-            // If no arguments were passed, just call it.
-            if(arg_count == 0) {
-                return;
-            }
-
-            // Make our array
-            auto arguments_alloc(std::make_unique<const char *[]>(arg_count));
-            for(std::size_t i = 0; i < arg_count; i++) {
-                arguments_alloc[i] = arguments[i].data();
-            }
-
-            bool cancel = false;
-
-            // Do it!
-            for(const auto &[handle, commands] : commands) {
-                std::string module_name;
-
-                if(handle == get_current_module()) {
-                    module_name = "balltze";
-                }
-                else {
-                    auto plugin = Plugins::get_dll_plugin(handle);
-                    if(!plugin) {
-                        continue;
-                    }
-                    module_name = plugin->name();
-                }
-
-                for(const Command &command : commands) {
-                    auto to_lower = [](std::string str) {
-                        std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
-                            return std::tolower(c);
-                        });
-                        return str;
-                    };
-
-                    auto full_command_name = to_lower(module_name + "_" + command.name());
-                    auto input = to_lower(arguments_alloc[0]);
-                    if(full_command_name == input) {
-                        logger.mute_ingame(false);
-                        auto res = command.call(arg_count - 1, &arguments_alloc[1]);
-                        logger.mute_ingame(true);
-                        if(res == CommandResult::COMMAND_RESULT_SUCCESS) {
-                            cancel = true;
-                        }
-                    }
-                }
-            }
-
-            if(cancel) {
+            if(execute_command(event.args.command) != COMMAND_RESULT_FAILED_ERROR_NOT_FOUND) {
                 Memory::fill_with_nops(unknown_command_message_print->data(), 5);
                 restore_unknown_command_message_print = true;
             }

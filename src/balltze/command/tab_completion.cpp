@@ -12,7 +12,7 @@
 namespace Balltze {
     using HscFunctionEntry = Engine::HscFunctionEntry;
 
-    extern std::map<HMODULE, std::vector<Command>> commands;
+    extern std::vector<Command> commands;
 
     static HscFunctionEntry ***entries = nullptr;
     static std::uint32_t *entry_count;
@@ -27,16 +27,14 @@ namespace Balltze {
         old_entries = *entries;
 
         new_entries_list = std::vector<HscFunctionEntry *>(old_entries, old_entries + old_entry_count);
-        for(auto &[plugin, command_list] : commands) {
-            for(auto &command : command_list) {
-                auto &new_command = new_entries_added.emplace_back(std::make_unique<HscFunctionEntry>());
-                new_command->return_type = Engine::HSC_DATA_TYPE_VOID;
-                new_command->name = command.full_name();
-                new_command->help_message = command.help();
-                new_command->help_parameters = command.params_help();
-                *reinterpret_cast<std::uint16_t *>(new_command->gap_70) = 0x15;
-                new_entries_list.emplace_back(new_command.get());
-            }
+        for(auto &command : commands) {
+            auto &new_command = new_entries_added.emplace_back(std::make_unique<HscFunctionEntry>());
+            new_command->return_type = Engine::HSC_DATA_TYPE_VOID;
+            new_command->name = command.full_name();
+            new_command->help_message = command.help();
+            new_command->help_parameters = command.params_help();
+            *reinterpret_cast<std::uint16_t *>(new_command->gap_70) = 0x15;
+            new_entries_list.emplace_back(new_command.get());
         }
 
         Memory::overwrite(entry_count, static_cast<std::uint32_t>(new_entries_list.size()));

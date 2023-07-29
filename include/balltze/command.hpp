@@ -14,6 +14,8 @@ namespace Balltze {
     #define BOOL_TO_STR(boolean) (boolean ? "true" : "false")
     #define STR_TO_BOOL(str) (std::strcmp(str, "1") == 0 || std::strcmp(str, "true") == 0)
 
+    using PluginHandle = void *;
+
     /**
      * Result of a command
      */
@@ -188,7 +190,7 @@ namespace Balltze {
         std::optional<std::string> m_full_name;
 
         /** Plugin that registered the command */
-        std::optional<HMODULE> m_module_handle;
+        std::optional<PluginHandle> m_plugin;
 
         /** Category of the command */
         std::string m_category;
@@ -217,12 +219,11 @@ namespace Balltze {
         /** Is public? Can be called from other plugins */
         bool m_public;
 
-        /** 
-         * Private register method.
-         * Saves the command to the command list.
-         */
         void register_command_impl(HMODULE module_handle);
-
+        friend CommandResult execute_command(std::string command);
+        static CommandResult execute_command_impl(HMODULE module_handle, std::string command);
+        friend void load_commands_settings();
+        static void load_commands_settings_impl(HMODULE module_handle);
         std::string get_full_name() const noexcept;
     };
 
@@ -256,6 +257,31 @@ namespace Balltze {
         Command command(name, category, help, params_help, function, autosave, min_args, max_args, can_call_from_console, is_public);
         command.register_command();
     }
+
+    /**
+     * Execute a command. Command must be registered.
+     * @param command   command to execute
+     */
+    inline CommandResult execute_command(std::string command) {
+        try {
+            return Command::execute_command_impl(get_current_module(), command);
+        }
+        catch(...) {
+            throw;
+        }
+    }
+
+    /**
+     * Load commands settings
+     */
+    inline void load_commands_settings() {
+        try {
+            Command::load_commands_settings_impl(get_current_module());
+        }
+        catch(...) {
+            throw;
+        }
+    }    
 }
 
 #endif

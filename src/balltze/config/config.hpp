@@ -23,7 +23,7 @@ namespace Balltze::Config {
     /**
      * Get the Balltze configs.
      */
-    Config get_config();
+    Config &get_config();
 
     /**
      * Get the Balltze gamepad configs.

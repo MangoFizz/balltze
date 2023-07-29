@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <balltze/config.hpp>
 #include <balltze/engine.hpp>
+#include <balltze/plugin.hpp>
 #include "config.hpp"
 
 namespace fs = std::filesystem;
@@ -109,17 +110,25 @@ namespace Balltze::Config {
     }
 
     void Config::remove(std::string key) {
-        auto keys = split_key(key);
-        nlohmann::json *slice = &config;
-        for(std::string key : keys) {
-            if(slice->contains(key)) {
-                slice = &(*slice)[key];
+        auto key_slices = split_key(key);
+        nlohmann::json *json = &config;
+        auto it = key_slices.begin();
+        while(it != key_slices.end()) {
+            auto slice = *it;
+            if(json->contains(slice)) {
+                if(std::next(it) == key_slices.end()) {
+                    json->erase(slice);
+                    break;
+                }
+                else {
+                    json = &(*json)[slice];
+                }
             }
             else {
-                return;
+                throw std::runtime_error("Key does not exist!");
             }
+            it++;
         }
-        *slice = nlohmann::json::object();
     }
 
     bool Config::exists(std::string key) {
@@ -142,7 +151,7 @@ namespace Balltze::Config {
         return path;
     }
 
-    Config get_config() {
+    Config &get_config() {
         static auto balltze_path = get_balltze_directory();
         static auto config = Config(balltze_path / "settings.json");
         return config;
