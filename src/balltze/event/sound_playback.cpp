@@ -15,7 +15,7 @@ namespace Balltze::Event {
         void *sound_playback_function = nullptr;
 
         bool dispatch_sound_playback_event_before(Engine::TagDefinitions::SoundPermutation *permutation) {
-            auto *tag = Engine::get_tag(permutation->sound_tag_id_0);
+            auto *tag = Engine::get_tag(permutation->sound_tag_handle_0);
             if(!tag) {
                 logger.debug("Could not find tag for permutation {} in dispatch_sound_playback_event_before", permutation->name.string);
                 return false;
@@ -28,7 +28,7 @@ namespace Balltze::Event {
         }
 
         void dispatch_sound_playback_event_after(Engine::TagDefinitions::SoundPermutation *permutation) {
-            auto *tag = Engine::get_tag(permutation->sound_tag_id_0);
+            auto *tag = Engine::get_tag(permutation->sound_tag_handle_0);
             if(!tag) {
                 logger.debug("Could not find tag for permutation {} in dispatch_sound_playback_event_before", permutation->name.string);
                 return;
@@ -52,7 +52,7 @@ namespace Balltze::Event {
                 handle = Event::SoundPlaybackEvent::subscribe_const([](SoundPlaybackEvent const &event) {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
-                    auto tag = Engine::get_tag(arguments.permutation->sound_tag_id_0);
+                    auto tag = Engine::get_tag(arguments.permutation->sound_tag_handle_0);
                     logger.debug("Sound playback event ({}): sound name: {}, permutation name: {}", time, tag->path, arguments.permutation->name.string);
                 });
             }

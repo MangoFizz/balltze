@@ -25,20 +25,20 @@ namespace Balltze::Engine {
         TagString() = default;
     };
 
-    union ElementHandle {
-        std::uint32_t whole_id;
+    union ResourceHandle {
+        std::uint32_t handle;
         struct {
             std::uint16_t index;
             std::uint16_t id;
-        } index;
+        };
 
-        ElementHandle(std::uint32_t id) {
-            this->whole_id = id;
+        ResourceHandle(std::uint32_t handle) {
+            this->handle = handle;
         }
 
-        ElementHandle() = default;
+        ResourceHandle() = default;
 
-        static ElementHandle null() noexcept {
+        static ResourceHandle null() noexcept {
             return { 0xFFFFFFFF };
         }
 
@@ -46,23 +46,23 @@ namespace Balltze::Engine {
             return *this == null();
         }
 
-        bool operator==(const ElementHandle &other) const noexcept {
-            return this->whole_id == other.whole_id;
+        bool operator==(const ResourceHandle &other) const noexcept {
+            return this->handle == other.handle;
         }
 
-        bool operator!=(const ElementHandle &other) const noexcept {
-            return this->whole_id != other.whole_id;
+        bool operator!=(const ResourceHandle &other) const noexcept {
+            return this->handle != other.handle;
         }
 
-        bool operator<(const ElementHandle& other) const noexcept {
-            return index.index < other.index.index; 
+        bool operator<(const ResourceHandle& other) const noexcept {
+            return index < other.index; 
         }
     };
-	static_assert(sizeof(ElementHandle) == sizeof(std::uint32_t));
+	static_assert(sizeof(ResourceHandle) == sizeof(std::uint32_t));
 
-    using PlayerHandle = ElementHandle;
-    using ObjectHandle = ElementHandle;
-    using TagHandle = ElementHandle;
+    using PlayerHandle = ResourceHandle;
+    using ObjectHandle = ResourceHandle;
+    using TagHandle = ResourceHandle;
 
     template<typename T> struct TagReflexive {
         std::uint32_t count;
@@ -83,7 +83,7 @@ namespace Balltze::Engine {
 		TagFourCC tag_fourcc;
 		std::uint32_t path_pointer;
 		std::size_t path_size;
-		TagHandle tag_id;
+		TagHandle tag_handle;
 	};
     static_assert(sizeof(TagDependency) == 0x10);
 

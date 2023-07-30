@@ -28,7 +28,7 @@ _create_object_query_asm:
 
     do_create_query:
 
-    ;# Push parent object ID
+    ;# Push parent object handle
     mov eax, dword ptr [esp + 0x8]
     push eax
 
@@ -111,7 +111,7 @@ _apply_damage_asm:
     push 0xFFFFFFFF
     push 0xFFFFFFFF
 
-    ;# Object ID
+    ;# Object handle
     push dword ptr [esp+0x3C]
 
     ;# Struct pointer

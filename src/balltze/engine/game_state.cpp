@@ -7,8 +7,8 @@
 
 namespace Balltze::Engine {
     DynamicObject *ObjectTable::get_dynamic_object(const ObjectHandle &object_handle) noexcept {
-        auto *object = this->get_element(object_handle.index.index);
-        if(object && object->id == object_handle.index.id) {
+        auto *object = this->get_element(object_handle.index);
+        if(object && object->id == object_handle.id) {
             return object->object;
         }
         else {
@@ -88,30 +88,30 @@ namespace Balltze::Engine {
         s.causer_player = causer_player;
         s.causer_object = causer_object;
         s.multiplier = multiplier;
-        apply_damage_asm(&s, object.whole_id);
+        apply_damage_asm(&s, object.handle);
     }
 
     PlayerHandle Player::get_handle() const noexcept {
-        PlayerHandle player_id;
-        player_id.index.id = this->player_id;
-        player_id.index.index = static_cast<std::uint16_t>(this - get_player_table().first_element);
-        return player_id;
+        PlayerHandle player_handle;
+        player_handle.id = this->player_id;
+        player_handle.index = static_cast<std::uint16_t>(this - get_player_table().first_element);
+        return player_handle;
     }
 
-    PlayerHandle get_client_player_id() noexcept {
-        static PlayerHandle *player_id = reinterpret_cast<PlayerHandle *>(**reinterpret_cast<std::byte ***>(Memory::get_signature("player_handle_address")->data()) + 4);
-        return *player_id;
+    PlayerHandle get_client_player_handle() noexcept {
+        static PlayerHandle *player_handle = reinterpret_cast<PlayerHandle *>(**reinterpret_cast<std::byte ***>(Memory::get_signature("player_handle_address")->data()) + 4);
+        return *player_handle;
     }
 
-    Player *PlayerTable::get_player(PlayerHandle player_id) noexcept {
-        if(player_id.is_null()) {
+    Player *PlayerTable::get_player(PlayerHandle player_handle) noexcept {
+        if(player_handle.is_null()) {
             return nullptr;
         }
-        if(player_id.index.index >= this->current_size) {
+        if(player_handle.index >= this->current_size) {
             return nullptr;
         }
-        auto &player = this->first_element[player_id.index.index];
-        if(player.player_id != player_id.index.id) {
+        auto &player = this->first_element[player_handle.index];
+        if(player.player_id != player_handle.id) {
             return nullptr;
         }
         return &player;
@@ -137,7 +137,7 @@ namespace Balltze::Engine {
     }
 
     Player *PlayerTable::get_client_player() noexcept {
-        return this->get_player(get_client_player_id());
+        return this->get_player(get_client_player_handle());
     }
 
     PlayerTable &get_player_table() noexcept {

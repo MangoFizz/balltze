@@ -31,7 +31,7 @@ _chat_out_asm:
     push [esp+0x2C]
     sub esp, 4
 
-    ;# Get our ID, too (for trial)
+    ;# Get our handle, too (for trial)
     ;# pushfd
     ;# pushad
     ;# call _chat_get_local_rcon_id

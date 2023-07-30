@@ -42,7 +42,7 @@ namespace Balltze::Engine {
                 return;
             }
             
-            if(widget->definition_tag_id == widget_definition) {
+            if(widget->definition_tag_handle == widget_definition) {
                 found_widgets.push_back(widget);
                 return;
             }
@@ -63,7 +63,7 @@ namespace Balltze::Engine {
     extern "C" {
         /**
          * Create a widget.
-         * @param widget_definition     Tag ID of widget definition
+         * @param widget_definition     Tag handle of widget definition
          * @param widget_replace        Widget to replace; can be null (not sure about this description)
          * @return                      Pointer to the new widget
          */
@@ -73,7 +73,7 @@ namespace Balltze::Engine {
          * Open a widget and creates a history entry for current root widget.
          * If there isn't a widget, the widget will not be opened.
          * @param current_root_widget   Current root widget
-         * @param widget_id             Tag ID of the widget to open
+         * @param widget_id             Tag handle of the widget to open
          * @return                      Pointer to the new widget
          */
         Widget *open_widget_asm(Widget *current_root_widget, TagHandle widget_definition) noexcept;
@@ -87,7 +87,7 @@ namespace Balltze::Engine {
         /**
          * Find a widget from a given widget definition
          * @param widget                Widget where to look
-         * @param widget_definition     Tag ID of a widget definition
+         * @param widget_definition     Tag handle of a widget definition
          * @return                      Widget if found, nullptr if not
          */
         Widget *find_widget_asm(Widget *widget, TagHandle widget_definition) noexcept;
@@ -131,7 +131,7 @@ namespace Balltze::Engine {
 
         /**
          * Play a sound from a given tag
-         * @param sound     Tag ID of the sound
+         * @param sound     Tag handle of the sound
          */
         void play_sound_asm(TagHandle sound);
     }
@@ -234,7 +234,7 @@ namespace Balltze::Engine {
         std::uint16_t focused_list_item_bitmap_index = widget->focused_child->bitmap_index;
 
         // Create new widget
-        Widget *new_widget = replace_widget(widget, widget->definition_tag_id);
+        Widget *new_widget = replace_widget(widget, widget->definition_tag_handle);
 
         if(focused_list_item_index != -1) {
             auto *child_widget = new_widget->child_widget;
@@ -279,15 +279,15 @@ namespace Balltze::Engine {
         if(tag_path) {
             auto *tag = get_tag(tag_path, TAG_CLASS_UI_WIDGET_DEFINITION);
             if(tag) {
-                open_widget(tag->id, false);
+                open_widget(tag->handle, false);
             }
         }
     }
 
     HudGlobals &get_hud_globals() {
-        static auto *sig = Memory::get_signature("hud_icon_messages_tag_id");
+        static auto *sig = Memory::get_signature("hud_icon_messages_tag_handle");
         if(!sig) {
-            throw std::runtime_error("Could not find signature for hud icon messages tag id");
+            throw std::runtime_error("Could not find signature for hud icon messages tag handle");
         }
         static auto **hud_globals = *reinterpret_cast<HudGlobals ***>(sig->data());
         return **hud_globals;
@@ -347,7 +347,7 @@ namespace Balltze::Engine {
             throw std::runtime_error("Invalid permutation");
         }
 
-        auto *sound_tag = get_tag(permutation->sound_tag_id_0);
+        auto *sound_tag = get_tag(permutation->sound_tag_handle_0);
         if(!sound_tag) {
             throw std::runtime_error("Invalid sound tag in permutation");
         }

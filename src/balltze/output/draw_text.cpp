@@ -26,7 +26,7 @@ namespace Balltze {
 
     struct CustomFontOverride {
         std::string family;
-        Engine::TagHandle tag_id;
+        Engine::TagHandle tag_handle;
         LPD3DXFONT override;
         int weight;
         int scaled_size;
@@ -64,9 +64,9 @@ namespace Balltze {
             return get_override_font(*generic);
         }
         else {
-            Engine::TagHandle tag_id = std::get<Engine::TagHandle>(font);
+            Engine::TagHandle tag_handle = std::get<Engine::TagHandle>(font);
             for(auto &font : map_custom_overrides) {
-                if(font.tag_id.whole_id == tag_id.whole_id) {
+                if(font.tag_handle.handle == tag_handle.handle) {
                     return font.override;
                 }
             }
@@ -78,7 +78,7 @@ namespace Balltze {
         if(font == GenericFont::FONT_SMALLER) {
             auto *tag = get_tag("ui\\gamespy", Engine::TagClassInt::TAG_CLASS_FONT);
             if(tag) {
-                return tag->id;
+                return tag->handle;
             }
             else {
                 return get_generic_font(GenericFont::FONT_SMALL);
@@ -88,7 +88,7 @@ namespace Balltze {
         if(font == GenericFont::FONT_TICKER) {
             auto *tag = get_tag("ui\\ticker", Engine::TagClassInt::TAG_CLASS_FONT);
             if(tag) {
-                return tag->id;
+                return tag->handle;
             }
             else {
                 return get_generic_font(GenericFont::FONT_CONSOLE);
@@ -647,7 +647,7 @@ namespace Balltze {
 
         // Check if font override exists
         for(std::size_t i = 0; i < map_custom_overrides.size(); i++) {
-            if(map_custom_overrides[i].tag_id.whole_id == font_tag.whole_id) {
+            if(map_custom_overrides[i].tag_handle.handle == font_tag.handle) {
                 throw std::runtime_error("font already overrode");
             }
         }
@@ -664,7 +664,7 @@ namespace Balltze {
             D3DXCreateFontA(dev, font.scaled_size, 0, font.weight, 1, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, font.family.c_str(), &font.override);
 
             for(auto &text : text_list) {
-                if(font.tag_id == text.font) {
+                if(font.tag_handle == text.font) {
                     text.override = font.override;
                 }
             }
@@ -675,7 +675,7 @@ namespace Balltze {
         if(dev) {
             for(auto &font : map_custom_overrides) {
                 for(auto &text : text_list) {
-                    if(font.tag_id == text.font) {
+                    if(font.tag_handle == text.font) {
                         text.override = NULL;
                     }
                 }

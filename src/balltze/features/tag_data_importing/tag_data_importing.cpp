@@ -166,7 +166,7 @@ namespace Balltze::Features {
 
                 auto get_tag_from_secondary_map = [&map_tag_data_header, &tag_array_raw](TagHandle tag_handle) -> const Tag * {
                     for(std::size_t i = 0; i < map_tag_data_header.tag_count; i++) {
-                        if(tag_array_raw[i].id == tag_handle) {
+                        if(tag_array_raw[i].handle == tag_handle) {
                             return &tag_array_raw[i];
                         }
                     }
@@ -191,16 +191,16 @@ namespace Balltze::Features {
                     }
 
                     // Check if we've already loaded this tag
-                    if(tags_directory.find(tag->id) != tags_directory.end()) {
-                        return tags_directory.find(tag->id)->second;
+                    if(tags_directory.find(tag->handle) != tags_directory.end()) {
+                        return tags_directory.find(tag->handle)->second;
                     }
 
                     // Set up new tag entry
                     auto &new_tag_entry = tag_array.emplace_back(*tag);
                     new_tag_entry.path = translate_address(new_tag_entry.path);
-                    new_tag_entry.id.index.index = tag_data_header.tag_count;
-                    new_tag_entry.id.index.id = tag_data_header.tags_literal + tag_data_header.tag_count;
-                    tags_directory.insert_or_assign(tag->id, new_tag_entry.id);
+                    new_tag_entry.handle.index = tag_data_header.tag_count;
+                    new_tag_entry.handle.id = tag_data_header.tags_literal + tag_data_header.tag_count;
+                    tags_directory.insert_or_assign(tag->handle, new_tag_entry.handle);
                     tag_data_header.tag_count++;
 
                     // if current tag are indexed or if tags are already fixed, we can continue
@@ -208,12 +208,12 @@ namespace Balltze::Features {
                         if(new_tag_entry.primary_class == TAG_CLASS_SOUND) {
                             new_tag_entry.data = translate_address(new_tag_entry.data);
                         }
-                        return new_tag_entry.id;
+                        return new_tag_entry.handle;
                     }
 
                     // There's no data loaded to fix... yet
                     if(tag->primary_class == TAG_CLASS_SCENARIO_STRUCTURE_BSP) {
-                        return new_tag_entry.id;
+                        return new_tag_entry.handle;
                     }
 
                     new_tag_entry.fix_data_offsets(translate_address(new_tag_entry.data), [&](std::uint32_t offset) -> std::uint32_t {
@@ -223,11 +223,11 @@ namespace Balltze::Features {
                     new_tag_entry.fix_dependencies([&](std::variant<TagDependency, TagHandle> elem) -> std::variant<TagDependency, TagHandle> {
                         if(std::holds_alternative<TagDependency>(elem)) {
                             auto &tag_dependency = std::get<TagDependency>(elem);
-                            if(tag_dependency.tag_id != -1) {
+                            if(tag_dependency.tag_handle != -1) {
                                 tag_dependency.path_pointer = translate_address(tag_dependency.path_pointer); 
-                                auto *broken_tag = get_tag_from_secondary_map(tag_dependency.tag_id);
+                                auto *broken_tag = get_tag_from_secondary_map(tag_dependency.tag_handle);
                                 auto tag_handle = load_tag(broken_tag, true); 
-                                tag_dependency.tag_id = tag_handle; 
+                                tag_dependency.tag_handle = tag_handle; 
                             }
                             return tag_dependency;
                         }
@@ -240,7 +240,7 @@ namespace Balltze::Features {
                             }
                             else {
                                 if(tag_handle != TagHandle::null()) {
-                                    logger.debug("Cannot resolve tag {} in map {}", tag_handle.whole_id, map.name);
+                                    logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, map.name);
                                 }
                                 return tag_handle;
                             }
@@ -283,7 +283,7 @@ namespace Balltze::Features {
                         }
                     }
 
-                    return new_tag_entry.id;
+                    return new_tag_entry.handle;
                 };
 
                 // Reserve space for tags to AVOID REALLOCATIONS

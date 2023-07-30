@@ -5,7 +5,7 @@
 #include <balltze/engine/tag.hpp>
 
 namespace Balltze::Engine {
-    extern "C" TagHandle get_tag_id(const char *path, std::uint32_t tag_class) noexcept;
+    extern "C" TagHandle get_tag_handle(const char *path, std::uint32_t tag_class) noexcept;
 
     std::byte *get_tag_data_address() noexcept {
         static std::optional<std::byte *> address;
@@ -20,16 +20,16 @@ namespace Balltze::Engine {
         return address.value();
     }
 
-    Tag *get_tag(TagHandle tag_id) noexcept {
-        if(tag_id.is_null()) {
+    Tag *get_tag(TagHandle tag_handle) noexcept {
+        if(tag_handle.is_null()) {
             return nullptr;
         }
 
         auto &tag_data_header = get_tag_data_header();
-        auto *tag = tag_data_header.tag_array + tag_id.index.index;
+        auto *tag = tag_data_header.tag_array + tag_handle.index;
         auto tag_count = tag_data_header.tag_count;
 
-        if(tag_id.index.index <= tag_count) {
+        if(tag_handle.index <= tag_count) {
             return tag;
         }
 
@@ -52,13 +52,13 @@ namespace Balltze::Engine {
         return nullptr;
     }
 
-    extern "C" Tag *get_tag_address_from_id(TagHandle tag_id) noexcept {
-        return get_tag(tag_id);
+    extern "C" Tag *get_tag_address_from_id(TagHandle tag_handle) noexcept {
+        return get_tag(tag_handle);
     }
 
     Tag *get_tag(std::string path, std::uint32_t tag_class) noexcept {
-        auto tag_id = get_tag_id(path.c_str(), tag_class);
-        return get_tag(tag_id);
+        auto tag_handle = get_tag_handle(path.c_str(), tag_class);
+        return get_tag(tag_handle);
     }
 
     TagClassInt tag_class_from_string(std::string tag_class_name) noexcept {

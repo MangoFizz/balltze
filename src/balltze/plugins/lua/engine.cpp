@@ -333,7 +333,7 @@ namespace Balltze::Plugins {
                 lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag_data_header.tag_array));
                 lua_setfield(state, -2, "tag_array");
 
-                lua_pushinteger(state, tag_data_header.scenario_tag.whole_id);
+                lua_pushinteger(state, tag_data_header.scenario_tag.handle);
                 lua_setfield(state, -2, "scenario_tag");
 
                 lua_pushinteger(state, tag_data_header.tag_count);
@@ -375,7 +375,7 @@ namespace Balltze::Plugins {
                 }
                 else {
                     Engine::TagHandle tag_handle;
-                    tag_handle.whole_id = tag_number_thing;
+                    tag_handle.handle = tag_number_thing;
                     tag_entry = Engine::get_tag(tag_handle);
                 }
             }
@@ -409,8 +409,8 @@ namespace Balltze::Plugins {
                 lua_pushstring(state, tertiary_class.c_str());
                 lua_setfield(state, -2, "tertiary_class");
 
-                lua_pushinteger(state, tag_entry->id.whole_id);
-                lua_setfield(state, -2, "id");
+                lua_pushinteger(state, tag_entry->handle.handle);
+                lua_setfield(state, -2, "handle");
 
                 lua_pushstring(state, tag_entry->path);
                 lua_setfield(state, -2, "path");
@@ -454,22 +454,22 @@ namespace Balltze::Plugins {
                     }
                 }
                 else {
-                    std::uint32_t tag_id_or_index;
+                    std::uint32_t tag_handle_or_index;
                     if(lua_istable(state, 1)) {
-                        lua_getfield(state, 1, "id");
-                        tag_id_or_index = lua_tointeger(state, -1);
+                        lua_getfield(state, 1, "handle");
+                        tag_handle_or_index = lua_tointeger(state, -1);
                         lua_pop(state, 1);
                     }
                     else {
-                        tag_id_or_index = lua_tointeger(state, 1);
+                        tag_handle_or_index = lua_tointeger(state, 1);
                     }
 
-                    if(tag_id_or_index < 0xFFFF) {
-                        tag_entry = Engine::get_tag(tag_id_or_index);
+                    if(tag_handle_or_index < 0xFFFF) {
+                        tag_entry = Engine::get_tag(tag_handle_or_index);
                     }
                     else {
                         Engine::TagHandle tag_handle;
-                        tag_handle.whole_id = tag_id_or_index;
+                        tag_handle.handle = tag_handle_or_index;
                         tag_entry = Engine::get_tag(tag_handle);
                     }
                 }
@@ -496,8 +496,8 @@ namespace Balltze::Plugins {
                 lua_setfield(state, -2, "_tag_data");
                 lua_pushinteger(state, tag_entry->primary_class);
                 lua_setfield(state, -2, "_tag_class");
-                lua_pushinteger(state, tag_entry->id.whole_id);
-                lua_setfield(state, -2, "_tag_id");
+                lua_pushinteger(state, tag_entry->handle.handle);
+                lua_setfield(state, -2, "_tag_handle");
 
                 lua_attach_tag_data_metatable(state);
 
@@ -521,7 +521,7 @@ namespace Balltze::Plugins {
                 Engine::TagHandle tag_handle;
 
                 if(lua_isinteger(state, 1)) {
-                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    tag_handle.handle = luaL_checkinteger(state, 1);
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
@@ -536,7 +536,7 @@ namespace Balltze::Plugins {
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
                     }
-                    tag_handle.whole_id = tag->id.whole_id;
+                    tag_handle.handle = tag->handle.handle;
                 }
 
                 Engine::Widget *base_widget = nullptr;
@@ -576,7 +576,7 @@ namespace Balltze::Plugins {
                 Engine::TagHandle tag_handle;
 
                 if(lua_isinteger(state, 1)) {
-                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    tag_handle.handle = luaL_checkinteger(state, 1);
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
@@ -591,7 +591,7 @@ namespace Balltze::Plugins {
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
                     }
-                    tag_handle.whole_id = tag->id.whole_id;
+                    tag_handle.handle = tag->handle.handle;
                 }
 
                 Engine::Widget *base_widget = nullptr;
@@ -629,7 +629,7 @@ namespace Balltze::Plugins {
                 Engine::TagHandle tag_handle;
 
                 if(lua_isinteger(state, 1)) {
-                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    tag_handle.handle = luaL_checkinteger(state, 1);
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
@@ -644,7 +644,7 @@ namespace Balltze::Plugins {
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
                     }
-                    tag_handle.whole_id = tag->id.whole_id;
+                    tag_handle.handle = tag->handle.handle;
                 }
 
                 bool push_history = false;
@@ -706,7 +706,7 @@ namespace Balltze::Plugins {
 
                 Engine::TagHandle tag_handle;
                 if(lua_isinteger(state, 2)) {
-                    tag_handle.whole_id = luaL_checkinteger(state, 2);
+                    tag_handle.handle = luaL_checkinteger(state, 2);
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
@@ -721,7 +721,7 @@ namespace Balltze::Plugins {
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
                     }
-                    tag_handle.whole_id = tag->id.whole_id;
+                    tag_handle.handle = tag->handle.handle;
                 }
 
                 auto *widget = Engine::replace_widget(target_widget, tag_handle);
@@ -912,7 +912,7 @@ namespace Balltze::Plugins {
             if(args == 1) {
                 Engine::TagHandle tag_handle;
                 if(lua_isinteger(state, 1)) {
-                    tag_handle.whole_id = luaL_checkinteger(state, 1);
+                    tag_handle.handle = luaL_checkinteger(state, 1);
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
@@ -927,7 +927,7 @@ namespace Balltze::Plugins {
                     if(!tag) {
                         return luaL_error(state, "Could not find tag.");
                     }
-                    tag_handle.whole_id = tag->id.whole_id;
+                    tag_handle.handle = tag->handle.handle;
                 }
 
                 try {

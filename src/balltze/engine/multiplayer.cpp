@@ -66,7 +66,7 @@ namespace Balltze::Engine {
 
     ServerInfoPlayer *ServerInfoPlayerList::get_player(PlayerHandle player) noexcept {
         for(auto &p : this->players) {
-            if(p.player_id == player.index.index) {
+            if(p.player_id == player.index) {
                 return &p;
             }
         }

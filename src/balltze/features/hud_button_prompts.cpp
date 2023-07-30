@@ -55,8 +55,8 @@ namespace Balltze::Features {
         auto &hud_globals = Engine::get_hud_globals();
         if(icon && *icon < hud_globals.button_icons.count) {
             auto &hud_icon = hud_globals.button_icons.offset[*icon];
-            if(!hud_globals.icon_bitmap.tag_id.is_null()) {
-                auto message_icons_tag_handle = hud_globals.icon_bitmap.tag_id;
+            if(!hud_globals.icon_bitmap.tag_handle.is_null()) {
+                auto message_icons_tag_handle = hud_globals.icon_bitmap.tag_handle;
                 auto *message_icons_tag = Engine::get_tag(message_icons_tag_handle);
                 if(message_icons_tag) {
                     auto *message_icons = message_icons_tag->get_data<Engine::TagDefinitions::Bitmap>();

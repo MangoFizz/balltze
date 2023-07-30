@@ -505,8 +505,8 @@ namespace Balltze::Plugins {
             lua_pushnil(state); 
             return 1; 
         }
-        else if(field == "id") { 
-            lua_pushinteger(state, dependency->tag_id.whole_id); 
+        else if(field == "handle") { 
+            lua_pushinteger(state, dependency->tag_handle.handle); 
             return 1; 
         }
         else if(field == "class") {
@@ -539,8 +539,8 @@ namespace Balltze::Plugins {
         if(field == "_data") { 
             return luaL_error(state, "Cannot set _data"); 
         }
-        else if(field == "id") { 
-            dependency->tag_id.whole_id = luaL_checkinteger(state, 3); 
+        else if(field == "handle") { 
+            dependency->tag_handle.handle = luaL_checkinteger(state, 3); 
         }
         else if(field == "class") {
             auto *tag_class = lua_tostring(state, 3);
@@ -1448,8 +1448,8 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "definition_tag_id") { 
-            lua_pushinteger(state, widget->definition_tag_id.whole_id);
+        if(field == "definition_tag_handle") { 
+            lua_pushinteger(state, widget->definition_tag_handle.handle);
             return 1;
         }
         else if(field == "name") {
@@ -1562,8 +1562,8 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "definition_tag_id") { 
-            widget->definition_tag_id.whole_id = luaL_checkinteger(state, 3);
+        if(field == "definition_tag_handle") { 
+            widget->definition_tag_handle.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "name") {
             return luaL_error(state, "Unsupported operation");

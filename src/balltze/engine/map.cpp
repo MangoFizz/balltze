@@ -45,7 +45,7 @@ namespace Balltze::Engine {
         auto &tag_data_header = get_tag_data_header();
 
         // Get the scenario tag (not always the first tag) and make sure it's actually a scenario tag
-        auto *scenario_tag = get_tag(tag_data_header.scenario_tag.index.index);
+        auto *scenario_tag = get_tag(tag_data_header.scenario_tag.index);
         if(scenario_tag->primary_class != TagClassInt::TAG_CLASS_SCENARIO) {
             return true;
         }

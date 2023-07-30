@@ -5,20 +5,20 @@
 .data
 
 get_tag_address: .long 0
-tag_id: .long 0
+tag_handle: .long 0
 
 .text
 
-get_tag_id_sig: .string "get_tag_id"
+get_tag_handle_sig: .string "get_tag_handle"
 
-.globl _get_tag_id
-_get_tag_id:
+.globl _get_tag_handle
+_get_tag_handle:
     pushad
     pushfd
 
     cmp dword ptr get_tag_address, 0
     jnz found
-    lea eax, get_tag_id_sig
+    lea eax, get_tag_handle_sig
     push eax
     call _get_address_for_signature
     mov get_tag_address, eax
@@ -36,11 +36,11 @@ _get_tag_id:
     mov edi, ebx
     call dword ptr get_tag_address
     add esp, 4
-    mov tag_id, eax
+    mov tag_handle, eax
     
     popfd
     popad
 
     ;# Return value
-    mov eax, tag_id
+    mov eax, tag_handle
     ret

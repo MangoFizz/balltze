@@ -234,9 +234,9 @@ for structName, struct in pairs(structs) do
             elseif(sneakCaseFieldType == "matrix") then
                 add("lua_push_engine_matrix(state, data->" .. field.name .. "); \n");
             elseif(sneakCaseFieldType == "tag_handle") then
-                add("lua_pushinteger(state, data->" .. field.name .. ".whole_id); \n");
+                add("lua_pushinteger(state, data->" .. field.name .. ".handle); \n");
             elseif(sneakCaseFieldType == "scenario_script_node_value") then
-                add("lua_pushinteger(state, data->" .. field.name .. ".tag_handle.whole_id); \n");
+                add("lua_pushinteger(state, data->" .. field.name .. ".tag_handle.handle); \n");
             elseif(sneakCaseFieldType == "tag_reflexive") then
                 local sneakCaseStructName = definitionParser.camelCaseToSnakeCase(field.struct)
                 local camelCaseStructName = definitionParser.snakeCaseToCamelCase(sneakCaseStructName)
@@ -466,13 +466,13 @@ for structName, struct in pairs(structs) do
                 indent(3)
                 add("} \n");
             elseif(sneakCaseFieldType == "tag_handle") then
-                add("auto tag_whole_id = luaL_checkinteger(state, 3); \n");
+                add("auto tag_handle = luaL_checkinteger(state, 3); \n");
                 indent(3)
-                add("data->" .. field.name .. ".whole_id = tag_whole_id; \n");
+                add("data->" .. field.name .. ".handle = tag_handle; \n");
             elseif(sneakCaseFieldType == "scenario_script_node_value") then
-                add("auto tag_whole_id = luaL_checkinteger(state, 3); \n");
+                add("auto tag_handle = luaL_checkinteger(state, 3); \n");
                 indent(3)
-                add("data->" .. field.name .. ".tag_handle.whole_id = tag_whole_id; \n");
+                add("data->" .. field.name .. ".tag_handle.handle = tag_handle; \n");
             else
                 add("return luaL_error(state, \"Invalid operation\"); \n");
             end

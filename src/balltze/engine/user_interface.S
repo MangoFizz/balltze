@@ -50,10 +50,10 @@ _create_widget_asm:
     ;# Widget instance to replace
     push ecx
 
-    ;# Widget tag ID
+    ;# Widget tag handle
     push eax
 
-    ;# Widget tag path (null because we are using the tag ID parameter)
+    ;# Widget tag path (null because we are using the tag handle parameter)
     push 0
 
     call dword ptr create_widget_function_address
@@ -73,7 +73,7 @@ _open_widget_asm:
 
     do_open_widget:
     mov eax, [esp + 4] ;# Current widget root instance
-    mov edx, [esp + 8] ;# New widget tag ID
+    mov edx, [esp + 8] ;# New widget tag handle
     push edx
     push eax
     call dword ptr open_widget_function_address
@@ -110,7 +110,7 @@ _find_widget_asm:
 
     do_find_widget:
     mov eax, [esp + 4] ;# Widget where to search
-    mov ecx, [esp + 8] ;# Tag ID of the widget definition
+    mov ecx, [esp + 8] ;# Tag handle of the widget definition
 
     push ecx
     push eax
@@ -255,7 +255,7 @@ _play_sound_asm:
     add esp, 4
     found:
 
-    ;# Get sound tag ID
+    ;# Get sound tag handle
     mov eax, [esp + 0x28]
 
     ;# Look for a valid tag id

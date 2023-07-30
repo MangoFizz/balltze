@@ -261,6 +261,8 @@ local function parseStruct(structDefinition)
         if field.type == "pad" then
             structField = {type = "pad"}
         elseif field.type == "TagID" then
+            -- Replace "tag_id" with "tag_handle" in field name
+            fieldName = fieldName:gsub("tag_id", "tag_handle")
             structField = {name = fieldName, type = "TagHandle"}
         elseif field.type == "Pointer" then
             structField = {name = fieldName, type = "byte", pointer = true}

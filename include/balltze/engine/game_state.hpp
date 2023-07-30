@@ -86,7 +86,7 @@ namespace Balltze::Engine {
         DynamicObject *get_dynamic_object(std::uint32_t index) noexcept;
 
         /**
-         * Spawn an object with an tag id.
+         * Spawn an object with an tag handle.
          * @param  tag_handle   Tag handle of the object.
          * @param  offset       Offset of the object.
          * @param  parent       Parent object.
@@ -391,8 +391,8 @@ namespace Balltze::Engine {
 
     struct DynamicObjectAttachmentsData {
         DynamicObjectAttachmentType types[8];
-        ElementHandle attachments[8];
-        ElementHandle first_widget;
+        ResourceHandle attachments[8];
+        ResourceHandle first_widget;
     };
     static_assert(sizeof(DynamicObjectAttachmentsData) == 0x2C);
 
@@ -505,7 +505,7 @@ namespace Balltze::Engine {
         PADDING(0x4);
 
         /** Cluster partition */
-        ElementHandle cluster_partition;
+        ResourceHandle cluster_partition;
 
         /** Object handle of something */
         ObjectHandle unknown_object;
@@ -534,7 +534,7 @@ namespace Balltze::Engine {
         DynamicObjectAttachmentsData attachment_data;
 
         /** Cached render state */
-        ElementHandle cached_render_state;
+        ResourceHandle cached_render_state;
 
         /** Region destroyeds */
         struct {
@@ -575,16 +575,16 @@ namespace Balltze::Engine {
          * Get the full object handle of the object.
          * @return full object handle of the object or a null handle if not available
          */
-        ObjectHandle full_object_id() noexcept {
+        ObjectHandle object_handle() noexcept {
             auto &table = get_object_table();
 
             ObjectHandle returned_id;
-            returned_id.whole_id = 0xFFFFFFFF;
+            returned_id.handle = 0xFFFFFFFF;
 
             for(std::size_t i = 0; i < table.current_size; i++) {
                 auto &object = table.first_element[i];
                 if(object.object == this) {
-                    returned_id.whole_id = i + 0x10000 * object.id;
+                    returned_id.handle = i + 0x10000 * object.id;
                     return returned_id;
                 }
             }
@@ -1071,7 +1071,7 @@ namespace Balltze::Engine {
         float speed;
 
         /** Unknown */
-        ElementHandle teleporter_flag_handle;
+        ResourceHandle teleporter_flag_handle;
 
         /** Unknown */
         std::uint32_t objective_mode;
@@ -1264,8 +1264,8 @@ namespace Balltze::Engine {
     struct Antenna {
         std::uint32_t unknown_0;
         std::uint32_t unknown_1;
-        ElementHandle tag_handle;
-        std::uint32_t parent_object_id;
+        TagHandle tag_handle;
+        ObjectHandle parent_object_handle;
         Point3D position;
         AntennaVertex vertices[0x15];
     };
@@ -1307,7 +1307,7 @@ namespace Balltze::Engine {
 
     /** This is a flag cloth object. */
     struct Flag {
-        ElementHandle some_handle;
+        ResourceHandle some_handle;
         std::uint32_t unknown0;
         ObjectHandle parent_object_handle;
         std::uint32_t some_handle1;
@@ -1328,7 +1328,7 @@ namespace Balltze::Engine {
     struct Light {
         // 0x0
         std::uint32_t unknown0;
-        ElementHandle some_handle;
+        ResourceHandle some_handle;
         std::uint32_t unknown1;
         std::uint32_t some_counter;
         // 0x10
@@ -1372,7 +1372,7 @@ namespace Balltze::Engine {
         float c; // idk, don't set this to anything less than or equal to 0 or the game will freeze with max CPU usage somehow
         std::uint32_t unknown3;
         std::uint32_t unknown4;
-        ElementHandle some_handle;
+        ResourceHandle some_handle;
         // 0x30
         Point3D position;
         float unknownx0;

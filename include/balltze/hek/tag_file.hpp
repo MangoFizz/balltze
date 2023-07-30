@@ -35,8 +35,8 @@ namespace Balltze::HEK {
             BLAM = 0x626C616D
         };
 
-        /** In some of the older point physics tags, this is some sort of tag ID; it's unused */
-        Memory::BigEndian<TagHandle> tag_id_unused;
+        /** In some of the older point physics tags, this is some sort of tag handle; it's unused */
+        Memory::BigEndian<TagHandle> tag_handle_unused;
 
         /** In some of the older point physics tags, this is set to the tag name; it's unused */
         TagString tag_name_unused;
@@ -99,7 +99,7 @@ namespace Balltze::HEK {
 		TagFourCC tag_fourcc;
 		Memory::BigEndian<std::uint32_t> path_pointer;
 		std::size_t path_size;
-		Memory::BigEndian<TagHandle> tag_id;
+		Memory::BigEndian<TagHandle> tag_handle;
 	};
     static_assert(sizeof(TagDependency) == 0x10);
 

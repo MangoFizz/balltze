@@ -286,8 +286,8 @@ namespace Balltze::Engine {
     static_assert(sizeof(WidgetMemoryPool::ResourceHandle) == 0x10);
 
     struct Widget {
-        /** ID of the widget tag */
-        TagHandle definition_tag_id;
+        /** Handle of the widget tag */
+        TagHandle definition_tag_handle;
 
         /** Name of the widget */
         const char *name;
@@ -629,7 +629,7 @@ namespace Balltze::Engine {
     /**
      * Find a widget from a given widget definition.
      * This is the function used by the game; it only returns the first coincidence.
-     * @param widget_definition     Widget definition tag ID of the widget to find
+     * @param widget_definition     Widget definition tag handle of the widget to find
      * @param widget_base           Widget where to look
      * @return                      Pointer to widget if found, nullptr if not
      */
@@ -637,7 +637,7 @@ namespace Balltze::Engine {
 
     /**
      * Find widgets from a given widget definition.
-     * @param widget_definition     Widget definition tag ID of the widget to find
+     * @param widget_definition     Widget definition tag handle of the widget to find
      * @param widget_base           Widget where to look
      * @return                      Vector of widgets
      */
@@ -645,7 +645,7 @@ namespace Balltze::Engine {
 
     /**
      * Open a widget
-     * @param widget_definition     Tag ID of widget definition
+     * @param widget_definition     Tag handle of widget definition
      * @param push_history          Push or not the current root widget to menu history.
      * @return                      Pointer to the new widget
      */
@@ -659,7 +659,7 @@ namespace Balltze::Engine {
     /**
      * Replace a widget
      * @param widget                Widget to be replaced
-     * @param widget_definition     Tag ID of the definition for the widget replace 
+     * @param widget_definition     Tag handle of the definition for the widget replace 
      * @return                      Pointer to the new widget
      */
     BALLTZE_API Widget *replace_widget(Widget *widget, TagHandle widget_definition) noexcept;
@@ -723,7 +723,7 @@ namespace Balltze::Engine {
 
     /**
      * Play a sound from a given tag
-     * @param sound     Tag ID of the sound
+     * @param sound     Tag handle of the sound
      */
     BALLTZE_API void play_sound(TagHandle tag_sound);
 

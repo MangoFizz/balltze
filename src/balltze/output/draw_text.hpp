@@ -85,7 +85,7 @@ namespace Balltze {
     /**
      * Get the font tag for a specific GenericFont.
      * @param  font the type of generic font
-     * @return      the tag's tag ID
+     * @return      the tag's tag handle
      */
     const Engine::TagHandle &get_generic_font(GenericFont font) noexcept;
 

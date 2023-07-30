@@ -29,7 +29,7 @@ namespace Balltze::Engine {
     };
 
     struct Player;
-    using PlayerHandle = ElementHandle;
+    using PlayerHandle = ResourceHandle;
 
     /**
      * This is a player in the server info player table. This information is used in chat and sv_players.
@@ -153,8 +153,8 @@ namespace Balltze::Engine {
         static ServerInfoPlayerList *get_server_info_player_list() noexcept;
 
         /**
-         * Get the player struct by its ID
-         * @param  player id of the player
+         * Get the player struct by its handle
+         * @param  player handle of the player
          * @return        pointer to the player or nullptr if not valid
          */
         ServerInfoPlayer *get_player(PlayerHandle player) noexcept;
