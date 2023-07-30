@@ -17,6 +17,7 @@ namespace Balltze::Engine {
 	using Matrix = float[3][3];
     using Point = float;
 	using TickCount = std::uint32_t;
+    using TickCount16 = std::uint16_t;
 
 	struct TagString {
         char string[0x20] = {};

@@ -23,6 +23,11 @@ namespace Balltze::Engine {
         GAMETYPE_RACE
     };
 
+    enum MultiplayerTeam : std::uint16_t {
+        MULTIPLAYER_TEAM_RED = 0,
+        MULTIPLAYER_TEAM_TEAM_BLUE,
+    };
+
     struct Player;
     using PlayerHandle = ElementHandle;
 

@@ -4,6 +4,8 @@
 #define BALLTZE_API__ENGINE__GAME_STATE_HPP
 
 #include <cstdint>
+#include <balltze/engine/tag_definitions/scenario.hpp>
+#include <balltze/engine/multiplayer.hpp>
 #include "../memory.hpp"
 #include "data_types.hpp"
 
@@ -52,36 +54,36 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(GenericTable<int>) == 0x38);
 
-    struct BaseDynamicObject;
+    struct DynamicObject;
 
     /**
      * This represents and points to an object in loopobjects.
      */
-    struct ObjectTableIndexHeader {
+    struct ObjectTableEntry {
         /** Object handle index */
         std::uint16_t id;
 
         PADDING(0x4);
 
         /** Address of the object in loopobjects */
-        BaseDynamicObject *object;
+        DynamicObject *object;
     };
-    static_assert(sizeof(ObjectTableIndexHeader) == 0xC);
+    static_assert(sizeof(ObjectTableEntry) == 0xC);
 
-    struct ObjectTable : GenericTable<ObjectTableIndexHeader> {
+    struct ObjectTable : GenericTable<ObjectTableEntry> {
         /**
          * Get the object by its handle, returning nullptr if the handle is invalid.
          * @param  object_handle This is the handle of the object.
          * @return           Return a pointer to the object or nullptr if the handle is invalid.
          */
-        BaseDynamicObject *get_dynamic_object(const ObjectHandle &object_handle) noexcept;
+        DynamicObject *get_dynamic_object(const ObjectHandle &object_handle) noexcept;
 
         /**
          * Get the object by an index, returning nullptr if the index is invalid.
          * @param  index This is the index of the object.
          * @return       Return a pointer to the object or nullptr if the index is invalid.
          */
-        BaseDynamicObject *get_dynamic_object(std::uint32_t index) noexcept;
+        DynamicObject *get_dynamic_object(std::uint32_t index) noexcept;
 
         /**
          * Spawn an object with an tag id.
@@ -111,7 +113,9 @@ namespace Balltze::Engine {
      */
     ObjectTable &get_object_table() noexcept;
 
-    /** This is the type of object an object is. */
+    /** 
+     * This is the type of object an object is. 
+     */
     enum ObjectType : std::uint16_t {
         /** Object -> Unit -> Biped */
         OBJECT_TYPE_BIPED = 0,
@@ -150,7 +154,19 @@ namespace Balltze::Engine {
         OBJECT_TYPE_SOUND_SCENERY
     };
 
-    /** A model node is a part of a model which can have its own position, rotation, and scale. */
+    /**
+     * Roles of an object in the netgame.
+     */
+    enum ObjectNetworkRole : std::uint32_t {
+        OBJECT_NETWORK_ROLE_MASTER = 0,
+        OBJECT_NETWORK_ROLE_PUPPET,
+        OBJECT_NETWORK_ROLE_LOCALLY_CONTROLLED_PUPPET,
+        OBJECT_NETWORK_ROLE_LOCAL_ONLY
+    };
+
+    /** 
+     * A model node is a part of a model which can have its own position, rotation, and scale. 
+     */
     struct ModelNode {
         /** Scale of this part of the model */
         float scale;
@@ -165,98 +181,160 @@ namespace Balltze::Engine {
     /** As of Halo 1.10, 64 nodes is the maximum count. */
     #define MAX_NODES 64
 
-    /**
-     * These are objects that are present in an instance of Halo rather than in tag data and have parameters such as location and health.
-     */
-    struct BaseDynamicObject {
-        /** This is the tag handle of the object. */
-        TagHandle tag_handle;
-
-        PADDING(0x4);
-        PADDING_BIT(std::uint32_t, 8);
-
-        /** If true, force baseline update. */
-        std::uint32_t should_force_baseline_update : 1;
-
-        PADDING_BIT(std::uint32_t, 23);
-
-        /** This is the number of ticks the object has existed. */
-        TickCount existence_time;
-
+    struct DynamicObjectFlags {
         /** No collision - this is used for backpack weapons. */
-        std::uint32_t no_collision : 1;
+        bool no_collision : 1;
 
         /** On the ground */
-        std::uint32_t on_ground : 1;
+        bool on_ground : 1;
 
         /** Ignore gravity */
-        std::uint32_t ignore_gravity : 1;
+        bool ignore_gravity : 1;
 
-        PADDING_BIT(std::uint32_t, 2);
+        /** In water */
+        bool in_water : 1;
+
+        PADDING_BIT(bool, 1);
 
         /** Not moving */
-        std::uint32_t stationary : 1;
+        bool stationary : 1;
 
-        PADDING_BIT(std::uint32_t, 1);
+        PADDING_BIT(bool, 1);
 
         /** No collision? */
-        std::uint32_t no_collision2 : 1;
+        bool no_collision2 : 1;
 
-        PADDING_BIT(std::uint32_t, 10);
+        PADDING_BIT(bool, 2);
+
+        /** Has sound looping attachment */
+        bool has_sound_looping_attachment : 1;
+
+        /** Connected to map */
+        bool connected_to_map : 1;
+
+        /** Not placed automatically */
+        bool not_placed_automatically : 1;
+
+        /** Is a device machine */
+        bool is_device_machine : 1;
+
+        /** Is an elevator */
+        bool is_elevator : 1;
+        
+        /** Is an elevator again */
+        bool is_elevator_2 : 1;
+
+        /** Is garbage */
+        bool is_garbage : 1;
+
+        PADDING_BIT(bool, 1);
 
         /** Cast a shadow if this is off. This is usually off for units, but it can be forced off for other objects. */
-        std::uint32_t no_shadow : 1;
+        bool no_shadow : 1;
 
-        PADDING_BIT(std::uint32_t, 2);
+        /** Deleted at deactivation */
+        bool delete_at_deactivation : 1;
+
+        /** Do not reactivate */
+        bool do_not_reactivate : 1;
 
         /** Object is in the void. */
-        std::uint32_t outside_of_map : 1;
+        bool outside_of_map : 1;
 
-        PADDING_BIT(std::uint32_t, 10);
-        PADDING(0x48);
+        PADDING_BIT(bool, 2);
+        
+        /** Is collidable */
+        bool collidable : 1;
 
-        /** Coordinates of the object relative to the world or to its parent */
-        Point3D position;
+        /** Has collision model */
+        bool has_collision_model : 1;
 
-        /** Velocity in world units per tick */
-        Point3D velocity;
+        /** Network related flags */
+        bool network_message_unknown_1 : 1;
+        bool network_message_unknown_2 : 1;
 
-        /** Orientation/rotation */
+        /** Open sauce flags */
+        bool opensauce_is_transforming_in : 1;
+        bool opensauce_is_transforming_out : 1;
+
+        PADDING_BIT(bool, 2);
+    };
+    static_assert(sizeof(DynamicObjectFlags) == sizeof(std::uint32_t));
+
+    struct ObjectNetwork {
+        /** Object position is valid */
+        bool valid_position;
+
+        /** Object position */
+        Vector3D position;
+
+        /** Object orientation is valid */
+        bool valid_forward_and_up;
+
+        /** Object orientation/rotation */
         Point3D orientation[2];
 
-        /** Rotational velocity of the object in world units per tick */
-        Euler3DPYR rotation_velocity;
+        /** Object velocity is valid */
+        bool valid_transitional_velocity;
 
-        /** Unknown */
-        std::uint32_t location_id;
+        /** Object velocity */
+        Vector3D transitional_velocity;
 
-        PADDING(0x4);
+        /** Timestamp is valid */
+        bool valid_timestamp;
 
-        /** Position of the object's center used for things such as lens flares, triggers, teleporters, etc. This is always relative to the world. */
-        Point3D center_position;
+        /** Timestamp */
+        TickCount timestamp;
+    };
+    static_assert(sizeof(ObjectNetwork) == 0x44);
 
-        PADDING(0x4);
-
-        /** Scale of the object */
-        float scale;
-
-        /** Type of object */
-        ObjectType type;
-
+    struct ScenarioLocation {
+        std::int32_t leaf_id;
+        std::int16_t cluster_id;
         PADDING(0x2);
-        PADDING(0x14);
+    }; 
+    static_assert(sizeof(ScenarioLocation) == 0x8);
 
-        /** Tag handle of the animation tag */
-        std::uint32_t animation_tag_id;
+    struct DynamicObjectVitalsFlags {
+        /** Health damage effect applied */
+        bool health_damage_effect_applied : 1;
 
-        /** Current animation index */
-        std::uint16_t animation;
+        /** Shield damage effect applied */
+        bool shield_damage_effect_applied : 1;
 
-        /** Frame of the current animation */
-        std::uint16_t animation_frame;
+        /** Health depleted */
+        bool health_depleted : 1;
 
-        PADDING(0x4);
+        /** Shield depleted */
+        bool shield_depleted : 1;
 
+        PADDING_BIT(bool, 1); // something related to shield 
+
+        /** Killed */
+        bool killed : 1;
+
+        /** Killed silent */
+        bool killed_silent : 1;
+
+        /** Cannot melee attack */
+        bool cannot_melee_attack : 1;
+
+        PADDING_BIT(bool, 3);
+
+        /** Object is invulnerable */
+        bool invulnerable : 1;
+
+        /** Shield recharging */
+        bool shield_recharging : 1;
+
+        /** Killed no stats */
+        bool killed_no_stats : 1;
+
+        PADDING_BIT(bool, 2);
+    };
+    static_assert(sizeof(DynamicObjectVitalsFlags) == sizeof(std::uint16_t));
+
+    struct DynamicObjectVitals {
         /** Base health */
         float base_health;
 
@@ -275,7 +353,12 @@ namespace Balltze::Engine {
         /** Current health damage? */
         float current_health_damage;
 
-        PADDING(0x4);
+        /** 
+         * Entangled object handle
+         * When this object is damaged, the 'entangled' object will also get damaged
+         * This is an immediate link, the entangled object's parent chain or 'entangled' reference isn't walked
+         */
+        ObjectHandle entangled_object;
 
         /** Recent shield damage taken? */
         float recent_shield_damage;
@@ -284,37 +367,197 @@ namespace Balltze::Engine {
         float recent_health_damage;
 
         /** Amount of time since shield damage was taken? */
-        std::uint32_t recent_shield_damage_time;
+        TickCount recent_shield_damage_time;
 
         /** Amount of time since health damage was taken? */
-        std::uint32_t recent_health_damage_time;
+        TickCount recent_health_damage_time;
 
         /** Time in ticks before shields recharge */
-        std::uint16_t shield_stun_time;
+        TickCount16 shield_stun_time;
 
-        PADDING_BIT(std::uint16_t, 11);
+        /** Flags */
+        DynamicObjectVitalsFlags flags;
+    };
+    static_assert(sizeof(DynamicObjectVitals) == 0x30);
 
-        /** Immune to damage and damage side effects */
-        std::uint16_t invulnerable : 1;
+    enum DynamicObjectAttachmentType : std::int8_t {
+        OBJECT_ATTACHMENT_TYPE_INVALID = -1,
+        OBJECT_ATTACHMENT_TYPE_LIGHT = 0,
+        OBJECT_ATTACHMENT_TYPE_LOOPING_SOUND,
+        OBJECT_ATTACHMENT_TYPE_EFFECT,
+        OBJECT_ATTACHMENT_TYPE_CONTRAIL,
+        OBJECT_ATTACHMENT_TYPE_PARTICLE
+    };
 
-        /** Shields are recharging */
-        std::uint16_t shield_recharging : 1;
+    struct DynamicObjectAttachmentsData {
+        DynamicObjectAttachmentType types[8];
+        ElementHandle attachments[8];
+        ElementHandle first_widget;
+    };
+    static_assert(sizeof(DynamicObjectAttachmentsData) == 0x2C);
 
-        PADDING_BIT(std::uint16_t, 3);
+    struct DynamicObjectBlockReference {
+        std::uint16_t size;
+        std::uint16_t offset;
+    };
+    static_assert(sizeof(DynamicObjectBlockReference) == 0x4);
 
-        PADDING(0x10);
+    /**
+     * These are objects that are present in an instance of Halo rather than in tag data and have parameters such as location and health.
+     */
+    struct DynamicObject {
+        /** This is the tag handle of the object. */
+        TagHandle tag_handle;
+
+        /** This is the object's network role */
+        ObjectNetworkRole network_role;
+        
+        PADDING_BIT(std::uint32_t, 8);
+
+        /** If true, force baseline update. */
+        std::uint32_t should_force_baseline_update : 1;
+
+        PADDING_BIT(std::uint32_t, 23);
+
+        /** This is the number of ticks the object has existed. */
+        TickCount existence_time;
+
+        /** Object flags */
+        DynamicObjectFlags flags;
+
+        /** Object marker id */
+        std::uint32_t object_marker_id;
+
+        /** Object network */
+        ObjectNetwork network;
+
+        /** Coordinates of the object relative to the world or to its parent */
+        Point3D position;
+
+        /** Velocity in world units per tick */
+        Point3D velocity;
+
+        /** Orientation/rotation */
+        Point3D orientation[2];
+
+        /** Rotational velocity of the object in world units per tick */
+        Euler3DPYR rotation_velocity;
+
+        /** Location of the object in the scenario */
+        ScenarioLocation scenario_location;
+        
+        /** Position of the object's center used for things such as lens flares, triggers, teleporters, etc. This is always relative to the world. */
+        Point3D center_position;
+
+        /** Radius of the object's bounding sphere */
+        float bounding_radius;
+
+        /** Scale of the object */
+        float scale;
+
+        /** Type of object */
+        ObjectType type;
+        PADDING(0x2);
+
+        union {
+            /** Singleplayer team index */
+            TagDefinitions::ScenarioTeamIndex team_owner;
+
+            /** Multiplayer team index */
+            MultiplayerTeam multiplayer_team_owner;
+        };
+
+        /** Name list index */
+        std::uint16_t name_list_index;
+
+        /** Ticks not spent at_rest, only biped updates this. */
+        TickCount16 moving_time; 
+
+        /** Variant index for region permuations */
+        std::uint16_t variant_index;
+
+        /** Object player handle */
+        PlayerHandle player;
+
+        /** Object handle of the object's owner object */
+        ObjectHandle owner_object;
+
+        PADDING(0x4);
+
+        /** Tag handle of the animation tag */
+        TagHandle animation_tag_handle;
+
+        /** Current animation index */
+        std::uint16_t animation_index;
+
+        /** Frame of the current animation */
+        std::uint16_t animation_frame;
+
+        /** Interpolation frame */
+        std::uint16_t animation_interpolation_frame;
+
+        /** Interpolation frame count */
+        std::uint16_t animation_interpolation_frame_count;
+
+        /** Object vitals */
+        DynamicObjectVitals vitals;
+
+        PADDING(0x4);
+
+        /** Cluster partition */
+        ElementHandle cluster_partition;
+
+        /** Object handle of something */
+        ObjectHandle unknown_object;
+
+        /** Next object */
+        ObjectHandle next_object;
 
         /** Current object handle of the object's current weapon; this may also be the object handle of the object's grenade if throwing */
-        ObjectHandle weapon;
+        ObjectHandle first_object;
 
         /** Object handle of the object's parent; if set, then the object's position is relative to the parent */
-        ObjectHandle parent;
+        ObjectHandle parent_object;
 
-        /** Unknown */
-        std::uint16_t parent_seat_index;
+        /** Parent attachment node */
+        std::uint8_t parent_attachment_node;
 
-        PADDING(0x2);
-        PADDING(0x64);
+        PADDING(0x1);
+
+        /** Force shield update */
+        bool force_shield_update;
+        
+        PADDING(0x1);
+        PADDING(0x20);
+
+        /** Attachment data */
+        DynamicObjectAttachmentsData attachment_data;
+
+        /** Cached render state */
+        ElementHandle cached_render_state;
+
+        /** Region destroyeds */
+        struct {
+            bool region_0 : 1;
+            bool region_1 : 1;
+            bool region_2 : 1;
+            bool region_3 : 1;
+            bool region_4 : 1;
+            bool region_5 : 1;
+            bool region_6 : 1;
+            bool region_7 : 1;
+        } region_destroyeds;
+
+        PADDING(0x1);
+
+        /** Shader permuations */
+        std::int16_t shader_permutation;
+
+        /** Region healths */
+        std::uint8_t region_healths[8];
+        
+        /** Region permutation ids */
+        std::int8_t region_permutation_ids[8];
 
         /** Colors used for things like armor color */
         ColorRGB color_change[4];
@@ -322,7 +565,11 @@ namespace Balltze::Engine {
         /** Colors used for things like armor color */
         ColorRGB color_change_2[4];
 
-        PADDING(0xC);
+        /** Node orientations blocks */
+        DynamicObjectBlockReference node_orientations[2];
+
+        /** Node matrices block */
+        DynamicObjectBlockReference node_matrices_block;
 
         /**
          * Get the full object handle of the object.
@@ -370,7 +617,7 @@ namespace Balltze::Engine {
             return reinterpret_cast<ModelNode *>(reinterpret_cast<std::byte *>(this) + model_node_offset[this->type]);
         }
     };
-    static_assert(sizeof(BaseDynamicObject) == 0x1F4);
+    static_assert(sizeof(DynamicObject) == 0x1F4);
 
     struct UnitRecentDamager {
         /** Last tick this object damaged this unit */
@@ -387,7 +634,7 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(UnitRecentDamager) == 0x10);
 
-    struct UnitDynamicObject : BaseDynamicObject {
+    struct UnitDynamicObject : DynamicObject {
         PADDING(0x10);
 
         PADDING_BIT(std::uint32_t, 4);
@@ -679,7 +926,7 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(WeaponMagazineState) == 0x10);
 
-    struct WeaponDynamicObject : BaseDynamicObject {
+    struct WeaponDynamicObject : DynamicObject {
         PADDING(0x40);
 
         /** Unknown */
@@ -1017,7 +1264,7 @@ namespace Balltze::Engine {
     struct Antenna {
         std::uint32_t unknown_0;
         std::uint32_t unknown_1;
-        std::uint32_t tag_handle;
+        ElementHandle tag_handle;
         std::uint32_t parent_object_id;
         Point3D position;
         AntennaVertex vertices[0x15];

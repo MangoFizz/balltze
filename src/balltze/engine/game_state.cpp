@@ -6,7 +6,7 @@
 #include <balltze/memory.hpp>
 
 namespace Balltze::Engine {
-    BaseDynamicObject *ObjectTable::get_dynamic_object(const ObjectHandle &object_handle) noexcept {
+    DynamicObject *ObjectTable::get_dynamic_object(const ObjectHandle &object_handle) noexcept {
         auto *object = this->get_element(object_handle.index.index);
         if(object && object->id == object_handle.index.id) {
             return object->object;
@@ -16,7 +16,7 @@ namespace Balltze::Engine {
         }
     }
 
-    BaseDynamicObject *ObjectTable::get_dynamic_object(std::uint32_t index) noexcept {
+    DynamicObject *ObjectTable::get_dynamic_object(std::uint32_t index) noexcept {
         auto *object = this->get_element(index);
         if(object) {
             return object->object;
