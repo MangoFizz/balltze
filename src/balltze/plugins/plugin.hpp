@@ -27,12 +27,14 @@ namespace Balltze::Plugins {
         std::string m_filename;
         std::filesystem::path m_filepath;
         std::filesystem::path m_directory;
+        bool m_loaded = false;
 
         virtual void get_directory() = 0;
         virtual void read_metadata() = 0;
 
     public:
         std::string filename() const noexcept;
+        std::filesystem::path filepath() const noexcept;
         std::string name() const noexcept;
         std::string author() const noexcept;
         VersionNumber version() const noexcept;
@@ -41,9 +43,11 @@ namespace Balltze::Plugins {
         std::filesystem::path directory() const noexcept;
         bool path_is_valid(std::filesystem::path path) const noexcept;
         void init_data_directory();
+        bool loaded() const noexcept;
 
         virtual PluginInitResult init() = 0;
         virtual void load() = 0;
+        virtual void unload() = 0;
     };
 
     class DLLPlugin : public Plugin {
@@ -57,6 +61,7 @@ namespace Balltze::Plugins {
         HMODULE handle();
         PluginInitResult init();
         void load();
+        void unload();
         DLLPlugin(std::filesystem::path dlL_file);
     };
 
@@ -80,6 +85,7 @@ namespace Balltze::Plugins {
         std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &imported_tags() const noexcept;
         PluginInitResult init();
         void load();
+        void unload();
         LuaPlugin(std::filesystem::path lua_file);
     };
 

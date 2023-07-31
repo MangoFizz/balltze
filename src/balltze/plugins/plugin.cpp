@@ -17,6 +17,10 @@ namespace Balltze::Plugins {
         return m_filename;
     }
 
+    std::filesystem::path Plugin::filepath() const noexcept {
+        return m_filepath;
+    }
+
     std::string Plugin::name() const noexcept {
         return m_metadata.name;
     }
@@ -57,6 +61,10 @@ namespace Balltze::Plugins {
         }
     }
 
+    bool Plugin::loaded() const noexcept {
+        return m_loaded;
+    }
+
     void DLLPlugin::read_metadata() {
         auto metadata_proc = GetProcAddress(m_handle, "plugin_metadata");
         if(metadata_proc) {
@@ -66,6 +74,7 @@ namespace Balltze::Plugins {
         else {
             logger.warning("Could not find plugin_metadata function in plugin {}.", m_filename);
             m_metadata.name = m_filepath.stem().string();
+            m_metadata.reloadable = false;
         }
     }
 
@@ -78,6 +87,10 @@ namespace Balltze::Plugins {
     }
 
     PluginInitResult DLLPlugin::init() {
+        if(m_loaded) {
+            throw std::runtime_error("Plugin cannot be initialized after loading.");
+        }
+
         logger.info("Initializing plugin {}...", m_filename);
         auto init_proc = GetProcAddress(m_handle, "plugin_init");
         if(init_proc) {
@@ -100,6 +113,10 @@ namespace Balltze::Plugins {
     }
 
     void DLLPlugin::load() {
+        if(m_loaded) {
+            throw std::runtime_error("Plugin already unloaded.");
+        }
+
         logger.info("Loading plugin {}...", m_filename);
         auto load_proc = GetProcAddress(m_handle, "plugin_load");
         if(load_proc) {
@@ -108,6 +125,28 @@ namespace Balltze::Plugins {
         }
         else {
             logger.warning("Could not find plugin_load function in plugin {}.", m_filename);
+        }
+
+        m_loaded = true;
+    }
+
+    void DLLPlugin::unload() {
+        if(!m_loaded) {
+            throw std::runtime_error("Plugin not loaded.");
+        }
+
+        logger.info("Unloading plugin {}...", m_filename);
+        auto unload_proc = GetProcAddress(m_handle, "plugin_unload");
+        if(unload_proc) {
+            auto unload_plugin = reinterpret_cast<plugin_unload_proc_t>(unload_proc);
+            unload_plugin();
+        }
+        else {
+            logger.warning("Could not find plugin_unload function in plugin {}.", m_filename);
+        }
+        
+        if(reloadable()) {
+            FreeLibrary(m_handle);
         }
     }
 
@@ -244,6 +283,10 @@ namespace Balltze::Plugins {
     }
 
     PluginInitResult LuaPlugin::init() {
+        if(m_loaded) {
+            throw std::runtime_error("Plugin cannot be initialized after loading.");
+        }
+
         Balltze::logger.info("Initializing plugin {}...", m_filename);
         lua_getglobal(m_state, "plugin_init");
         if(lua_isfunction(m_state, -1)) {
@@ -274,6 +317,10 @@ namespace Balltze::Plugins {
     }
 
     void LuaPlugin::load() {
+        if(m_loaded) {
+            throw std::runtime_error("Plugin already loaded.");
+        }
+
         Balltze::logger.info("Loading plugin {}...", m_filename);
         lua_getglobal(m_state, "plugin_load");
         if(lua_isfunction(m_state, -1)) {
@@ -289,6 +336,39 @@ namespace Balltze::Plugins {
         }
         else {
             Balltze::logger.warning("Could not find plugin_load function in plugin {}.", m_filename);
+        }
+
+        m_loaded = true;
+    }
+
+    void remove_plugin_commands(LuaPlugin *plugin) noexcept;
+
+    void LuaPlugin::unload() {
+        if(!m_loaded) {
+            throw std::runtime_error("Plugin not loaded.");
+        }
+
+        logger.debug("Unloading Lua plugin {}...", m_filename);
+        lua_getglobal(m_state, "plugin_unload");
+        if(lua_isfunction(m_state, -1)) {
+            auto res = lua_pcall(m_state, 0, 0, 0);
+            if(res != LUA_OK) {
+                const char *err = lua_tostring(m_state, -1);
+                if(err == nullptr) {
+                    err = "Unknown error.";
+                }
+                Balltze::logger.error("Error while unloading plugin {}: {}", m_filename, err);
+                lua_pop(m_state, 1);
+            }
+        }
+        else {
+            Balltze::logger.warning("Could not find plugin_unload function in plugin {}.", m_filename);
+        }
+
+        remove_plugin_commands(this);
+        
+        if(reloadable()) {
+            lua_close(m_state);
         }
     }
 

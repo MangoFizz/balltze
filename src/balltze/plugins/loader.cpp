@@ -4,6 +4,7 @@
 #include <vector>
 #include <filesystem>
 #include <memory>
+#include <balltze/command.hpp>
 #include <balltze/event.hpp>
 #include "../logger.hpp"
 #include "loader.hpp"
@@ -14,9 +15,22 @@ namespace Balltze::Plugins {
     static std::vector<std::unique_ptr<Plugin>> plugins;
     static EventListenerHandle<TickEvent> firstTickListener;
 
+    static bool plugin_loaded(std::filesystem::path path) noexcept {
+        for(auto &plugin : plugins) {
+            if(plugin->filepath() == path) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static void load_plugins_dlls() {
         auto plugins_path = get_plugins_path();
         for(auto &dll : std::filesystem::directory_iterator(plugins_path)) {
+            if(plugin_loaded(dll.path())) {
+                continue;
+            }
+
             if(dll.path().extension() == ".dll") {
                 try {
                     plugins.emplace_back(std::make_unique<DLLPlugin>(dll.path()));
@@ -31,6 +45,10 @@ namespace Balltze::Plugins {
     static void load_plugins_lua() {
         auto plugins_path = get_plugins_path();
         for(auto &lua : std::filesystem::directory_iterator(plugins_path)) {
+            if(plugin_loaded(lua.path())) {
+                continue;
+            }
+
             if(lua.path().extension() == ".lua") {
                 try {
                     plugins.emplace_back(std::make_unique<LuaPlugin>(lua.path()));
@@ -44,17 +62,23 @@ namespace Balltze::Plugins {
 
     static void load_plugins_first_tick(TickEvent const &context) noexcept {
         for(auto &plugin : plugins) {
+            if(plugin->loaded()) {
+                continue;
+            }
             plugin->load();
         }
         firstTickListener.remove();
     }
 
-    void load_plugins() noexcept {
+    void init_plugins() noexcept {
         init_plugins_path();
         logger.info("Initializing plugins...");
         load_plugins_dlls();
         load_plugins_lua();
         for(auto &plugin : plugins) {
+            if(plugin->loaded()) {
+                continue;
+            }
             auto init_result = plugin->init();
             switch(init_result) {
                 case PLUGIN_INIT_SUCCESS:
@@ -68,7 +92,21 @@ namespace Balltze::Plugins {
                     break;
             }
         }
-        firstTickListener = TickEvent::subscribe_const(load_plugins_first_tick, EVENT_PRIORITY_HIGHEST);
+    }
+
+    void unload_plugins() noexcept {
+        logger.info("Unloading plugins...");
+        auto it = plugins.begin();
+        while(it != plugins.end()) {
+            auto *plugin = it->get();
+            if(plugin->loaded() && plugin->reloadable()) {
+                plugin->unload();
+                it = plugins.erase(it);
+            }
+            else {
+                it++;
+            }
+        }
     }
 
     std::vector<LuaPlugin *> get_lua_plugins() noexcept {
@@ -101,5 +139,22 @@ namespace Balltze::Plugins {
             }
         }
         return nullptr;
+    }
+
+    void set_up_plugins() noexcept {
+        init_plugins();
+        firstTickListener = TickEvent::subscribe_const(load_plugins_first_tick, EVENT_PRIORITY_HIGHEST);
+
+        register_command("reload_plugins", "plugins", "Reloads all plugins", std::nullopt, [](int arg_count, const char **args) -> bool {
+            unload_plugins();
+            init_plugins();
+            for(auto &plugin : plugins) {
+                if(plugin->loaded()) {
+                    continue;
+                }
+                plugin->load();
+            }
+            return true;
+        }, false, 0, 0);
     }
 }

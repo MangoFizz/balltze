@@ -13,7 +13,7 @@
 #include "../logger.hpp"
 
 namespace Balltze {
-    std::vector<std::unique_ptr<Command>> commands;
+    std::vector<std::shared_ptr<Command>> commands;
 
     CommandResult Command::call(std::size_t arg_count, const char **args) const noexcept {
         if(m_function == nullptr) {
@@ -83,7 +83,7 @@ namespace Balltze {
         }
         m_plugin = reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle));
         m_full_name = get_full_name();
-        commands.emplace_back(std::make_unique<Command>(*this));
+        commands.emplace_back(std::make_shared<Command>(*this));
     }
 
     void Command::load_commands_settings_impl(HMODULE module_handle) {
@@ -284,7 +284,7 @@ namespace Balltze {
         }
         
         CommandResult res = COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
-        for(const auto &command : commands) {
+        for(const auto command : commands) {
             if(command->m_full_name == command_name) {
                 res = command->call(arg_count, arguments_alloc.get());
 
@@ -294,6 +294,8 @@ namespace Balltze {
                     config.set(std::string("commands.") + command->m_name, unsplit_arguments(arguments));
                     config.save();
                 }
+                
+                break;
             }
         }
 

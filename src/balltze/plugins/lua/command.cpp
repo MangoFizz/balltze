@@ -7,7 +7,7 @@
 #include "command.hpp"
 
 namespace Balltze {
-    extern std::vector<std::unique_ptr<Command>> commands;
+    extern std::vector<std::shared_ptr<Command>> commands;
 }
 
 namespace Balltze::Plugins {
@@ -23,6 +23,8 @@ namespace Balltze::Plugins {
         lua_getfield(state, -1, "commands");
         if(lua_isnil(state, -1)) {
             lua_pop(state, 1);
+
+            // if commands table does not exist, create it
             lua_newtable(state);
             lua_setfield(state, -2, "commands");
 
@@ -49,7 +51,6 @@ namespace Balltze::Plugins {
             if(lua_pcall(state, 1, 1, 0) == LUA_OK) {
                 if(!lua_isnil(state, -1)) {
                     if(lua_toboolean(state, -1)) {
-                        logger.info("Lua command {} returned true", *m_full_name);
                         return COMMAND_RESULT_SUCCESS;
                     }
                 }
@@ -57,6 +58,9 @@ namespace Balltze::Plugins {
                     logger.warning("Lua command {} returned nil", *m_full_name);
                 }
             }
+        }
+        else {
+            logger.warning("Lua command {} not found", *m_full_name);
         }
         return COMMAND_RESULT_FAILED_ERROR;
     }
@@ -76,7 +80,19 @@ namespace Balltze::Plugins {
         }
         m_plugin = reinterpret_cast<PluginHandle>(plugin);
         m_full_name = get_full_name();
-        commands.emplace_back(std::make_unique<LuaCommand>(*this));
+        commands.emplace_back(std::make_shared<LuaCommand>(*this));
+    }
+
+    void remove_plugin_commands(LuaPlugin *plugin) noexcept {
+        logger.debug("Removing commands from plugin {}", plugin->name());
+        for(auto it = commands.begin(); it != commands.end();) {
+            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
+                it = commands.erase(it);
+            }
+            else {
+                it++;
+            }
+        }   
     }
 
     static int lua_command_register_command(lua_State *state) noexcept {

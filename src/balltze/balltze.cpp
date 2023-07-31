@@ -34,7 +34,7 @@ namespace Balltze {
             Memory::find_signatures();
             Event::set_up_events();
             Features::set_up_features();
-            Plugins::load_plugins();
+            Plugins::set_up_plugins();
             set_up_commands();
             set_up_commands_tab_completion();
             load_commands_settings();

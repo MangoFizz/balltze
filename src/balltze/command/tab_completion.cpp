@@ -12,7 +12,7 @@
 namespace Balltze {
     using HscFunctionEntry = Engine::HscFunctionEntry;
 
-    extern std::vector<std::unique_ptr<Command>> commands;
+    extern std::vector<std::shared_ptr<Command>> commands;
 
     static HscFunctionEntry ***entries = nullptr;
     static std::uint32_t *entry_count;
