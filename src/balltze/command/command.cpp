@@ -13,17 +13,21 @@
 #include "../logger.hpp"
 
 namespace Balltze {
-    std::vector<Command> commands;
+    std::vector<std::unique_ptr<Command>> commands;
 
     CommandResult Command::call(std::size_t arg_count, const char **args) const noexcept {
+        if(m_function == nullptr) {
+            logger.debug("Command {} function has a null pointer", m_name);
+            return COMMAND_RESULT_FAILED_ERROR;
+        }
         if(arg_count > this->max_args()) {
-            return CommandResult::COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS;
+            return COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS;
         }
         else if(arg_count < this->min_args()) {
-            return CommandResult::COMMAND_RESULT_FAILED_NOT_ENOUGH_ARGUMENTS;
+            return COMMAND_RESULT_FAILED_NOT_ENOUGH_ARGUMENTS;
         }
         else {
-            return this->m_function(arg_count, args) ? CommandResult::COMMAND_RESULT_SUCCESS : CommandResult::COMMAND_RESULT_FAILED_ERROR;
+            return m_function(arg_count, args) ? COMMAND_RESULT_SUCCESS : COMMAND_RESULT_FAILED_ERROR;
         }
     }
 
@@ -57,28 +61,37 @@ namespace Balltze {
         m_name(name), m_category(category), m_help(help), m_params_help(params_help), m_function(function), m_autosave(autosave), m_min_args(min_args), m_max_args(max_args), m_can_call_from_console(can_call_from_console), m_public(is_public) {
             m_name = to_lower(m_name);
             m_plugin = nullptr;
+            if(m_min_args > m_max_args) {
+                throw std::runtime_error("Command " + m_name + " has a minimum argument count greater than the maximum argument count");
+            }
+            if(function == nullptr) {
+                throw std::runtime_error("Command " + m_name + " has a null function");
+            }
         }
+
+    Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, bool is_public) : 
+        m_name(name), m_category(category), m_help(help), m_params_help(params_help), m_function(nullptr), m_autosave(autosave), m_min_args(min_args), m_max_args(max_args), m_can_call_from_console(can_call_from_console), m_public(is_public) {}
 
     Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t args, bool can_call_from_console, bool is_public) : \
         Command(name, category, help, params_help, function, autosave, args, args, can_call_from_console, is_public) {}
 
     void Command::register_command_impl(HMODULE module_handle) {
-        for(const Command &command : commands) {
-            if(std::strcmp(command.name(), this->name()) == 0) {
+        for(const auto &command : commands) {
+            if(std::strcmp(command->name(), this->name()) == 0) {
                 throw std::runtime_error("Command " + std::string(this->name()) + " already registered!");
             }
         }
         m_plugin = reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle));
         m_full_name = get_full_name();
-        commands.push_back(*this);
+        commands.emplace_back(std::make_unique<Command>(*this));
     }
 
     void Command::load_commands_settings_impl(HMODULE module_handle) {
         if(module_handle == get_current_module()) {
             auto &config = Config::get_config();
             for(auto &command : commands) {
-                auto command_key = std::string("commands.") + command.m_name;
-                if(command.m_plugin && command.m_plugin == nullptr) {
+                auto command_key = std::string("commands.") + command->m_name;
+                if(command->m_plugin && command->m_plugin == nullptr) {
                     if(config.exists(command_key)) {
                         bool failed = false;
                         auto command_value = config.get<std::string>(command_key);
@@ -90,7 +103,7 @@ namespace Balltze {
                                 arguments_alloc[i] = arguments[i].data();
                             }
 
-                            bool res = command.call(arguments.size(), arguments_alloc.get());
+                            bool res = command->call(arguments.size(), arguments_alloc.get());
                             if(res != COMMAND_RESULT_SUCCESS) {
                                 failed = true;
                             }
@@ -100,7 +113,7 @@ namespace Balltze {
                         }
 
                         if(failed) {
-                            logger.warning("Command {} failed to load from config", command.m_name);
+                            logger.warning("Command {} failed to load from config", command->m_name);
                             config.remove(command_key);
                             config.save();
                         }
@@ -117,8 +130,8 @@ namespace Balltze {
             auto directory = plugin->directory();
             auto config = Config::Config(directory / "settings.json");
             for(auto &command : commands) {
-                auto command_key = std::string("commands.") + command.m_name;
-                if(command.m_plugin && command.m_plugin == reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle))) {
+                auto command_key = std::string("commands.") + command->m_name;
+                if(command->m_plugin && command->m_plugin == reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle))) {
                     if(config.exists(command_key)) {
                         auto command_value = config.get<std::string>(command_key);
                         auto arguments = split_arguments(command_value.value());
@@ -128,9 +141,9 @@ namespace Balltze {
                             arguments_alloc[i] = arguments[i].data();
                         }
 
-                        bool res = command.call(arguments.size(), arguments_alloc.get());
+                        bool res = command->call(arguments.size(), arguments_alloc.get());
                         if(!res) {
-                            logger.warning("Command {} failed to load from config", command.m_name);
+                            logger.warning("Command {} failed to load from config", command->m_name);
                             config.remove(command_key);
                             config.save();
                         }
@@ -271,14 +284,14 @@ namespace Balltze {
         }
         
         CommandResult res = COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
-        for(const Command &command : commands) {
-            if(command.full_name() == command_name) {
-                res = command.call(arg_count, arguments_alloc.get());
+        for(const auto &command : commands) {
+            if(command->m_full_name == command_name) {
+                res = command->call(arg_count, arguments_alloc.get());
 
                 // Save if autosave is enabled
-                if(command.autosave() && res == CommandResult::COMMAND_RESULT_SUCCESS) {
+                if(command->m_autosave && res == COMMAND_RESULT_SUCCESS) {
                     auto &config = Config::get_config();
-                    config.set(std::string("commands.") + command.name(), unsplit_arguments(arguments));
+                    config.set(std::string("commands.") + command->m_name, unsplit_arguments(arguments));
                     config.save();
                 }
             }

@@ -19,13 +19,7 @@ namespace Balltze::Plugins {
         lua_gettable(state, LUA_REGISTRYINDEX);
         if(lua_isnil(state, -1)) {
             lua_pop(state, 1);
-
-            lua_pushlightuserdata(state, balltze_module);
-            lua_newtable(state);
-            lua_settable(state, LUA_REGISTRYINDEX);
-
-            lua_pushlightuserdata(state, balltze_module);
-            lua_gettable(state, LUA_REGISTRYINDEX);
+            logger.error("Could not find balltze Lua registry table");
         }
 
         lua_newtable(state);

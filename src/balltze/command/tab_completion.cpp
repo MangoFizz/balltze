@@ -12,7 +12,7 @@
 namespace Balltze {
     using HscFunctionEntry = Engine::HscFunctionEntry;
 
-    extern std::vector<Command> commands;
+    extern std::vector<std::unique_ptr<Command>> commands;
 
     static HscFunctionEntry ***entries = nullptr;
     static std::uint32_t *entry_count;
@@ -27,12 +27,12 @@ namespace Balltze {
         old_entries = *entries;
 
         new_entries_list = std::vector<HscFunctionEntry *>(old_entries, old_entries + old_entry_count);
-        for(auto &command : commands) {
+        for(const auto &command : commands) {
             auto &new_command = new_entries_added.emplace_back(std::make_unique<HscFunctionEntry>());
             new_command->return_type = Engine::HSC_DATA_TYPE_VOID;
-            new_command->name = command.full_name();
-            new_command->help_message = command.help();
-            new_command->help_parameters = command.params_help();
+            new_command->name = command->full_name();
+            new_command->help_message = command->help();
+            new_command->help_parameters = command->params_help();
             *reinterpret_cast<std::uint16_t *>(new_command->gap_70) = 0x15;
             new_entries_list.emplace_back(new_command.get());
         }

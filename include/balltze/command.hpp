@@ -47,7 +47,7 @@ namespace Balltze {
     /**
      * Command the user can call to execute functions
      */
-    class Command {
+    class BALLTZE_API Command {
     public:
         /**
          * Get the name of the command
@@ -55,6 +55,13 @@ namespace Balltze {
          */
         inline const char *name() const noexcept {
             return this->m_name.c_str();
+        }
+
+        /**
+         * Get the handle of the plugin that registered the command
+         */
+        inline std::optional<PluginHandle> plugin() const noexcept {
+            return this->m_plugin;
         }
 
         /**
@@ -138,7 +145,7 @@ namespace Balltze {
          * @param  args      array of arguments
          * @return           result of command
          */
-        CommandResult call(std::size_t arg_count, const char **args) const noexcept;
+        virtual CommandResult call(std::size_t arg_count, const char **args) const noexcept;
 
         /**
          * Call the function with the given arguments
@@ -182,7 +189,7 @@ namespace Balltze {
             }
         }
 
-    private:
+    protected:
         /** Name of the command */
         std::string m_name;
 
@@ -192,6 +199,10 @@ namespace Balltze {
         /** Plugin that registered the command */
         std::optional<PluginHandle> m_plugin;
 
+        std::string get_full_name() const noexcept;
+        Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, bool is_public);
+
+    private:
         /** Category of the command */
         std::string m_category;
 
@@ -224,7 +235,6 @@ namespace Balltze {
         static CommandResult execute_command_impl(HMODULE module_handle, std::string command);
         friend void load_commands_settings();
         static void load_commands_settings_impl(HMODULE module_handle);
-        std::string get_full_name() const noexcept;
     };
 
     /** 
@@ -232,14 +242,14 @@ namespace Balltze {
      * @param command   Console command input
      * @return          Splitted arguments
      */
-    std::vector<std::string> split_arguments(std::string command) noexcept;
+    BALLTZE_API std::vector<std::string> split_arguments(std::string command) noexcept;
 
     /**
      * Unsplit the arguments
      * @param  arguments arguments to unsplit
      * @return           combined arguments
      */
-    std::string unsplit_arguments(const std::vector<std::string> &arguments) noexcept;
+    BALLTZE_API std::string unsplit_arguments(const std::vector<std::string> &arguments) noexcept;
 
     /**
      * Register a command

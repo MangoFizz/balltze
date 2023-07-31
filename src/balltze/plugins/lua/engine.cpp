@@ -1026,6 +1026,7 @@ namespace Balltze::Plugins {
                     object = object_table.get_dynamic_object(object_handle);
                 }
                 else {
+                    logger.debug("object handle {}", object_handle.handle);
                     object = object_table.get_dynamic_object(object_handle.index);
                 }
                 if(object) {

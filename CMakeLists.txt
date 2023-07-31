@@ -92,6 +92,7 @@ add_library(balltze SHARED
     src/balltze/plugins/plugin.cpp
     src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/lua/chimera.cpp
+    src/balltze/plugins/lua/command.cpp
     src/balltze/plugins/lua/engine.cpp
     src/balltze/plugins/lua/features.cpp
     src/balltze/plugins/lua/event.cpp
