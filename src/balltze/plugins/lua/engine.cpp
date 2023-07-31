@@ -975,6 +975,157 @@ namespace Balltze::Plugins {
         }    
     }
 
+    static int lua_engine_get_camera_data(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                auto &camera_data = Engine::get_camera_data();
+                lua_push_meta_engine_camera_data(state, camera_data);
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_data.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_engine_get_camera_type(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                auto camera_type = Engine::get_camera_type();
+                lua_pushinteger(state, camera_type);
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_type.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_engine_get_dynamic_object(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 1) {
+                auto &object_table = Engine::get_object_table();
+                Engine::DynamicObject *object;
+                Engine::ObjectHandle object_handle;
+                object_handle.handle = luaL_checkinteger(state, 1);
+                if(object_handle.id != 0) {
+                    object = object_table.get_dynamic_object(object_handle);
+                }
+                else {
+                    object = object_table.get_dynamic_object(object_handle.index);
+                }
+                if(object) {
+                    lua_push_meta_engine_dynamic_object(state, *object);
+                }
+                else {
+                    lua_pushnil(state);
+                }
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_dynamic_object.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_engine_create_dynamic_object(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 3 || args == 5) {
+                auto object_tag = Engine::TagHandle(luaL_checkinteger(state, 1));
+                Engine::ObjectHandle parent_object_handle = Engine::ObjectHandle::null();
+                auto position = lua_to_point3_d(state, 3);
+                if(!lua_isnil(state, 2)) {
+                    parent_object_handle.handle = luaL_checkinteger(state, 2);
+                }
+                auto &object_table = Engine::get_object_table();
+                auto object_handle = object_table.create_object(object_tag, position, parent_object_handle);
+                if(object_handle != Engine::ObjectHandle::null()) {
+                    auto *object = object_table.get_dynamic_object(object_handle);
+                    if(object) {
+                        lua_push_meta_engine_dynamic_object(state, *object);
+                        return 1;
+                    }
+                    else {
+                        return luaL_error(state, "Could not get object.");
+                    }
+                }
+                else {
+                    return luaL_error(state, "Could not create object.");
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.create_dynamic_object.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_engine_delete_dynamic_object(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1) {
+                auto &object_table = Engine::get_object_table();
+                if(lua_istable(state, 1)) {
+                    auto *object = lua_from_meta_object<Engine::DynamicObject>(state, 1);
+                    if(object) {
+                        auto object_handle = object->object_handle();
+                        object_table.delete_object(object_handle);
+                    }
+                    else {
+                        return luaL_error(state, "Invalid object.");
+                    }
+                }
+                else if(lua_isinteger(state, 1)) {
+                    Engine::ObjectHandle object_handle;
+                    object_handle.handle = luaL_checkinteger(state, 1);
+                    if(object_handle.id != 0) {
+                        object_table.delete_object(object_handle);
+                    }
+                    else {
+                        object_table.delete_object(object_handle.index);
+                    }
+                }
+                else {
+                    return luaL_error(state, "Invalid value type (expected table or integer).");
+                }
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.delete_dynamic_object.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
     static const luaL_Reg engine_functions[] = {
         {"console_print", lua_engine_console_print},
         {"get_resolution", lua_engine_get_resolution},
@@ -1001,6 +1152,11 @@ namespace Balltze::Plugins {
         {"draw_hud_message_sprite", lua_engine_draw_hud_message_sprite},
         {"play_sound", lua_engine_play_sound},
         {"get_sound_permutation_samples_duration", lua_engine_get_sound_permutation_samples_duration},
+        {"get_camera_data", lua_engine_get_camera_data},
+        {"get_camera_type", lua_engine_get_camera_type},
+        {"get_dynamic_object", lua_engine_get_dynamic_object},
+        {"create_dynamic_object", lua_engine_create_dynamic_object},
+        {"delete_dynamic_object", lua_engine_delete_dynamic_object},
         {nullptr, nullptr}
     };
 

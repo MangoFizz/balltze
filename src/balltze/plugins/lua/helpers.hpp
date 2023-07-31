@@ -35,7 +35,20 @@ namespace Balltze::Plugins {
 
     void lua_push_engine_resolution(lua_State *state, Engine::Resolution &resolution) noexcept;
 
+    std::string object_type_to_string(Engine::ObjectType type);
+    Engine::ObjectType object_type_from_string(const std::string &type);
+
+    std::string object_network_role_to_string(Engine::ObjectNetworkRole role);
+    Engine::ObjectNetworkRole object_network_role_from_string(const std::string &role);
+
+    std::string dynamic_object_attachment_type_to_string(Engine::DynamicObjectAttachmentType type);
+    Engine::DynamicObjectAttachmentType dynamic_object_attachment_type_from_string(const std::string &type);
+
+    std::string multiplayer_team_to_string(Engine::MultiplayerTeam team);
+    Engine::MultiplayerTeam multiplayer_team_from_string(const std::string &team);
+
     Engine::Point2DInt lua_to_point2_d_int(lua_State *state, int index);
+    Engine::Point3D lua_to_point3_d(lua_State *state, int index);
     Engine::ColorARGBInt lua_to_color_a_r_g_b_int(lua_State *state, int index);
 
     void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
@@ -48,6 +61,7 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point) noexcept;
     void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler) noexcept;
     void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler) noexcept;
+    void lua_push_meta_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3D &euler) noexcept;
     void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector) noexcept;
     void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector) noexcept;
     void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color) noexcept;
@@ -55,6 +69,18 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane) noexcept;
     void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept;
     void lua_push_meta_engine_widget(lua_State *state, Engine::Widget &widget) noexcept;
+    void lua_push_meta_engine_camera_data(lua_State *state, Engine::CameraData &data) noexcept;
+    void lua_push_meta_engine_rotation_matrix(lua_State *state, Engine::RotationMatrix &matrix) noexcept;
+    void lua_push_meta_engine_model_node(lua_State *state, Engine::ModelNode &node) noexcept;
+    void lua_push_meta_engine_dynamic_object_flags(lua_State *state, Engine::DynamicObjectFlags &flags) noexcept;
+    void lua_push_meta_engine_dynamic_object_network(lua_State *state, Engine::DynamicObjectNetwork &network) noexcept;
+    void lua_push_meta_engine_scenario_location(lua_State *state, Engine::ScenarioLocation &location) noexcept;
+    void lua_push_meta_engine_dynamic_object_vitals_flags(lua_State *state, Engine::DynamicObjectVitalsFlags &flags) noexcept;
+    void lua_push_meta_engine_dynamic_object_vitals(lua_State *state, Engine::DynamicObjectVitals &flags) noexcept;
+    void lua_push_meta_engine_dynamic_object_attachments_data(lua_State *state, Engine::DynamicObjectAttachmentsData &data) noexcept;
+    void lua_push_meta_engine_dynamic_object_region_destroyeds(lua_State *state, Engine::DynamicObjectRegionDestroyeds &destroyeds) noexcept;
+    void lua_push_meta_engine_dynamic_object_block_reference(lua_State *state, Engine::DynamicObjectBlockReference &reference) noexcept;
+    void lua_push_meta_engine_dynamic_object(lua_State *state, Engine::DynamicObject &object) noexcept;
 
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex) noexcept {

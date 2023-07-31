@@ -261,7 +261,7 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(DynamicObjectFlags) == sizeof(std::uint32_t));
 
-    struct ObjectNetwork {
+    struct DynamicObjectNetwork {
         /** Object position is valid */
         bool valid_position;
 
@@ -286,7 +286,7 @@ namespace Balltze::Engine {
         /** Timestamp */
         TickCount timestamp;
     };
-    static_assert(sizeof(ObjectNetwork) == 0x44);
+    static_assert(sizeof(DynamicObjectNetwork) == 0x44);
 
     struct ScenarioLocation {
         std::int32_t leaf_id;
@@ -396,6 +396,19 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(DynamicObjectAttachmentsData) == 0x2C);
 
+    struct DynamicObjectRegionDestroyeds {
+        bool region_0 : 1;
+        bool region_1 : 1;
+        bool region_2 : 1;
+        bool region_3 : 1;
+        bool region_4 : 1;
+        bool region_5 : 1;
+        bool region_6 : 1;
+        bool region_7 : 1;
+        PADDING_BIT(bool, 0x8);
+    };
+    static_assert(sizeof(DynamicObjectRegionDestroyeds) == sizeof(std::uint16_t));
+
     struct DynamicObjectBlockReference {
         std::uint16_t size;
         std::uint16_t offset;
@@ -429,7 +442,7 @@ namespace Balltze::Engine {
         std::uint32_t object_marker_id;
 
         /** Object network */
-        ObjectNetwork network;
+        DynamicObjectNetwork network;
 
         /** Coordinates of the object relative to the world or to its parent */
         Point3D position;
@@ -537,18 +550,7 @@ namespace Balltze::Engine {
         ResourceHandle cached_render_state;
 
         /** Region destroyeds */
-        struct {
-            bool region_0 : 1;
-            bool region_1 : 1;
-            bool region_2 : 1;
-            bool region_3 : 1;
-            bool region_4 : 1;
-            bool region_5 : 1;
-            bool region_6 : 1;
-            bool region_7 : 1;
-        } region_destroyeds;
-
-        PADDING(0x1);
+        DynamicObjectRegionDestroyeds region_destroyeds;
 
         /** Shader permuations */
         std::int16_t shader_permutation;

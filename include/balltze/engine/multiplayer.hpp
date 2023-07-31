@@ -25,7 +25,7 @@ namespace Balltze::Engine {
 
     enum MultiplayerTeam : std::uint16_t {
         MULTIPLAYER_TEAM_RED = 0,
-        MULTIPLAYER_TEAM_TEAM_BLUE,
+        MULTIPLAYER_TEAM_BLUE,
     };
 
     struct Player;
