@@ -10,15 +10,15 @@ namespace Balltze::Event {
         void map_file_data_read_event_before();
         void map_file_data_read_event_after();
 
-        void dispatch_map_file_data_read_event_before(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED *overlapped) {
+        void dispatch_map_file_data_read_event_before(HANDLE file_descriptor, std::byte *output, std::size_t *size, LPOVERLAPPED overlapped) {
             MapFileDataReadEventArgs args;
             args.file_handle = file_descriptor;
             args.output_buffer = output;
-            args.size = size;
-            args.overlapped = *overlapped;
+            args.size = *size;
+            args.overlapped = overlapped;
             MapFileDataReadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
-            *overlapped = event.args.overlapped;
+            *size = event.args.size;
         }
 
         void dispatch_map_file_data_read_event_after(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {

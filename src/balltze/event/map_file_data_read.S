@@ -8,7 +8,8 @@
 _map_file_data_read_event_before:
     mov eax, [esp + 0x2C]
     mov ebp, [esp + 0x30]
-    lea esi, [esp + 0x08]
+    mov esi, [esp + 0x08]
+    lea ebx, [esp + 0x14]
     push esi
     push ebx
     push ebp
@@ -21,6 +22,7 @@ _map_file_data_read_event_before:
 _map_file_data_read_event_after:
     mov eax, [esp + 0x2C]
     mov ebp, [esp + 0x30]
+    mov esi, [esp + 0x08]
     push esi
     push ebx
     push ebp
