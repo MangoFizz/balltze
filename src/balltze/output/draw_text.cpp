@@ -802,12 +802,8 @@ namespace Balltze {
                                 continue;
                             }
 
-                            logger.debug << "Loading font " << f.path().string() << "... ";
-                            if(AddFontResourceEx(f.path().string().c_str(), FR_PRIVATE, 0)) {
-                                logger.debug << "done" << logger.endl;
-                            }
-                            else {
-                                logger.debug << "FAILED" << logger.endl;
+                            logger.info("Loading font {}...", f.path().string());
+                            if(!AddFontResourceEx(f.path().string().c_str(), FR_PRIVATE, 0)) {
                                 std::string error_message = fmt::format("Failed to load {}.\nMake sure this is a valid font.", f.path().string().c_str());
                                 logger.error(error_message);
                                 show_error_box("Font error: %s", error_message);

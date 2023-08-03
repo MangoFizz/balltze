@@ -51,7 +51,7 @@ namespace Balltze::Features {
         }
 
         void read_map_data() {
-            logger.debug("Reading tag data for secondary map {}", this->name);
+            logger.info("Reading tag data for secondary map {}", this->name);
 
             std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
             std::fread(&this->header, sizeof(MapHeader), 1, file);
@@ -441,7 +441,6 @@ namespace Balltze::Features {
                         logger.warning("Cannot load model data from map {} because it has no tag data header", map->name);
                     }
                 }
-                logger.info("Model data loaded!");
             }
         }
         else {
