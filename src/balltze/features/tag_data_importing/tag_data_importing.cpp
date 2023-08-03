@@ -31,7 +31,6 @@ namespace Balltze::Features {
     static std::unique_ptr<MapHeader> loaded_map_header;
     static std::vector<std::shared_ptr<SecondaryMap>> secondary_maps;
     static std::vector<Tag> tag_array;
-    static bool tag_data_loaded = false;
     
     static std::string prepared_map_name;
     static std::unique_ptr<MapHeader> prepared_map_header;
@@ -449,12 +448,12 @@ namespace Balltze::Features {
             if(event.args.output_buffer == get_tag_data_address()) {
                 // Check if we're reading from the next map
                 if(file_name.stem().string() != prepared_map_name) {
-                    return;
+                    logger.warning("Reading tag data from map {} instead of {}", file_name.stem().string(), prepared_map_name);
+                    prepared_map_name = file_name.stem().string();
                 }
 
                 logger.info("Loading tag data from secondary maps...");
                 load_tag_data();
-                tag_data_loaded = true;
             }
         }
     }
