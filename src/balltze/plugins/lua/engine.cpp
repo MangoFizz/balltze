@@ -1134,29 +1134,32 @@ namespace Balltze::Plugins {
             if(args == 3) {
                 Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
                 Engine::ObjectHandle vehicle_handle(luaL_checkinteger(state, 2));
-                // TODO Add support for using seat labels too instead of seat indices
-                int seat_index = luaL_checkinteger(state, 3);
                 auto &object_table = Engine::get_object_table();
+
                 auto *unit = reinterpret_cast<Engine::UnitDynamicObject *>(object_table.get_dynamic_object(unit_handle));
-                auto *vehicle = reinterpret_cast<Engine::UnitDynamicObject *>(object_table.get_dynamic_object(vehicle_handle));
                 if(!unit) {
                     return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
                 }
                 if(!unit->type == Engine::OBJECT_TYPE_BIPED) {
                     return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped");
                 }
-                if(!vehicle) {
-                    return luaL_error(state, "invalid vehicle handle in balltze unit_enter_vehicle");
+                
+                try {
+                    if(lua_isinteger(state, 3)) {
+                        auto seat_index = luaL_checkinteger(state, 3);
+                        unit->enter_vehicle(vehicle_handle, seat_index);
+                    }
+                    else if(lua_isstring(state, 3)) {
+                        auto seat_label = luaL_checkstring(state, 3);
+                        unit->enter_vehicle(vehicle_handle, seat_label);
+                    }
+                    else {
+                        return luaL_error(state, "invalid seat index or label in balltze unit_enter_vehicle, expected integer or string");
+                    }
                 }
-                if(!vehicle->type == Engine::OBJECT_TYPE_VEHICLE) {
-                    return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected vehicle");
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, "%s in balltze unit_enter_vehicle", e.what());
                 }
-                auto vehicle_tag = Engine::get_tag(vehicle->tag_handle);
-                auto vehicle_tag_data = reinterpret_cast<Engine::TagDefinitions::Vehicle *>(vehicle_tag->data);
-                if(seat_index >= vehicle_tag_data->seats.count) {
-                    return luaL_error(state, "invalid seat index in ballte unit_enter_vehicle");
-                }
-                unit->enter_vehicle(vehicle_handle, vehicle_tag_data->seats.offset[seat_index].label.string);
             }
             else {
                 return luaL_error(state, "invalid number of arguments in balltze unit_enter_vehicle");

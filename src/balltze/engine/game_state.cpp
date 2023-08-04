@@ -2,6 +2,8 @@
 
 #include <optional>
 #include <balltze/engine/multiplayer.hpp>
+#include <balltze/engine/tag.hpp>
+#include <balltze/engine/tag_definitions/vehicle.hpp>
 #include <balltze/engine/game_state.hpp>
 #include <balltze/memory.hpp>
 
@@ -81,8 +83,55 @@ namespace Balltze::Engine {
         return object_table;
     }
 
-    void UnitDynamicObject::enter_vehicle(ObjectHandle vehicle_handle, std::string seat_name) noexcept {
-        unit_enter_vehicle_asm(this->object_handle(), vehicle_handle, seat_name.c_str());
+    void UnitDynamicObject::enter_vehicle(ObjectHandle vehicle_handle, std::string seat_label) {
+        auto *vehicle_object = reinterpret_cast<Engine::UnitDynamicObject *>(get_object_table().get_dynamic_object(vehicle_handle));
+        if(!vehicle_object) {
+            throw std::runtime_error("vehicle object not found");
+        }
+        if(!vehicle_object->type == Engine::OBJECT_TYPE_VEHICLE) {
+            throw std::runtime_error("object is not a vehicle");
+        }
+
+        auto tag_handle = vehicle_object->tag_handle;
+        auto tag = get_tag(tag_handle);
+        if(!tag) {
+            throw std::runtime_error("vehicle tag not found");
+        }
+        auto *tag_data = reinterpret_cast<TagDefinitions::Vehicle *>(tag->data);
+
+        for(std::size_t seat_index = 0; seat_index < tag_data->seats.count; seat_index++) {
+            auto &seat = tag_data->seats.offset[seat_index];
+            if(seat.label.string == seat_label) {
+                unit_enter_vehicle_asm(this->object_handle(), vehicle_handle, seat_label.c_str());
+                return;
+            }
+        }
+
+        throw std::runtime_error("seat not found");
+    }
+
+    void UnitDynamicObject::enter_vehicle(ObjectHandle vehicle_handle, std::size_t seat_index) {
+        auto *vehicle_object = reinterpret_cast<Engine::UnitDynamicObject *>(get_object_table().get_dynamic_object(vehicle_handle));
+        if(!vehicle_object) {
+            throw std::runtime_error("vehicle object not found");
+        }
+        if(!vehicle_object->type == Engine::OBJECT_TYPE_VEHICLE) {
+            throw std::runtime_error("object is not a vehicle");
+        }
+
+        auto tag_handle = vehicle_object->tag_handle;
+        auto tag = get_tag(tag_handle);
+        if(!tag) {
+            throw std::runtime_error("vehicle tag not found");
+        }
+        auto *tag_data = reinterpret_cast<TagDefinitions::Vehicle *>(tag->data);
+
+        if(seat_index < 0 || seat_index >= tag_data->seats.count) {
+            throw std::runtime_error("seat index out of bounds");
+        }
+
+        auto &seat_name = tag_data->seats.offset[seat_index].label.string;
+        unit_enter_vehicle_asm(this->object_handle(), vehicle_handle, seat_name);
     }
 
     extern "C" void apply_damage_asm(DamageObjectStructThing *damage, std::uint32_t object);

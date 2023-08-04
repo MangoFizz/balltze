@@ -869,10 +869,17 @@ namespace Balltze::Engine {
 
         /**
          * Makes the unit enter a vehicle
-         * @param vehicle_handle Handle of the vehicle to enter
-         * @param seat_name Name of the seat to enter
+         * @param vehicle_handle    Handle of the vehicle to enter
+         * @param seat_label        Label of the seat to enter
          */
-        void enter_vehicle(ObjectHandle vehicle_handle, std::string seat_name) noexcept;
+        void enter_vehicle(ObjectHandle vehicle_handle, std::string seat_label);
+
+        /**
+         * Makes the unit enter a vehicle
+         * @param vehicle_handle    Handle of the vehicle to enter
+         * @param seat_index        Index of the seat to enter
+         */
+        void enter_vehicle(ObjectHandle vehicle_handle, std::size_t seat_index);
     };
     static_assert(sizeof(UnitDynamicObject) == 0x4CC);
 
