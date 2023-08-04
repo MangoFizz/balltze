@@ -742,7 +742,7 @@ namespace Balltze::Plugins {
         }
         else if(field == "path") { 
             char path[dependency->path_size + 1];
-            std::memcpy(path, reinterpret_cast<char *>(dependency->path_pointer), dependency->path_size);
+            std::memcpy(path, dependency->path, dependency->path_size);
             path[dependency->path_size] = '\0';
             lua_pushstring(state, path);
             return 1; 
@@ -783,7 +783,7 @@ namespace Balltze::Plugins {
             if(dependency->path_size < std::strlen(path)) {
                 return luaL_error(state, "Path is too long");
             }
-            std::memcpy(reinterpret_cast<char *>(dependency->path_pointer), path, std::strlen(path));
+            std::memcpy(dependency->path, path, std::strlen(path));
         }
         else { 
             return luaL_error(state, "Invalid key"); 

@@ -105,6 +105,7 @@ add_library(balltze SHARED
     ${TAG_REBASE_OFFSETS_FUNCTION_CPP} 
     ${TAG_FIX_DEPENDENCIES_FUNCTION_CPP} 
     ${TAG_LUA_METATABLE_FUNCTION_CPP}
+    ${TAG_COPY_DATA_FUNCTION_CPP}
 )
 
 # Set Balltze output properties

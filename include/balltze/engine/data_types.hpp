@@ -81,7 +81,7 @@ namespace Balltze::Engine {
 
 	struct TagDependency {
 		TagFourCC tag_fourcc;
-		std::uint32_t path_pointer;
+		char *path;
 		std::size_t path_size;
 		TagHandle tag_handle;
 	};

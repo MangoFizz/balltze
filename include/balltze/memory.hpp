@@ -24,6 +24,8 @@
 #define GET_BIT_GAP(type, bytes, line) BIT_GAP(type, bytes, line)
 #define PADDING_BIT(type, bytes) GET_BIT_GAP(type, bytes, __LINE__)
 
+#define MIB_SIZE 1048576
+
 namespace Balltze::Memory {
     /**
      * Overwrite the data at the pointer with the given bytes, ignoring any wildcard bytes.

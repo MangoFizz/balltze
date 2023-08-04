@@ -12,6 +12,7 @@
 
 #include <balltze/engine.hpp>
 #include <balltze/utils.hpp>
+#include <balltze/command.hpp>
 #include <balltze/event.hpp>
 #include <balltze/features.hpp>
 #include <balltze/memory.hpp>
@@ -29,8 +30,11 @@ namespace Balltze::Features {
 
     static std::string loaded_map_name;
     static std::unique_ptr<MapHeader> loaded_map_header;
+    static std::unique_ptr<TagDataHeader> loaded_map_tag_data_header;
     static std::vector<std::shared_ptr<SecondaryMap>> secondary_maps;
     static std::vector<Tag> tag_array;
+    static std::unique_ptr<std::byte[]> tag_data;
+    static std::size_t tag_data_cursor = 0;
     
     static std::string prepared_map_name;
     static std::unique_ptr<MapHeader> prepared_map_header;
@@ -44,6 +48,7 @@ namespace Balltze::Features {
         std::byte *tag_data_address = nullptr;
         TagDataHeader *tag_data_header;
         std::vector<std::pair<std::string, TagClassInt>> tags_to_load;
+        std::map<char *, char *> tag_path_translations;
         bool load_all_tags = false;
 
         std::size_t tag_data_size() const {
@@ -111,6 +116,7 @@ namespace Balltze::Features {
         secondary_maps = prepared_secondary_maps;
         loaded_map_name = std::move(prepared_map_name);
         loaded_map_header = std::move(prepared_map_header);
+        loaded_map_tag_data_header = std::make_unique<TagDataHeader>(tag_data_header);
 
         // Read tag data header for main map
         auto data_base_offset = loaded_map_header->file_size;
@@ -120,6 +126,11 @@ namespace Balltze::Features {
         auto *tag_array_raw = reinterpret_cast<const Tag *>(tag_data_address + sizeof(TagDataHeader));
         tag_array = std::vector<Tag>(tag_array_raw, tag_array_raw + tag_data_header.tag_count);
 
+        // Reserve 32 MiB for tag data
+        tag_data = std::make_unique<std::byte[]>(32 * MIB_SIZE);
+        tag_data_cursor = 0;
+
+        std::chrono::time_point start = std::chrono::steady_clock::now();
         for(auto &map : secondary_maps) {
             auto map_tag_data_header = map->tag_data_header;
             auto map_tag_data = map->tag_data.get();
@@ -162,6 +173,24 @@ namespace Balltze::Features {
                 return address;
             };
 
+            auto translate_tag_path = [&map](char *path) -> char * {
+                if(path == nullptr) {
+                    return nullptr;
+                }
+
+                // Check if path is already translated
+                if(map->tag_path_translations.find(path) != map->tag_path_translations.end()) {
+                    return map->tag_path_translations[path];
+                }
+
+                // Copy path to tag data buffer
+                auto *new_path = std::strcpy(reinterpret_cast<char *>(tag_data.get() + tag_data_cursor), path);
+                tag_data_cursor += std::strlen(path) + 1;
+
+                map->tag_path_translations.insert_or_assign(path, new_path);
+                return new_path;
+            };
+
             std::function<TagHandle (const Tag *, bool)> load_tag = [&](const Tag *tag, bool required) -> TagHandle {
                 // Check if current tag class is supported
                 if(!is_supported_tag(tag->primary_class)) {
@@ -179,7 +208,7 @@ namespace Balltze::Features {
 
                 // Set up new tag entry
                 auto &new_tag_entry = tag_array.emplace_back(*tag);
-                new_tag_entry.path = translate_address(new_tag_entry.path);
+                new_tag_entry.path = translate_tag_path(translate_address(new_tag_entry.path));
                 new_tag_entry.handle.index = tag_data_header.tag_count;
                 new_tag_entry.handle.id = tag_data_header.tags_literal + tag_data_header.tag_count;
                 tags_directory.insert_or_assign(tag->handle, new_tag_entry.handle);
@@ -202,30 +231,29 @@ namespace Balltze::Features {
                     return new_tag_entry.indexed ? offset : offset + data_base_offset;
                 });
 
-                new_tag_entry.fix_dependencies([&](std::variant<TagDependency, TagHandle> elem) -> std::variant<TagDependency, TagHandle> {
-                    if(std::holds_alternative<TagDependency>(elem)) {
-                        auto &tag_dependency = std::get<TagDependency>(elem);
-                        if(tag_dependency.tag_handle != -1) {
-                            tag_dependency.path_pointer = translate_address(tag_dependency.path_pointer); 
-                            auto *broken_tag = get_tag_from_secondary_map(tag_dependency.tag_handle);
-                            auto tag_handle = load_tag(broken_tag, true); 
-                            tag_dependency.tag_handle = tag_handle; 
-                        }
-                        return tag_dependency;
+                new_tag_entry.data = new_tag_entry.copy_data([](std::byte *data, std::size_t size) -> std::byte * {
+                    auto *new_data = tag_data.get() + tag_data_cursor;
+                    std::memcpy(new_data, data, size);
+                    tag_data_cursor += size;
+                    return new_data;
+                });
+
+                if(!new_tag_entry.data) {
+                    logger.fatal("Failed to copy data for tag {} of class {}", new_tag_entry.path, tag_class_to_string(new_tag_entry.primary_class));
+                    std::exit(EXIT_FAILURE);
+                }
+
+                new_tag_entry.fix_dependencies([&](TagHandle tag_handle) -> TagHandle {
+                    auto *broken_tag = get_tag_from_secondary_map(tag_handle);
+                    if(broken_tag) {
+                        auto new_tag_handle = load_tag(broken_tag, true);
+                        return new_tag_handle;
                     }
                     else {
-                        auto &tag_handle = std::get<TagHandle>(elem);
-                        auto *broken_tag = get_tag_from_secondary_map(tag_handle);
-                        if(broken_tag) {
-                            auto new_tag_handle = load_tag(broken_tag, true);
-                            return new_tag_handle;
+                        if(tag_handle != TagHandle::null()) {
+                            logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, map->name);
                         }
-                        else {
-                            if(tag_handle != TagHandle::null()) {
-                                logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, map->name);
-                            }
-                            return tag_handle;
-                        }
+                        return tag_handle;
                     }
                 });
 
@@ -295,10 +323,13 @@ namespace Balltze::Features {
                     }
                 }
             }
-        
+
             data_base_offset += map->header.file_size;
             model_data_base_offset += map_tag_data_header->model_data_size;
         }
+        std::chrono::time_point end = std::chrono::steady_clock::now();
+
+        logger.info("Loaded {} tags in {} ms", tag_array.size() - loaded_map_tag_data_header->tag_count, std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
 
         tag_data_header.tag_array = tag_array.data();
     }
@@ -470,5 +501,16 @@ namespace Balltze::Features {
 
         auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
         auto *model_data_buffer_alloc_hook = Memory::hook_function(model_data_buffer_alloc_sig->data(), on_model_data_buffer_alloc_asm);
+
+        register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps", std::nullopt, [](int arg_count, const char **args) -> bool {
+            if(secondary_maps.empty()) {
+                logger.info("No secondary maps loaded");
+                return true;
+            }
+            Engine::console_printf("Secondary maps loaded: %zu", secondary_maps.size());
+            Engine::console_printf("Tags imported: %zu", tag_array.size() - loaded_map_tag_data_header->tag_count);
+            Engine::console_printf("Imported tag data size: %.2f MiB", static_cast<float>(tag_data_cursor) / MIB_SIZE);
+            return true;
+        }, false, 0, 0);
     }
 }

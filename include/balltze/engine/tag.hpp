@@ -66,9 +66,16 @@ namespace Balltze::Engine {
 
         /**
          * Fix tag dependencies
-         * @param dependency_resolver Dependency resolver
+         * @param dependency_resolver A function that resolves tag handles from tag dependencies
          */
-        void fix_dependencies(std::function<std::variant<TagDependency, TagHandle>(std::variant<TagDependency, TagHandle>)> dependency_resolver);
+        void fix_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver);
+
+        /**
+         * Copy tag data to a new location
+         * @param  data_allocator A function that allocates memory for the copied structures from the original data and returns a pointer to the reserved memory
+         * @return                Pointer to copied data
+         */
+        std::byte *copy_data(std::function<std::byte *(std::byte *, std::size_t)> data_allocator);
     };
     static_assert(sizeof(Tag) == 0x20);
 
