@@ -17,7 +17,7 @@ services:
     - |
       mkdir build
       cd build
-      i686-w64-mingw32-cmake .. -DBALLTZE_ENABLE_EXPERIMENTAL=ON
+      i686-w64-mingw32-cmake .. -DBALLTZE_ENABLE_EXPERIMENTAL=ON -DCMAKE_CXX_FLAGS="-Wno-error=format-security"
       make -j $(nproc)
   build-release:
     <<: *common
@@ -27,7 +27,7 @@ services:
     - |
       mkdir build
       cd build
-      i686-w64-mingw32-cmake .. -DBALLTZE_ENABLE_EXPERIMENTAL=ON -DCMAKE_BUILD_TYPE=Release
+      i686-w64-mingw32-cmake .. -DBALLTZE_ENABLE_EXPERIMENTAL=ON  -DCMAKE_CXX_FLAGS="-Wno-error=format-security" -DCMAKE_BUILD_TYPE=Release
       make -j $(nproc)
       i686-w64-mingw32-strip balltze.dll
   clean:
