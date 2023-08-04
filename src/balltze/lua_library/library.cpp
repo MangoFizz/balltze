@@ -98,6 +98,41 @@ namespace Balltze::LuaLibrary {
         return 0;
     }
 
+    static int lua_unit_enter_vehicle(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 3) {
+            Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
+            Engine::ObjectHandle vehicle_handle(luaL_checkinteger(state, 2));
+            // TODO Add support for using seat labels too instead of seat indices
+            int seat_index = luaL_checkinteger(state, 3);
+            auto &object_table = Engine::get_object_table();
+            auto *unit = reinterpret_cast<Engine::UnitDynamicObject *>(object_table.get_dynamic_object(unit_handle));
+            auto *vehicle = reinterpret_cast<Engine::UnitDynamicObject *>(object_table.get_dynamic_object(vehicle_handle));
+            if(!unit) {
+                return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
+            }
+            if(!unit->type == Engine::OBJECT_TYPE_BIPED) {
+                return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped");
+            }
+            if(!vehicle) {
+                return luaL_error(state, "invalid vehicle handle in balltze unit_enter_vehicle");
+            }
+            if(!vehicle->type == Engine::OBJECT_TYPE_VEHICLE) {
+                return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected vehicle");
+            }
+            auto vehicle_tag = Engine::get_tag(vehicle->tag_handle);
+            auto vehicle_tag_data = reinterpret_cast<Engine::TagDefinitions::Vehicle *>(vehicle_tag->data);
+            if(seat_index >= vehicle_tag_data->seats.count) {
+                return luaL_error(state, "invalid seat index in ballte unit_enter_vehicle");
+            }
+            unit->enter_vehicle(vehicle_handle, vehicle_tag_data->seats.offset[seat_index].label.string);
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in balltze unit_enter_vehicle");
+        }
+        return 0;
+    }
+
     static int lua_script_unload(lua_State *state) noexcept {
         for(auto it = scripts.begin(); it != scripts.end(); it++) {
             if((*it)->state == state) {
@@ -164,6 +199,7 @@ namespace Balltze::LuaLibrary {
         // Set balltze functions
         register_function(state, "set_callback", lua_set_callback);
         register_function(state, "import_tag_data", lua_import_tag_data);
+        register_function(state, "unit_enter_vehicle", lua_unit_enter_vehicle);
 
         /**
          * Set __gc metamethod

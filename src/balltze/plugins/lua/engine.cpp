@@ -1127,6 +1127,48 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_unit_enter_vehicle(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 3) {
+                Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
+                Engine::ObjectHandle vehicle_handle(luaL_checkinteger(state, 2));
+                // TODO Add support for using seat labels too instead of seat indices
+                int seat_index = luaL_checkinteger(state, 3);
+                auto &object_table = Engine::get_object_table();
+                auto *unit = reinterpret_cast<Engine::UnitDynamicObject *>(object_table.get_dynamic_object(unit_handle));
+                auto *vehicle = reinterpret_cast<Engine::UnitDynamicObject *>(object_table.get_dynamic_object(vehicle_handle));
+                if(!unit) {
+                    return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
+                }
+                if(!unit->type == Engine::OBJECT_TYPE_BIPED) {
+                    return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped");
+                }
+                if(!vehicle) {
+                    return luaL_error(state, "invalid vehicle handle in balltze unit_enter_vehicle");
+                }
+                if(!vehicle->type == Engine::OBJECT_TYPE_VEHICLE) {
+                    return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected vehicle");
+                }
+                auto vehicle_tag = Engine::get_tag(vehicle->tag_handle);
+                auto vehicle_tag_data = reinterpret_cast<Engine::TagDefinitions::Vehicle *>(vehicle_tag->data);
+                if(seat_index >= vehicle_tag_data->seats.count) {
+                    return luaL_error(state, "invalid seat index in ballte unit_enter_vehicle");
+                }
+                unit->enter_vehicle(vehicle_handle, vehicle_tag_data->seats.offset[seat_index].label.string);
+            }
+            else {
+                return luaL_error(state, "invalid number of arguments in balltze unit_enter_vehicle");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        return 0;
+    }
+
     static const luaL_Reg engine_functions[] = {
         {"console_print", lua_engine_console_print},
         {"get_resolution", lua_engine_get_resolution},
@@ -1158,6 +1200,7 @@ namespace Balltze::Plugins {
         {"get_dynamic_object", lua_engine_get_dynamic_object},
         {"create_dynamic_object", lua_engine_create_dynamic_object},
         {"delete_dynamic_object", lua_engine_delete_dynamic_object},
+        {"unit_enter_vehicle", lua_unit_enter_vehicle},
         {nullptr, nullptr}
     };
 

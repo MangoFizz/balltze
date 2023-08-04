@@ -866,6 +866,13 @@ namespace Balltze::Engine {
         UnitRecentDamager recent_damager[4];
 
         PADDING(0x5C);
+
+        /**
+         * Makes the unit enter a vehicle
+         * @param vehicle_handle Handle of the vehicle to enter
+         * @param seat_name Name of the seat to enter
+         */
+        void enter_vehicle(ObjectHandle vehicle_handle, std::string seat_name) noexcept;
     };
     static_assert(sizeof(UnitDynamicObject) == 0x4CC);
 

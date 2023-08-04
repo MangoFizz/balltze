@@ -40,6 +40,7 @@ namespace Balltze::Engine {
         void create_object_query_asm(TagHandle tag_handle, ObjectHandle parent, s_object_creation_disposition *query);
         ObjectHandle create_object_asm(s_object_creation_disposition *query, std::uint32_t object_type);
         void delete_object_asm(TagHandle tag_handle);
+        void unit_enter_vehicle_asm(ObjectHandle unit_handle, ObjectHandle vehicle_handle, const char *seat_name);
     }
 
     ObjectHandle ObjectTable::create_object(const TagHandle &tag_handle, Point3D offset, const ObjectHandle &parent) noexcept {
@@ -78,6 +79,10 @@ namespace Balltze::Engine {
     ObjectTable &get_object_table() noexcept {
         static auto &object_table = ***reinterpret_cast<ObjectTable ***>(Memory::get_signature("object_table_address")->data());
         return object_table;
+    }
+
+    void UnitDynamicObject::enter_vehicle(ObjectHandle vehicle_handle, std::string seat_name) noexcept {
+        unit_enter_vehicle_asm(this->object_handle(), vehicle_handle, seat_name.c_str());
     }
 
     extern "C" void apply_damage_asm(DamageObjectStructThing *damage, std::uint32_t object);
