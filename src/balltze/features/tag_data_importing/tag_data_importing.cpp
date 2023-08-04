@@ -505,18 +505,18 @@ namespace Balltze::Features {
 
         register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps", std::nullopt, [](int arg_count, const char **args) -> bool {
             if(secondary_maps.empty()) {
-                logger.info("No secondary maps loaded.");
+                Engine::console_print("No tag data imported from secondary maps");
                 return true;
             }
             std::string maps_loaded;
             for(std::size_t i = 0; i < secondary_maps.size(); i++) {
                 auto &map = secondary_maps[i];
                 maps_loaded += map->name;
-                if(i == secondary_maps.size() - 1) {
+                if(i < secondary_maps.size() - 1) {
                     maps_loaded += ", ";
                 }
             }
-            Engine::console_printf("Imported tag data summary:");
+            Engine::console_print("Imported tag data summary:");
             Engine::console_printf("Maps loaded: %zu (%s)", secondary_maps.size(), maps_loaded.c_str());
             Engine::console_printf("Tags imported: %zu", tag_array.size() - loaded_map_tag_data_header->tag_count);
             Engine::console_printf("Imported tag data size: %.2f MiB", static_cast<float>(tag_data_cursor) / MIB_SIZE);
