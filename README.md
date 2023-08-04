@@ -48,9 +48,19 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../toolchain-i686-w64
 ```
 cmake --build .
 ```
-
 Depending on your system, you may need to modify the toolchain file to match your 
 environment.
+
+### Compiling using Docker
+There is a docker image available for building the project without having to install libraries and
+tools on your system. To build the image, run:
+```
+docker build . -t bonk
+```
+Now use docker compose to build the project:
+```
+docker compose run compile
+```
 
 NOTE: If you want to build the project with the experimental features, you need to
 define the `BALLTZE_ENABLE_EXPERIMENTAL` CMake variable to `ON` when generating the 
