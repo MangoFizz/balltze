@@ -53,14 +53,14 @@ namespace Balltze {
          * Get the name of the command
          * @return pointer to the name of the command
          */
-        inline const char *name() const noexcept {
+        const char *name() const noexcept {
             return this->m_name.c_str();
         }
 
         /**
          * Get the handle of the plugin that registered the command
          */
-        inline std::optional<PluginHandle> plugin() const noexcept {
+        std::optional<PluginHandle> plugin() const noexcept {
             return this->m_plugin;
         }
 
@@ -68,7 +68,7 @@ namespace Balltze {
          * Get the full name of the command
          * @return pointer to the full name of the command
          */
-        inline const char *full_name() const noexcept {
+        const char *full_name() const noexcept {
             return this->m_full_name->c_str();
         }
 
@@ -76,7 +76,7 @@ namespace Balltze {
          * Get the category of the command
          * @return pointer to the category of the command
          */
-        inline const char *category() const noexcept {
+        const char *category() const noexcept {
             return this->m_category.c_str();
         }
 
@@ -84,7 +84,7 @@ namespace Balltze {
          * Get the help of the command
          * @return pointer to the help of the command
          */
-        inline const char *help() const noexcept {
+        const char *help() const noexcept {
             return this->m_help.c_str();
         }
 
@@ -92,7 +92,7 @@ namespace Balltze {
          * Get the help of the parameters of the command
          * @return pointer to the help of the parameters of the command
          */
-        inline const char *params_help() const noexcept {
+        const char *params_help() const noexcept {
             if(m_params_help.has_value()) {
                 return this->m_params_help->c_str();
             }
@@ -103,7 +103,7 @@ namespace Balltze {
          * Get the minimum arguments of the command
          * @return minimum arguments
          */
-        inline std::size_t min_args() const noexcept {
+        std::size_t min_args() const noexcept {
             return this->m_min_args;
         }
 
@@ -111,7 +111,7 @@ namespace Balltze {
          * Get the maximum arguments of the command
          * @return maximum arguments
          */
-        inline std::size_t max_args() const noexcept {
+        std::size_t max_args() const noexcept {
             return this->m_max_args;
         }
 
@@ -119,7 +119,7 @@ namespace Balltze {
          * Return whether the command automatically saves
          * @return true if command should automatically save
          */
-        inline bool autosave() const noexcept {
+        bool autosave() const noexcept {
             return this->m_autosave;
         }
 
@@ -127,7 +127,7 @@ namespace Balltze {
          * Return whether the command can be called from console
          * @return true if command can be called from console
          */
-        inline bool can_call_from_console() const noexcept {
+        bool can_call_from_console() const noexcept {
             return this->m_can_call_from_console;
         }
 
@@ -135,7 +135,7 @@ namespace Balltze {
          * Return whether the command is public
          * @return true if command is public
          */
-        inline bool is_public() const noexcept {
+        bool is_public() const noexcept {
             return this->m_public;
         }
 
