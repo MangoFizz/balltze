@@ -207,10 +207,11 @@ namespace Balltze::Features {
                 }
 
                 // Set up new tag entry
+                auto previous_handle = tag_array.back().handle;
                 auto &new_tag_entry = tag_array.emplace_back(*tag);
                 new_tag_entry.path = translate_tag_path(translate_address(new_tag_entry.path));
-                new_tag_entry.handle.index = tag_data_header.tag_count;
-                new_tag_entry.handle.id = tag_data_header.tags_literal + tag_data_header.tag_count;
+                new_tag_entry.handle.index = previous_handle.index + 1;
+                new_tag_entry.handle.id = previous_handle.id + 1;
                 tags_directory.insert_or_assign(tag->handle, new_tag_entry.handle);
                 tag_data_header.tag_count++;
 
@@ -504,10 +505,19 @@ namespace Balltze::Features {
 
         register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps", std::nullopt, [](int arg_count, const char **args) -> bool {
             if(secondary_maps.empty()) {
-                logger.info("No secondary maps loaded");
+                logger.info("No secondary maps loaded.");
                 return true;
             }
-            Engine::console_printf("Secondary maps loaded: %zu", secondary_maps.size());
+            std::string maps_loaded;
+            for(std::size_t i = 0; i < secondary_maps.size(); i++) {
+                auto &map = secondary_maps[i];
+                maps_loaded += map->name;
+                if(i == secondary_maps.size() - 1) {
+                    maps_loaded += ", ";
+                }
+            }
+            Engine::console_printf("Imported tag data summary:");
+            Engine::console_printf("Maps loaded: %zu (%s)", secondary_maps.size(), maps_loaded.c_str());
             Engine::console_printf("Tags imported: %zu", tag_array.size() - loaded_map_tag_data_header->tag_count);
             Engine::console_printf("Imported tag data size: %.2f MiB", static_cast<float>(tag_data_cursor) / MIB_SIZE);
             return true;
