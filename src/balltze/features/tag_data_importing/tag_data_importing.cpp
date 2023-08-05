@@ -199,31 +199,6 @@ namespace Balltze::Features {
                 return new_tag_entry.indexed ? offset : offset + data_base_offset;
             });
 
-            new_tag_entry.data = new_tag_entry.copy_data([](std::byte *data, std::size_t size) -> std::byte * {
-                auto *new_data = reserve_tag_data_space(size);
-                std::memcpy(new_data, data, size);
-                return new_data;
-            });
-
-            if(!new_tag_entry.data) {
-                logger.fatal("Failed to copy data for tag {} of class {}", new_tag_entry.path, tag_class_to_string(new_tag_entry.primary_class));
-                std::exit(EXIT_FAILURE);
-            }
-
-            new_tag_entry.fix_dependencies([this](TagHandle tag_handle, bool self_reference) -> TagHandle {
-                auto *broken_tag = this->get_tag(tag_handle);
-                if(broken_tag) {
-                    auto new_tag_handle = this->load_tag(broken_tag, true);
-                    return new_tag_handle;
-                }
-                else {
-                    if(tag_handle != TagHandle::null()) {
-                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, name);
-                    }
-                    return tag_handle;
-                }
-            });
-
             switch(new_tag_entry.primary_class) {
                 case TAG_CLASS_BITMAP: {
                     Bitmap *bitmap = reinterpret_cast<Bitmap *>(new_tag_entry.data);
@@ -259,6 +234,31 @@ namespace Balltze::Features {
                     break;
                 }
             }
+
+            new_tag_entry.data = new_tag_entry.copy_data([](std::byte *data, std::size_t size) -> std::byte * {
+                auto *new_data = reserve_tag_data_space(size);
+                std::memcpy(new_data, data, size);
+                return new_data;
+            });
+
+            if(!new_tag_entry.data) {
+                logger.fatal("Failed to copy data for tag \"{}\" of class {}", new_tag_entry.path, tag_class_to_string(new_tag_entry.primary_class));
+                std::exit(EXIT_FAILURE);
+            }
+
+            new_tag_entry.fix_dependencies([this](TagHandle tag_handle, bool self_reference) -> TagHandle {
+                auto *broken_tag = this->get_tag(tag_handle);
+                if(broken_tag) {
+                    auto new_tag_handle = this->load_tag(broken_tag, true);
+                    return new_tag_handle;
+                }
+                else {
+                    if(tag_handle != TagHandle::null()) {
+                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, name);
+                    }
+                    return tag_handle;
+                }
+            });
 
             return new_tag_entry.handle;
         }
@@ -487,7 +487,7 @@ namespace Balltze::Features {
                     }
                     offset_acc += map_file_size;
                 }
-                show_error_box("File offset %zu is out of bounds! Map file size: %zu", file_offset, offset_acc);
+                logger.warning("File offset {} is out of bounds! Map file size: {}", file_offset, offset_acc);
             }
 
             // Read model data ONLY for secondary maps
@@ -528,25 +528,29 @@ namespace Balltze::Features {
     void reload_tag_data(TagHandle tag_handle) {
         auto *tag = get_tag(tag_handle);
 
+        if(!tag) {
+            throw std::runtime_error("Tag not found");
+        }
+
         // If tag is from the loaded map, create a copy of it in the virtual tag data
         auto *tag_data_address = get_tag_data_address();
-        if(tag->handle.index < loaded_map_tag_data_header->tag_count) {
+        if(tag_handle.index < loaded_map_tag_data_header->tag_count) {
             auto *raw_tag_array = reinterpret_cast<Tag *>(loaded_map_tag_data.get() + sizeof(TagDataHeader));
-            auto *raw_tag = raw_tag_array + tag->handle.index;
+            auto *raw_tag = &raw_tag_array[tag->handle.index];
 
-            if(tag->primary_class != raw_tag->primary_class || std::strcmp(tag->path, raw_tag->path) != 0) {
-                throw std::runtime_error("Tag mismatch");
+            auto translate_address = [](auto address) {
+                if(address != 0) {
+                    auto base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(loaded_map_tag_data.get());
+                    address = reinterpret_cast<decltype(address)>(reinterpret_cast<std::uint32_t>(address) - base_address_disp);
+                }
+                return address;
+            };
+
+            if(tag->primary_class != raw_tag->primary_class || std::strcmp(tag->path, translate_address(raw_tag->path))) {
+                throw std::runtime_error("Tag mismatch (1)");
             }
 
             if(tag->data >= tag_data_address && tag->data < tag_data_address + loaded_map_header->tag_data_size) {
-                auto translate_address = [](auto address) {
-                    if(address != 0) {
-                        auto base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(loaded_map_tag_data.get());
-                        address = reinterpret_cast<decltype(address)>(reinterpret_cast<std::uint32_t>(address) - base_address_disp);
-                    }
-                    return address;
-                };
-
                 raw_tag->fix_data_offsets(translate_address(raw_tag->data), std::nullopt);
                 
                 tag->data = raw_tag->copy_data([](std::byte *data, std::size_t size) -> std::byte * {
@@ -558,24 +562,22 @@ namespace Balltze::Features {
             else {
                 auto *tag_data = tag->data;
                 tag->data = raw_tag->copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
-                    std::memcpy(tag_data, data, size);
+                    auto *new_data = tag_data;
+                    std::memcpy(new_data, data, size);
                     tag_data += size;
-                    return tag_data;
+                    return new_data;
                 });
             }
         }
         else {
-            Tag *raw_tag = nullptr;
+            const Tag *raw_tag = nullptr;
+            SecondaryMap *tag_map;
             for(auto &map : secondary_maps) {
                 for(auto [origin_tag_handle, virtual_tag_handle] : map->tag_handles_translations) {
                     if(virtual_tag_handle == tag_handle) {
-                        if(tag->primary_class == raw_tag->primary_class && std::strcmp(tag->path, raw_tag->path) == 0) {
-                            raw_tag = const_cast<Tag *>(map->get_tag(origin_tag_handle));
-                            break;
-                        }
-                        else {
-                            throw std::runtime_error("Tag mismatch");
-                        }
+                        raw_tag = map->get_tag(origin_tag_handle);
+                        tag_map = map.get();
+                        break;
                     }
                 }
                 if(raw_tag) {
@@ -587,11 +589,28 @@ namespace Balltze::Features {
                 throw std::runtime_error("Tag not found");
             }
 
+            if(tag->primary_class != raw_tag->primary_class || std::strcmp(tag->path, tag_map->translate_address(raw_tag->path)) != 0) {
+                throw std::runtime_error("Tag mismatch (2)");
+            }
+
+            Tag fixed_entry = *raw_tag;
+            fixed_entry.data = tag_map->translate_address(fixed_entry.data);
+
             auto *tag_data = tag->data;
-            tag->data = raw_tag->copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
-                std::memcpy(tag_data, data, size);
+            tag->data = fixed_entry.copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
+                auto *new_data = tag_data;
+                std::memcpy(new_data, data, size);
                 tag_data += size;
-                return tag_data;
+                return new_data;
+            });
+
+            tag->fix_dependencies([&tag, &tag_map](TagHandle tag_handle, bool self_reference) -> TagHandle {
+                auto &translations = tag_map->tag_handles_translations;
+                if(translations.find(tag_handle) != translations.end()) {
+                    return translations[tag_handle];
+                }
+                logger.warning("Cannot resolve tag handle {} from map {} when reloading tag {}", tag_handle.handle, tag_map->name, tag->path);
+                return tag_handle;
             });
         }
     }

@@ -70,14 +70,22 @@ for structName, struct in pairs(structs) do
         local fieldAccess = paramName .. "." .. (field.name or "")
         if(field.type == "TagDependency") then
             indent(2)
+            add("if(" .. fieldAccess .. ".tag_handle != TagHandle::null()) {\n")
+            indent(3)
             add(fieldAccess .. ".tag_handle = dependency_resolver(" .. fieldAccess .. ".tag_handle, false);\n")
+            indent(2)
+            add("}\n")
         elseif(field.type == "TagHandle") then
             indent(2)
+            add("if(" .. fieldAccess .. " != TagHandle::null()) {\n")
+            indent(3)
             if(field.cacheOnly) then
                 add(fieldAccess .. " = dependency_resolver(" .. fieldAccess .. ", true);\n")
             else
                 add(fieldAccess .. " = dependency_resolver(" .. fieldAccess .. ", false);\n")
             end
+            indent(2)
+            add("}\n")
         elseif(field.type == "TagReflexive") then
             indent(2)
             add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
