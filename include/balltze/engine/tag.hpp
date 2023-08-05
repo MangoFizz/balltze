@@ -68,7 +68,7 @@ namespace Balltze::Engine {
          * Fix tag dependencies
          * @param dependency_resolver A function that resolves tag handles from tag dependencies
          */
-        void fix_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver);
+        void fix_dependencies(std::function<TagHandle(TagHandle, bool)> dependency_resolver);
 
         /**
          * Copy tag data to a new location

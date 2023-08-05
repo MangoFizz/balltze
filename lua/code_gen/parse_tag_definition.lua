@@ -13,6 +13,7 @@
 ---@field struct string
 ---@field description string
 ---@field inherits string
+---@field cache_only boolean
 
 ---@class StructField
 ---@field name string
@@ -277,6 +278,8 @@ local function parseStruct(structDefinition)
         if field.bounds then
             structField.size = 2
         end
+
+        structField.cacheOnly = field.cache_only or false
 
         struct.fields[fieldIndex] = structField
     end

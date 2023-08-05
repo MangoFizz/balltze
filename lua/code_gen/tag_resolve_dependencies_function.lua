@@ -50,7 +50,7 @@ namespace Balltze::Engine {
 
 for structName, _ in pairs(structs) do
     indent(1)
-    add("static inline void fix_dependencies_req(" .. structName .. " &" .. definitionParser.camelCaseToSnakeCase(structName) .. ", std::function<TagHandle(TagHandle)> &dependency_resolver); \n");
+    add("static inline void fix_dependencies_req(" .. structName .. " &" .. definitionParser.camelCaseToSnakeCase(structName) .. ", std::function<TagHandle(TagHandle, bool)> &dependency_resolver); \n");
 end
 
 add("\n")
@@ -59,7 +59,7 @@ for structName, struct in pairs(structs) do
     local paramName = definitionParser.camelCaseToSnakeCase(structName)
 
     indent(1)
-    add("static inline void fix_dependencies_req(" .. structName .. " &" .. paramName .. ", std::function<TagHandle(TagHandle)> &dependency_resolver) {\n")
+    add("static inline void fix_dependencies_req(" .. structName .. " &" .. paramName .. ", std::function<TagHandle(TagHandle, bool)> &dependency_resolver) {\n")
     
     if(struct.inherits and structs[definitionParser.snakeCaseToCamelCase(struct.inherits)]) then
         indent(2)
@@ -70,10 +70,14 @@ for structName, struct in pairs(structs) do
         local fieldAccess = paramName .. "." .. (field.name or "")
         if(field.type == "TagDependency") then
             indent(2)
-            add(fieldAccess .. ".tag_handle = dependency_resolver(" .. fieldAccess .. ".tag_handle);\n")
+            add(fieldAccess .. ".tag_handle = dependency_resolver(" .. fieldAccess .. ".tag_handle, false);\n")
         elseif(field.type == "TagHandle") then
             indent(2)
-            add(fieldAccess .. " = dependency_resolver(" .. fieldAccess .. ");\n")
+            if(field.cacheOnly) then
+                add(fieldAccess .. " = dependency_resolver(" .. fieldAccess .. ", true);\n")
+            else
+                add(fieldAccess .. " = dependency_resolver(" .. fieldAccess .. ", false);\n")
+            end
         elseif(field.type == "TagReflexive") then
             indent(2)
             add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
@@ -91,7 +95,7 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    void Tag::fix_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver) {
+    void Tag::fix_dependencies(std::function<TagHandle(TagHandle, bool)> dependency_resolver) {
         switch(this->primary_class) {
 ]])
 

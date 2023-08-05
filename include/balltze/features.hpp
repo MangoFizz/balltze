@@ -30,6 +30,18 @@ namespace Balltze::Features {
      * @param map_name    Name of the map to import the tags from
      */
     BALLTZE_API void import_tags_from_map(std::filesystem::path map_file);
+
+    /**
+     * Reloads the data of a tag
+     * @param tag_handle    Handle of the tag to reload
+     */
+    BALLTZE_API void reload_tag_data(Engine::TagHandle tag_handle);
+
+    /**
+     * Replace the dependencies of a tag
+     * @param tag_handle    Handle of the tag to replace the dependencies of
+     */
+    BALLTZE_API void replace_tag_dependencies(Engine::TagHandle tag_handle, Engine::TagHandle new_tag_handle);
 }
 
 #endif

@@ -58,6 +58,10 @@ namespace Balltze::Plugins {
                     logger.warning("Lua command {} returned nil", *m_full_name);
                 }
             }
+            else {
+                logger.debug("Lua command {} failed: {}", *m_full_name, lua_tostring(state, -1));
+                lua_pop(state, 1);
+            }
         }
         else {
             logger.warning("Lua command {} not found", *m_full_name);
