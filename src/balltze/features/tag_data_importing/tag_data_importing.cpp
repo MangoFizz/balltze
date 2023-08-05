@@ -210,14 +210,6 @@ namespace Balltze::Features {
                     break;
                 }
 
-                case TAG_CLASS_FONT: {
-                    auto *font = reinterpret_cast<Font *>(new_tag_entry.data);
-                    for(std::size_t i = 0; i < font->characters.count; i++) {
-                        font->characters.offset[i].pixels_offset += data_base_offset;
-                    }
-                    break;
-                }
-
                 case TAG_CLASS_GBXMODEL: {
                     auto *gbxmodel = reinterpret_cast<Gbxmodel *>(new_tag_entry.data);
                     for(std::size_t i = 0; i < gbxmodel->geometries.count; i++) {

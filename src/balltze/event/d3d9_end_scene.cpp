@@ -39,9 +39,16 @@ namespace Balltze::Event {
         }
 
         try {
-            // Workaround for Chimera hook (NEEDS TO BE FIXED)
-            std::byte *ptr = Memory::follow_32bit_jump(d3d9_end_scene_sig->data()) + 5;
-            Memory::hook_function(ptr, d3d9_end_scene_before_event, d3d9_end_scene_after_event, false);
+            char *d3d9_call_end_scene_sig_ptr = reinterpret_cast<char *>(d3d9_end_scene_sig->data());
+
+            if(d3d9_call_end_scene_sig_ptr[0] == 0xE9) {
+                // Workaround for Chimera hook (NEEDS TO BE FIXED)
+                std::byte *ptr = Memory::follow_32bit_jump(d3d9_end_scene_sig->data()) + 5;
+                Memory::hook_function(ptr, d3d9_end_scene_before_event, d3d9_end_scene_after_event, false);
+            }
+            else {
+                Memory::hook_function(d3d9_end_scene_sig->data(), d3d9_end_scene_before_event, d3d9_end_scene_after_event, false);
+            }
         }
         catch(std::runtime_error &e) {
             throw std::runtime_error("Could not hook D3D9 end scene event: " + std::string(e.what()));
