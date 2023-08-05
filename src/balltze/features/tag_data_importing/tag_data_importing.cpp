@@ -373,6 +373,9 @@ namespace Balltze::Features {
 
     void import_tag_from_map(std::string map_name, std::string tag_path, TagClassInt tag_class) {
         try {
+            if(map_name == prepared_map_name) {
+                return;
+            }
             for(auto &map : prepared_secondary_maps) {
                 if(map->name == map_name) {
                     for(auto &tag : map->tags_to_load) {
@@ -394,6 +397,9 @@ namespace Balltze::Features {
 
     void import_tag_from_map(std::filesystem::path map_file, std::string tag_path, TagClassInt tag_class) {
         try {
+            if(map_file.stem().string() == prepared_map_name) {
+                return;
+            }
             for(auto &map : prepared_secondary_maps) {
                 if(map->path == map_file) {
                     for(auto &tag : map->tags_to_load) {
@@ -416,6 +422,9 @@ namespace Balltze::Features {
 
     void import_tags_from_map(std::filesystem::path map_file) {
         try {
+            if(map_file.stem().string() == prepared_map_name) {
+                return;
+            }
             for(auto &map : prepared_secondary_maps) {
                 if(map->path == map_file) {
                     return;
@@ -593,11 +602,11 @@ namespace Balltze::Features {
                 throw std::runtime_error("Tag mismatch (2)");
             }
 
-            Tag fixed_entry = *raw_tag;
-            fixed_entry.data = tag_map->translate_address(fixed_entry.data);
+            Tag entry_copy = *raw_tag;
+            entry_copy.data = tag_map->translate_address(entry_copy.data);
 
             auto *tag_data = tag->data;
-            tag->data = fixed_entry.copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
+            tag->data = entry_copy.copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
                 auto *new_data = tag_data;
                 std::memcpy(new_data, data, size);
                 tag_data += size;
