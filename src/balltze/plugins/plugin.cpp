@@ -404,7 +404,7 @@ namespace Balltze::Plugins {
 
     std::filesystem::path get_plugins_path() noexcept {
         try {
-            return Engine::get_path() / "plugins";
+            return Config::get_balltze_directory() / "plugins";
         }
         catch(std::runtime_error &e) {
             logger.warning("Could not get data directory path.");

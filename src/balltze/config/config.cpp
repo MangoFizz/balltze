@@ -153,7 +153,8 @@ namespace Balltze::Config {
 
     Config &get_config() {
         static auto balltze_path = get_balltze_directory();
-        static auto config = Config(balltze_path / "settings.json");
+        std::filesystem::create_directories(balltze_path / "config");
+        static auto config = Config(balltze_path / "config" / "settings.json");
         return config;
     }
 
@@ -167,7 +168,8 @@ namespace Balltze::Config {
         if(gamepad) {
             try {
                 auto balltze_path = get_balltze_directory();
-                gamepad_config = Config(balltze_path / "gamepad" / (*gamepad + ".json"), false);
+                std::filesystem::create_directories(balltze_path / "config" / "gamepad");
+                gamepad_config = Config(balltze_path / "config" / "gamepad" / (*gamepad + ".json"), false);
                 return gamepad_config;
             }
             catch(std::runtime_error) {
