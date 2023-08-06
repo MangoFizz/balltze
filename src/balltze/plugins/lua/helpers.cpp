@@ -486,6 +486,39 @@ namespace Balltze::Plugins {
         }
     }
 
+    std::string camera_type_to_string(Engine::CameraType camera_type) {
+        switch(camera_type) {
+            case Engine::CAMERA_FIRST_PERSON: 
+                return "first_person";
+            case Engine::CAMERA_VEHICLE:
+                return "vehicle";
+            case Engine::CAMERA_CINEMATIC:
+                return "cinematic";
+            case Engine::CAMERA_DEBUG:
+                return "debug";
+            default:
+                return "unknown";
+        }
+    }
+
+    Engine::CameraType camera_type_from_string(const std::string &camera_type) {
+        if(camera_type == "first_person") {
+            return Engine::CAMERA_FIRST_PERSON;
+        }
+        else if(camera_type == "vehicle") {
+            return Engine::CAMERA_VEHICLE;
+        }
+        else if(camera_type == "cinematic") {
+            return Engine::CAMERA_CINEMATIC;
+        }
+        else if(camera_type == "debug") {
+            return Engine::CAMERA_DEBUG;
+        }
+        else {
+            throw std::runtime_error("Invalid camera type.");
+        }
+    }
+
     Engine::Point2DInt lua_to_point2_d_int(lua_State *state, int index) {
         Engine::Point2DInt point;
         if(lua_istable(state, index)) {

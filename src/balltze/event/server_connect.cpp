@@ -27,7 +27,7 @@ namespace Balltze::Event {
         }
     }
 
-    static std::string ip_address_int_to_string(std::uint32_t address_int) noexcept {
+    std::string ip_address_int_to_string(std::uint32_t address_int) noexcept {
         std::string address;
         for(int i = 0; i < 4; i++) {
             address += std::to_string((address_int >> (i * 8)) & 0xFF);

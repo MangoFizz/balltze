@@ -55,6 +55,19 @@ namespace Balltze {
 
             firstTickListener.remove();
         }, EVENT_PRIORITY_HIGHEST);
+
+        register_command("console_debug", "debug", "Sets whenever to print log messages to the in-game console.", "[enable: boolean]", [](int arg_count, const char **args) -> bool {
+            if(arg_count == 1) {
+                bool new_setting = STR_TO_BOOL(args[0]);
+                logger.mute_ingame(!new_setting);
+                return true;
+            }
+            else {
+                logger.error("Invalid number of arguments in balltze command console_debug.");
+                return false;
+            }
+            return true;
+        }, true, 0, 1);
     }
 }
 

@@ -604,6 +604,12 @@ namespace Balltze::Engine {
      * @return reference to the widget globals
      */
     BALLTZE_API WidgetGlobals *get_widget_globals();
+    
+    /**
+     * Get the name of a give input device
+     * @param device    Input device
+     */
+    BALLTZE_API std::string get_input_device_name(InputDevice device) noexcept;
 
     /**
      * Get string for a gamepad button

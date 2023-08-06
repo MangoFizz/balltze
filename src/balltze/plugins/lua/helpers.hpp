@@ -47,6 +47,9 @@ namespace Balltze::Plugins {
     std::string multiplayer_team_to_string(Engine::MultiplayerTeam team);
     Engine::MultiplayerTeam multiplayer_team_from_string(const std::string &team);
 
+    std::string camera_type_to_string(Engine::CameraType camera_type);
+    Engine::CameraType camera_type_from_string(const std::string &camera_type);
+
     Engine::Point2DInt lua_to_point2_d_int(lua_State *state, int index);
     Engine::Point3D lua_to_point3_d(lua_State *state, int index);
     Engine::ColorARGBInt lua_to_color_a_r_g_b_int(lua_State *state, int index);

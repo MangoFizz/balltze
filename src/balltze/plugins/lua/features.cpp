@@ -10,7 +10,7 @@
 #include "helpers.hpp"
 
 namespace Balltze::Plugins {
-    int lua_import_tag_from_map(lua_State *state) {
+    static int lua_import_tag_from_map(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -61,7 +61,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    int lua_import_tags_from_map(lua_State *state) {
+    static int lua_import_tags_from_map(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -102,7 +102,19 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    int lua_reload_tag_data(lua_State *state) {
+    static int lua_clear_tag_imports(lua_State *state) {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            plugin->clear_tag_imports();
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        return 0;
+    }
+
+    static int lua_reload_tag_data(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -145,7 +157,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    int lua_replace_tag_dependencies(lua_State *state) {
+    static int lua_replace_tag_dependencies(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -170,7 +182,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void on_map_data_read(Event::MapFileLoadEvent &event) {
+    static void on_map_data_read(Event::MapFileLoadEvent &event) {
         auto plugins = get_lua_plugins();
         for(auto &plugin : plugins) {
             auto map_imports = plugin->imported_tags();
@@ -201,6 +213,7 @@ namespace Balltze::Plugins {
     static const luaL_Reg features_functions[] = {
         {"import_tag_from_map", lua_import_tag_from_map},
         {"import_tags_from_map", lua_import_tags_from_map},
+        {"clear_tag_imports", lua_clear_tag_imports},
         {"reload_tag_data", lua_reload_tag_data},
         {"replace_tag_dependencies", lua_replace_tag_dependencies},
         {nullptr, nullptr}

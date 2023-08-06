@@ -442,6 +442,19 @@ namespace Balltze::Engine {
         return *buffer;
     }
 
+    std::string get_input_device_name(InputDevice device) noexcept {
+        switch(device) {
+            case INPUT_DEVICE_KEYBOARD:
+                return "keyboard";
+            case INPUT_DEVICE_MOUSE:
+                return "mouse";
+            case INPUT_DEVICE_GAMEPAD:
+                return "gamepad";
+            default:
+                "unknown";
+        }
+    }
+
     std::string get_gamepad_button_name(GamepadButton button) noexcept {
         switch(button) {
             case GAMEPAD_BUTTON_A:
