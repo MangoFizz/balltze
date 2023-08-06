@@ -451,7 +451,7 @@ namespace Balltze::Engine {
             case INPUT_DEVICE_GAMEPAD:
                 return "gamepad";
             default:
-                "unknown";
+                return "unknown";
         }
     }
 
