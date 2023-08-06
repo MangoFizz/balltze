@@ -135,13 +135,11 @@ namespace Balltze {
     }
 
     void Logger::endl_impl(HMODULE module, LoggerStream &stream) {
-        if(stream.m_level == LOG_LEVEL_DEBUG && stream.m_logger->m_mute_debug) {
-            return;
+        if(!(stream.m_level == LOG_LEVEL_DEBUG && stream.m_logger->m_mute_debug)) {
+            print_console(stream);
+            print_file(stream);
+            print_ingame(stream);
         }
-
-        print_console(stream);
-        print_file(stream);
-        print_ingame(stream);
 
         stream.m_stream.str("");
         stream.m_stream.clear();
