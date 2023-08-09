@@ -26,98 +26,202 @@ namespace Balltze::Features {
     using namespace Engine;
     using namespace Engine::TagDefinitions;
 
-    constexpr std::size_t virtual_tag_data_buffer_size = 32 * MIB_SIZE;
+    class VirtualTagData;
+    class MapCache;
+    class SecondaryMapCache;
 
-    struct SecondaryMap;
+    static std::unique_ptr<MapCache> map_cache;
+    static std::unique_ptr<MapCache> preloaded_map_cache;
+    static std::vector<std::shared_ptr<SecondaryMapCache>> secondary_maps_cache;
+    static std::vector<std::shared_ptr<SecondaryMapCache>> preloaded_secondary_maps_cache;
+    static std::unique_ptr<VirtualTagData> virtual_tag_data;
 
-    static std::string loaded_map_name;
-    static std::unique_ptr<MapHeader> loaded_map_header;
-    static std::unique_ptr<TagDataHeader> loaded_map_tag_data_header;
-    static std::unique_ptr<std::byte[]> loaded_map_tag_data;
-    static std::vector<std::shared_ptr<SecondaryMap>> secondary_maps;
-    
-    static std::string prepared_map_name;
-    static std::unique_ptr<MapHeader> prepared_map_header;
-    static std::vector<std::shared_ptr<SecondaryMap>> prepared_secondary_maps;
+    constexpr std::size_t virtual_tag_data_buffer_size = 128 * MIB_SIZE;
 
-    static std::vector<Tag> virtual_tag_array;
-    static std::unique_ptr<std::byte[]> virtual_tag_data;
-    static std::size_t virtual_tag_data_cursor = 0;
+    class VirtualTagData {
+    private:
+        std::vector<Tag> m_tag_array;
+        std::unique_ptr<std::byte[]> m_tag_data;
+        std::size_t m_tag_data_cursor = 0;
+        TagHandle m_next_handle;
 
-    static bool tag_class_is_supported(TagClassInt tag_class) noexcept {
-        static TagClassInt unsupportedTags[] = {
-            TAG_CLASS_GLOBALS,
-            TAG_CLASS_HUD_GLOBALS,
-            TAG_CLASS_METER,
-            TAG_CLASS_SCENARIO_STRUCTURE_BSP,
-            TAG_CLASS_SCENARIO,
-        };
-
-        for(auto &i : unsupportedTags) {
-            if(i == tag_class) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    std::byte *reserve_tag_data_space(std::size_t size) {
-        auto *data = virtual_tag_data.get() + virtual_tag_data_cursor;
-        virtual_tag_data_cursor += size;
-        return data;
-    }
-
-    Tag &insert_tag_entry(Tag const &entry) {
-        auto previous_handle = virtual_tag_array.back().handle;
-        auto &new_entry = virtual_tag_array.emplace_back(entry);
-        new_entry.handle.index = previous_handle.index + 1;
-        new_entry.handle.id = previous_handle.id + 1;
-
-        // Update tag data header
-        auto &tag_data_header = get_tag_data_header();
-        tag_data_header.tag_count++;
-        tag_data_header.tag_array = virtual_tag_array.data();
-
-        return virtual_tag_array.back();
-    }
-
-    struct SecondaryMap {
-        std::string name;
-        std::filesystem::path path;
-        MapHeader header;
-        std::unique_ptr<std::byte[]> raw_tag_data;
-        TagDataHeader *tag_data_header;
-        Tag *tag_array;
-        std::vector<std::pair<std::string, TagClassInt>> tags_to_load;
-        std::map<char *, char *> tag_path_translations;
-        std::map<TagHandle, TagHandle> tag_handles_translations;
-        std::map<TagHandle, std::vector<TagHandle>> tags_copies;
-        bool load_all_tags = false;
-
-        std::size_t size() {
-            std::size_t count = 0;
-            count += sizeof(MapHeader);
-            count += header.tag_data_size;
-            return count;
+    public:
+        VirtualTagData() {
+            m_tag_data = std::make_unique<std::byte[]>(virtual_tag_data_buffer_size);
+            m_next_handle.index = 0;
+            m_next_handle.id = 0xE174;
         }
 
-        const Tag *get_tag(TagHandle tag_handle) {
-            for(std::size_t i = 0; i < tag_data_header->tag_count; i++) {
-                if(tag_array[i].handle == tag_handle) {
-                    return &tag_array[i];
-                }
+        VirtualTagData(VirtualTagData &&other) {
+            m_tag_array = std::move(other.m_tag_array);
+            m_tag_data = std::move(other.m_tag_data);
+            m_tag_data_cursor = other.m_tag_data_cursor;
+            m_next_handle = other.m_next_handle;
+
+            other.m_tag_data_cursor = 0;
+            other.m_next_handle.index = 0;
+            other.m_next_handle.id = 0xE174;
+        }
+
+        std::size_t tag_data_size() const noexcept {
+            return m_tag_data_cursor;
+        }
+
+        std::size_t tag_count() const noexcept {
+            return m_tag_array.size();
+        }
+
+        std::byte *reserve_tag_data_space(std::size_t size) noexcept {
+            if(m_tag_data_cursor + size > virtual_tag_data_buffer_size) {
+                logger.fatal("Tag data buffer overflow");
+                std::exit(EXIT_FAILURE);
             }
-            return nullptr;
+            auto *data = m_tag_data.get() + m_tag_data_cursor;
+            m_tag_data_cursor += size;
+            return data;
+        }
+
+        Tag &insert_tag_entry(Tag const &entry) noexcept {
+            auto &new_entry = m_tag_array.emplace_back(entry);
+            new_entry.handle.index = m_next_handle.index++;
+            new_entry.handle.id = m_next_handle.id++;
+            return new_entry;
+        }
+
+        void insert_tags_entries_front(Tag *tags, std::size_t count) noexcept {
+            m_tag_array.insert(m_tag_array.begin(), tags, tags + count);
+
+            auto last_handle = m_tag_array[count - 1].handle;
+            auto it = m_tag_array.begin() + count;
+            while(it != m_tag_array.end()) {
+                it->handle.index = ++last_handle.index;
+                it->handle.id = ++last_handle.id;
+                it++;
+            }
+            m_next_handle.index = ++last_handle.index;
+            m_next_handle.id = ++last_handle.id;
+        }
+
+        void update_tag_data_header() {
+            auto &tag_data_header = get_tag_data_header();
+            tag_data_header.tag_count = m_tag_array.size();
+            tag_data_header.tag_array = m_tag_array.data();
+        }
+    };
+
+    class MapCache {
+    protected:
+        std::string m_name;
+        std::filesystem::path m_path;
+        MapHeader m_header;
+        std::unique_ptr<std::byte[]> m_raw_tag_data;
+        TagDataHeader *m_tag_data_header = nullptr;
+        Tag *m_tag_array = nullptr;
+        std::map<TagHandle, std::vector<TagHandle>> m_tags_copies;
+
+        void read_header() {
+            logger.info("Reading header for map {}", m_name);
+
+            std::FILE *file = std::fopen(m_path.string().c_str(), "rb");
+            std::fread(&m_header, sizeof(MapHeader), 1, file);
+            std::fclose(file);
+        }
+
+        void read_tag_data_from_file() {
+            logger.info("Reading tag data for map {}", m_name);
+            
+            m_raw_tag_data = std::make_unique<std::byte[]>(m_header.tag_data_size);
+
+            std::FILE *file = std::fopen(m_path.string().c_str(), "rb");
+            std::fseek(file, m_header.tag_data_offset, SEEK_SET);
+            std::fread(m_raw_tag_data.get(), 1, m_header.tag_data_size, file);
+            std::fclose(file);
+
+            m_tag_data_header = reinterpret_cast<TagDataHeader *>(m_raw_tag_data.get());
+            m_tag_array = reinterpret_cast<Tag *>(m_raw_tag_data.get() + sizeof(TagDataHeader));
+        }
+
+    public:
+        MapCache(std::string map_name) : m_name(map_name) {
+            try {
+                m_path = path_for_map_local(m_name.c_str());
+            }
+            catch (std::runtime_error &e) {
+                throw;
+            }
+            read_header();
+        }
+
+        MapCache(std::filesystem::path map_path) : m_path(map_path) {
+            m_name = m_path.stem().string();
+            if(!std::filesystem::exists(m_path)) {
+                throw std::runtime_error("Map file does not exist");
+            }
+            read_header();
+        }
+
+        MapCache(MapCache &&other) {
+            m_raw_tag_data = std::move(other.m_raw_tag_data);
+            m_tags_copies = std::move(other.m_tags_copies);
+        }
+
+        std::string name() const noexcept {
+            return m_name;
+        }
+
+        void name(std::string map_name) {
+            m_name = map_name;
+        }
+
+        std::filesystem::path path() const noexcept {
+            return m_path;
+        }
+
+        MapHeader const &header() {
+            return m_header;
+        }
+
+        TagDataHeader const &tag_data_header() const noexcept {
+            return *m_tag_data_header;
+        }
+
+        std::byte *tag_data() noexcept {
+            return m_raw_tag_data.get();
         }
 
         template<typename T>
         T translate_address(T address) {
             if(address != 0) {
-                auto base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(raw_tag_data.get());
+                auto base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(m_raw_tag_data.get());
                 address = reinterpret_cast<T>(reinterpret_cast<std::uint32_t>(address) - base_address_disp);
             }
             return address;
         }
+
+        const Tag *get_tag(TagHandle tag_handle) {
+            for(std::size_t i = 0; i < m_tag_data_header->tag_count; i++) {
+                if(m_tag_array[i].handle == tag_handle) {
+                    return &m_tag_array[i];
+                }
+            }
+            return nullptr;
+        }
+
+        void read_tag_data_from_buffer(std::byte *data) noexcept {
+            m_raw_tag_data = std::make_unique<std::byte[]>(m_header.tag_data_size);
+            std::memcpy(m_raw_tag_data.get(), data, m_header.tag_data_size);
+
+            m_tag_data_header = reinterpret_cast<TagDataHeader *>(m_raw_tag_data.get());
+            m_tag_array = reinterpret_cast<Tag *>(m_raw_tag_data.get() + sizeof(TagDataHeader));
+        }
+    };
+
+    class SecondaryMapCache : public MapCache {
+    private:
+        std::vector<std::pair<std::string, TagClassInt>> m_tags_to_load;
+        std::map<char *, char *> m_tag_path_translations;
+        std::map<TagHandle, TagHandle> m_tag_handles_translations;
+        bool m_load_all_tags = false;
 
         char *translate_tag_path(char *path) noexcept {
             if(path == nullptr) {
@@ -125,38 +229,55 @@ namespace Balltze::Features {
             }
 
             // Check if path is already translated
-            if(tag_path_translations.find(path) != tag_path_translations.end()) {
-                return tag_path_translations[path];
+            if(m_tag_path_translations.find(path) != m_tag_path_translations.end()) {
+                return m_tag_path_translations[path];
             }
 
             // Copy path to tag data buffer
-            auto *new_path = std::strcpy(reinterpret_cast<char *>(virtual_tag_data.get() + virtual_tag_data_cursor), path);
-            virtual_tag_data_cursor += std::strlen(path) + 1;
+            auto *buffer = virtual_tag_data->reserve_tag_data_space(std::strlen(path) + 1);
+            auto *new_path = std::strcpy(reinterpret_cast<char *>(buffer), path);
 
-            tag_path_translations.insert_or_assign(path, new_path);
+            m_tag_path_translations.insert_or_assign(path, new_path);
             return new_path;
         }
 
         std::uint32_t get_data_base_offset() {
-            std::uint32_t offset = loaded_map_header->file_size;
-            for(auto &map : secondary_maps) {
+            std::uint32_t offset = map_cache->header().file_size;
+            for(auto &map : secondary_maps_cache) {
                 if(this == map.get()) {
                     break;
                 }
-                offset += map->header.file_size;
+                offset += map->header().file_size;
             }
             return offset;
         }
 
         std::uint32_t get_model_data_base_offset() {
-            std::uint32_t offset = loaded_map_tag_data_header->model_data_size;
-            for(auto &map : secondary_maps) {
+            std::uint32_t offset = map_cache->tag_data_header().model_data_size;
+            for(auto &map : secondary_maps_cache) {
                 if(this == map.get()) {
                     break;
                 }
-                offset += map->tag_data_header->model_data_size;
+                offset += map->tag_data_header().model_data_size;
             }
             return offset;
+        }
+
+        static bool tag_class_is_supported(TagClassInt tag_class) noexcept {
+            static TagClassInt unsupportedTags[] = {
+                TAG_CLASS_GLOBALS,
+                TAG_CLASS_HUD_GLOBALS,
+                TAG_CLASS_METER,
+                TAG_CLASS_SCENARIO_STRUCTURE_BSP,
+                TAG_CLASS_SCENARIO,
+            };
+
+            for(auto &i : unsupportedTags) {
+                if(i == tag_class) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         TagHandle load_tag(const Tag *tag, bool required) {
@@ -173,14 +294,14 @@ namespace Balltze::Features {
             auto model_data_base_offset = get_model_data_base_offset();
 
             // Check if we've already loaded this tag
-            if(tag_handles_translations.find(tag->handle) != tag_handles_translations.end()) {
-                return tag_handles_translations.find(tag->handle)->second;
+            if(m_tag_handles_translations.find(tag->handle) != m_tag_handles_translations.end()) {
+                return m_tag_handles_translations.find(tag->handle)->second;
             }
 
             // Set up new tag entry
-            auto &new_tag_entry = insert_tag_entry(*tag);
+            auto &new_tag_entry = virtual_tag_data->insert_tag_entry(*tag);
             new_tag_entry.path = translate_tag_path(translate_address(new_tag_entry.path));
-            tag_handles_translations.insert_or_assign(tag->handle, new_tag_entry.handle);
+            m_tag_handles_translations.insert_or_assign(tag->handle, new_tag_entry.handle);
 
             // if current tag are indexed or if tags are already fixed, we can continue
             if(tag->indexed) {
@@ -215,8 +336,8 @@ namespace Balltze::Features {
                     for(std::size_t i = 0; i < gbxmodel->geometries.count; i++) {
                         for(std::size_t j = 0; j < gbxmodel->geometries.offset[i].parts.count; j++) {
                             gbxmodel->geometries.offset[i].parts.offset[j].vertex_offset += model_data_base_offset;
-                            gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset += model_data_base_offset - loaded_map_tag_data_header->vertex_size + tag_data_header->vertex_size;
-                            gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset_2 += model_data_base_offset - loaded_map_tag_data_header->vertex_size + tag_data_header->vertex_size;
+                            gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset += model_data_base_offset - map_cache->tag_data_header().vertex_size + m_tag_data_header->vertex_size;
+                            gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset_2 += model_data_base_offset - map_cache->tag_data_header().vertex_size + m_tag_data_header->vertex_size;
                         }                               
                     }
                     break;
@@ -228,7 +349,7 @@ namespace Balltze::Features {
             }
 
             new_tag_entry.data = new_tag_entry.copy_data([](std::byte *data, std::size_t size) -> std::byte * {
-                auto *new_data = reserve_tag_data_space(size);
+                auto *new_data = virtual_tag_data->reserve_tag_data_space(size);
                 std::memcpy(new_data, data, size);
                 return new_data;
             });
@@ -246,7 +367,7 @@ namespace Balltze::Features {
                 }
                 else {
                     if(tag_handle != TagHandle::null()) {
-                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, name);
+                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, m_name);
                     }
                     return tag_handle;
                 }
@@ -255,53 +376,87 @@ namespace Balltze::Features {
             return new_tag_entry.handle;
         }
 
-        void read_map_data() {
-            logger.info("Reading tag data for secondary map {}", this->name);
-
-            std::FILE *file = std::fopen(this->path.string().c_str(), "rb");
-            std::fread(&this->header, sizeof(MapHeader), 1, file);
-
-            if(header.engine_type == CACHE_FILE_CUSTOM_EDITION_COMPRESSED) {
-                std::fclose(file);
+    public:
+        SecondaryMapCache(std::string map_name) : MapCache(map_name) {
+            if(m_header.engine_type == CACHE_FILE_CUSTOM_EDITION_COMPRESSED) {
                 throw std::runtime_error("Map file is compressed");
             } 
 
-            if(header.engine_type != CACHE_FILE_CUSTOM_EDITION) {
-                std::fclose(file);
+            if(m_header.engine_type != CACHE_FILE_CUSTOM_EDITION) {
                 throw std::runtime_error("Map file is not a Halo Custom Edition map");
             }
 
-            raw_tag_data = std::make_unique<std::byte[]>(header.tag_data_size);
-            std::fseek(file, header.tag_data_offset, SEEK_SET);
-            std::fread(raw_tag_data.get(), 1, header.tag_data_size, file);
-            std::fclose(file);
-
-            tag_data_header = reinterpret_cast<TagDataHeader *>(raw_tag_data.get());
-            tag_array = reinterpret_cast<Tag *>(raw_tag_data.get() + sizeof(TagDataHeader));
+            read_tag_data_from_file();
         }
 
-        SecondaryMap(const std::string name) {
-            this->name = name;
+        SecondaryMapCache(std::filesystem::path map_path) : MapCache(map_path) {
+            if(m_header.engine_type == CACHE_FILE_CUSTOM_EDITION_COMPRESSED) {
+                throw std::runtime_error("Map file is compressed");
+            } 
 
-            try {
-                this->path = path_for_map_local(name.c_str());
-            }
-            catch (std::runtime_error &e) {
-                throw;
+            if(m_header.engine_type != CACHE_FILE_CUSTOM_EDITION) {
+                throw std::runtime_error("Map file is not a Halo Custom Edition map");
             }
 
-            read_map_data();
+            read_tag_data_from_file();
         }
 
-        SecondaryMap(std::filesystem::path path) {
-            this->name = path.stem().string();
-            this->path = path;
-
-            if(!std::filesystem::exists(path)) {
-                throw std::runtime_error("Map file does not exist");
+        void add_tag_import(std::string tag_path, TagClassInt tag_class) {
+            for(auto &tag : m_tags_to_load) {
+                if(tag.first == tag_path && tag.second == tag_class) {
+                    return;
+                }
             }
+            m_tags_to_load.emplace_back(tag_path, tag_class);
+        }
 
-            read_map_data();
+        void import_all_tags() {
+            m_load_all_tags = true;
+        }
+
+        std::optional<TagHandle> get_origin_tag_handle(TagHandle handle) {
+            auto *tag = Engine::get_tag(handle);
+            for(auto &[origin_handle, virtual_handle] : m_tag_handles_translations) {
+                if(handle == virtual_handle) {
+                    auto *origin_tag = this->get_tag(origin_handle);
+                    if(tag->primary_class == origin_tag->primary_class && std::strcmp(tag->path, translate_address(origin_tag->path))) {
+                        return origin_handle;
+                    }
+                }
+            }
+            return std::nullopt;
+        }
+
+        std::optional<TagHandle> translate_tag_handle(TagHandle handle) {
+            if(m_tag_handles_translations.find(handle) != m_tag_handles_translations.end()) {
+                return m_tag_handles_translations[handle];
+            }
+            return std::nullopt;
+        }
+
+        void load_tag_data() {
+            if(m_load_all_tags) {
+                for(std::size_t i = 0; i < m_tag_data_header->tag_count; i++) {
+                    load_tag(m_tag_array + i, false);
+                }
+            }
+            else {
+                for(auto &tag : m_tags_to_load) {
+                    bool tag_found = false;
+                    for(std::size_t i = 0; i < m_tag_data_header->tag_count; i++) {
+                        std::string path = translate_address(m_tag_array[i].path);
+                        if(path == tag.first && (m_tag_array[i].primary_class == tag.second || tag.second == TAG_CLASS_NULL)) {
+                            if(load_tag(m_tag_array + i, false) != TagHandle::null()) {
+                                tag_found = true;
+                            }
+                            break;
+                        }
+                    }
+                    if(!tag_found) {
+                        logger.warning("Tag {} of class {} not found in map {}", tag.first, tag_class_to_string(tag.second), m_name);
+                    }
+                }
+            }
         }
     };
 
@@ -309,151 +464,37 @@ namespace Balltze::Features {
         auto &tag_data_header = get_tag_data_header();
         auto *tag_data_address = get_tag_data_address();
 
-        // Start timestamp
-        std::chrono::time_point start = std::chrono::steady_clock::now();
-
         // Initialize our stuff
-        secondary_maps = prepared_secondary_maps;
-        loaded_map_name = std::move(prepared_map_name);
-        loaded_map_header = std::move(prepared_map_header);
-        loaded_map_tag_data_header = std::make_unique<TagDataHeader>(tag_data_header);
-        loaded_map_tag_data = std::make_unique<std::byte[]>(loaded_map_header->tag_data_size);
-        std::memcpy(loaded_map_tag_data.get(), tag_data_address, loaded_map_header->tag_data_size);
-
-        // Initialize virtual tag data
-        virtual_tag_array = std::vector<Tag>(tag_data_header.tag_array, tag_data_header.tag_array + tag_data_header.tag_count);
-        virtual_tag_data = std::make_unique<std::byte[]>(virtual_tag_data_buffer_size);
-        virtual_tag_data_cursor = 0;
-
-        for(auto &map : secondary_maps) {
-            auto map_tag_data_header = map->tag_data_header;
-
-            // Reserve space for tags to AVOID REALLOCATIONS during the process
-            virtual_tag_array.reserve(virtual_tag_array.size() + (map->load_all_tags ? map_tag_data_header->tag_count : map->tags_to_load.size()));
-
-            if(map->load_all_tags) {
-                for(std::size_t i = 0; i < map_tag_data_header->tag_count; i++) {
-                    map->load_tag(map->tag_array + i, false);
-                }
-            }
-            else {
-                for(auto &tag : map->tags_to_load) {
-                    bool tag_found = false;
-                    for(std::size_t i = 0; i < map_tag_data_header->tag_count; i++) {
-                        std::string path = map->translate_address(map->tag_array[i].path);
-                        if(path == tag.first && (map->tag_array[i].primary_class == tag.second || tag.second == TAG_CLASS_NULL)) {
-                            if(map->load_tag(map->tag_array + i, false) != TagHandle::null()) {
-                                tag_found = true;
-                            }
-                            break;
-                        }
-                    }
-                    if(!tag_found) {
-                        logger.warning("Tag {} of class {} not found in map {}", tag.first, tag_class_to_string(tag.second), map->name);
-                    }
-                }
-            }
+        secondary_maps_cache = preloaded_secondary_maps_cache;
+        map_cache = std::move(preloaded_map_cache);
+        map_cache->read_tag_data_from_buffer(tag_data_address);
+        virtual_tag_data = std::make_unique<VirtualTagData>();
+        virtual_tag_data->insert_tags_entries_front(tag_data_header.tag_array, tag_data_header.tag_count);
+        
+        logger.debug("Loading secondary maps data...");
+        for(auto &map : secondary_maps_cache) {
+            map->load_tag_data();
         }
-
-        tag_data_header.tag_array = virtual_tag_array.data();
-
-        // End timestamp
-        std::chrono::time_point end = std::chrono::steady_clock::now();
-
-        logger.info("Loaded {} tags in {} ms", virtual_tag_array.size() - loaded_map_tag_data_header->tag_count, std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+        
+        virtual_tag_data->update_tag_data_header();
     }
 
-    void import_tag_from_map(std::string map_name, std::string tag_path, TagClassInt tag_class) {
-        try {
-            if(map_name == prepared_map_name) {
-                return;
-            }
-            for(auto &map : prepared_secondary_maps) {
-                if(map->name == map_name) {
-                    for(auto &tag : map->tags_to_load) {
-                        if(tag.first == tag_path && tag.second == tag_class) {
-                            return;
-                        }
-                    }
-                    map->tags_to_load.emplace_back(tag_path, tag_class);
-                    return;
-                }
-            }
-            auto &map = prepared_secondary_maps.emplace_back(std::make_shared<SecondaryMap>(map_name));
-            map->tags_to_load.emplace_back(tag_path, tag_class);
-        }
-        catch(std::exception &e) {
-            logger.error("Failed to import tag {} from map {}: {}", tag_path, map_name, e.what());
-        }
-    }
-
-    void import_tag_from_map(std::filesystem::path map_file, std::string tag_path, TagClassInt tag_class) {
-        try {
-            if(map_file.stem().string() == prepared_map_name) {
-                return;
-            }
-            for(auto &map : prepared_secondary_maps) {
-                if(map->path == map_file) {
-                    for(auto &tag : map->tags_to_load) {
-                        if(tag.first == tag_path && tag.second == tag_class) {
-                            return;
-                        }
-                    }
-                    map->tags_to_load.emplace_back(tag_path, tag_class);
-                    return;
-                }
-            }
-            auto &map = prepared_secondary_maps.emplace_back(std::make_shared<SecondaryMap>(map_file));
-            map->tags_to_load.emplace_back(tag_path, tag_class);
-        }
-        catch(std::exception &e) {
-            logger.debug("Failed to import tag {} from map {}: {}", tag_path, map_file.string(), e.what());
-            throw;
-        }
-    }
-
-    void import_tags_from_map(std::filesystem::path map_file) {
-        try {
-            if(map_file.stem().string() == prepared_map_name) {
-                return;
-            }
-            for(auto &map : prepared_secondary_maps) {
-                if(map->path == map_file) {
-                    return;
-                }
-            }
-            auto &map = prepared_secondary_maps.emplace_back(std::make_shared<SecondaryMap>(map_file));
-            map->load_all_tags = true;
-        }
-        catch(std::runtime_error &e) {
-            logger.debug("Failed to import tags from map {}: {}", map_file.string(), e.what());
-            throw;
-        }
-    }
-
-    void on_map_file_load(Event::MapFileLoadEvent const &event) {
+    void prepare_to_load_map(Event::MapFileLoadEvent const &event) {
         if(event.time == Event::EVENT_TIME_BEFORE) {
+            logger.info("Clearing preloaded maps cache...");
+            preloaded_secondary_maps_cache.clear();
+
             logger.info("Preparing to load map {}", event.args.map_name);
-
-            // Read next map data
-            prepared_map_name = event.args.map_name;
             auto map_path = path_for_map_local(event.args.map_name.c_str());
-            prepared_map_header = std::make_unique<MapHeader>();
-            std::FILE *file = std::fopen(map_path.string().c_str(), "rb");
-            std::fread(prepared_map_header.get(), sizeof(MapHeader), 1, file);
-            std::fclose(file);
-
-            if(prepared_map_header->head != MapHeader::HEAD_LITERAL || prepared_map_header->foot != MapHeader::FOOT_LITERAL) {
+            preloaded_map_cache = std::make_unique<MapCache>(map_path);
+            if(preloaded_map_cache->header().head != MapHeader::HEAD_LITERAL || preloaded_map_cache->header().foot != MapHeader::FOOT_LITERAL) {
                 throw std::runtime_error("Map file is corrupted");
             }
-
-            // Clear prepared secondary maps
-            prepared_secondary_maps.clear();
         }
     }
 
     void on_read_map_file_data(Event::MapFileDataReadEvent &event) {      
-        if(secondary_maps.empty() && prepared_secondary_maps.empty()) {
+        if(secondary_maps_cache.empty() && preloaded_secondary_maps_cache.empty()) {
             return;
         }
 
@@ -469,17 +510,17 @@ namespace Balltze::Features {
         auto file_name = file_path.filename();
 
         if(event.time == Event::EVENT_TIME_BEFORE) {
-            if(file_name.stem().string() != loaded_map_name) {
+            if(!map_cache || file_name.stem().string() != map_cache->name()) {
                 return;
             }
 
             // Look for secondary maps offset displacement
-            auto offset_acc = loaded_map_header->file_size;
+            auto offset_acc = map_cache->header().file_size;
             if(file_offset > offset_acc) {
-                for(auto &map : secondary_maps) {
-                    auto map_file_size = map->header.file_size;
+                for(auto &map : secondary_maps_cache) {
+                    auto map_file_size = map->header().file_size;
                     if(file_offset <= offset_acc + map_file_size) {
-                        std::FILE *file = std::fopen(map->path.string().c_str(), "rb");
+                        std::FILE *file = std::fopen(map->path().string().c_str(), "rb");
                         std::fseek(file, file_offset - offset_acc, SEEK_SET);
                         std::fread(output, 1, size, file);
                         std::fclose(file);
@@ -496,33 +537,88 @@ namespace Balltze::Features {
             if(tag_data_header.model_data_file_offset == file_offset && tag_data_header.model_data_size == size) {
                 logger.info("Loading model data from secondary maps...");
                 std::size_t buffer_cursor = tag_data_header.model_data_size;
-                for(auto &map : secondary_maps) {
-                    auto &map_tag_data_header = map->tag_data_header;
-                    if(map_tag_data_header) {
-                        std::FILE *file = std::fopen(map->path.string().c_str(), "rb");
-                        std::fseek(file, map_tag_data_header->model_data_file_offset, SEEK_SET);
-                        std::fread(output + buffer_cursor, 1, map_tag_data_header->model_data_size, file);
-                        std::fclose(file);
-                        
-                        buffer_cursor += map_tag_data_header->model_data_size;
-                    }
-                    else {
-                        logger.warning("Cannot load model data from map {} because it has no tag data header", map->name);
-                    }
+                for(auto &map : secondary_maps_cache) {
+                    auto &map_tag_data_header = map->tag_data_header();
+                    std::FILE *file = std::fopen(map->path().string().c_str(), "rb");
+                    std::fseek(file, map_tag_data_header.model_data_file_offset, SEEK_SET);
+                    std::fread(output + buffer_cursor, 1, map_tag_data_header.model_data_size, file);
+                    std::fclose(file);
+                    
+                    buffer_cursor += map_tag_data_header.model_data_size;
                 }
             }
         }
         else {
             if(event.args.output_buffer == get_tag_data_address()) {
                 // Check if we're reading from the next map
-                if(file_name.stem().string() != prepared_map_name) {
-                    logger.warning("Reading tag data from map {} instead of {}", file_name.stem().string(), prepared_map_name);
-                    prepared_map_name = file_name.stem().string();
+                if(file_name.stem().string() != preloaded_map_cache->name()) {
+                    logger.warning("Reading tag data from map {} instead of {}", file_name.stem().string(), preloaded_map_cache->name());
+                    preloaded_map_cache->name(file_name.stem().string());
                 }
 
                 logger.info("Loading tag data from secondary maps...");
                 load_tag_data();
             }
+        }
+    }
+
+    void import_tag_from_map(std::string map_name, std::string tag_path, TagClassInt tag_class) {
+        try {
+            if(map_name == preloaded_map_cache->name()) {
+                return;
+            }
+            for(auto &map : preloaded_secondary_maps_cache) {
+                if(map->name() == map_name) {
+                    map->add_tag_import(tag_path, tag_class);
+                    return;
+                }
+            }
+            logger.debug("Creating map cache for {}", map_name);
+            auto &map = preloaded_secondary_maps_cache.emplace_back(std::make_shared<SecondaryMapCache>(map_name));
+            map->add_tag_import(tag_path, tag_class);
+        }
+        catch(std::exception &e) {
+            logger.error("Failed to import tag {} from map {}: {}", tag_path, map_name, e.what());
+        }
+    }
+
+    void import_tag_from_map(std::filesystem::path map_file, std::string tag_path, TagClassInt tag_class) {
+        try {
+            if(map_file == preloaded_map_cache->path()) {
+                return;
+            }
+            for(auto &map : preloaded_secondary_maps_cache) {
+                if(map->path() == map_file) {
+                    map->add_tag_import(tag_path, tag_class);
+                    return;
+                }
+            }
+            logger.debug("Creating map cache for {}", map_file.stem().string());
+            auto &map = preloaded_secondary_maps_cache.emplace_back(std::make_shared<SecondaryMapCache>(map_file));
+            map->add_tag_import(tag_path, tag_class);
+        }
+        catch(std::exception &e) {
+            logger.error("Failed to import tag {} from map {}: {}", tag_path, map_file.stem().string(), e.what());
+        }
+    }
+
+    void import_tags_from_map(std::filesystem::path map_file) {
+        try {
+            if(map_file == preloaded_map_cache->path()) {
+                return;
+            }
+            for(auto &map : preloaded_secondary_maps_cache) {
+                if(map->path() == map_file) {
+                    return;
+                }
+            }
+            logger.debug("Creating map cache for {}", map_file.stem().string());
+            auto &map = preloaded_secondary_maps_cache.emplace_back(std::make_shared<SecondaryMapCache>(map_file));
+            map->import_all_tags();
+        }
+        catch(std::runtime_error &e) {
+            logger.debug("Failed to import tags from map {}: {}", map_file.string(), e.what());
+            throw;
         }
     }
 
@@ -535,13 +631,13 @@ namespace Balltze::Features {
 
         // If tag is from the loaded map, create a copy of it in the virtual tag data
         auto *tag_data_address = get_tag_data_address();
-        if(tag_handle.index < loaded_map_tag_data_header->tag_count) {
-            auto *raw_tag_array = reinterpret_cast<Tag *>(loaded_map_tag_data.get() + sizeof(TagDataHeader));
+        if(tag_handle.index < map_cache->tag_data_header().tag_count) {
+            auto *raw_tag_array = reinterpret_cast<Tag *>(map_cache->tag_data() + sizeof(TagDataHeader));
             auto *raw_tag = &raw_tag_array[tag->handle.index];
 
             auto translate_address = [](auto address) {
                 if(address != 0) {
-                    auto base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(loaded_map_tag_data.get());
+                    auto base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(map_cache->tag_data());
                     address = reinterpret_cast<decltype(address)>(reinterpret_cast<std::uint32_t>(address) - base_address_disp);
                 }
                 return address;
@@ -551,11 +647,11 @@ namespace Balltze::Features {
                 throw std::runtime_error("Tag mismatch (1)");
             }
 
-            if(tag->data >= tag_data_address && tag->data < tag_data_address + loaded_map_header->tag_data_size) {
+            if(tag->data >= tag_data_address && tag->data < tag_data_address + map_cache->header().tag_data_size) {
                 raw_tag->fix_data_offsets(translate_address(raw_tag->data), std::nullopt);
                 
                 tag->data = raw_tag->copy_data([](std::byte *data, std::size_t size) -> std::byte * {
-                    auto *new_data = reserve_tag_data_space(size);
+                    auto *new_data = virtual_tag_data->reserve_tag_data_space(size);
                     std::memcpy(new_data, data, size);
                     return new_data;
                 });
@@ -571,53 +667,40 @@ namespace Balltze::Features {
             }
         }
         else {
-            const Tag *raw_tag = nullptr;
-            SecondaryMap *tag_map;
-            for(auto &map : secondary_maps) {
-                for(auto [origin_tag_handle, virtual_tag_handle] : map->tag_handles_translations) {
-                    if(virtual_tag_handle == tag_handle) {
-                        raw_tag = map->get_tag(origin_tag_handle);
-                        tag_map = map.get();
-                        break;
-                    }
-                }
-                if(raw_tag) {
-                    break;
+            for(auto &map : secondary_maps_cache) {
+                auto origin_handle = map->get_origin_tag_handle(tag_handle);
+                if(origin_handle) {
+                    auto *raw_tag = map->get_tag(*origin_handle);
+                    auto entry_copy = *raw_tag;
+                    entry_copy.data = map->translate_address(entry_copy.data);
+
+                    auto *tag_data = tag->data;
+                    tag->data = entry_copy.copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
+                        auto *new_data = tag_data;
+                        std::memcpy(new_data, data, size);
+                        tag_data += size;
+                        return new_data;
+                    });
+
+                    tag->fix_dependencies([&tag, &map](TagHandle tag_handle, bool self_reference) -> TagHandle {
+                        auto new_handle = map->translate_tag_handle(tag_handle);
+                        if(new_handle) {
+                            return *new_handle;
+                        }
+                        logger.warning("Cannot resolve tag handle {} from map {} when reloading tag {}", tag_handle.handle, map->name(), tag->path);
+                        return tag_handle;
+                    });
                 }
             }
 
-            if(!raw_tag) {
-                throw std::runtime_error("Tag not found");
-            }
-
-            if(tag->primary_class != raw_tag->primary_class || std::strcmp(tag->path, tag_map->translate_address(raw_tag->path)) != 0) {
-                throw std::runtime_error("Tag mismatch (2)");
-            }
-
-            Tag entry_copy = *raw_tag;
-            entry_copy.data = tag_map->translate_address(entry_copy.data);
-
-            auto *tag_data = tag->data;
-            tag->data = entry_copy.copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
-                auto *new_data = tag_data;
-                std::memcpy(new_data, data, size);
-                tag_data += size;
-                return new_data;
-            });
-
-            tag->fix_dependencies([&tag, &tag_map](TagHandle tag_handle, bool self_reference) -> TagHandle {
-                auto &translations = tag_map->tag_handles_translations;
-                if(translations.find(tag_handle) != translations.end()) {
-                    return translations[tag_handle];
-                }
-                logger.warning("Cannot resolve tag handle {} from map {} when reloading tag {}", tag_handle.handle, tag_map->name, tag->path);
-                return tag_handle;
-            });
+            throw std::runtime_error("Tag not found");
         }
     }
 
     void replace_tag_dependencies(TagHandle tag_handle, TagHandle new_tag_handle) {
-        for(auto &tag : virtual_tag_array) {
+        auto &tag_data_header = get_tag_data_header();
+        for(std::size_t i = 0; i < tag_data_header.tag_count; i++) {
+            auto &tag = tag_data_header.tag_array[i];
             tag.fix_dependencies([tag_handle, new_tag_handle](TagHandle dependency_handle, bool self_reference) -> TagHandle {
                 if(dependency_handle == tag_handle && !self_reference) {
                     return new_tag_handle;
@@ -632,38 +715,38 @@ namespace Balltze::Features {
     
         void on_model_data_buffer_alloc(std::size_t *size) {
             logger.info("Allocating model data buffer for secondary maps...");
-            for(auto &map : prepared_secondary_maps) {
-                *size += map->tag_data_header->model_data_size;
+            for(auto &map : preloaded_secondary_maps_cache) {
+                *size += map->tag_data_header().model_data_size;
             }
         }
     }
 
     void set_up_tag_data_importing() {
-        Event::MapFileLoadEvent::subscribe_const(on_map_file_load, Event::EVENT_PRIORITY_HIGHEST);
+        Event::MapFileLoadEvent::subscribe_const(prepare_to_load_map, Event::EVENT_PRIORITY_HIGHEST);
         Event::MapFileDataReadEvent::subscribe(on_read_map_file_data);
 
         auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
         auto *model_data_buffer_alloc_hook = Memory::hook_function(model_data_buffer_alloc_sig->data(), on_model_data_buffer_alloc_asm);
 
         register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps", std::nullopt, [](int arg_count, const char **args) -> bool {
-            if(secondary_maps.empty()) {
+            if(secondary_maps_cache.empty()) {
                 Engine::console_print("No tag data imported from secondary maps");
                 return true;
             }
             std::string maps_loaded;
             std::size_t cached_data = 0;
-            for(std::size_t i = 0; i < secondary_maps.size(); i++) {
-                auto &map = secondary_maps[i];
-                maps_loaded += map->name;
-                cached_data += map->size();
-                if(i < secondary_maps.size() - 1) {
+            for(std::size_t i = 0; i < secondary_maps_cache.size(); i++) {
+                auto &map = secondary_maps_cache[i];
+                maps_loaded += map->name();
+                cached_data += map->header().tag_data_size;
+                if(i < secondary_maps_cache.size() - 1) {
                     maps_loaded += ", ";
                 }
             }
             Engine::console_print("Imported tag data summary");
-            Engine::console_printf("Maps loaded: %zu (%s)", secondary_maps.size(), maps_loaded.c_str());
-            Engine::console_printf("Tags imported: %zu", virtual_tag_array.size() - loaded_map_tag_data_header->tag_count);
-            Engine::console_printf("Imported tag data size: %.2fMiB / %.2fMiB", static_cast<float>(virtual_tag_data_cursor) / MIB_SIZE, static_cast<float>(virtual_tag_data_buffer_size) / MIB_SIZE);
+            Engine::console_printf("Maps loaded: %zu (%s)", secondary_maps_cache.size(), maps_loaded.c_str());
+            Engine::console_printf("Tags imported: %zu", virtual_tag_data->tag_count() - map_cache->tag_data_header().tag_count);
+            Engine::console_printf("Imported tag data size: %.2fMiB / %.2fMiB", static_cast<float>(virtual_tag_data->tag_data_size()) / MIB_SIZE, static_cast<float>(virtual_tag_data_buffer_size) / MIB_SIZE);
             Engine::console_printf("Cached tag data size: %.2f MiB", static_cast<float>(cached_data) / MIB_SIZE);
             return true;
         }, false, 0, 0);
