@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <windows.h>
 #include <balltze/logger.hpp>
 #include <balltze/engine/core.hpp>
 #include <fmt/chrono.h>
@@ -134,9 +135,20 @@ namespace Balltze {
         }
     }
 
+    static inline bool current_exe_is_cui() noexcept {
+        std::byte *base = reinterpret_cast<std::byte *>(GetModuleHandle(NULL));
+        auto *dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(base);
+        auto *header = reinterpret_cast<PIMAGE_NT_HEADERS>(base + dos_header->e_lfanew);
+        return header->OptionalHeader.Subsystem == IMAGE_SUBSYSTEM_WINDOWS_CUI;
+    }
+
     void Logger::endl_impl(HMODULE module, LoggerStream &stream) {
         if(!(stream.m_level == LOG_LEVEL_DEBUG && stream.m_logger->m_mute_debug)) {
-            print_console(stream);
+            static bool is_cui = current_exe_is_cui();
+            if(is_cui) {
+                // For some reason, it crash the game when the subsystem is GUI
+                print_console(stream);
+            }
             print_file(stream);
             print_ingame(stream);
         }
