@@ -222,6 +222,6 @@ namespace Balltze::Plugins {
     void lua_set_features_table(lua_State *state) noexcept {
         lua_create_functions_table(state, "features", features_functions);
 
-        static auto listener = Event::MapFileLoadEvent::subscribe(on_map_data_read);
+        static auto listener = Event::MapFileLoadEvent::subscribe(on_map_data_read, Event::EVENT_PRIORITY_LOWEST);
     }
 }
