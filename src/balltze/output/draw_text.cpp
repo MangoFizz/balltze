@@ -579,10 +579,6 @@ namespace Balltze {
     float widescreen_width_480p = 640.0;
 
     void apply_text(std::variant<std::string, std::wstring> text, std::int16_t x, std::int16_t y, std::int16_t width, std::int16_t height, const Engine::ColorARGB &color, const std::variant<Engine::TagHandle, GenericFont> &font, FontAlignment alignment, TextAnchor anchor, bool immediate) noexcept {
-        if(!font_override_enabled) {
-            return;
-        }
-
         // Find the font
         Engine::TagHandle font_tag = get_generic_font_if_generic(font);
         LPD3DXFONT override_font = get_override_font(font);
