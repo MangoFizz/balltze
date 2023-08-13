@@ -482,6 +482,22 @@ namespace Balltze::Features {
             return std::nullopt;
         }
 
+        /**
+         * Get the a tag entry from the virtual tag data that belongs to the map
+         * @param tag_path  Path to the tag
+         * @param tag_class Tag class of the tag
+         * @return          Pointer to the tag entry
+         */
+        Tag *get_tag(std::string const &tag_path, TagClassInt tag_class) {
+            for(auto &[origin_handle, tag_handle] : m_tag_handles_translations) {
+                auto *tag = Engine::get_tag(tag_handle);
+                if(std::strcmp(tag->path, tag_path.c_str()) == 0 && tag->primary_class == tag_class) {
+                    return tag;
+                }
+            }
+            return nullptr;
+        }
+
         std::optional<TagHandle> translate_tag_handle(TagHandle handle) {
             if(m_tag_handles_translations.find(handle) != m_tag_handles_translations.end()) {
                 return m_tag_handles_translations[handle];
@@ -824,6 +840,31 @@ namespace Balltze::Features {
         virtual_tag_data->update_tag_data_header();
 
         return new_entry.handle;
+    }
+
+    Tag *get_tag_copy(TagHandle handle, std::string const &name) noexcept {
+        Tag *tag = nullptr;
+        tag = map_cache->get_tag_copy(handle, name);
+        if(!tag) {
+            for(auto &map : secondary_maps_cache) {
+                tag = map->get_tag_copy(handle, name);
+                if(tag) {
+                    break;
+                }
+            }
+        }
+        return tag;
+    }
+
+    Tag *get_imported_tag(std::string const &map_name, std::string const &tag_path, TagClassInt tag_class) noexcept {
+        Tag *tag = nullptr;
+        for(auto &map : secondary_maps_cache) {
+            if(map->name() == map_name) {
+                tag = map->get_tag(tag_path, tag_class);
+                break;
+            }
+        }
+        return tag;
     }
 
     void replace_tag_references(TagHandle tag_handle, TagHandle new_tag_handle) {

@@ -395,31 +395,7 @@ namespace Balltze::Plugins {
             }
 
             if(tag_entry) {
-                lua_newtable(state);
-
-                auto primary_class = Engine::tag_class_to_string(tag_entry->primary_class);
-                lua_pushstring(state, primary_class.c_str());
-                lua_setfield(state, -2, "primary_class");
-
-                auto secondary_class = Engine::tag_class_to_string(tag_entry->secondary_class);
-                lua_pushstring(state, secondary_class.c_str());
-                lua_setfield(state, -2, "secondary_class");
-
-                auto tertiary_class = Engine::tag_class_to_string(tag_entry->tertiary_class);
-                lua_pushstring(state, tertiary_class.c_str());
-                lua_setfield(state, -2, "tertiary_class");
-
-                lua_pushinteger(state, tag_entry->handle.handle);
-                lua_setfield(state, -2, "handle");
-
-                lua_pushstring(state, tag_entry->path);
-                lua_setfield(state, -2, "path");
-
-                lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag_entry->data));
-                lua_setfield(state, -2, "data");
-
-                lua_pushboolean(state, tag_entry->indexed);
-                lua_setfield(state, -2, "indexed");
+                lua_push_engine_tag(state, tag_entry);
             }
             else {
                 lua_pushnil(state);

@@ -208,6 +208,60 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_get_tag_copy(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 2) {
+                auto tag_handle = luaL_checkinteger(state, 1);
+                auto copy_name = luaL_checkstring(state, 2);
+                try {
+                    auto *tag_copy = Features::get_tag_copy(tag_handle, copy_name);
+                    lua_push_engine_tag(state, tag_copy);
+                    return 1;
+                }
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, e.what());
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in balltze function features.get_tag_copy.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_get_imported_tag(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 3) {
+                auto map_path = luaL_checkstring(state, 1);
+                auto tag_path = luaL_checkstring(state, 2);
+                auto tag_class_string = luaL_checkstring(state, 3);
+                auto tag_class_int = Engine::tag_class_from_string(tag_class_string);
+                try {
+                    auto *tag = Features::get_imported_tag(map_path, tag_path, tag_class_int);
+                    lua_push_engine_tag(state, tag);
+                    return 1;
+                }
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, e.what());
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in balltze function features.get_imported_tag.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
     static void on_map_data_read(Event::MapFileLoadEvent &event) {
         auto plugins = get_lua_plugins();
         for(auto &plugin : plugins) {
@@ -243,6 +297,8 @@ namespace Balltze::Plugins {
         {"reload_tag_data", lua_reload_tag_data},
         {"replace_tag_references", lua_replace_tag_references},
         {"clone_tag", lua_clone_tag},
+        {"get_tag_copy", lua_get_tag_copy},
+        {"get_imported_tag", lua_get_imported_tag},
         {nullptr, nullptr}
     };
 

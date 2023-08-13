@@ -680,6 +680,34 @@ namespace Balltze::Plugins {
         return color;
     }
 
+    void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
+        lua_newtable(state);
+
+        auto primary_class = Engine::tag_class_to_string(tag->primary_class);
+        lua_pushstring(state, primary_class.c_str());
+        lua_setfield(state, -2, "primary_class");
+
+        auto secondary_class = Engine::tag_class_to_string(tag->secondary_class);
+        lua_pushstring(state, secondary_class.c_str());
+        lua_setfield(state, -2, "secondary_class");
+
+        auto tertiary_class = Engine::tag_class_to_string(tag->tertiary_class);
+        lua_pushstring(state, tertiary_class.c_str());
+        lua_setfield(state, -2, "tertiary_class");
+
+        lua_pushinteger(state, tag->handle.handle);
+        lua_setfield(state, -2, "handle");
+
+        lua_pushstring(state, tag->path);
+        lua_setfield(state, -2, "path");
+
+        lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag->data));
+        lua_setfield(state, -2, "data");
+
+        lua_pushboolean(state, tag->indexed);
+        lua_setfield(state, -2, "indexed");
+    }
+
     static int lua_engine_color_a_r_g_b_int__index(lua_State *state) {
         lua_getfield(state, 1, "_data"); 
         auto color = static_cast<Engine::ColorARGBInt *>(lua_touserdata(state, -1)); 

@@ -50,6 +50,22 @@ namespace Balltze::Features {
      * @return              Handle of the copied tag
      */
     BALLTZE_API Engine::TagHandle clone_tag(Engine::TagHandle tag_handle, std::string copy_name);
+
+    /**
+     * Get a copy of a tag
+     * @param tag_handle    Handle of the original tag
+     * @param copy_name     Name of the copied tag
+     * @return              Pointer to the copied tag entry
+     */
+    BALLTZE_API Engine::Tag *get_tag_copy(Engine::TagHandle handle, std::string const &name) noexcept;
+
+    /**
+     * Get a an imported tag from another map
+     * @param tag_path    Path of the tag to get
+     * @param tag_class   Class of the tag to get
+     * @return            Pointer to the tag entry
+     */
+    BALLTZE_API Engine::Tag *get_imported_tag(std::string const &map_name, std::string const &tag_path, Engine::TagClassInt tag_class) noexcept;
 }
 
 #endif

@@ -54,6 +54,8 @@ namespace Balltze::Plugins {
     Engine::Point3D lua_to_point3_d(lua_State *state, int index);
     Engine::ColorARGBInt lua_to_color_a_r_g_b_int(lua_State *state, int index);
 
+    void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept;
+
     void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
     void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept;
     void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point) noexcept;
