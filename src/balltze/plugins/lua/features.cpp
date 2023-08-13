@@ -157,7 +157,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    static int lua_replace_tag_dependencies(lua_State *state) {
+    static int lua_replace_tag_references(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -165,7 +165,7 @@ namespace Balltze::Plugins {
                 auto tag_handle = luaL_checkinteger(state, 1);
                 auto new_tag_handle = luaL_checkinteger(state, 2);
                 try {
-                    Features::replace_tag_dependencies(tag_handle, new_tag_handle);
+                    Features::replace_tag_references(tag_handle, new_tag_handle);
                 }
                 catch(std::runtime_error &e) {
                     return luaL_error(state, e.what());
@@ -180,6 +180,32 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Unknown plugin.");
         }
         return 0;
+    }
+
+    static int lua_clone_tag(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 2) {
+                auto tag_handle = luaL_checkinteger(state, 1);
+                auto copy_name = luaL_checkstring(state, 2);
+                try {
+                    auto new_tag_handle = Features::clone_tag(tag_handle, copy_name);
+                    lua_pushinteger(state, new_tag_handle.handle);
+                    return 1;
+                }
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, e.what());
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in balltze function features.clone_tag.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
     }
 
     static void on_map_data_read(Event::MapFileLoadEvent &event) {
@@ -215,7 +241,8 @@ namespace Balltze::Plugins {
         {"import_tags_from_map", lua_import_tags_from_map},
         {"clear_tag_imports", lua_clear_tag_imports},
         {"reload_tag_data", lua_reload_tag_data},
-        {"replace_tag_dependencies", lua_replace_tag_dependencies},
+        {"replace_tag_references", lua_replace_tag_references},
+        {"clone_tag", lua_clone_tag},
         {nullptr, nullptr}
     };
 

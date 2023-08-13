@@ -59,23 +59,23 @@ namespace Balltze::Engine {
 
         /**
          * Fix tag offsets with a new data address 
-         * @param new_data_address              New data address for tag data
+         * @param new_tag_data_address          New data address for tag data
          * @param external_data_offset_resolver Function to resolve external data offsets
          */
-        void fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
+        void rebase_data_offsets(std::byte *new_tag_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
 
         /**
          * Fix tag dependencies
          * @param dependency_resolver A function that resolves tag handles from tag dependencies
          */
-        void fix_dependencies(std::function<TagHandle(TagHandle, bool)> dependency_resolver);
+        void resolve_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver);
 
         /**
          * Copy tag data to a new location
          * @param  data_allocator A function that allocates memory for the copied structures from the original data and returns a pointer to the reserved memory
          * @return                Pointer to copied data
          */
-        std::byte *copy_data(std::function<std::byte *(std::byte *, std::size_t)> data_allocator);
+        std::byte *copy_data(std::function<std::byte *(std::byte *, std::size_t)> data_allocator) const;
     };
     static_assert(sizeof(Tag) == 0x20);
 

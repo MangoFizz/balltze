@@ -38,10 +38,18 @@ namespace Balltze::Features {
     BALLTZE_API void reload_tag_data(Engine::TagHandle tag_handle);
 
     /**
-     * Replace the dependencies of a tag
-     * @param tag_handle    Handle of the tag to replace the dependencies of
+     * Replace all tag references to a tag by references to another tag
+     * @param tag_handle    Handle of the tag to replace
      */
-    BALLTZE_API void replace_tag_dependencies(Engine::TagHandle tag_handle, Engine::TagHandle new_tag_handle);
+    BALLTZE_API void replace_tag_references(Engine::TagHandle tag_handle, Engine::TagHandle new_tag_handle);
+
+    /**
+     * Copy a tag
+     * @param tag_handle    Handle of the tag to copy
+     * @param copy_name     Name of the copied tag
+     * @return              Handle of the copied tag
+     */
+    BALLTZE_API Engine::TagHandle clone_tag(Engine::TagHandle tag_handle, std::string copy_name);
 }
 
 #endif

@@ -124,10 +124,8 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    void Tag::fix_data_offsets(std::byte *new_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver) {
-        std::ptrdiff_t offset_disp = reinterpret_cast<std::int32_t>(new_data_address - this->data);
-
-        this->data = new_data_address;
+    void Tag::rebase_data_offsets(std::byte *new_tag_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver) {
+        std::ptrdiff_t offset_disp = reinterpret_cast<std::int32_t>(new_tag_data_address - get_tag_data_address());
 
         switch(this->primary_class) {
 ]])

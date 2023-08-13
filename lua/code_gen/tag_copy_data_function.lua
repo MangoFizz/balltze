@@ -114,13 +114,13 @@ for structName, struct in pairs(structs) do
             indent(2)
             add("}\n")
         elseif(field.type == "TagDependency") then
-            indent(2)
-            add("if(" .. fieldAccess .. ".path && " .. fieldAccess .. ".path_size > 0) {\n")
-            indent(3)
             -- Prevents the thing from crashing when the path is bullshit
+            -- indent(2)
+            -- add("if(" .. fieldAccess .. ".path && " .. fieldAccess .. ".path_size > 0) {\n")
+            -- indent(3)
             --add(fieldAccess .. ".path = reinterpret_cast<char *>(data_allocator(reinterpret_cast<std::byte *>(" .. fieldAccess .. ".path), " .. fieldAccess .. ".path_size + 1));\n")
-            indent(2)
-            add("}\n")
+            -- indent(2)
+            -- add("}\n")
         elseif(structs[definitionParser.snakeCaseToCamelCase(field.type)]) then
             indent(2)
             add("copy_struct_data(data, data_allocator, false);\n")
@@ -133,7 +133,7 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    std::byte *Tag::copy_data(std::function<std::byte *(std::byte *, std::size_t)> data_allocator) {
+    std::byte *Tag::copy_data(std::function<std::byte *(std::byte *, std::size_t)> data_allocator) const {
         switch(this->primary_class) {
 ]])
 

@@ -442,7 +442,7 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             if(args == 1 || args == 2) {
                 Engine::Tag *tag_entry = nullptr;
-                if(lua_isstring(state, 1)) {
+                if(args == 2 && lua_isstring(state, 1)) {
                     const char *tag_path = lua_tostring(state, 1);
                     const char *tag_class_str = lua_tostring(state, 2);
                     auto tag_class = Engine::tag_class_from_string(tag_class_str);
@@ -475,7 +475,8 @@ namespace Balltze::Plugins {
                 }
 
                 if(!tag_entry) {
-                    return luaL_error(state, "Could not find tag.");
+                    lua_pushnil(state);
+                    return 1;
                 }
 
                 if(args == 2) {
