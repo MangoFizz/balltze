@@ -996,7 +996,7 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             if(args == 1) {
                 auto &object_table = Engine::get_object_table();
-                Engine::DynamicObject *object;
+                Engine::BaseObject *object;
                 Engine::ObjectHandle object_handle;
                 object_handle.handle = luaL_checkinteger(state, 1);
                 if(object_handle.id != 0) {
@@ -1070,7 +1070,7 @@ namespace Balltze::Plugins {
             if(args == 1) {
                 auto &object_table = Engine::get_object_table();
                 if(lua_istable(state, 1)) {
-                    auto *object = lua_from_meta_object<Engine::DynamicObject>(state, 1);
+                    auto *object = lua_from_meta_object<Engine::BaseObject>(state, 1);
                     if(object) {
                         auto object_handle = object->object_handle();
                         object_table.delete_object(object_handle);
@@ -1113,7 +1113,7 @@ namespace Balltze::Plugins {
                 Engine::ObjectHandle vehicle_handle(luaL_checkinteger(state, 2));
                 auto &object_table = Engine::get_object_table();
 
-                auto *unit = reinterpret_cast<Engine::UnitDynamicObject *>(object_table.get_dynamic_object(unit_handle));
+                auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_dynamic_object(unit_handle));
                 if(!unit) {
                     return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
                 }

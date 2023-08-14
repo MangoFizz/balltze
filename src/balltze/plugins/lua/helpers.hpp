@@ -41,8 +41,8 @@ namespace Balltze::Plugins {
     std::string object_network_role_to_string(Engine::ObjectNetworkRole role);
     Engine::ObjectNetworkRole object_network_role_from_string(const std::string &role);
 
-    std::string dynamic_object_attachment_type_to_string(Engine::DynamicObjectAttachmentType type);
-    Engine::DynamicObjectAttachmentType dynamic_object_attachment_type_from_string(const std::string &type);
+    std::string dynamic_object_attachment_type_to_string(Engine::BaseObjectAttachmentType type);
+    Engine::BaseObjectAttachmentType dynamic_object_attachment_type_from_string(const std::string &type);
 
     std::string multiplayer_team_to_string(Engine::MultiplayerTeam team);
     Engine::MultiplayerTeam multiplayer_team_from_string(const std::string &team);
@@ -77,15 +77,15 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_camera_data(lua_State *state, Engine::CameraData &data) noexcept;
     void lua_push_meta_engine_rotation_matrix(lua_State *state, Engine::RotationMatrix &matrix) noexcept;
     void lua_push_meta_engine_model_node(lua_State *state, Engine::ModelNode &node) noexcept;
-    void lua_push_meta_engine_dynamic_object_flags(lua_State *state, Engine::DynamicObjectFlags &flags) noexcept;
-    void lua_push_meta_engine_dynamic_object_network(lua_State *state, Engine::DynamicObjectNetwork &network) noexcept;
+    void lua_push_meta_engine_dynamic_object_flags(lua_State *state, Engine::BaseObjectFlags &flags) noexcept;
+    void lua_push_meta_engine_dynamic_object_network(lua_State *state, Engine::BaseObjectNetwork &network) noexcept;
     void lua_push_meta_engine_scenario_location(lua_State *state, Engine::ScenarioLocation &location) noexcept;
-    void lua_push_meta_engine_dynamic_object_vitals_flags(lua_State *state, Engine::DynamicObjectVitalsFlags &flags) noexcept;
-    void lua_push_meta_engine_dynamic_object_vitals(lua_State *state, Engine::DynamicObjectVitals &flags) noexcept;
-    void lua_push_meta_engine_dynamic_object_attachments_data(lua_State *state, Engine::DynamicObjectAttachmentsData &data) noexcept;
-    void lua_push_meta_engine_dynamic_object_region_destroyeds(lua_State *state, Engine::DynamicObjectRegionDestroyeds &destroyeds) noexcept;
-    void lua_push_meta_engine_dynamic_object_block_reference(lua_State *state, Engine::DynamicObjectBlockReference &reference) noexcept;
-    void lua_push_meta_engine_dynamic_object(lua_State *state, Engine::DynamicObject &object) noexcept;
+    void lua_push_meta_engine_dynamic_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags) noexcept;
+    void lua_push_meta_engine_dynamic_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags) noexcept;
+    void lua_push_meta_engine_dynamic_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &data) noexcept;
+    void lua_push_meta_engine_dynamic_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &destroyeds) noexcept;
+    void lua_push_meta_engine_dynamic_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &reference) noexcept;
+    void lua_push_meta_engine_dynamic_object(lua_State *state, Engine::BaseObject &object) noexcept;
 
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex) noexcept {

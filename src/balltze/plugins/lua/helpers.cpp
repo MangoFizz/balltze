@@ -420,7 +420,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    std::string dynamic_object_attachment_type_to_string(Engine::DynamicObjectAttachmentType type) {
+    std::string dynamic_object_attachment_type_to_string(Engine::BaseObjectAttachmentType type) {
         switch(type) {
             case Engine::OBJECT_ATTACHMENT_TYPE_INVALID: 
                 return "invalid";
@@ -439,7 +439,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    Engine::DynamicObjectAttachmentType dynamic_object_attachment_type_from_string(const std::string &type) {
+    Engine::BaseObjectAttachmentType dynamic_object_attachment_type_from_string(const std::string &type) {
         if(type == "invalid") {
             return Engine::OBJECT_ATTACHMENT_TYPE_INVALID;
         }
@@ -718,11 +718,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "red") { 
+        if(field == "red") { 
             lua_pushinteger(state, color->red); 
             return 1; 
         }
@@ -753,10 +749,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "red") { 
+        if(field == "red") { 
             color->red = static_cast<std::uint8_t>(luaL_checkinteger(state, 3)); 
         }
         else if(field == "green") { 
@@ -788,11 +781,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "handle") { 
+        if(field == "handle") { 
             lua_pushinteger(state, dependency->tag_handle.handle); 
             return 1; 
         }
@@ -823,10 +812,7 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "handle") { 
+        if(field == "handle") { 
             dependency->tag_handle.handle = luaL_checkinteger(state, 3); 
         }
         else if(field == "class") {
@@ -866,11 +852,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "x") { 
+        if(field == "x") { 
             lua_pushnumber(state, point->x); 
             return 1; 
         }
@@ -893,10 +875,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "x") { 
+        if(field == "x") { 
             point->x = luaL_checknumber(state, 3); 
         }
         else if(field == "y") { 
@@ -922,11 +901,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "x") { 
+        if(field == "x") { 
             lua_pushinteger(state, point->x); 
             return 1; 
         }
@@ -953,10 +928,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "x") { 
+        if(field == "x") { 
             point->x = luaL_checkinteger(state, 3); 
         }
         else if(field == "y") { 
@@ -985,11 +957,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "size") { 
+        if(field == "size") { 
             lua_pushinteger(state, offset->size); 
             return 1; 
         }
@@ -1032,10 +1000,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "size") { 
+        if(field == "size") { 
             offset->size = luaL_checkinteger(state, 3); 
         }
         else if(field == "external") { 
@@ -1067,11 +1032,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "alpha") { 
+        if(field == "alpha") { 
             lua_pushnumber(state, color->alpha); 
             return 1; 
         }
@@ -1102,10 +1063,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "alpha") { 
+        if(field == "alpha") { 
             color->alpha = luaL_checknumber(state, 3); 
         }
         else if(field == "red") { 
@@ -1137,11 +1095,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "top") { 
+        if(field == "top") { 
             lua_pushinteger(state, rectangle->top); 
             return 1; 
         }
@@ -1172,10 +1126,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "top") { 
+        if(field == "top") { 
             rectangle->top = luaL_checkinteger(state, 3); 
         }
         else if(field == "left") { 
@@ -1207,11 +1158,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "x") { 
+        if(field == "x") { 
             lua_pushinteger(state, point->x); 
             return 1; 
         }
@@ -1234,10 +1181,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "x") { 
+        if(field == "x") { 
             point->x = luaL_checkinteger(state, 3); 
         }
         else if(field == "y") { 
@@ -1263,11 +1207,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "yaw") { 
+        if(field == "yaw") { 
             lua_pushnumber(state, euler->yaw); 
             return 1; 
         }
@@ -1290,10 +1230,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "yaw") { 
+        if(field == "yaw") { 
             euler->yaw = luaL_checknumber(state, 3); 
         }
         else if(field == "pitch") { 
@@ -1319,11 +1256,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "yaw") { 
+        if(field == "yaw") { 
             lua_pushnumber(state, euler->yaw); 
             return 1; 
         }
@@ -1350,10 +1283,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "yaw") { 
+        if(field == "yaw") { 
             euler->yaw = luaL_checknumber(state, 3); 
         }
         else if(field == "pitch") { 
@@ -1382,11 +1312,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "yaw") { 
+        if(field == "yaw") { 
             lua_pushnumber(state, euler->yaw); 
             return 1; 
         }
@@ -1413,10 +1339,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "yaw") { 
+        if(field == "yaw") { 
             euler->yaw = luaL_checknumber(state, 3); 
         }
         else if(field == "pitch") { 
@@ -1445,11 +1368,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "i") { 
+        if(field == "i") { 
             lua_pushnumber(state, vector->i); 
             return 1; 
         }
@@ -1472,10 +1391,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "i") { 
+        if(field == "i") { 
             vector->i = luaL_checknumber(state, 3); 
         }
         else if(field == "j") { 
@@ -1501,11 +1417,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "i") { 
+        if(field == "i") { 
             lua_pushnumber(state, vector->i); 
             return 1; 
         }
@@ -1532,10 +1444,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "i") { 
+        if(field == "i") { 
             vector->i = luaL_checknumber(state, 3); 
         }
         else if(field == "j") { 
@@ -1564,11 +1473,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "red") { 
+        if(field == "red") { 
             lua_pushnumber(state, color->red); 
             return 1; 
         }
@@ -1595,10 +1500,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "red") { 
+        if(field == "red") { 
             color->red = luaL_checknumber(state, 3); 
         }
         else if(field == "green") { 
@@ -1627,11 +1529,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "i") { 
+        if(field == "i") { 
             lua_pushnumber(state, quaternion->i); 
             return 1; 
         }
@@ -1662,10 +1560,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "i") { 
+        if(field == "i") { 
             quaternion->i = luaL_checknumber(state, 3); 
         }
         else if(field == "j") { 
@@ -1697,11 +1592,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "vector") { 
+        if(field == "vector") { 
             lua_push_meta_engine_vector3_d(state, plane->vector);
             return 1;
         }
@@ -1720,10 +1611,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "vector") { 
+        if(field == "vector") { 
             return luaL_error(state, "Invalid operation");
         }
         else { 
@@ -1746,11 +1634,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            lua_pushnil(state); 
-            return 1; 
-        }
-        else if(field == "vector") { 
+        if(field == "vector") { 
             lua_push_meta_engine_vector2_d(state, plane->vector);
             return 1;
         }
@@ -1769,10 +1653,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "_data") { 
-            return luaL_error(state, "Cannot set _data"); 
-        }
-        else if(field == "vector") { 
+        if(field == "vector") { 
             return luaL_error(state, "Invalid operation");
         }
         else { 
@@ -2183,7 +2064,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_flags__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto flags = static_cast<Engine::DynamicObjectFlags *>(lua_touserdata(state, -1)); 
+        auto flags = static_cast<Engine::BaseObjectFlags *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2257,7 +2138,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_flags__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto flags = static_cast<Engine::DynamicObjectFlags *>(lua_touserdata(state, -1)); 
+        auto flags = static_cast<Engine::BaseObjectFlags *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2330,13 +2211,13 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object_flags(lua_State *state, Engine::DynamicObjectFlags &flags) noexcept {
+    void lua_push_meta_engine_dynamic_object_flags(lua_State *state, Engine::BaseObjectFlags &flags) noexcept {
         lua_push_meta_object(state, flags, lua_engine_dynamic_object_flags__index, lua_engine_dynamic_object_flags__newindex); 
     }
 
     static int lua_engine_dynamic_object_network__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto object_network = static_cast<Engine::DynamicObjectNetwork *>(lua_touserdata(state, -1)); 
+        auto object_network = static_cast<Engine::BaseObjectNetwork *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
@@ -2380,7 +2261,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_network__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto object_network = static_cast<Engine::DynamicObjectNetwork *>(lua_touserdata(state, -1)); 
+        auto object_network = static_cast<Engine::BaseObjectNetwork *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2432,7 +2313,7 @@ namespace Balltze::Plugins {
         }
         else if(field == "timestamp") { 
             if(lua_isinteger(state, 3)) {
-                object_network->timestamp = static_cast<Engine::TickCount>(lua_tointeger(state, 3));
+                object_network->timestamp = static_cast<Engine::TickCount32>(lua_tointeger(state, 3));
             }
             else {
                 return luaL_error(state, "Invalid value");
@@ -2444,7 +2325,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object_network(lua_State *state, Engine::DynamicObjectNetwork &network) noexcept {
+    void lua_push_meta_engine_dynamic_object_network(lua_State *state, Engine::BaseObjectNetwork &network) noexcept {
         lua_push_meta_object(state, network, lua_engine_dynamic_object_network__index, lua_engine_dynamic_object_network__newindex); 
     }
 
@@ -2499,7 +2380,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_vitals_flags__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto flags = static_cast<Engine::DynamicObjectVitalsFlags *>(lua_touserdata(state, -1)); 
+        auto flags = static_cast<Engine::BaseObjectVitalsFlags *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2546,7 +2427,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_vitals_flags__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto flags = static_cast<Engine::DynamicObjectVitalsFlags *>(lua_touserdata(state, -1)); 
+        auto flags = static_cast<Engine::BaseObjectVitalsFlags *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2592,13 +2473,13 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object_vitals_flags(lua_State *state, Engine::DynamicObjectVitalsFlags &flags) noexcept {
+    void lua_push_meta_engine_dynamic_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags) noexcept {
         lua_push_meta_object(state, flags, lua_engine_dynamic_object_vitals_flags__index, lua_engine_dynamic_object_vitals_flags__newindex); 
     }
 
     static int lua_engine_dynamic_object_vitals__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto vitals = static_cast<Engine::DynamicObjectVitals *>(lua_touserdata(state, -1)); 
+        auto vitals = static_cast<Engine::BaseObjectVitals *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
@@ -2653,7 +2534,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_vitals__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto vitals = static_cast<Engine::DynamicObjectVitals *>(lua_touserdata(state, -1)); 
+        auto vitals = static_cast<Engine::BaseObjectVitals *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2690,10 +2571,10 @@ namespace Balltze::Plugins {
             vitals->recent_health_damage = luaL_checknumber(state, 3);
         }
         else if(field == "recent_shield_damage_time") {
-            vitals->recent_shield_damage_time = static_cast<Engine::TickCount>(luaL_checkinteger(state, 3));
+            vitals->recent_shield_damage_time = static_cast<Engine::TickCount32>(luaL_checkinteger(state, 3));
         }
         else if(field == "recent_health_damage_time") {
-            vitals->recent_health_damage_time = static_cast<Engine::TickCount>(luaL_checkinteger(state, 3));
+            vitals->recent_health_damage_time = static_cast<Engine::TickCount32>(luaL_checkinteger(state, 3));
         }
         else if(field == "shield_stun_time") {
             vitals->shield_stun_time = static_cast<Engine::TickCount16>(luaL_checkinteger(state, 3));
@@ -2707,13 +2588,13 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object_vitals(lua_State *state, Engine::DynamicObjectVitals &flags) noexcept {
+    void lua_push_meta_engine_dynamic_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags) noexcept {
         lua_push_meta_object(state, flags, lua_engine_dynamic_object_vitals__index, lua_engine_dynamic_object_vitals__newindex); 
     }
 
     static int lua_engine_dynamic_object_attachments_data__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto attachments_data = static_cast<Engine::DynamicObjectAttachmentsData *>(lua_touserdata(state, -1)); 
+        auto attachments_data = static_cast<Engine::BaseObjectAttachmentsData *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
@@ -2746,7 +2627,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_attachments_data__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto attachments_data = static_cast<Engine::DynamicObjectAttachmentsData *>(lua_touserdata(state, -1)); 
+        auto attachments_data = static_cast<Engine::BaseObjectAttachmentsData *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2756,7 +2637,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "types") { 
-            std::optional<Engine::DynamicObjectAttachmentType> types[sizeof(attachments_data->types) / sizeof(attachments_data->types[0])];
+            std::optional<Engine::BaseObjectAttachmentType> types[sizeof(attachments_data->types) / sizeof(attachments_data->types[0])];
             try {
                 for(std::size_t i = 0; i < sizeof(attachments_data->types) / sizeof(attachments_data->types[0]); i++) {
                     lua_rawgeti(state, 3, i + 1);
@@ -2804,13 +2685,13 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object_attachments_data(lua_State *state, Engine::DynamicObjectAttachmentsData &attachments_data) noexcept {
+    void lua_push_meta_engine_dynamic_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &attachments_data) noexcept {
         lua_push_meta_object(state, attachments_data, lua_engine_dynamic_object_attachments_data__index, lua_engine_dynamic_object_attachments_data__newindex); 
     }
 
     static int lua_engine_dynamic_object_region_destroyeds__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto regions = static_cast<Engine::DynamicObjectRegionDestroyeds *>(lua_touserdata(state, -1)); 
+        auto regions = static_cast<Engine::BaseObjectRegionDestroyeds *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
@@ -2850,7 +2731,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_region_destroyeds__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto regions = static_cast<Engine::DynamicObjectRegionDestroyeds *>(lua_touserdata(state, -1)); 
+        auto regions = static_cast<Engine::BaseObjectRegionDestroyeds *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2890,13 +2771,13 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object_region_destroyeds(lua_State *state, Engine::DynamicObjectRegionDestroyeds &regions) noexcept {
+    void lua_push_meta_engine_dynamic_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &regions) noexcept {
         lua_push_meta_object(state, regions, lua_engine_dynamic_object_region_destroyeds__index, lua_engine_dynamic_object_region_destroyeds__newindex); 
     }
 
     static int lua_engine_dynamic_object_block_reference__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto block_reference = static_cast<Engine::DynamicObjectBlockReference *>(lua_touserdata(state, -1)); 
+        auto block_reference = static_cast<Engine::BaseObjectBlockReference *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
@@ -2918,7 +2799,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object_block_reference__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto block_reference = static_cast<Engine::DynamicObjectBlockReference *>(lua_touserdata(state, -1)); 
+        auto block_reference = static_cast<Engine::BaseObjectBlockReference *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -2939,7 +2820,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object_block_reference(lua_State *state, Engine::DynamicObjectBlockReference &block_reference) noexcept {
+    void lua_push_meta_engine_dynamic_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &block_reference) noexcept {
         lua_push_meta_object(state, block_reference, lua_engine_dynamic_object_block_reference__index, lua_engine_dynamic_object_block_reference__newindex); 
     }
 
@@ -2948,7 +2829,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object__index(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto object = static_cast<Engine::DynamicObject *>(lua_touserdata(state, -1)); 
+        auto object = static_cast<Engine::BaseObject *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
@@ -3126,7 +3007,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_dynamic_object__newindex(lua_State *state) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto object = static_cast<Engine::DynamicObject *>(lua_touserdata(state, -1)); 
+        auto object = static_cast<Engine::BaseObject *>(lua_touserdata(state, -1)); 
         lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
@@ -3145,7 +3026,7 @@ namespace Balltze::Plugins {
             object->should_force_baseline_update = luaL_checkinteger(state, 3);
         }
         else if(field == "existence_time") {
-            object->existence_time = static_cast<Engine::TickCount>(luaL_checkinteger(state, 3));
+            object->existence_time = static_cast<Engine::TickCount32>(luaL_checkinteger(state, 3));
         }
         else if(field == "flags") {
             return luaL_error(state, "Invalid operation");
@@ -3323,7 +3204,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_dynamic_object(lua_State *state, Engine::DynamicObject &object) noexcept {
+    void lua_push_meta_engine_dynamic_object(lua_State *state, Engine::BaseObject &object) noexcept {
         lua_push_meta_object(state, object, lua_engine_dynamic_object__index, lua_engine_dynamic_object__newindex); 
     }
 }

@@ -16,7 +16,7 @@ namespace Balltze::Engine {
 	using TagFourCC = TagClassInt;
 	using Matrix = float[3][3];
     using Point = float;
-	using TickCount = std::uint32_t;
+	using TickCount32 = std::uint32_t;
     using TickCount16 = std::uint16_t;
 
 	struct TagString {
@@ -164,6 +164,14 @@ namespace Balltze::Engine {
 		std::int16_t right;
 	};
     static_assert(sizeof(Rectangle2D) == 0x8);
+
+    struct Rectangle2DF {
+        float top;
+        float left;
+        float bottom;
+        float right;
+    };
+    static_assert(sizeof(Rectangle2DF) == 0x10);
 
 	struct Point2DInt {
 		std::int16_t x;

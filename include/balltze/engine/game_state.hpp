@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <balltze/engine/tag_definitions/scenario.hpp>
+#include <balltze/engine/tag_definitions/damage_effect.hpp>
 #include <balltze/engine/multiplayer.hpp>
 #include "../memory.hpp"
 #include "data_types.hpp"
@@ -36,15 +37,15 @@ namespace Balltze::Engine {
         std::uint16_t next_id;
 
         /** Pointer to the first element */
-        T *first_element;
+        T* first_element;
 
         /**
          * Get the element from an index
          * @param  index index of the element
          * @return       pointer to the element or nullptr if out of bounds
          */
-        T *get_element(std::size_t index) {
-            if(index >= this->current_size) {
+        T* get_element(std::size_t index) {
+            if (index >= this->current_size) {
                 return nullptr;
             }
             else {
@@ -54,7 +55,7 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(GenericTable<int>) == 0x38);
 
-    struct DynamicObject;
+    struct BaseObject;
 
     /**
      * This represents and points to an object in loopobjects.
@@ -66,7 +67,7 @@ namespace Balltze::Engine {
         PADDING(0x4);
 
         /** Address of the object in loopobjects */
-        DynamicObject *object;
+        BaseObject* object;
     };
     static_assert(sizeof(ObjectTableEntry) == 0xC);
 
@@ -76,14 +77,14 @@ namespace Balltze::Engine {
          * @param  object_handle This is the handle of the object.
          * @return           Return a pointer to the object or nullptr if the handle is invalid.
          */
-        DynamicObject *get_dynamic_object(const ObjectHandle &object_handle) noexcept;
+        BaseObject* get_dynamic_object(const ObjectHandle& object_handle) noexcept;
 
         /**
          * Get the object by an index, returning nullptr if the index is invalid.
          * @param  index This is the index of the object.
          * @return       Return a pointer to the object or nullptr if the index is invalid.
          */
-        DynamicObject *get_dynamic_object(std::uint32_t index) noexcept;
+        BaseObject* get_dynamic_object(std::uint32_t index) noexcept;
 
         /**
          * Spawn an object with an tag handle.
@@ -92,13 +93,13 @@ namespace Balltze::Engine {
          * @param  parent       Parent object.
          * @return              Handle of the spawned object.
          */
-        ObjectHandle create_object(const TagHandle &tag_handle, Point3D offset, const ObjectHandle &parent) noexcept;
+        ObjectHandle create_object(const TagHandle& tag_handle, Point3D offset, const ObjectHandle& parent) noexcept;
 
         /**
          * Delete an object with an object handle.
          * @param  object_handle The object handle of the object
          */
-        void delete_object(const ObjectHandle &object_handle) noexcept;
+        void delete_object(const ObjectHandle& object_handle) noexcept;
 
         /**
          * Delete an object with an index.
@@ -111,10 +112,10 @@ namespace Balltze::Engine {
      * Get the object table
      * @return object table
      */
-    ObjectTable &get_object_table() noexcept;
+    ObjectTable& get_object_table() noexcept;
 
-    /** 
-     * This is the type of object an object is. 
+    /**
+     * This is the type of object an object is.
      */
     enum ObjectType : std::uint16_t {
         /** Object -> Unit -> Biped */
@@ -164,8 +165,8 @@ namespace Balltze::Engine {
         OBJECT_NETWORK_ROLE_LOCAL_ONLY
     };
 
-    /** 
-     * A model node is a part of a model which can have its own position, rotation, and scale. 
+    /**
+     * A model node is a part of a model which can have its own position, rotation, and scale.
      */
     struct ModelNode {
         /** Scale of this part of the model */
@@ -179,9 +180,9 @@ namespace Balltze::Engine {
     };
 
     /** As of Halo 1.10, 64 nodes is the maximum count. */
-    #define MAX_NODES 64
+#define MAX_NODES 64
 
-    struct DynamicObjectFlags {
+    struct BaseObjectFlags {
         /** No collision - this is used for backpack weapons. */
         bool no_collision : 1;
 
@@ -220,7 +221,7 @@ namespace Balltze::Engine {
 
         /** Is an elevator */
         bool is_elevator : 1;
-        
+
         /** Is an elevator again */
         bool is_elevator_2 : 1;
 
@@ -242,7 +243,7 @@ namespace Balltze::Engine {
         bool outside_of_map : 1;
 
         PADDING_BIT(bool, 2);
-        
+
         /** Is collidable */
         bool collidable : 1;
 
@@ -259,9 +260,9 @@ namespace Balltze::Engine {
 
         PADDING_BIT(bool, 2);
     };
-    static_assert(sizeof(DynamicObjectFlags) == sizeof(std::uint32_t));
+    static_assert(sizeof(BaseObjectFlags) == sizeof(std::uint32_t));
 
-    struct DynamicObjectNetwork {
+    struct BaseObjectNetwork {
         /** Object position is valid */
         bool valid_position;
 
@@ -284,18 +285,18 @@ namespace Balltze::Engine {
         bool valid_timestamp;
 
         /** Timestamp */
-        TickCount timestamp;
+        TickCount32 timestamp;
     };
-    static_assert(sizeof(DynamicObjectNetwork) == 0x44);
+    static_assert(sizeof(BaseObjectNetwork) == 0x44);
 
     struct ScenarioLocation {
         std::int32_t leaf_id;
         std::int16_t cluster_id;
         PADDING(0x2);
-    }; 
+    };
     static_assert(sizeof(ScenarioLocation) == 0x8);
 
-    struct DynamicObjectVitalsFlags {
+    struct BaseObjectVitalsFlags {
         /** Health damage effect applied */
         bool health_damage_effect_applied : 1;
 
@@ -332,9 +333,9 @@ namespace Balltze::Engine {
 
         PADDING_BIT(bool, 2);
     };
-    static_assert(sizeof(DynamicObjectVitalsFlags) == sizeof(std::uint16_t));
+    static_assert(sizeof(BaseObjectVitalsFlags) == sizeof(std::uint16_t));
 
-    struct DynamicObjectVitals {
+    struct BaseObjectVitals {
         /** Base health */
         float base_health;
 
@@ -353,7 +354,7 @@ namespace Balltze::Engine {
         /** Current health damage? */
         float current_health_damage;
 
-        /** 
+        /**
          * Entangled object handle
          * When this object is damaged, the 'entangled' object will also get damaged
          * This is an immediate link, the entangled object's parent chain or 'entangled' reference isn't walked
@@ -367,20 +368,20 @@ namespace Balltze::Engine {
         float recent_health_damage;
 
         /** Amount of time since shield damage was taken? */
-        TickCount recent_shield_damage_time;
+        TickCount32 recent_shield_damage_time;
 
         /** Amount of time since health damage was taken? */
-        TickCount recent_health_damage_time;
+        TickCount32 recent_health_damage_time;
 
         /** Time in ticks before shields recharge */
         TickCount16 shield_stun_time;
 
         /** Flags */
-        DynamicObjectVitalsFlags flags;
+        BaseObjectVitalsFlags flags;
     };
-    static_assert(sizeof(DynamicObjectVitals) == 0x30);
+    static_assert(sizeof(BaseObjectVitals) == 0x30);
 
-    enum DynamicObjectAttachmentType : std::int8_t {
+    enum BaseObjectAttachmentType : std::int8_t {
         OBJECT_ATTACHMENT_TYPE_INVALID = -1,
         OBJECT_ATTACHMENT_TYPE_LIGHT = 0,
         OBJECT_ATTACHMENT_TYPE_LOOPING_SOUND,
@@ -389,14 +390,14 @@ namespace Balltze::Engine {
         OBJECT_ATTACHMENT_TYPE_PARTICLE
     };
 
-    struct DynamicObjectAttachmentsData {
-        DynamicObjectAttachmentType types[8];
+    struct BaseObjectAttachmentsData {
+        BaseObjectAttachmentType types[8];
         ResourceHandle attachments[8];
         ResourceHandle first_widget;
     };
-    static_assert(sizeof(DynamicObjectAttachmentsData) == 0x2C);
+    static_assert(sizeof(BaseObjectAttachmentsData) == 0x2C);
 
-    struct DynamicObjectRegionDestroyeds {
+    struct BaseObjectRegionDestroyeds {
         bool region_0 : 1;
         bool region_1 : 1;
         bool region_2 : 1;
@@ -407,24 +408,24 @@ namespace Balltze::Engine {
         bool region_7 : 1;
         PADDING_BIT(bool, 0x8);
     };
-    static_assert(sizeof(DynamicObjectRegionDestroyeds) == sizeof(std::uint16_t));
+    static_assert(sizeof(BaseObjectRegionDestroyeds) == sizeof(std::uint16_t));
 
-    struct DynamicObjectBlockReference {
+    struct BaseObjectBlockReference {
         std::uint16_t size;
         std::uint16_t offset;
     };
-    static_assert(sizeof(DynamicObjectBlockReference) == 0x4);
+    static_assert(sizeof(BaseObjectBlockReference) == 0x4);
 
     /**
      * These are objects that are present in an instance of Halo rather than in tag data and have parameters such as location and health.
      */
-    struct DynamicObject {
+    struct BaseObject {
         /** This is the tag handle of the object. */
         TagHandle tag_handle;
 
         /** This is the object's network role */
         ObjectNetworkRole network_role;
-        
+
         PADDING_BIT(std::uint32_t, 8);
 
         /** If true, force baseline update. */
@@ -433,16 +434,16 @@ namespace Balltze::Engine {
         PADDING_BIT(std::uint32_t, 23);
 
         /** This is the number of ticks the object has existed. */
-        TickCount existence_time;
+        TickCount32 existence_time;
 
         /** Object flags */
-        DynamicObjectFlags flags;
+        BaseObjectFlags flags;
 
         /** Object marker id */
         std::uint32_t object_marker_id;
 
         /** Object network */
-        DynamicObjectNetwork network;
+        BaseObjectNetwork network;
 
         /** Coordinates of the object relative to the world or to its parent */
         Point3D position;
@@ -458,7 +459,7 @@ namespace Balltze::Engine {
 
         /** Location of the object in the scenario */
         ScenarioLocation scenario_location;
-        
+
         /** Position of the object's center used for things such as lens flares, triggers, teleporters, etc. This is always relative to the world. */
         Point3D center_position;
 
@@ -484,7 +485,7 @@ namespace Balltze::Engine {
         std::uint16_t name_list_index;
 
         /** Ticks not spent at_rest, only biped updates this. */
-        TickCount16 moving_time; 
+        TickCount16 moving_time;
 
         /** Variant index for region permuations */
         std::uint16_t variant_index;
@@ -513,7 +514,7 @@ namespace Balltze::Engine {
         std::uint16_t animation_interpolation_frame_count;
 
         /** Object vitals */
-        DynamicObjectVitals vitals;
+        BaseObjectVitals vitals;
 
         PADDING(0x4);
 
@@ -539,25 +540,31 @@ namespace Balltze::Engine {
 
         /** Force shield update */
         bool force_shield_update;
-        
-        PADDING(0x1);
-        PADDING(0x20);
+
+        struct ObjectValidOutGoingFunctions {
+            bool a : 1;
+            bool b : 1;
+            bool c : 1;
+            bool d : 1;
+        } valid_outgoing_functions; 
+        float incoming_function_values[4];
+        float outgoing_function_values[4];
 
         /** Attachment data */
-        DynamicObjectAttachmentsData attachment_data;
+        BaseObjectAttachmentsData attachment_data;
 
         /** Cached render state */
         ResourceHandle cached_render_state;
 
         /** Region destroyeds */
-        DynamicObjectRegionDestroyeds region_destroyeds;
+        BaseObjectRegionDestroyeds region_destroyeds;
 
         /** Shader permuations */
         std::int16_t shader_permutation;
 
         /** Region healths */
         std::uint8_t region_healths[8];
-        
+
         /** Region permutation ids */
         std::int8_t region_permutation_ids[8];
 
@@ -568,24 +575,24 @@ namespace Balltze::Engine {
         ColorRGB color_change_2[4];
 
         /** Node orientations blocks */
-        DynamicObjectBlockReference node_orientations[2];
+        BaseObjectBlockReference node_orientations[2];
 
         /** Node matrices block */
-        DynamicObjectBlockReference node_matrices_block;
+        BaseObjectBlockReference node_matrices_block;
 
         /**
          * Get the full object handle of the object.
          * @return full object handle of the object or a null handle if not available
          */
         ObjectHandle object_handle() noexcept {
-            auto &table = get_object_table();
+            auto& table = get_object_table();
 
             ObjectHandle returned_id;
             returned_id.handle = 0xFFFFFFFF;
 
-            for(std::size_t i = 0; i < table.current_size; i++) {
-                auto &object = table.first_element[i];
-                if(object.object == this) {
+            for (std::size_t i = 0; i < table.current_size; i++) {
+                auto& object = table.first_element[i];
+                if (object.object == this) {
                     returned_id.handle = i + 0x10000 * object.id;
                     return returned_id;
                 }
@@ -599,7 +606,7 @@ namespace Balltze::Engine {
          * Get the object's model nodes or nullptr if this is unknown for this object type.
          * @return a pointer to the object model nodes or nullptr if unknown or not available
          */
-        ModelNode *nodes() noexcept {
+        ModelNode* nodes() noexcept {
             static const std::size_t model_node_offset[] = {
                 0x550,
                 0x5C0,
@@ -612,18 +619,18 @@ namespace Balltze::Engine {
                 0x21C
             };
 
-            if(this->type >= sizeof(model_node_offset) / sizeof(model_node_offset[0])) {
+            if (this->type >= sizeof(model_node_offset) / sizeof(model_node_offset[0])) {
                 return nullptr;
             }
 
-            return reinterpret_cast<ModelNode *>(reinterpret_cast<std::byte *>(this) + model_node_offset[this->type]);
+            return reinterpret_cast<ModelNode*>(reinterpret_cast<std::byte*>(this) + model_node_offset[this->type]);
         }
     };
-    static_assert(sizeof(DynamicObject) == 0x1F4);
+    static_assert(sizeof(BaseObject) == 0x1F4);
 
     struct UnitRecentDamager {
         /** Last tick this object damaged this unit */
-        TickCount last_damage_time;
+        TickCount32 last_damage_time;
 
         /** Total damage done by this object */
         float total_damage;
@@ -636,236 +643,426 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(UnitRecentDamager) == 0x10);
 
-    struct UnitDynamicObject : DynamicObject {
-        PADDING(0x10);
-
-        PADDING_BIT(std::uint32_t, 4);
-
-        /** Invisible (camo) */
-        std::uint32_t invisible : 1;
-
-        PADDING_BIT(std::uint32_t, 14);
-
-        /** Flashlight is on */
-        std::uint32_t flashlight : 1;
-
-        /** Do not drop weapons on death */
-        std::uint32_t does_not_drop_items : 1;
-
-        PADDING_BIT(std::uint32_t, 3);
-
-        /** Frozen. burr */
-        std::uint32_t suspended : 1;
-
-        PADDING_BIT(std::uint32_t, 7);
-
-        /** Crouching button is pressed */
-        std::uint16_t crouch_button : 1;
-
-        /** Jumping button is pressed */
-        std::uint16_t jump_button : 1;
-
-        PADDING_BIT(std::uint16_t, 2);
-
-        /** Flashlight button is pressed */
-        std::uint16_t flashlight_button : 1;
-
-        PADDING_BIT(std::uint16_t, 1);
-
-        /** Action button is pressed */
-        std::uint16_t action_button : 1;
-
-        /** Melee button is pressed */
-        std::uint16_t melee_button : 1;
-
-        PADDING_BIT(std::uint16_t, 2);
-
-        /** Is there a meaning of our existence if we only live and die seemingly with no purpose? */
-        std::uint16_t reload_button : 1;
-
-        /** Primary fire button is pressed */
-        std::uint16_t primary_fire_button : 1;
-
-        /** Secondary fire button is pressed */
-        std::uint16_t secondary_fire_button : 1;
-
-        /** Grenade button is pressed */
-        std::uint16_t grenade_button : 1;
-
-        /** Exchange weapon button or action button is pressed */
-        std::uint16_t exchange_weapon_button : 1;
-
-        PADDING_BIT(std::uint16_t, 1);
-
-        PADDING(0x2);
-        PADDING(0xC);
-
-        /** handle of the player owner */
-        PlayerHandle player_handle;
-
-        PADDING(0x4);
-
-        /** Last tick the unit fired a round */
-        TickCount last_bullet_time;
-
-        /** Direction the unit is facing? */
-        Point3D facing;
-
-        /** Where the unit wants to aim? */
-        Point3D desired_aim;
-
-        /** The aim? */
-        Point3D aim;
-
-        /** What is this? */
-        Point3D aim_velocity;
-
-        /** More aim stuff? What? */
-        Point3D aim2;
-
-        /** Is this it? */
-        Point3D aim3;
-
-        PADDING(0xC);
-
-        /** Analog running, from -1 (full speed backward) to 1 (full speed upward). */
-        float run;
-
-        /** Analog strafing, from -1 (full speed to the right) to 1 (full speed to the left) */
-        float strafe;
-
-        /** Analog ascension, from -1 (full speed downward) to 1 (full speed upward). */
-        float ascend;
-
-        /** Apparently 1 when firing? */
-        float shooting;
-
-        PADDING(0xC);
-
-        /** Object handle of the thrown grenade */
-        ObjectHandle thrown_grenade_id;
-
-        PADDING(0x8);
-
-        /** 4 when standing, 3 when crouching, and 0 when in a vehicle */
-        std::uint8_t crouch_stand_thing;
-
-        /** Current weapon slot */
-        std::uint8_t weapon_slot2;
-
-        /** Current weapon type? */
-        std::uint8_t weapon_type;
-
-        /** Current animation state of the weapon */
-        std::uint8_t animation_state;
-
-        /** 5 when reloading and 7 when meleeing? */
-        std::uint8_t reload_melee;
-
-        /** Firing */
-        std::uint8_t shooting2;
-
-        /** Animation state of the player's weapon again? */
-        std::uint8_t animation_state2;
-
-        /** Crouching... again */
-        std::uint8_t crouch2;
-
-        PADDING(0x10);
-
-        /** Top-most aim possible? */
-        float aim_rectangle_top_x;
-
-        /** Bottom-most aim possible? */
-        float aim_rectangle_bottom_x;
-
-        /** Left-most aim possible? */
-        float aim_rectangle_left_y;
-
-        /** Right-most aim possible? */
-        float aim_rectangle_right_y;
-
-        /** Top-most aim possible again? */
-        float look_rectangle_top_x;
-
-        /** Bottom-most aim possible again? */
-        float look_rectangle_bottom_x;
-
-        /** Left-most aim possible again? */
-        float look_rectangle_left_y;
-
-        /** Right-most aim possible again? */
-        float look_rectangle_right_y;
-
-        PADDING(0x18);
-
-        /** Current seat (0xFFFF if no seat) */
-        std::uint16_t vehicle_seat;
-
-        /** Current weapon slot */
-        std::uint16_t weapon_slot;
-
-        /** Weapon slot being changed to */
-        std::uint16_t next_weapon_slot;
-
-        PADDING(0x2);
-
-        /** Weapons the unit owns in slot order */
-        ObjectHandle weapons[4];
-
-        /** Last tick a weapon was used */
-        TickCount weapon_last_use[4];
-
-        PADDING(0x4);
-
-        /** Grenade type (0 = fragmentation; 1 = plasma) */
-        std::uint8_t current_grenade_type;
-
-        /** Next grenade type */
-        std::uint8_t next_grenade_type;
-
-        /** Primary grenade count */
-        std::uint8_t primary_grenade_count;
-
-        /** Secondary grenades count */
-        std::uint8_t secondary_grenade_count;
-
-        /** Zoom level */
-        std::uint8_t zoom_level;
-
-        /** Zoom level being changed to */
-        std::uint8_t desired_zoom_level;
-
+    struct UnitFlags {
+        bool unknown_biped_speech_related : 1;
+        PADDING_BIT(bool, 3);
+        bool power_up : 1;
+        bool power_up_addition : 1; // invisible power up?
+        bool controllable : 1;
+        bool berserking : 1;
+        PADDING_BIT(bool, 8);
+        PADDING_BIT(bool, 3);
+        bool unknown_integrated_light_related : 1;
+        bool will_not_drop_items : 1;
+        bool unknown : 1;
+        bool can_blink : 1;
+        bool impervious : 1;
+        bool suspended : 1;
+        bool blind : 1;
+        bool unknown_nv_related : 1; // when this is on, the integrated NV power increases. rate is 2x the speed it leaks when on. Wtf is an NV?? I asked the same thing, maybe night vision?
+        bool possessed : 1;
+        bool desires_flashlight_on : 1;
+        bool desires_flashlight_off : 1;
+        PADDING_BIT(bool, 2);
+    };
+    static_assert(sizeof(UnitFlags) == 0x4);
+
+    struct UnitControlFlags {
+        bool crouch : 1;
+        bool jump : 1;
+        bool user1 : 1;
+        bool user2 : 1;
+        bool light : 1;
+        bool exact_facing : 1;
+        bool action : 1;
+        bool melee : 1;
+        bool look_dont_turn : 1;
+        bool force_alert : 1;
+        bool reload : 1;
+        bool primary_trigger : 1;
+        bool secondary_trigger : 1;
+        bool grenade : 1;
+        bool exchange_weapon : 1;
+        PADDING_BIT(bool, 1);
+    };
+
+    enum UnitThrowingGrenadeState : std::int8_t {
+        UNIT_THROWING_GRENADE_STATE_NONE = 0,
+        UNIT_THROWING_GRENADE_STATE_BEGIN,
+        UNIT_THROWING_GRENADE_STATE_IN_HAND,
+        UNIT_THROWING_GRENADE_STATE_RELEASED
+    };
+
+    enum UnitAnimationState : std::int8_t {
+        UNI_ANIMATION_STATE_INVALID = -1,
+        UNI_ANIMATION_STATE_IDLE,
+        UNI_ANIMATION_STATE_GESTURE,
+        UNI_ANIMATION_STATE_TURN_LEFT,
+        UNI_ANIMATION_STATE_TURN_RIGHT,
+        UNI_ANIMATION_STATE_MOVE_FRONT,
+        UNI_ANIMATION_STATE_MOVE_BACK,
+        UNI_ANIMATION_STATE_MOVE_LEFT,
+        UNI_ANIMATION_STATE_MOVE_RIGHT,
+        UNI_ANIMATION_STATE_STUNNED_FRONT,
+        UNI_ANIMATION_STATE_STUNNED_BACK,
+        UNI_ANIMATION_STATE_STUNNED_LEFT,
+        UNI_ANIMATION_STATE_STUNNED_RIGHT,
+        UNI_ANIMATION_STATE_SLIDE_FRONT,
+        UNI_ANIMATION_STATE_SLIDE_BACK,
+        UNI_ANIMATION_STATE_SLIDE_LEFT,
+        UNI_ANIMATION_STATE_SLIDE_RIGHT,
+        UNI_ANIMATION_STATE_READY,
+        UNI_ANIMATION_STATE_PUT_AWAY,
+        UNI_ANIMATION_STATE_AIM_STILL,
+        UNI_ANIMATION_STATE_AIM_MOVE,
+        UNI_ANIMATION_STATE_AIRBORNE,
+        UNI_ANIMATION_STATE_LAND_SOFT,
+        UNI_ANIMATION_STATE_LAND_HARD,
+        UNI_ANIMATION_STATE_UNKNOWN23,
+        UNI_ANIMATION_STATE_AIRBORNE_DEAD,
+        UNI_ANIMATION_STATE_LANDING_DEAD,
+        UNI_ANIMATION_STATE_SEAT_ENTER,
+        UNI_ANIMATION_STATE_SEAT_EXIT,
+        UNI_ANIMATION_STATE_CUSTOM_ANIMATION,
+        UNI_ANIMATION_STATE_IMPULSE,
+        UNI_ANIMATION_STATE_MELEE,
+        UNI_ANIMATION_STATE_MELEE_AIRBORNE,
+        UNI_ANIMATION_STATE_MELEE_CONTINUOUS,
+        UNI_ANIMATION_STATE_THROW_GRENADE,
+        UNI_ANIMATION_STATE_RESSURECT_FRONT,
+        UNI_ANIMATION_STATE_RESSURECT_BACK,
+        UNI_ANIMATION_STATE_FEEDING,
+        UNI_ANIMATION_STATE_SURPRISE_FRONT,
+        UNI_ANIMATION_STATE_SURPRISE_BACK,
+        UNI_ANIMATION_STATE_LEAP_START,
+        UNI_ANIMATION_STATE_LEAP_AIRBORNE,
+        UNI_ANIMATION_STATE_LEAP_MELEE,
+        UNI_ANIMATION_STATE_UNKNOWN42,
+        UNI_ANIMATION_STATE_BERSERK,
+        UNI_ANIMATION_STATE_YELO_SEAT_BOARDING,
+        UNI_ANIMATION_STATE_YELO_SEAT_EJECTING,
+        UNI_ANIMATION_STATE_YELO_MOUNTING,
+        UNI_ANIMATION_STATE_YELO_TRANSFORMING
+    };
+
+    enum UnitReplacementAnimationState : std::int8_t {
+        UNIT_REPLACEMENT_ANIMATION_STATE_NONE = 0,
+        UNIT_REPLACEMENT_ANIMATION_STATE_DISARM,
+        UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_DROP,
+        UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_READY,
+        UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_PUT_AWAY,
+        UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_RELOAD1,
+        UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_RELOAD2,
+        UNIT_REPLACEMENT_ANIMATION_STATE_MELEE,
+        UNIT_REPLACEMENT_ANIMATION_STATE_THROW_GRENADE
+    };
+
+    enum UnitOverlayAnimationState : std::int8_t {
+        UNIT_OVERLAY_ANIMATION_STATE_NONE = 0,
+        UNIT_OVERLAY_ANIMATION_STATE_FIRE1,
+        UNIT_OVERLAY_ANIMATION_STATE_FIRE2,
+        UNIT_OVERLAY_ANIMATION_STATE_CHARGED1,
+        UNIT_OVERLAY_ANIMATION_STATE_CHARGED2,
+        UNIT_OVERLAY_ANIMATION_STATE_CHAMBER1,
+        UNIT_OVERLAY_ANIMATION_STATE_CHAMBER2
+    };
+
+    enum UnitBaseSeat : std::int8_t {
+        UNIT_BASE_SEAT_ASLEEP = 0,
+        UNIT_BASE_SEAT_ALERT,
+        UNIT_BASE_SEAT_STAND,
+        UNIT_BASE_SEAT_CROUCH,
+        UNIT_BASE_SEAT_FLEE,
+        UNIT_BASE_SEAT_FLAMING
+    };
+
+    struct AnimationState {
+        std::int16_t animation_index;
+        std::int16_t frame_index;
+    };
+
+    struct UnitAnimationData {
+        struct {
+            bool animation_bit0_unknown : 1;
+            bool animation_bit1_unknown : 1;
+            bool animation_bit2_unknown : 1;
+            bool animation_bit3_unknown : 1;
+            PADDING_BIT(bool, 4);
+            PADDING(1);
+        } flags;
+        std::int16_t unknown_some_animation_index_maybe;
+        std::int16_t unknown_some_animation_index;
+        PADDING(2); // Only set on initialization, never read afterwards
+        // animation graph unit indexes
+        std::uint8_t seat_index;
+        std::uint8_t seat_weapon_index;
+        std::uint8_t weapon_type_index;
+        UnitAnimationState state;
+        UnitReplacementAnimationState replacement_state;
+        UnitOverlayAnimationState overlay_state;
+        UnitAnimationState desired_state;
+        UnitBaseSeat base_seat;
+        std::int8_t emotion;
+        PADDING(1);
+        AnimationState replacement_animation;
+        AnimationState overlay_state_animation;
+        AnimationState weapon_ik;
+        bool update_look;
+        bool update_aim;
+        Rectangle2DF looking_bounds;
+        Rectangle2DF aiming_bounds;
+        PADDING(8);
+    };
+    static_assert(sizeof(UnitAnimationData) == 0x48);
+
+    enum UnitSpeechPriority : std::int16_t {
+        UNIT_SPEECH_PRIORITY_NONE = 0,
+        UNIT_SPEECH_PRIORITY_IDLE,
+        UNIT_SPEECH_PRIORITY_PAIN,
+        UNIT_SPEECH_PRIORITY_TALK,
+        UNIT_SPEECH_PRIORITY_COMMUNICATE,
+        UNIT_SPEECH_PRIORITY_SHOUT,
+        UNIT_SPEECH_PRIORITY_SCRIPT,
+        UNIT_SPEECH_PRIORITY_INVOLUNTARY,
+        UNIT_SPEECH_PRIORITY_EXLAIM,
+        UNIT_SPEECH_PRIORITY_SCREAM,
+        UNIT_SPEECH_PRIORITY_DEATH
+    };
+
+    enum UnitScreamType : int16_t {
+        UNIT_SCREAM_TYPE_FEAR = 0,
+        UNIT_SCREAM_TYPE_ENEMY_GRENADE,
+        UNIT_SCREAM_TYPE_PAIN,
+        UNIT_SCREAM_TYPE_MAIMED_LIMB,
+        UNIT_SCREAM_TYPE_MAIMED_HEAD,
+        UNIT_SCREAM_TYPE_RESSURECTION
+    };
+
+    enum AiCommunicationType : int16_t {
+        AI_COMMUNICATION_TYPE_DEATH = 0,
+        AI_COMMUNICATION_TYPE_SPREE,
+        AI_COMMUNICATION_TYPE_HURT,
+        AI_COMMUNICATION_TYPE_DAMAGE,
+        AI_COMMUNICATION_TYPE_SIGHTED_ENEMY,
+        AI_COMMUNICATION_TYPE_FOUND_ENEMY,
+        AI_COMMUNICATION_TYPE_UNEXPECTED_ENEMY,
+        AI_COMMUNICATION_TYPE_FOUND_DEAD_FRIEND,
+        AI_COMMUNICATION_TYPE_ALLEGIANCE_CHANGED,
+        AI_COMMUNICATION_TYPE_GRENADE_THROWING,
+        AI_COMMUNICATION_TYPE_GRENADE_STARTLE,
+        AI_COMMUNICATION_TYPE_GRENADE_SIGHTED,
+        AI_COMMUNICATION_TYPE_GRENADE_DANGER,
+        AI_COMMUNICATION_TYPE_LOST_CONTACT,
+        AI_COMMUNICATION_TYPE_BLOCKED,
+        AI_COMMUNICATION_TYPE_ALERT_NONCOMBAT,
+        AI_COMMUNICATION_TYPE_SEARCH_START,
+        AI_COMMUNICATION_TYPE_SEARCH_QUERY,
+        AI_COMMUNICATION_TYPE_SEARCH_REPORT,
+        AI_COMMUNICATION_TYPE_SEARCH_ABANDON,
+        AI_COMMUNICATION_TYPE_SEARCH_GROUP_ABANDON,
+        AI_COMMUNICATION_TYPE_UNCOVER_START,
+        AI_COMMUNICATION_TYPE_ADVANCE,
+        AI_COMMUNICATION_TYPE_RETREAT,
+        AI_COMMUNICATION_TYPE_COVER,
+        AI_COMMUNICATION_TYPE_SIGHTED_FRIEND_PLAYER,
+        AI_COMMUNICATION_TYPE_SHOOTING,
+        AI_COMMUNICATION_TYPE_SHOOTING_VEHICLE,
+        AI_COMMUNICATION_TYPE_SHOOTING_BERSERK,
+        AI_COMMUNICATION_TYPE_SHOOTING_GROUP,
+        AI_COMMUNICATION_TYPE_SHOOTING_TRAITOR,
+        AI_COMMUNICATION_TYPE_FLEE,
+        AI_COMMUNICATION_TYPE_FLEE_LEADER_DIED,
+        AI_COMMUNICATION_TYPE_FLEE_IDLE,
+        AI_COMMUNICATION_TYPE_ATTEMPTED_FLEE,
+        AI_COMMUNICATION_TYPE_HIDING_FINISHED,
+        AI_COMMUNICATION_TYPE_VEHICLE_ENTRY,
+        AI_COMMUNICATION_TYPE_VEHICLE_EXIT,
+        AI_COMMUNICATION_TYPE_VEHICLE_WOOHOO,
+        AI_COMMUNICATION_TYPE_VEHICLE_SCARED,
+        AI_COMMUNICATION_TYPE_VEHICLE_FALLING,
+        AI_COMMUNICATION_TYPE_SURPRISE,
+        AI_COMMUNICATION_TYPE_BERSERK,
+        AI_COMMUNICATION_TYPE_MELEE,
+        AI_COMMUNICATION_TYPE_DIVE,
+        AI_COMMUNICATION_TYPE_UNCONVER_EXCLAMATION,
+        AI_COMMUNICATION_TYPE_FALLING,
+        AI_COMMUNICATION_TYPE_LEAP,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_ALONE,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_UNSCATHED,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_WOUNDED,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_MASSACRE,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_TRIUMPH,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_CHECK_ENEMY,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_CHECK_FRIEND,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_SHOOT_CORPSE,
+        AI_COMMUNICATION_TYPE_POSTCOMBAT_CELEBRATE
+    };
+
+    struct AiCommunicationPacket {
+        PADDING(6); //unknown
+        AiCommunicationType type;
+        PADDING(2); //unknown
         PADDING(2);
+        PADDING(2); //unknown
+        PADDING(6);
+        PADDING(2); //unknown
+        PADDING(2);
+        PADDING(4); //unknown
+        bool broken;
+        PADDING(3);
+    };
+    static_assert(sizeof(AiCommunicationPacket) == 0x20);
 
-        /** Object handle of the controller of this unit */
-        ObjectHandle controller;
+    struct UnitSpeech {
+        UnitSpeechPriority priority;
+        UnitScreamType scream_type;
+        TagHandle sound_tag;
+        TickCount16 ticks;
+        std::int16_t unknown2;
+        std::int32_t unknown;
+        AiCommunicationPacket ai_communication_info;
+    };
+    static_assert(sizeof(UnitSpeech) == 0x30);
 
-        /** Object handle of the gunner of this unit */
-        ObjectHandle gunner;
+    struct UnitSpeechData {
+        UnitSpeech current;
+        UnitSpeech next;
+        std::int16_t unknown0; // speech_ticks_left?
+        std::int16_t unknown1; // speech_ticks_left?
+        std::int16_t unknown2; // speech_ticks_left?
+        std::int16_t unknown3;
+        std::int32_t unknown4;
+        bool unknown6;
+        bool unknown7;
+        bool unknown8;
+        PADDING(1);
+        std::int16_t unknown9;
+        std::int16_t unknown10;
+        std::int16_t unknown11; // copied from unknown2
+        std::int16_t unknown12;
+        std::int32_t unknown13; // 400 set to -1 if unknown10 becomes 0
+    };
 
-        PADDING(0x14);
+    struct UnitControlData {
+        std::int8_t animation_state;
+        std::int8_t aiming_speed;
+        UnitControlFlags control_flags;
+        std::int16_t weapon_index;
+        std::int16_t grenade_index;
+        std::int16_t zoom_index;
+        PADDING(2);
+        Vector3D throttle;
+        float primary_trigger;
+        Vector3D facing_vector;
+        Vector3D aiming_vector;
+        Vector3D looking_vector;
+    };
+    static_assert(sizeof(UnitControlData) == 0x40);
 
-        /** Intensity of the flashlight */
-        float flashlight_intensity;
-
-        /** Remaining battery life of the flashlight */
-        float flashlight_battery;
-
-        /* Intensity of the night vision */
-        float night_vision_intensity;
-
-        PADDING(0x30);
-
-        /* Invisibility of the unit (1 = full camo; 0 = no camo) */
-        float invisibility;
-
-        PADDING(0xB0);
-
-        /** Most recent damaging objects */
-        UnitRecentDamager recent_damager[4];
-
-        PADDING(0x5C);
+    struct UnitObject : BaseObject {
+        TagHandle actor;
+        struct {
+            TagHandle actor;
+            ObjectHandle next_unit;
+            ObjectHandle previous_unit;
+        } swarm;
+        UnitFlags unit_flags;
+        UnitControlFlags unit_control_flags;
+        PADDING(0x4);
+        std::int8_t shield_snapping;
+        std::int8_t base_seat_index;
+        struct {
+            TickCount32 ticks_remaining;
+            UnitControlFlags control_flags;
+            PADDING(0x2);
+        } persistent_control;
+        PlayerHandle controlling_player;
+        std::int16_t ai_effect_type;
+        std::int16_t emotion_animation_index;
+        std::uint32_t next_ai_effect_tick;
+        Vector3D desired_facing_vector;
+        Vector3D desired_aiming_vector;
+        Vector3D aiming_vector;
+        Vector3D aiming_velocity;
+        Euler3D looking_angles;
+        Vector3D looking_vector;
+        Vector3D looking_velocity;
+        Vector3D throttle;
+        float primary_trigger;
+        std::int8_t aiming_speed;
+        std::int8_t melee_state;
+        std::int8_t melee_timer;
+        std::int8_t ticks_until_flame_to_death;
+        std::int8_t ping_animation_ticks_left; // also set to the same PersistentControlTicks value when an actor dies and they fire-wildely
+        UnitThrowingGrenadeState grenade_state;
+        std::int16_t unknown_725;
+        std::int16_t unknown_726;
+        PADDING(0x2);
+        ObjectHandle grenade_projectile; 
+        UnitAnimationData animation;
+        float ambient;
+        float illumination;
+        float mouth_factor;
+        PADDING(4);
+        int16_t vehicle_seat_id;
+        int16_t current_weapon_id;
+        int16_t next_weapon_id;
+        PADDING(2);
+        ObjectHandle weapons[4];
+        TickCount32 weapon_ready_ticks[4];
+        ResourceHandle equipment_handle; // figure out what type of resource this is
+        std::int8_t current_grenade_index;
+        std::int8_t next_grenade_index;
+        std::uint8_t grenade_counts[2];
+        // Opensauce is weird and has this defined as a union
+        // so it can be two extra grenade counts when unzoomed.
+        std::uint8_t zoom_level;
+        std::uint8_t desired_zoom_level;
+        // End of opensauce shenanigans
+        std::int8_t ticks_since_last_vehicle_speech;
+        std::uint8_t aiming_change;
+        ObjectHandle powered_seats_riders[2];
+        // these are related
+        ResourceHandle _unknown22;
+        std::int32_t _some_tick_time;
+        std::int16_t encounter_id;
+        std::int16_t squad_id;
+        float powered_seats_power[2];
+        float integrated_light_power;
+        float integrated_light_toggle_power; // minimum power for a toggle?
+        float integrated_night_vision_toggle_power;
+        Vector3D seat_related[4];
+        float camo_power;
+        float full_spectrum_vision_power; // gets updated, but not used.
+        TagHandle dialogue_definition;
+        UnitSpeechData speech;
+        struct {
+            TagDefinitions::DamageEffectCategory catagory;
+            TickCount16 ai_ticks_until_handle;
+            float amount;
+            ObjectHandle responsible_unit;
+        } damage_result;
+        ObjectHandle object_flame_causer; // Object that caused flaming death
+        float _unknown23;
+        PADDING(4);
+        TickCount32 died_at_tick;
+        TickCount16 feign_death_timer;
+        bool camo_regrowth;
+        PADDING(1);
+        float stun;
+        TickCount16 stun_ticks;
+        std::int16_t spree_count;
+        std::int32_t spree_starting_time;
+        UnitRecentDamager recent_damage[4];
+        PADDING(4);
+        PADDING(2);
+        uint8_t opensauce_zoom_level;
+        uint8_t opensauce_desired_zoom_level;
+        UnitControlData control_data;
+        bool last_completed_client_update_valid;
+        PADDING(3);
+        int32_t last_completed_client_update_id;
+        PADDING(12);
 
         /**
          * Makes the unit enter a vehicle
@@ -881,97 +1078,393 @@ namespace Balltze::Engine {
          */
         void enter_vehicle(ObjectHandle vehicle_handle, std::size_t seat_index);
     };
-    static_assert(sizeof(UnitDynamicObject) == 0x4CC);
+    static_assert(sizeof(UnitObject) == 0x4CC);
 
-    struct WeaponTriggerState {
-        PADDING(0x1);
+    struct BipedFlags {
+        bool airborne : 1;
+        bool slipping : 1;
+        bool absolute_movement : 1;
+        bool no_collision : 1;
+        bool passes_through_other_bipeds : 1;
+        bool limping2 : 1;
+        PADDING_BIT(bool, 2);
+        PADDING(3);
+    };
+    static_assert(sizeof(BipedFlags) == 0x4);
 
-        /** Unknown */
-        std::uint8_t trigger_state;
+    enum BipedMovementState : std::int8_t {
+        BIPED_MOVEMENT_STATE_MOVING = 0,
+        BIPED_MOVEMENT_STATE_IDLE, // or turning
+        BIPED_MOVEMENT_STATE_GESTURING
+    };
 
-        /** Unknown */
-        std::uint8_t trigger_time;
+    struct BipedNetworkDelta {
+        std::int8_t grenade_counts[2];
+        PADDING(2);
+        float body_vitality;
+        float shield_vitality; // Actual shield divided by 3
+        bool shield_stun_ticks_greater_than_zero;
+        PADDING(3);
+    };
+    static_assert(sizeof(BipedNetworkDelta) == 0x10);
 
+    struct BipedNetwork {
+        PADDING(2); // two unknown signed bytes
+        bool baseline_valid;
+        std::int8_t baseline_id;
+        std::int8_t message_id;
+        PADDING(3);
+        BipedNetworkDelta update_baseline;
+        bool delta_valid;
+        PADDING(3);
+        BipedNetworkDelta update_delta;
+    };
+    static_assert(sizeof(BipedNetwork) == 0x2C);
+
+    struct BipedObject : public UnitObject {
+        BipedFlags biped_flags;
+        // I expect these to be stun related
+        std::int8_t landing_timer; // counts up whe biped lands, gets higher depending on height.
+        std::int8_t landing_force; // instantly changes when landing. Depends on how hard the fall was.
+        BipedMovementState movement_state;
         PADDING(1);
+        std::int32_t _biped_unknown3;
+        std::uint32_t action_flags; // Something to do with walking and jumping
+        // maybe another set of control flags
+        std::int32_t _biped_unknown4;
+        Vector3D biped_position;
+        std::int32_t walking_counter; //? Counts up when moving
+        PADDING(12); // unknown
+        ObjectHandle bump_object; // references the object that this biped last bumped into.
+        std::int8_t ticks_since_last_bump;
+        std::int8_t airborne_ticks;
+        std::int8_t slipping_ticks; // counts up when hit by nade
+        std::int8_t digital_throttle;
+        std::int8_t jump_ticks;
+        std::int8_t melee_ticks;
+        std::int8_t melee_inflict_ticks;
+        PADDING(1);
+        std::int16_t unknown_biped2;
+        PADDING(2);
+        float crouch_scale;
+        float unknown_biped1;
+        Plane3D unknown_biped_physics_related;
+        BipedNetwork network;
+    };
+    static_assert(sizeof(BipedObject) == 0x84 + sizeof(UnitObject));
 
-        /** Unknown */
+    struct VehicleFlags {
+        bool vehicle_unknown0 : 1; 
+        bool hovering : 1;
+        bool crouched : 1;
+        bool jumping : 1;
+        bool unknown_vehicle1 : 1;
+        bool unknown_vehicle2 : 3;
+        PADDING(1);
+    };
+
+    struct VehicleNetworkData {
+        bool at_rest;
+        PADDING(3);
+        Vector3D position;
+        Vector3D transitional_velocity;
+        Vector3D angular_velocity;
+        Vector3D forward;
+        Vector3D up;
+    };
+    static_assert(sizeof(VehicleNetworkData) == 0x40);
+
+    struct VehicleNetwork {
+        bool time_valid;
+        bool baseline_valid;
+        std::int8_t baseline_id;
+        std::int8_t message_id;
+        VehicleNetworkData update_baseline;
+        bool delta_valid; //? A comment reads 'unused'
+        PADDING(3);
+        VehicleNetworkData update_delta;
+        TickCount32 last_moved_at_tick; // -1 if the vehicle is occupied
+        // For all gametypes except race this is the vehicle_block id
+        // For race this is the netgame_flag
+        std::int16_t scenario_respawn_id; 
+        PADDING(2);
+        // Only used to check if the vehicle should respawn it seems.
+        Vector3D respawn_position; // unknown function.
+    };
+
+    struct VehicleObject : public UnitObject {
+        VehicleFlags vehicle_flags;
+        PADDING(2); // unknown int16
+        PADDING(4); // unknown set of bytes
+        float speed;
+        float slide;
+        float turn;
+        float tire_position;
+        float thread_position_left;
+        float thread_position_right;
+        float hover;
+        float thrust;
+        std::int8_t suspension_states[8];
+        Vector3D hover_position;
+        Vector3D unknown_vehicle3;
+        Vector3D unknown_vehicle4;
+        std::int32_t unknown_vehicle5;
+        VehicleNetwork network;
+    }; 
+    static_assert(sizeof(VehicleObject) == 0xF4 + sizeof(UnitObject));
+
+    struct ItemObject : BaseObject {
+        std::uint32_t flags;
+        std::int16_t ticks_until_detonation;
+        struct {
+            std::int16_t surface_id;
+            std::int16_t reference_id; // bsp_reference_id
+        } bsp_collision;
+        PADDING(2);
+        ObjectHandle dropped_by_unit; // Set when a unit that held this item drops it.
+        std::int32_t last_update_tick;
+        struct {
+            ObjectHandle object;
+            Vector3D object_position;
+        } object_collision;
+        Vector3D unknown_collision_position; // ? My guesses without checking it yet.
+        Euler2D unknown_collision_angle; // ?
+    };
+    static_assert(sizeof(ItemObject) == 0x38 + sizeof(BaseObject));
+
+    struct GarbageObject : ItemObject {
+        std::int16_t ticks_until_garbage_collection;
+        PADDING(2);
+        PADDING(20);
+    };
+    static_assert(sizeof(GarbageObject) == 0x18 + sizeof(ItemObject));
+
+    enum WeaponState : std::int8_t {
+        IDLE,
+        FIRE1,
+        FIRE2,
+        CHAMBER1,
+        CHAMBER2,
+        RELOAD1,
+        RELOAD2,
+        CHARGED1,
+        CHARGED2,
+        READY,
+        PUT_AWAY
+    };
+
+    struct WeaponTrigger {
+        std::int8_t idle_time;
+        WeaponState state;
+        TickCount16 trigger_time;
         std::uint32_t not_firing;
-
-        /** Unknown */
         std::uint32_t auto_reload;
-
         PADDING(0x2);
-
-        /** Number of rounds since the last tracer */
         std::uint16_t rounds_since_last_tracer;
-
-        /** Rare of fire */
         float rate_of_fire;
-
-        /** Ejection port recovery time */
         float ejection_port_recovery_time;
-
-        /** Illumination recovery time */
         float illumination_recovery_time;
-
-        /** Unknown */
-        float error_angle_thingy;
-
-        PADDING(0x8);
+        float projectile_error_related;
+        ResourceHandle charing_effect;
+        std::int8_t network_delay_ticks;
+        PADDING(3);
     };
-    static_assert(sizeof(WeaponTriggerState) == 0x28);
+    static_assert(sizeof(WeaponTrigger) == 0x28);
 
-    struct WeaponMagazineState {
-        /** Unknown */
-        std::uint16_t magazine_state;
-
-        /** Unknown */
-        std::uint16_t chambering_time;
-
-        PADDING(0x2);
-
-        /** Total unloaded ammo */
-        std::uint16_t ammo;
-
-        /** Total loaded ammo */
-        std::uint16_t loaded_ammo;
-
-        PADDING(0x2);
-
-        PADDING(0x4);
+    enum WeaponMagazineState : std::int16_t {
+        WEAPON_MAGAZINE_STATE_IDLE,
+        WEAPON_MAGAZINE_STATE_CHAMBERING_START,
+        WEAPON_MAGAZINE_STATE_CHAMBERING_FINISH,
+        WEAPON_MAGAZINE_STATE_CHAMBERING
     };
-    static_assert(sizeof(WeaponMagazineState) == 0x10);
 
-    struct WeaponDynamicObject : DynamicObject {
-        PADDING(0x40);
+    struct WeaponMagazine {
+        WeaponMagazineState state;
+        TickCount16 reload_ticks_remaining;
+        TickCount16 reload_ticks;
+        std::int16_t rounds_unloaded;
+        std::int16_t rounds_loaded;
+        std::int16_t rounds_left_to_recharge; // number of rounds left to apply to rounds_loaded (based on tag's rounds_recharged)
+        std::int16_t unknown; // maybe an enum.
+        std::int16_t unknown2; // possibly padding
+    };
+    static_assert(sizeof(WeaponMagazine) == 0x10);
 
-        /** Unknown */
-        float primary_trigger;
+    struct WeaponReloadStartData {
+        std::int16_t total_rounds[2];
+        std::int16_t loaded_rounds[2];
+    };
+    static_assert(sizeof(WeaponReloadStartData) == 8);
 
-        PADDING(0x4);
-
-        /** Heat */
-        float heat;
-
-        /** Age; 1 = unusable */
+    struct WeaponNetworkData {
+        Vector3D position;
+        Vector3D transitional_velocity;
+        Vector3D angular_velocity; //unused
+        std::int16_t magazine_rounds_total[2];
         float age;
+    }; 
+    static_assert(sizeof(WeaponNetworkData) == 0x2C);
 
-        /** Illumination */
-        float illumination;
-
-        /** Unknown */
-        float light_power;
-
-        PADDING(0x14);
-
-        /** Trigger states */
-        WeaponTriggerState triggers[2];
-
-        /** Magazine states */
-        WeaponMagazineState magazines[2];
-
+    struct WeaponNetwork {
+        bool baseline_valid;
+        std::int8_t baseline_index;
+        std::int8_t message_index;
+        PADDING(1);
+        WeaponNetworkData update_baseline;
+        bool delta_valid;
+        PADDING(3);
+        WeaponNetworkData update_delta;
     };
-    static_assert(sizeof(WeaponDynamicObject) == 0x2D0);
+
+    struct WeaponObject : ItemObject {
+        std::uint32_t flags;
+        std::uint16_t owner_unit_flags;
+        PADDING(2);
+        float primary_trigger;
+        WeaponState weapon_state;
+        PADDING(1);
+        std::int16_t ready_ticks;
+        float heat;
+        float age;
+        float illumination_fraction;
+        float integrated_light_power;
+        PADDING(4);
+        ObjectHandle tracked_object;
+        PADDING(8);
+        std::int16_t alt_shots_loaded;
+        PADDING(2);
+        WeaponTrigger triggers[2];
+        WeaponMagazine magazines[2]; 
+        TickCount32 last_trigger_fire_tick;
+        WeaponReloadStartData reload_starting_point;
+        PADDING(4);
+        WeaponNetwork network;
+    };
+    static_assert(sizeof(WeaponObject) == 0x114 + sizeof(ItemObject));
+
+    struct EquipmentNetworkData {
+        Vector3D position;
+        Vector3D transitional_velocity;
+        Vector3D angular_velocity;
+    }; 
+    static_assert(sizeof(EquipmentNetworkData) == 0x24);
+
+    struct EquipmentNetwork {
+        bool baseline_valid;
+        std::int8_t baseline_index;
+        std::int8_t message_index;
+        PADDING(1);
+        EquipmentNetworkData update_baseline;
+        bool delta_valid; // Unsure
+        PADDING(3);
+        EquipmentNetworkData update_delta;
+    };
+
+    struct EquipmentObject : public ItemObject {
+        PADDING(24); //Opensauce uses these padding bytes
+        EquipmentNetwork network;
+    };
+    static_assert(sizeof(EquipmentObject) == 0x68 + sizeof(ItemObject));
+
+    struct ProjectileObjectFlags {
+        bool tracer : 1;
+        bool projectile_unknown_bit : 1;
+        bool attached : 1;
+        PADDING_BIT(bool, 5); //unknown
+        PADDING(3); //possibly more bits
+    };
+
+    struct ProjectileNetworkData {
+        Vector3D position;
+        Vector3D transitional_velocity;
+    }; static_assert(sizeof(ProjectileNetworkData) == 0x18);
+
+    struct ProjectileNetwork {
+        bool unknown;
+        bool baseline_valid;
+        std::int8_t baseline_index;
+        std::int8_t message_index;
+        ProjectileNetworkData update_baseline;
+        bool delta_valid;
+        PADDING(3);
+        ProjectileNetworkData update_delta;
+    };
+
+    struct ProjectileObject : public ItemObject {
+        ProjectileObjectFlags projectile_flags;
+        std::int16_t action_enum;
+        std::int16_t material_id; // unconfirmed.
+        ObjectHandle source_unit;
+        ObjectHandle target_object;
+        std::int32_t contrail_attachment_block_id;
+        float time_remaining; // To target or to 0.0? What?
+        float arming_rate; // related to detonation coundown timer
+        float unknown_proj_float1;
+        float unknown_proj_float2; // related to arming time
+        float distance_travelled;
+        Vector3D transitional_velocity;
+        float water_damage_upper_bound;
+        Vector3D angular_velocity;
+        Euler2D unknown_euler;
+        ProjectileNetwork network;
+    };
+    static_assert(sizeof(ProjectileObject) == 0x84 + sizeof(ItemObject));
+
+    struct DeviceObject : public BaseObject {
+        bool position_reversed : 1;
+        bool not_usable_from_any_side : 1;
+        bool _device_pad_bits1 : 6;
+        PADDING(3);
+        struct {
+            std::int16_t device_group_id;
+            PADDING(2);
+            float value;
+            float change;
+        } power, position;
+        bool one_sided : 1;
+        bool operates_automatically : 1;
+        bool _device_pad_bits2 : 6;
+        PADDING(3);
+    };
+    static_assert(sizeof(DeviceObject) == 0x20 + sizeof(BaseObject));
+
+    struct DeviceMachineObjectFlags {
+        bool does_not_operate_automatically : 1;
+        bool machine_one_sided : 1;
+        bool never_appears_locked : 1;
+        bool opened_by_melee_attack : 1;
+        PADDING_BIT(bool, 4);
+        PADDING(3);
+    };
+
+    struct DeviceMachineObject : public DeviceObject {
+        DeviceMachineObjectFlags device_flags;
+        std::uint32_t ticks_since_started_opening;
+        Vector3D elevator_position;
+    };
+    static_assert(sizeof(DeviceMachineObject) == 0x14 + sizeof(DeviceObject));
+
+    struct DeviceControlObjectFlags {
+        bool usable_from_both_sides : 1;
+        bool device_control_unused_bits1 : 4;
+        PADDING_BIT(bool, 3);
+        PADDING(3);
+    };
+
+    struct DeviceControlObject : public DeviceObject {
+        DeviceControlObjectFlags device_control_flags;
+        int16_t custom_name_id;
+        PADDING(2);
+    };
+    static_assert(sizeof(DeviceControlObject) == 8 + sizeof(DeviceObject));
+
+    struct DeviceLightFixtureObject : public DeviceObject {
+        ColorRGB light_color;
+        float light_intensity;
+        float light_falloff_angle;
+        float light_cutoff_angle;
+    };
+    static_assert(sizeof(DeviceLightFixtureObject) == 0x18 + sizeof(DeviceObject));
 
     struct DamageObjectStructThing {
         TagHandle damage_tag_handle;
@@ -1011,6 +1504,64 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(AntennaVertex) == 0x20);
 
+    enum NetworkColor : std::uint16_t {
+        NETWORK_COLOR_WHITE   = 0,
+        NETWORK_COLOR_BLACK,
+        NETWORK_COLOR_RED,
+        NETWORK_COLOR_BLUE,
+        NETWORK_COLOR_GRAY,
+        NETWORK_COLOR_YELLOW,
+        NETWORK_COLOR_GREEN,
+        NETWORK_COLOR_PINK,
+        NETWORK_COLOR_PURPLE,
+        NETWORK_COLOR_CYAN,
+        NETWORK_COLOR_COBALT,
+        NETWORK_COLOR_ORANGE,
+        NETWORK_COLOR_TEAL,
+        NETWORK_COLOR_SAGE,
+        NETWORK_COLOR_BROWN,
+        NETWORK_COLOR_TAN,
+        NETWORK_COLOR_MAROON,
+        NETWORK_COLOR_SALMON
+    };
+
+    enum PlayerObjectiveMode : std::int32_t {
+        PLAYER_OBJECTIVE_MODE_RACE = 22,
+        PLAYER_OBJECTIVE_MODE_HILL = 34,
+        PLAYER_OBJECTIVE_MODE_JUGGERNAUT = 35,
+        PLAYER_OBJECTIVE_MODE_BALL = 41,
+        PLAYER_OBJECTIVE_MODE_NONE = -1
+    };
+
+    union PlayerMultiplayerStatistics {
+        std::uint32_t _pad[2];
+
+        struct Ctf {
+            std::int16_t flag_grabs;
+            std::int16_t flag_returns;
+            std::int16_t flag_scores;
+        } ctf;
+
+        struct Slayer {
+        } slayer;
+
+        struct Oddball {
+            std::int16_t _unknown;
+            std::int16_t target_kills;
+            std::int16_t kills;
+        } oddball;
+
+        struct King {
+            std::int16_t hill_score;
+        } king;
+
+        struct Race {
+            std::int16_t time;
+            std::int16_t laps;
+            std::int16_t best_time;
+        } race;
+    }; static_assert(sizeof(PlayerMultiplayerStatistics) == 8);
+
     /**
      * These are players.
      */
@@ -1024,7 +1575,7 @@ namespace Balltze::Engine {
         /** Name of the player */
         wchar_t name[12];
 
-        PADDING(0x4);
+        ResourceHandle unknown_handle;
 
         /** Team of the player 0 = red; 1 = blue; etc. */
         std::uint8_t team;
@@ -1041,30 +1592,32 @@ namespace Balltze::Engine {
         std::uint16_t interaction_object_seat;
 
         /** Ticks remaining for the player to respawn */
-        TickCount respawn_time;
+        TickCount32 respawn_time;
 
         /** Number of ticks being added to the player's next respawn time */
-        TickCount respawn_time_growth;
+        TickCount32 respawn_time_growth;
 
         /** Player's current object handle. */
         ObjectHandle object_handle;
 
         /** Player's object handle. Does this have to do with death cam or something? */
-        ObjectHandle last_object_handle;
+        ObjectHandle prev_object_handle;
 
-        PADDING(0x4);
-        PADDING(0x4);
+        std::int16_t bsp_cluster_id;
+        bool weapon_swap_result;
+        PADDING(1);
+        ObjectHandle auto_aim_target_object;
 
         /** Last tick the player fired */
-        TickCount last_fire_time;
+        TickCount32 last_fire_time;
 
         /** Name of the player (again) */
         wchar_t name2[12];
 
         /** Color of the player in respect to FFA */
-        std::uint16_t color;
+        NetworkColor color;
 
-        PADDING(0x2);
+        std::int16_t icon_index;
 
         /** Machine index of the player. This + 1 = rcon index */
         std::uint8_t machine_index;
@@ -1081,7 +1634,7 @@ namespace Balltze::Engine {
         /** Number of ticks remaining for the player to be invisible. */
         std::uint16_t invisibility_time;
 
-        PADDING(0x2);
+        std::int16_t other_powerup_time_left;
 
         /** Speed multiplier of the player. */
         float speed;
@@ -1090,7 +1643,7 @@ namespace Balltze::Engine {
         ResourceHandle teleporter_flag_handle;
 
         /** Unknown */
-        std::uint32_t objective_mode;
+        PlayerObjectiveMode objective_mode;
 
         /** Unknown */
         PlayerHandle objective_player_handle;
@@ -1099,18 +1652,18 @@ namespace Balltze::Engine {
         PlayerHandle target_player;
 
         /** Unknown - Some timer for fading in the name of the player being looked at? */
-        std::uint32_t target_time;
+        TickCount32 target_time;
 
         /** Tick the player last died */
-        TickCount last_death_time;
+        TickCount32 last_death_time;
 
         /** Current slayer target */
         PlayerHandle slayer_target;
 
         /** Player is odd man out */
-        std::uint32_t odd_man_out;
+        bool odd_man_out;
 
-        PADDING(0x6);
+        PADDING(9);
 
         /** Player's current kill streak */
         std::uint16_t kill_streak;
@@ -1121,15 +1674,8 @@ namespace Balltze::Engine {
         /** Last tick a player killed someone */
         std::uint16_t last_kill_time;
 
-        /** Number of kills made by the player */
-        std::uint16_t kills;
-
-        PADDING(0x6);
-
-        /** Number of assists made by the player */
-        std::uint16_t assists;
-
-        PADDING(0x6);
+        std::int16_t kills[4];
+        std::int16_t assists[4];
 
         /** Number of times player killed a member on the team (including themself) */
         std::uint16_t betrays;
@@ -1147,24 +1693,18 @@ namespace Balltze::Engine {
 
         PADDING(0x2);
 
-        /** Unknown - Possibly number of flag steals, hill time (ticks), race time (ticks)? */
-        std::uint16_t stat1;
-
-        /** Unknown - Possibly number of flag returns or oddball target kills? */
-        std::uint16_t stat2;
-
-        /** Unknown - Possibly number of scores, oddball kills, or race best time (ticks)? */
-        std::uint16_t stat3;
-
-        PADDING(0x2);
+        PlayerMultiplayerStatistics multiplayer_statistics;
 
         /** Time being telefragged in ticks */
-        TickCount telefrag_timer;
+        TickCount32 telefrag_timer;
 
         /** Tick the player left */
-        TickCount quit_time;
+        TickCount32 quit_time;
 
-        PADDING(0x8);
+        bool telefrag_danger;
+        bool quit;
+
+        PADDING(0x6);
 
         /** Current ping of the player in milliseconds */
         std::uint32_t ping;
@@ -1173,7 +1713,9 @@ namespace Balltze::Engine {
         std::uint32_t team_kill_count;
 
         /** Number of ticks since the player's last betrayal */
-        TickCount team_kill_timer;
+        TickCount32 team_kill_ticks_since_last;
+
+        // Start of network stuff
 
         PADDING(0x10);
 
@@ -1256,26 +1798,26 @@ namespace Balltze::Engine {
          * @param  player_handle handle of the player to get
          * @return           the player if found, or nullptr if not
          */
-        Player *get_player(PlayerHandle player_handle) noexcept;
+        Player* get_player(PlayerHandle player_handle) noexcept;
 
         /**
          * Get a player by rcon handle (0-15)
          * @return pointer to the player if found
          */
-        Player *get_player_by_rcon_handle(std::size_t rcon_handle) noexcept;
+        Player* get_player_by_rcon_handle(std::size_t rcon_handle) noexcept;
 
         /**
          * Get the client player
          * @return pointer to the client player
          */
-        Player *get_client_player() noexcept;
+        Player* get_client_player() noexcept;
     };
 
     /**
      * Get the player table
      * @return reference to the player table
      */
-    PlayerTable &get_player_table() noexcept;
+    PlayerTable& get_player_table() noexcept;
 
     struct Antenna {
         std::uint32_t unknown_0;
@@ -1293,15 +1835,15 @@ namespace Balltze::Engine {
      * Get the antenna table
      * @return reference to the antenna table
      */
-    AntennaTable &get_antenna_table() noexcept;
+    AntennaTable& get_antenna_table() noexcept;
 
     using DecalTable = GenericTable<void>;
-    
+
     /**
      * Get the decal table
      * @return reference to the decal table
      */
-    DecalTable &get_decal_table() noexcept;
+    DecalTable& get_decal_table() noexcept;
 
     using EffectTable = GenericTable<void>;
 
@@ -1309,7 +1851,7 @@ namespace Balltze::Engine {
      * Get the effect table
      * @return reference to the effect table
      */
-    EffectTable &get_effect_table() noexcept;
+    EffectTable& get_effect_table() noexcept;
 
     /** This is a part of a flag. */
     struct FlagPart {
@@ -1339,7 +1881,7 @@ namespace Balltze::Engine {
      * Get the flag table
      * @return reference to the flag table
      */
-    FlagTable &get_flag_table() noexcept;
+    FlagTable& get_flag_table() noexcept;
 
     struct Light {
         // 0x0
@@ -1371,7 +1913,7 @@ namespace Balltze::Engine {
      * Get the light table
      * @return reference to the light table
      */
-    LightTable &get_light_table() noexcept;
+    LightTable& get_light_table() noexcept;
 
     struct Particle {
         // 0x0
@@ -1416,7 +1958,7 @@ namespace Balltze::Engine {
      * Get the particle table
      * @return reference to the particle table
      */
-    ParticleTable &get_particle_table() noexcept;
+    ParticleTable& get_particle_table() noexcept;
 
     /**
      * Get whether the game is paused

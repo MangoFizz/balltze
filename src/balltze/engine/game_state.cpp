@@ -8,7 +8,7 @@
 #include <balltze/memory.hpp>
 
 namespace Balltze::Engine {
-    DynamicObject *ObjectTable::get_dynamic_object(const ObjectHandle &object_handle) noexcept {
+    BaseObject *ObjectTable::get_dynamic_object(const ObjectHandle &object_handle) noexcept {
         auto *object = this->get_element(object_handle.index);
         if(object && object->id == object_handle.id) {
             return object->object;
@@ -18,7 +18,7 @@ namespace Balltze::Engine {
         }
     }
 
-    DynamicObject *ObjectTable::get_dynamic_object(std::uint32_t index) noexcept {
+    BaseObject *ObjectTable::get_dynamic_object(std::uint32_t index) noexcept {
         auto *object = this->get_element(index);
         if(object) {
             return object->object;
@@ -83,8 +83,8 @@ namespace Balltze::Engine {
         return object_table;
     }
 
-    void UnitDynamicObject::enter_vehicle(ObjectHandle vehicle_handle, std::string seat_label) {
-        auto *vehicle_object = reinterpret_cast<Engine::UnitDynamicObject *>(get_object_table().get_dynamic_object(vehicle_handle));
+    void UnitObject::enter_vehicle(ObjectHandle vehicle_handle, std::string seat_label) {
+        auto *vehicle_object = reinterpret_cast<Engine::UnitObject *>(get_object_table().get_dynamic_object(vehicle_handle));
         if(!vehicle_object) {
             throw std::runtime_error("vehicle object not found");
         }
@@ -110,8 +110,8 @@ namespace Balltze::Engine {
         throw std::runtime_error("seat not found");
     }
 
-    void UnitDynamicObject::enter_vehicle(ObjectHandle vehicle_handle, std::size_t seat_index) {
-        auto *vehicle_object = reinterpret_cast<Engine::UnitDynamicObject *>(get_object_table().get_dynamic_object(vehicle_handle));
+    void UnitObject::enter_vehicle(ObjectHandle vehicle_handle, std::size_t seat_index) {
+        auto *vehicle_object = reinterpret_cast<Engine::UnitObject *>(get_object_table().get_dynamic_object(vehicle_handle));
         if(!vehicle_object) {
             throw std::runtime_error("vehicle object not found");
         }
