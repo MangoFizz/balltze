@@ -11,6 +11,7 @@ namespace Balltze::Plugins {
     void lua_set_features_table(lua_State *state) noexcept;
     void lua_set_command_table(lua_State *state) noexcept;
     void lua_set_chimera_table(lua_State *state) noexcept;
+    void lua_set_output_table(lua_State *state) noexcept;
 
     void lua_open_balltze_api(lua_State *state) {
         // Set up balltze registry table
@@ -27,6 +28,7 @@ namespace Balltze::Plugins {
         lua_set_event_table(state);
         lua_set_features_table(state);
         lua_set_command_table(state);
+        lua_set_output_table(state);
         lua_set_chimera_table(state);
         lua_setglobal(state, "balltze");
     }

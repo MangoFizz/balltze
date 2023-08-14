@@ -182,9 +182,8 @@ namespace Balltze::Memory {
                     m_cave.insert(0xFF);
 
                     // call dword ptr [edx + disp32]
-                    if(instruction[1] == 0x92) {
-                        m_cave.insert(0x92);
-                        m_cave.insert(&instruction[2], 4);
+                    if(instruction[1] == 0x92 || instruction[1] == 0x91) {
+                        m_cave.insert(&instruction[1], 5);
 
                         instruction_size = 6;
                         break;

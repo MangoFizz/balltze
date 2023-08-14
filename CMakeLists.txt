@@ -88,6 +88,8 @@ add_library(balltze SHARED
     src/balltze/output/logger.cpp
     src/balltze/output/messaging.cpp
     src/balltze/output/subtitles.cpp
+    src/balltze/output/video.cpp
+    src/balltze/output/video.S
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
     src/balltze/plugins/lua/api.cpp
@@ -100,6 +102,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/lfmt.cpp
     src/balltze/plugins/lua/lfmt.c
     src/balltze/plugins/lua/logger.cpp
+    src/balltze/plugins/lua/output.cpp
     src/balltze/balltze.cpp
 
     ${TAG_REBASE_OFFSETS_FUNCTION_CPP} 
