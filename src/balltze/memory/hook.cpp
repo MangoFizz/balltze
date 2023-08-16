@@ -388,9 +388,16 @@ namespace Balltze::Memory {
                 }
 
                 // mov
-                case 0xA0: {
+                case 0xA0 ... 0xA1: {
                     m_cave.insert(&instruction[0], 5);
                     instruction_size = 5;
+                    break;
+                }
+
+                // xor bl, bl
+                case 0x32: {
+                    m_cave.insert(&instruction[0], 2);
+                    instruction_size = 2;
                     break;
                 }
 

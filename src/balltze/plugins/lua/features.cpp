@@ -262,7 +262,10 @@ namespace Balltze::Plugins {
         }
     }
 
-    static void on_map_data_read(Event::MapFileLoadEvent &event) {
+    static void on_map_load(Event::MapLoadEvent &event) {
+        if(event.time == Event::EVENT_TIME_AFTER) {
+            return;
+        }
         auto plugins = get_lua_plugins();
         for(auto &plugin : plugins) {
             auto map_imports = plugin->imported_tags();
@@ -305,6 +308,6 @@ namespace Balltze::Plugins {
     void lua_set_features_table(lua_State *state) noexcept {
         lua_create_functions_table(state, "features", features_functions);
 
-        static auto listener = Event::MapFileLoadEvent::subscribe(on_map_data_read, Event::EVENT_PRIORITY_LOWEST);
+        static auto listener = Event::MapLoadEvent::subscribe(on_map_load, Event::EVENT_PRIORITY_LOWEST);
     }
 }

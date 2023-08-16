@@ -103,6 +103,7 @@ namespace Balltze::Event {
     template class EventHandler<ServerConnectEvent>;
     template class EventHandler<ObjectDamageEvent>;
     template class EventHandler<RconMessageEvent>;
+    template class EventHandler<MapLoadEvent>;
 
     static EventListenerHandle<TickEvent> first_tick_listener;
 
@@ -120,6 +121,7 @@ namespace Balltze::Event {
             EventHandler<ServerConnectEvent>::init();
             EventHandler<ObjectDamageEvent>::init();
             EventHandler<RconMessageEvent>::init();
+            EventHandler<MapLoadEvent>::init();
             
             first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
                 EventHandler<D3D9EndSceneEvent>::init();

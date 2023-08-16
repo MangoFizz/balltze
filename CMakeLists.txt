@@ -63,6 +63,8 @@ add_library(balltze SHARED
     src/balltze/event/map_file_data_read.cpp
     src/balltze/event/map_file_data_read.S
     src/balltze/event/map_file_load.cpp
+    src/balltze/event/map_load.cpp
+    src/balltze/event/map_load.S
     src/balltze/event/object_damage.cpp
     src/balltze/event/object_damage.S
     src/balltze/event/rcon_message.cpp
@@ -73,6 +75,8 @@ add_library(balltze SHARED
     src/balltze/event/tick.cpp
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
+    src/balltze/features/loading_screen.cpp
+    src/balltze/features/loading_screen.S
     src/balltze/features/sound_subtitles.cpp
     src/balltze/features/tag_data_importing/map.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.cpp

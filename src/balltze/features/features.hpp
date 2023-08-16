@@ -25,16 +25,22 @@ namespace Balltze::Features {
     void set_up_sound_subtitles() noexcept;
 
     /**
+     * Set up the loading screen
+     */
+    void set_up_loading_screen() noexcept;
+
+    /**
      * Set up all features.
      */
     inline void set_up_features() {
         try {
-            Features::set_up_gamepad_pause_button();
-            Features::set_up_hud_button_prompts();
+            set_up_gamepad_pause_button();
+            set_up_hud_button_prompts();
 
 #ifdef BALLTZE_ENABLE_EXPERIMENTAL
-            Features::set_up_sound_subtitles();
-            Features::set_up_tag_data_importing();
+            set_up_sound_subtitles();
+            set_up_tag_data_importing();
+            set_up_loading_screen();
 #endif
         }
         catch(...) {

@@ -119,6 +119,7 @@ namespace Balltze::Event {
 #include "events/server_connect.hpp"
 #include "events/object_damage.hpp"
 #include "events/rcon_message.hpp"
+#include "events/map_load.hpp"
 
 #endif
 
