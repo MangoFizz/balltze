@@ -351,7 +351,9 @@ namespace Balltze::Features {
 
             // Fix entry path and data pointers
             tag->path = translate_address(tag->path);
-            tag->data = translate_address(tag->data);
+            if(!tag->indexed || tag->primary_class == TAG_CLASS_SOUND) {
+                tag->data = translate_address(tag->data);
+            }
 
             // Set up new tag entry
             auto &new_tag_entry = virtual_tag_data->insert_tag_entry(*tag);
@@ -360,9 +362,6 @@ namespace Balltze::Features {
 
             // if current tag are indexed or if tags are already fixed, we can continue
             if(tag->indexed) {
-                if(new_tag_entry.primary_class == TAG_CLASS_SOUND) {
-                    new_tag_entry.data = translate_address(new_tag_entry.data);
-                }
                 return new_tag_entry.handle;
             }
 
