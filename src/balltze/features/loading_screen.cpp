@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <cstdlib>
 #include <thread>
+#include <chrono>
 #include <atomic>
 #include <d3d9.h>
 #include <windows.h>
@@ -49,8 +50,15 @@ namespace Balltze::Features {
     static Bik *bik = nullptr;
     static IDirect3DDevice9 *device = nullptr;
     static IDirect3DTexture9 *texture = nullptr;
+    static std::uint8_t alpha_channel = 255;
     static D3DLOCKED_RECT locked_rect;
     static std::map<D3DRENDERSTATETYPE, DWORD> old_render_state;
+    static std::map<D3DTEXTURESTAGESTATETYPE, DWORD> old_texture_stage_0_state;
+    static std::map<D3DTEXTURESTAGESTATETYPE, DWORD> old_texture_stage_1_state;
+    static std::map<D3DSAMPLERSTATETYPE, DWORD> old_sampler_stage_0_state;
+
+    static std::chrono::milliseconds appreciation_delay = std::chrono::milliseconds(2000);
+    static bool demo = false;
 
     static std::filesystem::path get_loading_screens_path() {
         auto path = Config::get_balltze_directory() / "loading_screens";
@@ -86,6 +94,7 @@ namespace Balltze::Features {
             texture = nullptr;
         }
         loading_screen_playback = false;
+        demo = false;
     }
 
     static void play_loading_screen() {
@@ -98,6 +107,8 @@ namespace Balltze::Features {
         if(bik) {
             end_loading_screen();
         }
+
+        alpha_channel = 255;
 
         bik = bik_open(path.string().c_str(), 0);
         if(!bik) {
@@ -118,6 +129,28 @@ namespace Balltze::Features {
             device->SetRenderState(type, value);
             old_render_state.insert_or_assign(type, old_value);
         };
+
+        auto set_texture_stage_state = [](DWORD stage, D3DTEXTURESTAGESTATETYPE type, DWORD value) {
+            DWORD old_value = 0;
+            device->GetTextureStageState(stage, type, &old_value);
+            device->SetTextureStageState(stage, type, value);
+            if(stage == 0) {
+                old_texture_stage_0_state.insert_or_assign(type, old_value);
+            }
+            else if(stage == 1) {
+                old_texture_stage_1_state.insert_or_assign(type, old_value);
+            }
+        };
+
+        auto set_sampler_state = [](DWORD stage, D3DSAMPLERSTATETYPE type, DWORD value) {
+            DWORD old_value = 0;
+            device->GetSamplerState(stage, type, &old_value);
+            device->SetSamplerState(stage, type, value);
+            old_sampler_stage_0_state.insert_or_assign(type, old_value);
+        };
+
+        D3DCAPS9 caps;
+        device->GetDeviceCaps(&caps);
 
         set_render_state(D3DRS_ALPHABLENDENABLE, true);
         set_render_state(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
@@ -144,11 +177,41 @@ namespace Balltze::Features {
         set_render_state(D3DRS_STENCILENABLE, false);
         set_render_state(D3DRS_VERTEXBLEND, false);
         set_render_state(D3DRS_WRAP0, 0);
+
+        set_texture_stage_state(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+        set_texture_stage_state(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+        set_texture_stage_state(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+        set_texture_stage_state(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+        set_texture_stage_state(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+        set_texture_stage_state(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+        set_texture_stage_state(0, D3DTSS_TEXCOORDINDEX, 0);
+        set_texture_stage_state(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+        set_texture_stage_state(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+        set_texture_stage_state(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+        set_sampler_state(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+        set_sampler_state(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+        set_sampler_state(0, D3DSAMP_MAGFILTER, caps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR);
+        set_sampler_state(0, D3DSAMP_MAXMIPLEVEL, 0);
+        set_sampler_state(0, D3DSAMP_MAXANISOTROPY, caps.MaxAnisotropy);
+        set_sampler_state(0, D3DSAMP_MINFILTER, caps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR);
+        set_sampler_state(0, D3DSAMP_MIPFILTER, caps.TextureFilterCaps & D3DPTFILTERCAPS_MIPFLINEAR ? D3DTEXF_LINEAR : D3DTEXF_POINT);
+        set_sampler_state(0, D3DSAMP_MIPMAPLODBIAS, 0);
+        set_sampler_state(0, D3DSAMP_SRGBTEXTURE, 0);
     }
 
     void sprite_render_end() {
         for(auto &[type, value] : old_render_state) {
             device->SetRenderState(type, value);
+        }
+        for(auto &[type, value] : old_texture_stage_0_state) {
+            device->SetTextureStageState(0, type, value);
+        }
+        for(auto &[type, value] : old_texture_stage_1_state) {
+            device->SetTextureStageState(1, type, value);
+        }
+        for(auto &[type, value] : old_sampler_stage_0_state) {
+            device->SetSamplerState(0, type, value);
         }
     }
 
@@ -188,7 +251,7 @@ namespace Balltze::Features {
         }
 
         if(!texture) {
-            ASSERT_D3D(device->CreateTexture(bik->width, bik->height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture, NULL), "Failed to create texture");
+            ASSERT_D3D(device->CreateTexture(bik->width, bik->height, 0, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture, NULL), "Failed to create texture");
         }
 
         if(bik) {
@@ -200,14 +263,24 @@ namespace Balltze::Features {
 
             ASSERT_D3D(texture->LockRect(0, &locked_rect, NULL, D3DLOCK_DISCARD), "Failed to lock texture");
             bik_copy_to_buffer(bik, locked_rect.pBits, locked_rect.Pitch, bik->height, 0, 0, BINKCOPYALL | BIKSURFACE32);
-            set_texture_alpha_channel(255);
+            set_texture_alpha_channel(alpha_channel);
             ASSERT_D3D(texture->UnlockRect(0), "Failed to unlock texture");
 
-            render_sprite(0, 0, bik->width, bik->height, texture);
+            IDirect3DSurface9 *surface;
+            device->GetRenderTarget(0, &surface);
+            D3DSURFACE_DESC desc;
+            surface->GetDesc(&desc);
+
+            render_sprite(0, 0, desc.Width, desc.Height, texture);
 
             if(bik->current_frame >= bik->frames_count) {
-                bik_go_to(bik, 1, 0);
-                bik_set_volume(bik, 0, 0);
+                if(!demo) {
+                    bik_go_to(bik, 1, 0);
+                    bik_set_volume(bik, 0, 0);
+                }
+                else {
+                    end_loading_screen();
+                }
             }
         }
     }
@@ -215,6 +288,9 @@ namespace Balltze::Features {
     static void update_d3d9_device(Event::D3D9EndSceneEvent &event) {
         if(!device) {
             device = event.args.device;
+        }
+        if(event.time == Event::EVENT_TIME_BEFORE && demo) {
+            draw_loading_screen();
         }
     }
 
@@ -241,7 +317,9 @@ namespace Balltze::Features {
         void load_map_override_asm(const char *);
 
         void set_map_load_thread_done_flag() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(3300)); // ADD A SETTING FOR THIS
+            if(loading_screen_playback) {
+                std::this_thread::sleep_for(appreciation_delay);
+            }
             map_load_thread_done = true;
         }
     }
@@ -309,13 +387,14 @@ namespace Balltze::Features {
         if(!loading_screen_playback && are_we_in_loading_screen) {
             play_loading_screen();
         }
-        else if(loading_screen_playback && !are_we_in_loading_screen) {
+        else if(!demo && loading_screen_playback && !are_we_in_loading_screen) {
             end_loading_screen();
         }
         draw_loading_screen();
     }
 
-    static bool loading_screen_render_hook() {
+    static bool loading_screen_render_hook(std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t, Engine::ColorARGBInt color_mask) {
+        alpha_channel = color_mask.alpha;
         return true;
     }
 
@@ -351,11 +430,6 @@ namespace Balltze::Features {
         Event::D3D9DeviceResetEvent::subscribe(on_device_reset, Event::EVENT_PRIORITY_HIGHEST);
         Event::MapLoadEvent::subscribe(update_map_name);
 
-        register_command("test_loading_screen", "debug", "Plays a random loading screen", std::nullopt, [](int arg_count, const char **args) -> bool {
-            play_loading_screen();
-            return true;
-        }, false, 0, 0);
-
         load_bik_functions();
 
         tick_event_listener_handle = Event::TickEvent::subscribe([](Event::TickEvent &) {
@@ -371,8 +445,32 @@ namespace Balltze::Features {
             std::function<void()> load_map_hook_callback = reinterpret_cast<void(*)()>(load_map_override);
             Memory::override_function(load_map_function_sig->data(), load_map_hook_callback, load_map_function_address);
             Memory::hook_function(loading_screen_handler_sig->data(), loading_screen_hook);
-            Memory::hook_function(loading_screen_render_function_call_sig->data(), std::function<bool()>(loading_screen_render_hook));
+            Memory::hook_function(loading_screen_render_function_call_sig->data(), std::function<bool()>(reinterpret_cast<bool (*)()>(loading_screen_render_hook)));
+
+            register_command("test_loading_screen", "debug", "Plays a random loading screen", std::nullopt, [](int arg_count, const char **args) -> bool {
+                demo = true;
+                play_loading_screen();
+                return true;
+            }, false, 0, 0);
+
             tick_event_listener_handle.remove();
         });
+
+        register_command("set_loading_screen_appreciation_delay", "features", "Sets the delay before after the loading screen is done before the map is loaded", "<milliseconds>", [](int arg_count, const char **args) -> bool {
+            if(arg_count == 0) {
+                logger.info("Current appreciation delay: {}ms", appreciation_delay.count());
+                return true;
+            }
+
+            try {
+                appreciation_delay = std::chrono::milliseconds(std::stoi(args[0]));
+            }
+            catch(std::exception &e) {
+                logger.error("Invalid argument: {}", e.what());
+                return false;
+            }
+
+            return true;
+        }, true, 0, 1);
     }
 }
