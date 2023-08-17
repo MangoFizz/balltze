@@ -118,6 +118,7 @@ namespace Balltze::Features {
         TagDataHeader *m_tag_data_header = nullptr;
         Tag *m_tag_array = nullptr;
         std::map<TagHandle, std::vector<TagHandle>> m_tags_copies;
+        std::map<void *, void *> m_address_translations;
 
         void read_header() {
             logger.info("Reading header for map {}", m_name);
@@ -199,8 +200,15 @@ namespace Balltze::Features {
         template<typename T>
         T translate_address(T address) {
             if(address != 0) {
+                for(auto &[original_address, translated_address] : m_address_translations) {
+                    if(reinterpret_cast<void *>(address) == original_address || reinterpret_cast<void *>(address) == translated_address) {
+                        return reinterpret_cast<T>(translated_address);
+                    }
+                }
                 auto base_address_disp = reinterpret_cast<std::uint32_t>(get_tag_data_address()) - reinterpret_cast<std::uint32_t>(m_raw_tag_data.get());
-                address = reinterpret_cast<T>(reinterpret_cast<std::uint32_t>(address) - base_address_disp);
+                auto new_address = reinterpret_cast<T>(reinterpret_cast<std::uint32_t>(address) - base_address_disp);
+                m_address_translations.insert_or_assign(reinterpret_cast<void *>(address), reinterpret_cast<void *>(new_address));
+                return new_address;
             }
             return address;
         }
@@ -563,16 +571,11 @@ namespace Balltze::Features {
 
     void prepare_to_load_map(Event::MapLoadEvent const &event) {
         if(event.time == Event::EVENT_TIME_BEFORE) {
-            auto name = event.args.name;
-            if(event.args.name == "levels\\ui\\ui") {
-                name = "ui";
-            }
-
             logger.info("Clearing preloaded maps cache...");
             preloaded_secondary_maps_cache.clear();
 
-            logger.info("Preparing to load map {}", name);
-            auto map_path = path_for_map_local(name.c_str());
+            logger.info("Preparing to load map {}", event.args.name);
+            auto map_path = path_for_map_local(event.args.name.c_str());
             preloaded_map_cache = std::make_unique<MapCache>(map_path);
             if(preloaded_map_cache->header().head != MapHeader::HEAD_LITERAL || preloaded_map_cache->header().foot != MapHeader::FOOT_LITERAL) {
                 throw std::runtime_error("Map file is corrupted");

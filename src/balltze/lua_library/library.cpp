@@ -33,7 +33,7 @@ namespace Balltze::LuaLibrary {
 
     static std::vector<std::unique_ptr<Script>> scripts;
     static bool allow_tag_data_import = true;
-    static std::optional<Event::EventListenerHandle<Event::MapFileLoadEvent>> map_file_load_listener_handle;
+    static std::optional<Event::EventListenerHandle<Event::MapLoadEvent>> map_load_listener_handle;
 
     static Script *get_script(lua_State *state) noexcept {
         for(auto &script : scripts) {
@@ -143,14 +143,17 @@ namespace Balltze::LuaLibrary {
         return 0;
     }
 
-    static void on_map_file_load(Event::MapFileLoadEvent const &event) noexcept {
+    static void on_map_load(Event::MapLoadEvent const &event) noexcept {
+        if(event.time == Event::EVENT_TIME_AFTER) {
+            return;
+        }
         allow_tag_data_import = true;
         for(auto &script : scripts) {
             auto *state = script->state;
             auto it = script->callbacks.find(CallbackTargetedEvent::MAP_FILE_LOAD);
             if(it != script->callbacks.end()) {
                 lua_getglobal(state, it->second.c_str());
-                lua_pushstring(state, event.args.map_name.c_str());
+                lua_pushstring(state, event.args.name.c_str());
                 if(lua_pcall(state, 1, 0, 0) != LUA_OK) {
                     const char *err = lua_tostring(state, -1);
                     console_printf(CONSOLE_COLOR_ERROR, "%s", err);
@@ -211,8 +214,8 @@ namespace Balltze::LuaLibrary {
         lua_setmetatable(state, -2);
 
         // Subscribe to events
-        if(!map_file_load_listener_handle) {
-            map_file_load_listener_handle = Event::MapFileLoadEvent::subscribe_const(on_map_file_load);
+        if(!map_load_listener_handle) {
+            map_load_listener_handle = Event::MapLoadEvent::subscribe_const(on_map_load, Event::EVENT_PRIORITY_LOWEST);
         }
 
         auto *script = scripts.emplace_back(std::make_unique<Script>()).get();

@@ -13,9 +13,12 @@ namespace Balltze::Event {
         void map_load_after_event();
 
         void dispatch_map_load_event_before(const char *map_name) {
-            MapLoadEventArgs args;
-            args.name = map_name;
             last_map_name = map_name;
+            if(last_map_name == "levels\\ui\\ui") {
+                last_map_name = "ui";
+            }
+            MapLoadEventArgs args;
+            args.name = last_map_name;
             MapLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
