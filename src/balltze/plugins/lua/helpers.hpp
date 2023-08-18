@@ -69,7 +69,6 @@ namespace Balltze::Plugins {
     std::string weapon_magazine_state_to_string(Engine::WeaponMagazineState state);
     std::string network_color_to_string(Engine::NetworkColor color);
     std::string player_objective_mode_to_string(Engine::PlayerObjectiveMode mode);
-    std::string object_type_to_string(Engine::ObjectType type);
 
     Engine::UnitThrowingGrenadeState unit_throwing_grenade_state_from_string(const std::string &state);
     Engine::UnitAnimationState unit_animation_state_from_string(const std::string &state);
@@ -84,7 +83,6 @@ namespace Balltze::Plugins {
     Engine::WeaponMagazineState weapon_magazine_state_from_string(const std::string &state);
     Engine::NetworkColor network_color_from_string(const std::string &color);
     Engine::PlayerObjectiveMode player_objective_mode_from_string(const std::string &mode);
-    Engine::ObjectType object_type_from_string(const std::string &type);
 
     void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
     void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept;

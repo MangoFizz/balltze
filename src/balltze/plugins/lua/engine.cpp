@@ -1054,7 +1054,7 @@ namespace Balltze::Plugins {
                             lua_push_meta_engine_object(state, *object);
                             break;
                         default:
-                            logger.warning("Unknown object type {}.", object->type);
+                            logger.warning("Unknown object type {}.", static_cast<int>(object->type));
                             lua_push_meta_engine_object(state, *object);
                             break;
                     }
