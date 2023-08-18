@@ -77,14 +77,14 @@ namespace Balltze::Engine {
          * @param  object_handle This is the handle of the object.
          * @return           Return a pointer to the object or nullptr if the handle is invalid.
          */
-        BaseObject* get_dynamic_object(const ObjectHandle& object_handle) noexcept;
+        BaseObject* get_object(const ObjectHandle& object_handle) noexcept;
 
         /**
          * Get the object by an index, returning nullptr if the index is invalid.
          * @param  index This is the index of the object.
          * @return       Return a pointer to the object or nullptr if the index is invalid.
          */
-        BaseObject* get_dynamic_object(std::uint32_t index) noexcept;
+        BaseObject* get_object(std::uint32_t index) noexcept;
 
         /**
          * Spawn an object with an tag handle.
@@ -776,20 +776,22 @@ namespace Balltze::Engine {
         UNIT_BASE_SEAT_FLAMING
     };
 
-    struct AnimationState {
+    struct UnitAnimationStateData {
         std::int16_t animation_index;
         std::int16_t frame_index;
     };
 
+    struct UnitAnimationFlags {
+        bool animation_bit0_unknown : 1;
+        bool animation_bit1_unknown : 1;
+        bool animation_bit2_unknown : 1;
+        bool animation_bit3_unknown : 1;
+        PADDING_BIT(bool, 4);
+        PADDING(1);
+    };
+
     struct UnitAnimationData {
-        struct {
-            bool animation_bit0_unknown : 1;
-            bool animation_bit1_unknown : 1;
-            bool animation_bit2_unknown : 1;
-            bool animation_bit3_unknown : 1;
-            PADDING_BIT(bool, 4);
-            PADDING(1);
-        } flags;
+        UnitAnimationFlags flags;
         std::int16_t unknown_some_animation_index_maybe;
         std::int16_t unknown_some_animation_index;
         PADDING(2); // Only set on initialization, never read afterwards
@@ -804,9 +806,9 @@ namespace Balltze::Engine {
         UnitBaseSeat base_seat;
         std::int8_t emotion;
         PADDING(1);
-        AnimationState replacement_animation;
-        AnimationState overlay_state_animation;
-        AnimationState weapon_ik;
+        UnitAnimationStateData replacement_animation;
+        UnitAnimationStateData overlay_state_animation;
+        UnitAnimationStateData weapon_ik;
         bool update_look;
         bool update_aim;
         Rectangle2DF looking_bounds;
@@ -1037,7 +1039,7 @@ namespace Balltze::Engine {
         TagHandle dialogue_definition;
         UnitSpeechData speech;
         struct {
-            TagDefinitions::DamageEffectCategory catagory;
+            TagDefinitions::DamageEffectCategory category;
             TickCount16 ai_ticks_until_handle;
             float amount;
             ObjectHandle responsible_unit;
@@ -1233,24 +1235,24 @@ namespace Balltze::Engine {
     static_assert(sizeof(ItemObject) == 0x38 + sizeof(BaseObject));
 
     struct GarbageObject : ItemObject {
-        std::int16_t ticks_until_garbage_collection;
+        TickCount16 ticks_until_garbage_collection;
         PADDING(2);
         PADDING(20);
     };
     static_assert(sizeof(GarbageObject) == 0x18 + sizeof(ItemObject));
 
     enum WeaponState : std::int8_t {
-        IDLE,
-        FIRE1,
-        FIRE2,
-        CHAMBER1,
-        CHAMBER2,
-        RELOAD1,
-        RELOAD2,
-        CHARGED1,
-        CHARGED2,
-        READY,
-        PUT_AWAY
+        WEAPON_STATE_IDLE,
+        WEAPON_STATE_FIRE1,
+        WEAPON_STATE_FIRE2,
+        WEAPON_STATE_CHAMBER1,
+        WEAPON_STATE_CHAMBER2,
+        WEAPON_STATE_RELOAD1,
+        WEAPON_STATE_RELOAD2,
+        WEAPON_STATE_CHARGED1,
+        WEAPON_STATE_CHARGED2,
+        WEAPON_STATE_READY,
+        WEAPON_STATE_PUT_AWAY
     };
 
     struct WeaponTrigger {
@@ -1410,20 +1412,23 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(ProjectileObject) == 0x84 + sizeof(ItemObject));
 
+    struct DeviceObjectState {
+        std::int16_t device_group_id;
+        PADDING(2);
+        float value;
+        float change;
+    };
+    
     struct DeviceObject : public BaseObject {
         bool position_reversed : 1;
         bool not_usable_from_any_side : 1;
-        bool _device_pad_bits1 : 6;
+        PADDING_BIT(bool, 6);
         PADDING(3);
-        struct {
-            std::int16_t device_group_id;
-            PADDING(2);
-            float value;
-            float change;
-        } power, position;
+        DeviceObjectState power;
+        DeviceObjectState position;
         bool one_sided : 1;
         bool operates_automatically : 1;
-        bool _device_pad_bits2 : 6;
+        PADDING_BIT(bool, 6);
         PADDING(3);
     };
     static_assert(sizeof(DeviceObject) == 0x20 + sizeof(BaseObject));
@@ -1446,8 +1451,7 @@ namespace Balltze::Engine {
 
     struct DeviceControlObjectFlags {
         bool usable_from_both_sides : 1;
-        bool device_control_unused_bits1 : 4;
-        PADDING_BIT(bool, 3);
+        PADDING_BIT(bool, 7);
         PADDING(3);
     };
 
@@ -1546,7 +1550,7 @@ namespace Balltze::Engine {
         } slayer;
 
         struct Oddball {
-            std::int16_t _unknown;
+            std::int16_t unknown;
             std::int16_t target_kills;
             std::int16_t kills;
         } oddball;

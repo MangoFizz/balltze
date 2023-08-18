@@ -106,8 +106,8 @@ namespace Balltze::LuaLibrary {
             // TODO Add support for using seat labels too instead of seat indices
             int seat_index = luaL_checkinteger(state, 3);
             auto &object_table = Engine::get_object_table();
-            auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_dynamic_object(unit_handle));
-            auto *vehicle = reinterpret_cast<Engine::UnitObject *>(object_table.get_dynamic_object(vehicle_handle));
+            auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(unit_handle));
+            auto *vehicle = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(vehicle_handle));
             if(!unit) {
                 return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
             }

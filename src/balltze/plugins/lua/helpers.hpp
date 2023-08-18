@@ -41,8 +41,8 @@ namespace Balltze::Plugins {
     std::string object_network_role_to_string(Engine::ObjectNetworkRole role);
     Engine::ObjectNetworkRole object_network_role_from_string(const std::string &role);
 
-    std::string dynamic_object_attachment_type_to_string(Engine::BaseObjectAttachmentType type);
-    Engine::BaseObjectAttachmentType dynamic_object_attachment_type_from_string(const std::string &type);
+    std::string object_attachment_type_to_string(Engine::BaseObjectAttachmentType type);
+    Engine::BaseObjectAttachmentType object_attachment_type_from_string(const std::string &type);
 
     std::string multiplayer_team_to_string(Engine::MultiplayerTeam team);
     Engine::MultiplayerTeam multiplayer_team_from_string(const std::string &team);
@@ -56,6 +56,36 @@ namespace Balltze::Plugins {
 
     void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept;
 
+    std::string unit_throwing_grenade_state_to_string(Engine::UnitThrowingGrenadeState state);
+    std::string unit_animation_state_to_string(Engine::UnitAnimationState state);
+    std::string unit_replacement_animation_state_to_string(Engine::UnitReplacementAnimationState state);
+    std::string unit_overlay_animation_state_to_string(Engine::UnitOverlayAnimationState state);
+    std::string unit_base_seat_to_string(Engine::UnitBaseSeat seat);
+    std::string unit_speech_priority_to_string(Engine::UnitSpeechPriority priority);
+    std::string unit_scream_type_to_string(Engine::UnitScreamType type);
+    std::string ai_communication_type_to_string(Engine::AiCommunicationType type);
+    std::string biped_movement_state_to_string(Engine::BipedMovementState state);
+    std::string weapon_state_to_string(Engine::WeaponState state);
+    std::string weapon_magazine_state_to_string(Engine::WeaponMagazineState state);
+    std::string network_color_to_string(Engine::NetworkColor color);
+    std::string player_objective_mode_to_string(Engine::PlayerObjectiveMode mode);
+    std::string object_type_to_string(Engine::ObjectType type);
+
+    Engine::UnitThrowingGrenadeState unit_throwing_grenade_state_from_string(const std::string &state);
+    Engine::UnitAnimationState unit_animation_state_from_string(const std::string &state);
+    Engine::UnitReplacementAnimationState unit_replacement_animation_state_from_string(const std::string &state);
+    Engine::UnitOverlayAnimationState unit_overlay_animation_state_from_string(const std::string &state);
+    Engine::UnitBaseSeat unit_base_seat_from_string(const std::string &seat);
+    Engine::UnitSpeechPriority unit_speech_priority_from_string(const std::string &priority);
+    Engine::UnitScreamType unit_scream_type_from_string(const std::string &type);
+    Engine::AiCommunicationType ai_communication_type_from_string(const std::string &type);
+    Engine::BipedMovementState biped_movement_state_from_string(const std::string &state);
+    Engine::WeaponState weapon_state_from_string(const std::string &state);
+    Engine::WeaponMagazineState weapon_magazine_state_from_string(const std::string &state);
+    Engine::NetworkColor network_color_from_string(const std::string &color);
+    Engine::PlayerObjectiveMode player_objective_mode_from_string(const std::string &mode);
+    Engine::ObjectType object_type_from_string(const std::string &type);
+
     void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
     void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept;
     void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point) noexcept;
@@ -63,6 +93,7 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset) noexcept;
     void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color) noexcept;
     void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle) noexcept;
+    void lua_push_meta_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF &rectangle) noexcept;
     void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point) noexcept;
     void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler) noexcept;
     void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler) noexcept;
@@ -77,15 +108,63 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_camera_data(lua_State *state, Engine::CameraData &data) noexcept;
     void lua_push_meta_engine_rotation_matrix(lua_State *state, Engine::RotationMatrix &matrix) noexcept;
     void lua_push_meta_engine_model_node(lua_State *state, Engine::ModelNode &node) noexcept;
-    void lua_push_meta_engine_dynamic_object_flags(lua_State *state, Engine::BaseObjectFlags &flags) noexcept;
-    void lua_push_meta_engine_dynamic_object_network(lua_State *state, Engine::BaseObjectNetwork &network) noexcept;
+    
+    void lua_push_meta_engine_object_flags(lua_State *state, Engine::BaseObjectFlags &flags) noexcept;
+    void lua_push_meta_engine_object_network(lua_State *state, Engine::BaseObjectNetwork &network) noexcept;
     void lua_push_meta_engine_scenario_location(lua_State *state, Engine::ScenarioLocation &location) noexcept;
-    void lua_push_meta_engine_dynamic_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags) noexcept;
-    void lua_push_meta_engine_dynamic_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags) noexcept;
-    void lua_push_meta_engine_dynamic_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &data) noexcept;
-    void lua_push_meta_engine_dynamic_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &destroyeds) noexcept;
-    void lua_push_meta_engine_dynamic_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &reference) noexcept;
-    void lua_push_meta_engine_dynamic_object(lua_State *state, Engine::BaseObject &object) noexcept;
+    void lua_push_meta_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags) noexcept;
+    void lua_push_meta_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags) noexcept;
+    void lua_push_meta_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &data) noexcept;
+    void lua_push_meta_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &destroyeds) noexcept;
+    void lua_push_meta_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &reference) noexcept;
+    void lua_push_meta_engine_object(lua_State *state, Engine::BaseObject &object) noexcept;
+
+    void lua_push_meta_engine_unit_recent_damager(lua_State *state, Engine::UnitRecentDamager &damager) noexcept;
+    void lua_push_meta_engine_unit_flags(lua_State *state, Engine::UnitFlags &flags) noexcept;
+    void lua_push_meta_engine_unit_control_flags(lua_State *state, Engine::UnitControlFlags &flags) noexcept;
+    void lua_push_meta_engine_unit_animation_state_data(lua_State *state, Engine::UnitAnimationStateData &data) noexcept;
+    void lua_push_meta_engine_unit_animation_flags(lua_State *state, Engine::UnitAnimationFlags &data) noexcept;
+    void lua_push_meta_engine_unit_animation_data(lua_State *state, Engine::UnitAnimationData &data) noexcept;
+    void lua_push_meta_engine_ai_communication_packet(lua_State *state, Engine::AiCommunicationPacket &packet) noexcept;
+    void lua_push_meta_engine_unit_speech(lua_State *state, Engine::UnitSpeech &speech) noexcept;
+    void lua_push_meta_engine_unit_speech_data(lua_State *state, Engine::UnitSpeech &speech) noexcept;
+    void lua_push_meta_engine_unit_control_data(lua_State *state, Engine::UnitControlData &data) noexcept;
+    void lua_push_meta_engine_unit_object(lua_State *state, Engine::UnitObject &object) noexcept;
+    void lua_push_meta_engine_biped_flags(lua_State *state, Engine::BipedFlags &flags) noexcept;
+    void lua_push_meta_engine_biped_network_delta(lua_State *state, Engine::BipedNetworkDelta &delta) noexcept;
+    void lua_push_meta_engine_biped_network(lua_State *state, Engine::BipedNetwork &network) noexcept;
+    void lua_push_meta_engine_biped_object(lua_State *state, Engine::BipedObject &object) noexcept;
+    void lua_push_meta_engine_vehicle_flags(lua_State *state, Engine::VehicleFlags &flags) noexcept;
+    void lua_push_meta_engine_vehicle_network_data(lua_State *state, Engine::VehicleNetworkData &data) noexcept;
+    void lua_push_meta_engine_vehicle_network(lua_State *state, Engine::VehicleNetwork &network) noexcept;
+    void lua_push_meta_engine_vehicle_object(lua_State *state, Engine::VehicleObject &object) noexcept;
+
+    void lua_push_meta_engine_item_object(lua_State *state, Engine::ItemObject &object) noexcept;
+    void lua_push_meta_engine_garbage_object(lua_State *state, Engine::GarbageObject &object) noexcept;
+    void lua_push_meta_engine_weapon_trigger(lua_State *state, Engine::WeaponTrigger &trigger) noexcept;
+    void lua_push_meta_engine_weapon_magazine(lua_State *state, Engine::WeaponMagazine &magazine) noexcept;
+    void lua_push_meta_engine_weapon_reload_start_data(lua_State *state, Engine::WeaponReloadStartData &data) noexcept;
+    void lua_push_meta_engine_weapon_network_data(lua_State *state, Engine::WeaponNetworkData &data) noexcept;
+    void lua_push_meta_engine_weapon_network(lua_State *state, Engine::WeaponNetwork &network) noexcept;
+    void lua_push_meta_engine_weapon_object(lua_State *state, Engine::WeaponObject &object) noexcept;
+    void lua_push_meta_engine_equipment_network_data(lua_State *state, Engine::EquipmentNetworkData &data) noexcept;
+    void lua_push_meta_engine_equipment_network(lua_State *state, Engine::EquipmentNetwork &network) noexcept;
+    void lua_push_meta_engine_equipment_object(lua_State *state, Engine::EquipmentObject &object) noexcept;
+    void lua_push_meta_engine_projectile_object_flags(lua_State *state, Engine::ProjectileObjectFlags &flags) noexcept;
+    void lua_push_meta_engine_projectile_network_data(lua_State *state, Engine::ProjectileNetworkData &data) noexcept;
+    void lua_push_meta_engine_projectile_network(lua_State *state, Engine::ProjectileNetwork &network) noexcept;
+    void lua_push_meta_engine_projectile_object(lua_State *state, Engine::ProjectileObject &object) noexcept;
+
+    void lua_push_meta_engine_device_object_state(lua_State *state, Engine::DeviceObjectState &object_state) noexcept;
+    void lua_push_meta_engine_device_object(lua_State *state, Engine::DeviceObject &object) noexcept;
+    void lua_push_meta_engine_device_machine_object_flags(lua_State *state, Engine::DeviceMachineObjectFlags &flags) noexcept;
+    void lua_push_meta_engine_device_machine_object(lua_State *state, Engine::DeviceMachineObject &object) noexcept;
+    void lua_push_meta_engine_device_control_object_flags(lua_State *state, Engine::DeviceControlObjectFlags &flags) noexcept;
+    void lua_push_meta_engine_device_control_object(lua_State *state, Engine::DeviceControlObject &object) noexcept;
+    void lua_push_meta_engine_device_light_fixture_object(lua_State *state, Engine::DeviceLightFixtureObject &object) noexcept;
+
+    void lua_push_meta_engine_player_multiplayer_statistics(lua_State *state, Engine::PlayerMultiplayerStatistics &statistics) noexcept;
+    void lua_push_meta_engine_player(lua_State *state, Engine::Player &player) noexcept;
 
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex) noexcept {
