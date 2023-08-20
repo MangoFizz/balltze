@@ -23,7 +23,7 @@ namespace Balltze {
     static void initialize_balltze() noexcept {
         logger.mute_ingame(true);
         try {
-            logger.set_file(Config::get_balltze_directory() / "balltze.log");
+            logger.set_file(Config::get_balltze_directory() / "balltze.log", false);
         }
         catch(std::runtime_error &e) {
             logger.error("failed to set log file: {}", e.what());

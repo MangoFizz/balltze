@@ -131,7 +131,7 @@ namespace Balltze {
             auto config = Config::Config(directory / "settings.json");
             for(auto &command : commands) {
                 auto command_key = std::string("commands.") + command->m_name;
-                if(command->m_plugin && command->m_plugin == reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle))) {
+                if(command->m_plugin && command->m_plugin == reinterpret_cast<void *>(plugin)) {
                     if(config.exists(command_key)) {
                         auto command_value = config.get<std::string>(command_key);
                         auto arguments = split_arguments(command_value.value());
@@ -142,7 +142,7 @@ namespace Balltze {
                         }
 
                         bool res = command->call(arguments.size(), arguments_alloc.get());
-                        if(!res) {
+                        if(res != COMMAND_RESULT_SUCCESS) {
                             logger.warning("Command {} failed to load from config", command->m_name);
                             config.remove(command_key);
                             config.save();
@@ -286,15 +286,35 @@ namespace Balltze {
         CommandResult res = COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
         for(const auto command : commands) {
             if(command->m_full_name == command_name) {
-                res = command->call(arg_count, arguments_alloc.get());
-
-                // Save if autosave is enabled
-                if(command->m_autosave && res == COMMAND_RESULT_SUCCESS) {
-                    auto &config = Config::get_config();
-                    config.set(std::string("commands.") + command->m_name, unsplit_arguments(arguments));
-                    config.save();
+                if(!command->plugin()) {
+                    logger.error("Could not get plugin for module handle {}", reinterpret_cast<std::uintptr_t>(module_handle));
+                    break;
                 }
-                
+
+                Plugins::Plugin *command_plugin = reinterpret_cast<Plugins::Plugin *>(*command->plugin());
+                Plugins::Plugin *module_plugin = Plugins::get_dll_plugin(module_handle);
+                if(module_handle == get_current_module() || command->is_public() || module_plugin == command_plugin) {
+                    res = command->call(arg_count, arguments_alloc.get());
+
+                    // Save if autosave is enabled
+                    if(command->m_autosave && res == COMMAND_RESULT_SUCCESS) {
+                        bool is_balltze_command = command_plugin == nullptr;
+                        if(is_balltze_command) {
+                            auto &config = Config::get_config();
+                            config.set(std::string("commands.") + command->m_name, unsplit_arguments(arguments));
+                            config.save();
+                        }
+                        else {
+                            auto directory = command_plugin->directory();
+                            auto config = Config::Config(directory / "settings.json");
+                            config.set(std::string("commands.") + command->m_name, unsplit_arguments(arguments));
+                            config.save();
+                        }
+                    }
+                }
+                else {
+                    logger.warning("Plugin {} tried to call command {} from plugin {}", module_plugin->name(), command->m_name, command_plugin->name());
+                }              
                 break;
             }
         }
