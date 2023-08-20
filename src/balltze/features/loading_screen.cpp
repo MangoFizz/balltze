@@ -315,6 +315,8 @@ namespace Balltze::Features {
         void *load_map_function_address = nullptr;
         std::uint32_t load_map_function_result = false;
         void load_map_override_asm(const char *);
+        void set_video_mode_asm();
+        void *set_video_mode_return = nullptr;
 
         void set_map_load_thread_done_flag() {
             if(loading_screen_playback) {
@@ -326,53 +328,30 @@ namespace Balltze::Features {
 
     static std::uint32_t load_map_override() {
         // Load map in a separate thread so we can render the loading screen
-        std::thread(load_map_override_asm, map_to_load.c_str()).detach();
+        std::thread map_load_thread(load_map_override_asm, map_to_load.c_str());
 
-        IDirect3DDevice9 *main_device = device;
-        IDirect3DTexture9 *old_texture = texture;
-        D3DPRESENT_PARAMETERS present_params;
-        IDirect3DSwapChain9 *swap_chain;
-        IDirect3DDevice9 *aux_device;
+        if(loading_screen_playback) {
+            map_load_thread.detach();
 
-        // Get present params from the main device
-        main_device->GetSwapChain(0, &swap_chain);
-        ZeroMemory(&present_params, sizeof(present_params));
-        swap_chain->GetPresentParameters(&present_params);
-
-        // Create an aux device to render the loading screen while the main one is busy setting the map stuff
-        static auto d3d9_handle = LoadLibraryA("d3d9.dll");
-        static auto PDirect3DCreate9 = reinterpret_cast<decltype(Direct3DCreate9) *>(GetProcAddress(d3d9_handle, "Direct3DCreate9"));
-        IDirect3D9 *d3d9 = PDirect3DCreate9(D3D_SDK_VERSION);
-        d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, Engine::get_window_globals()->hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present_params, &aux_device);
-
-        // Set aux device as the main one
-        device = aux_device;
-        texture = nullptr;
-
-        // Continue rendering loading screen until load_map thread is done
-        while(!map_load_thread_done) {
-            MSG message;
-            if(PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
-                // Forward window messages so Windows doesn't think the game is frozen 
-                TranslateMessage(&message);
-                DispatchMessageA(&message);
-            }
-            else {
-                device->BeginScene();
-                draw_loading_screen();
-                device->EndScene();
-                device->Present(NULL, NULL, NULL, NULL);
+            // Continue rendering loading screen until load_map thread is done
+            while(!map_load_thread_done) {
+                MSG message;
+                if(PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
+                    // Forward window messages so Windows doesn't think the game is frozen 
+                    TranslateMessage(&message);
+                    DispatchMessageA(&message);
+                }
+                else {
+                    device->BeginScene();
+                    draw_loading_screen();
+                    device->EndScene();
+                    device->Present(NULL, NULL, NULL, NULL);
+                }
             }
         }
-
-        // Release aux device resources
-        device = main_device;
-        if(texture) {
-            texture->Release();
-            texture = old_texture;
+        else {
+            map_load_thread.join();
         }
-        aux_device->Release();
-        d3d9->Release();
 
         // Reset thread exit flag
         map_load_thread_done = false;
@@ -431,6 +410,16 @@ namespace Balltze::Features {
         Event::MapLoadEvent::subscribe(update_map_name);
 
         load_bik_functions();
+
+        auto set_video_mode_sig = Memory::get_signature("set_video_mode");
+        if(!set_video_mode_sig) {
+            logger.error("Failed to find signatures for loading screen.");
+            return;
+        }
+
+        auto *set_video_mode_address = Memory::follow_32bit_jump(set_video_mode_sig->data()) + 12;
+        Memory::override_function(set_video_mode_address, set_video_mode_asm, set_video_mode_return);
+        set_video_mode_return = set_video_mode_sig->data() + 5;
 
         tick_event_listener_handle = Event::TickEvent::subscribe([](Event::TickEvent &) {
             auto load_map_function_sig = Memory::get_signature("load_map_function");

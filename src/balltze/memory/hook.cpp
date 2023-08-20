@@ -189,9 +189,8 @@ namespace Balltze::Memory {
                         break;
                     }
                     // call dword ptr [edx + disp8]
-                    else if(instruction[1] == 0x52) {
-                        m_cave.insert(0x52);
-                        m_cave.insert(instruction[2]);
+                    else if(instruction[1] == 0x52 || instruction[1] == 0x51) {
+                        m_cave.insert(&instruction[1], 3);
 
                         instruction_size = 3;
                         break;

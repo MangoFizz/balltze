@@ -78,3 +78,12 @@ _bik_set_volume:
     call dword ptr [_bik_set_volume_addr]
     ret
 
+.globl _set_video_mode_asm
+_set_video_mode_asm:
+    push eax
+    mov eax, [esp + 0x14]
+    or eax, 0x4 ;# enable multithreading 
+    mov [esp + 0x14], eax
+    pop eax
+    call dword ptr [ecx + 0x40]
+    jmp dword ptr [_set_video_mode_return]
