@@ -116,6 +116,8 @@ namespace Balltze::Features {
             return;
         }
 
+        bik_set_volume(bik, 0, 0);
+
         loading_screen_playback = true;
     }
 
@@ -276,7 +278,6 @@ namespace Balltze::Features {
             if(bik->current_frame >= bik->frames_count) {
                 if(!demo) {
                     bik_go_to(bik, 1, 0);
-                    bik_set_volume(bik, 0, 0);
                 }
                 else {
                     end_loading_screen();
@@ -342,10 +343,18 @@ namespace Balltze::Features {
                     DispatchMessageA(&message);
                 }
                 else {
-                    device->BeginScene();
-                    draw_loading_screen();
-                    device->EndScene();
-                    device->Present(NULL, NULL, NULL, NULL);
+                    auto hr = device->TestCooperativeLevel();
+                    if(hr == D3DERR_DEVICENOTRESET) {
+                        texture->Release();
+                        texture = nullptr;
+                        device = nullptr;
+                    }
+                    else if(hr == D3D_OK) {
+                        device->BeginScene();
+                        draw_loading_screen();
+                        device->EndScene();
+                        device->Present(NULL, NULL, NULL, NULL);
+                    }
                 }
             }
         }
@@ -373,7 +382,9 @@ namespace Balltze::Features {
     }
 
     static bool loading_screen_render_hook(std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t, Engine::ColorARGBInt color_mask) {
-        alpha_channel = color_mask.alpha;
+        if(*game_loading_screen_flag == 8) {
+            alpha_channel = color_mask.alpha;
+        }
         return true;
     }
 
