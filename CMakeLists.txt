@@ -8,6 +8,8 @@ project(balltze
     LANGUAGES ASM C CXX
 )
 
+set(CMAKE_CXX_STANDARD 20)
+
 # Set modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 

@@ -65,7 +65,7 @@ namespace Balltze {
                     *this << format << endl;
                 } 
                 else {
-                    std::string output = fmt::format(format, args...);
+                    std::string output = fmt::format(fmt::runtime(format), args...);
                     *this << output << endl;
                 }
             }

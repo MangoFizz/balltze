@@ -808,8 +808,8 @@ namespace Balltze {
                         }
                     }
                     catch(std::exception &e) {
-                        std::string error_message = "Failed to iterate through font directory.";
-                        show_error_box("Font error: %s", error_message.c_str());
+                        constexpr const char *error_message = "Failed to iterate through font directory.";
+                        show_error_box("Font error: %s", error_message);
                         logger.error(error_message);
                         std::exit(EXIT_FAILURE);
                     }

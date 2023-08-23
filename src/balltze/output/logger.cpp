@@ -160,7 +160,8 @@ namespace Balltze {
     void Logger::print_console(LoggerStream &stream) {
         auto name = stream.m_logger->m_name;
         auto content = stream.m_stream.str();
-        auto time = fmt::format("{:%H:%M:%S}", fmt::localtime(std::time(nullptr)));
+        constexpr const char *time_format = "{:%H:%M:%S}";
+        auto time = fmt::format(time_format, fmt::localtime(std::time(nullptr)));
 
         auto apply_format = [&](fmt::text_style style, std::string text) {
             fmt::basic_memory_buffer<char> buffer;
@@ -194,7 +195,7 @@ namespace Balltze {
             auto output_level = apply_format(stream.m_console_style, stream.m_prefix);
             auto output_prefix = apply_format(fg(fmt::color::white), name);
             auto output_content = apply_format(fg(fmt::color::white), content);
-            fmt::print(stream.m_console_format, output_time, output_level, output_prefix, output_content);
+            fmt::print(fmt::runtime(stream.m_console_format), output_time, output_level, output_prefix, output_content);
         }
         else {
             fmt::print("\n");
@@ -210,7 +211,7 @@ namespace Balltze {
             auto time = fmt::format("{:%Y-%m-%d %H:%M:%S}", fmt::localtime(std::time(nullptr)));
 
             if(!content.empty()) {
-                logger->m_file << fmt::format(stream.m_file_format, time, stream.m_prefix, name, content);
+                logger->m_file << fmt::format(fmt::runtime(stream.m_file_format), time, stream.m_prefix, name, content);
                 logger->m_file.flush();
             }
         }
@@ -226,7 +227,7 @@ namespace Balltze {
 
         if(!content.empty()) {
             auto color = color_for_log_level(stream.m_level);
-            auto text = fmt::format(stream.m_ingame_format, name, content);
+            auto text = fmt::format(fmt::runtime(stream.m_ingame_format), name, content);
             Engine::console_print(text, color);
         }
     }
