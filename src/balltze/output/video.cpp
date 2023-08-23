@@ -53,4 +53,29 @@ namespace Balltze {
         }
         play_bik_video(path.string().c_str());
     }
+
+    extern "C" {
+        FARPROC bik_open_addr = nullptr;
+        FARPROC bik_pause_addr = nullptr;
+        FARPROC bik_next_frame_addr = nullptr;
+        FARPROC bik_do_frame_addr = nullptr;
+        FARPROC bik_copy_to_buffer_addr = nullptr;
+        FARPROC bik_wait_addr = nullptr;
+        FARPROC bik_close_addr = nullptr;
+        FARPROC bik_go_to_addr = nullptr;
+        FARPROC bik_set_volume_addr = nullptr;
+    }
+
+    void load_bik_functions() {
+        auto lib = LoadLibraryA("binkw32.dll");
+        bik_open_addr = GetProcAddress(lib, MAKEINTRESOURCE(36));
+        bik_pause_addr = GetProcAddress(lib, MAKEINTRESOURCE(41));
+        bik_next_frame_addr = GetProcAddress(lib, MAKEINTRESOURCE(35));
+        bik_do_frame_addr = GetProcAddress(lib, MAKEINTRESOURCE(22));
+        bik_copy_to_buffer_addr = GetProcAddress(lib, MAKEINTRESOURCE(18));
+        bik_wait_addr = GetProcAddress(lib, MAKEINTRESOURCE(57));
+        bik_close_addr = GetProcAddress(lib, MAKEINTRESOURCE(16));
+        bik_go_to_addr = GetProcAddress(lib, MAKEINTRESOURCE(32));
+        bik_set_volume_addr = GetProcAddress(lib, MAKEINTRESOURCE(56));
+    }
 }

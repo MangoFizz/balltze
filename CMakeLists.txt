@@ -93,6 +93,7 @@ add_library(balltze SHARED
     src/balltze/output/draw_text.S
     src/balltze/output/logger.cpp
     src/balltze/output/messaging.cpp
+    src/balltze/output/sprite.cpp
     src/balltze/output/subtitles.cpp
     src/balltze/output/video.cpp
     src/balltze/output/video.S
