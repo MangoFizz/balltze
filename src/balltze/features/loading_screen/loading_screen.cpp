@@ -7,8 +7,6 @@
 #include <semaphore>
 #include <atomic>
 #include <d3d9.h>
-#include <dxerr9.h>
-#include <d3dx9tex.h>
 #include <windows.h>
 #include <gdiplus.h>
 #include <balltze/command.hpp>
