@@ -165,6 +165,10 @@ namespace Balltze {
     }
 
     static void draw_subtitles(Event::FrameEvent const &) {
+        if(subtitles.empty() && subtitles_queue.empty()) {
+            return;
+        }
+
         std::size_t subtitles_offset = subtitle_y_base_offset;
         bool is_fading_in = false;
         std::size_t slide_offset = 0;

@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#ifndef BALLTZE__RESOURCES_HPP
+#define BALLTZE__RESOURCES_HPP
+
+#define ID_LOADING_SCREEN_SHADER 101
+#define ID_LOADING_SCREEN_BACKGROUND 102
+
+#endif
