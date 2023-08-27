@@ -2,9 +2,16 @@
 
 #include <map>
 #include <windows.h>
-#include "sprite.hpp"
+#include <balltze/helpers/d3d9_sprite.hpp>
+#include <balltze/helpers/resources.hpp>
+#include "../logger.hpp"
+
+using namespace Gdiplus;
 
 namespace Balltze {
+    #define ASSERT_D3D(x, msg) if(x != D3D_OK) { logger.error("D3D9 assertion failed: {}", std::string(msg)); return; }
+    #define ASSERT_D3D_EX(x, msg, ex) if(x != D3D_OK) { logger.error("D3D9 assertion failed: {}", std::string(msg)); ex; }
+
     IDirect3DDevice9 *Sprite::device() {
         IDirect3DDevice9 *device = nullptr;
         m_texture->GetDevice(&device);
@@ -137,5 +144,81 @@ namespace Balltze {
 
     Sprite::Sprite(IDirect3DTexture9 *texture) : m_texture(texture) {
         m_is_sprite_drawn = false;
+    }
+
+    HRESULT load_texture_from_file(const wchar_t *filename, IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
+        GdiplusStartupInput gdip_startup_input;
+        ULONG_PTR gdiplus_token;
+        GdiplusStartup(&gdiplus_token, &gdip_startup_input, NULL);
+
+        auto *bitmap = Bitmap::FromFile(filename, FALSE);
+        if(!bitmap) {
+            GdiplusShutdown(gdiplus_token);
+            return E_FAIL;
+        }
+
+        UINT width = bitmap->GetWidth();
+        UINT height = bitmap->GetHeight();
+
+        HRESULT hr = device->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, texture, NULL);
+        if(FAILED(hr)) {
+            delete bitmap;
+            GdiplusShutdown(gdiplus_token);
+            return hr;
+        }
+
+        D3DLOCKED_RECT lockedRect;
+        (*texture)->LockRect(0, &lockedRect, NULL, 0);
+        BitmapData bitmapData;
+        Rect rect(0, 0, width, height);
+        bitmap->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+        memcpy(lockedRect.pBits, bitmapData.Scan0, width * height * 4);
+        bitmap->UnlockBits(&bitmapData);
+        (*texture)->UnlockRect(0);
+
+        delete bitmap;
+        GdiplusShutdown(gdiplus_token);
+
+        return S_OK;
+    }
+
+    
+
+    HRESULT load_texture_from_resource(const wchar_t *resource_name, HMODULE module, IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
+        GdiplusStartupInput gdiplus_startup_input;
+        ULONG_PTR gdiplus_token;
+        GdiplusStartup(&gdiplus_token, &gdiplus_startup_input, NULL);
+
+        auto bitmap = load_image_from_resource(module, resource_name, L"PNG");
+        if(!bitmap) {
+            GdiplusShutdown(gdiplus_token);
+            logger.error("Failed to load image {} from resource!", reinterpret_cast<int>(resource_name));
+            return E_FAIL;
+        }
+
+        UINT width = bitmap->GetWidth();
+        UINT height = bitmap->GetHeight();
+
+        HRESULT hr = device->CreateTexture(width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, texture, NULL);
+        if(FAILED(hr)) {
+            bitmap.reset();
+            GdiplusShutdown(gdiplus_token);
+            logger.error("Failed to create texture for image {} from resource!", reinterpret_cast<int>(resource_name));
+            return hr;
+        }
+
+        D3DLOCKED_RECT locked_rect;
+        (*texture)->LockRect(0, &locked_rect, NULL, 0);
+        BitmapData bitmap_data;
+        Rect rect(0, 0, width, height);
+        bitmap->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &bitmap_data);
+        memcpy(locked_rect.pBits, bitmap_data.Scan0, width * height * 4);
+        bitmap->UnlockBits(&bitmap_data);
+        (*texture)->UnlockRect(0);
+
+        bitmap.reset();
+        GdiplusShutdown(gdiplus_token);
+
+        return S_OK;
     }
 }

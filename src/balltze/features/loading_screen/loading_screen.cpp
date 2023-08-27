@@ -13,11 +13,12 @@
 #include <balltze/hook.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/event.hpp>
+#include <balltze/helpers/d3d9_sprite.hpp>
+#include <balltze/helpers/resources.hpp>
 #include "../../config/config.hpp"
-#include "../../output/sprite.hpp"
 #include "../../output/video.hpp"
 #include "../../logger.hpp"
-#include "loading_screen_resources.hpp"
+#include "../../resources.hpp"
 
 using namespace std::chrono_literals;
 
@@ -37,6 +38,19 @@ namespace Balltze::Features {
 
     static std::atomic<bool> waiting_for_loading_screen_end = false;
     static std::binary_semaphore wait_for_background_end_semaphore{0};
+
+    static HRESULT load_loading_screen_background_texture(IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
+        return load_texture_from_resource(MAKEINTRESOURCEW(ID_LOADING_SCREEN_BACKGROUND), get_current_module(), device, texture);
+    }
+
+    static HRESULT load_loading_screen_shader(IDirect3DDevice9 *device, IDirect3DPixelShader9 **shader) {
+        auto shader_data = load_resource_data(get_current_module(), MAKEINTRESOURCEW(ID_LOADING_SCREEN_SHADER), L"CSO");
+        if(!shader_data) {
+            return E_FAIL;
+        }
+        HRESULT hr = device->CreatePixelShader(reinterpret_cast<const DWORD *>(shader_data->data()), shader);
+        return hr;
+    }
 
     std::chrono::milliseconds loading_screen_background_actual_duration() {
         float duration = static_cast<float>(loading_screen_shader_effect_duration.count());

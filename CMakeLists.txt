@@ -77,7 +77,6 @@ add_library(balltze SHARED
     src/balltze/event/tick.cpp
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
-    src/balltze/features/loading_screen/loading_screen_resources.cpp
     src/balltze/features/loading_screen/loading_screen.cpp
     src/balltze/features/loading_screen/loading_screen.S
     src/balltze/features/loading_screen/loading_screen.rc
@@ -85,6 +84,8 @@ add_library(balltze SHARED
     src/balltze/features/tag_data_importing/map.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.S
+    src/balltze/helpers/d3d9_sprite.cpp
+    src/balltze/helpers/resources.cpp
     src/balltze/lua_library/library.cpp
     src/balltze/math/bezier.cpp
     src/balltze/math/trig.cpp
@@ -95,7 +96,6 @@ add_library(balltze SHARED
     src/balltze/output/draw_text.S
     src/balltze/output/logger.cpp
     src/balltze/output/messaging.cpp
-    src/balltze/output/sprite.cpp
     src/balltze/output/subtitles.cpp
     src/balltze/output/video.cpp
     src/balltze/output/video.S

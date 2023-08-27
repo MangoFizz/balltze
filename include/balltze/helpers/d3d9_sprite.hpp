@@ -1,17 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__OUTPUT__DRAW_SPRITE_HPP
-#define BALLTZE__OUTPUT__DRAW_SPRITE_HPP
+#ifndef BALLTZE_API__HELPERS__D3D9_SPRITE_HPP
+#define BALLTZE_API__HELPERS__D3D9_SPRITE_HPP
 
 #include <string>
 #include <map>
 #include <d3d9.h>
-#include "../logger.hpp"
+#include "../api.hpp"
 
 namespace Balltze {
-    #define ASSERT_D3D(x, msg) if(x != D3D_OK) { logger.error("D3D9 assertion failed: {}", std::string(msg)); return; }
-    #define ASSERT_D3D_EX(x, msg, ex) if(x != D3D_OK) { logger.error("D3D9 assertion failed: {}", std::string(msg)); ex; }
-
     struct Vertex {
         float x, y, z, rhw;
         D3DCOLOR color;
@@ -21,8 +18,8 @@ namespace Balltze {
     /**
      * Basic sprite class.
      */
-    class Sprite {
-    private:
+    class BALLTZE_API Sprite {
+    protected:
         IDirect3DTexture9 *m_texture;
         std::map<D3DRENDERSTATETYPE, DWORD> m_old_render_state;
         std::map<D3DTEXTURESTAGESTATETYPE, DWORD> m_old_texture_stage_0_state;
@@ -41,6 +38,9 @@ namespace Balltze {
         Sprite() = default;
         ~Sprite() = default;
     };
+
+    BALLTZE_API HRESULT load_texture_from_file(const wchar_t *filename, IDirect3DDevice9 *device, IDirect3DTexture9 **texture);
+    BALLTZE_API HRESULT load_texture_from_resource(const wchar_t *resource_name, HMODULE module, IDirect3DDevice9 *device, IDirect3DTexture9 **texture);
 }
 
 #endif
