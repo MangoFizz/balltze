@@ -102,8 +102,13 @@ namespace Balltze::Features {
             m_next_handle.id = ++last_handle.id;
         }
 
+        void reserve_tag_entries(std::size_t count) noexcept {
+            m_tag_array.reserve(m_tag_array.size() + count);
+        }
+
         void update_tag_data_header() {
             auto &tag_data_header = get_tag_data_header();
+            m_tag_array.shrink_to_fit();
             tag_data_header.tag_count = m_tag_array.size();
             tag_data_header.tag_array = m_tag_array.data();
         }
@@ -513,6 +518,9 @@ namespace Balltze::Features {
         }
 
         void load_tag_data() {
+            // Reserve space for tags to AVOID REALLOCATIONS during the process (!!!)
+            virtual_tag_data->reserve_tag_entries(m_tag_data_header->tag_count);
+
             if(m_load_all_tags) {
                 for(std::size_t i = 0; i < m_tag_data_header->tag_count; i++) {
                     load_tag(m_tag_array + i, false);
