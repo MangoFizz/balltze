@@ -36,7 +36,7 @@ namespace Balltze::Features {
     static std::vector<std::shared_ptr<SecondaryMapCache>> preloaded_secondary_maps_cache;
     static std::unique_ptr<VirtualTagData> virtual_tag_data;
 
-    constexpr std::size_t virtual_tag_data_buffer_size = 128 * MIB_SIZE;
+    constexpr std::size_t virtual_tag_data_buffer_size = 64 * MIB_SIZE;
 
     class VirtualTagData {
     private:
