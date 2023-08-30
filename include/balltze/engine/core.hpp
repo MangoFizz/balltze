@@ -148,6 +148,12 @@ namespace Balltze::Engine {
      * @return Return a reference to the camera data.
      */
     BALLTZE_API CameraData &get_camera_data() noexcept;
+
+    /**
+     * Get the master volume.
+     * @return Return the master volume.
+     */
+    BALLTZE_API std::uint8_t get_master_volume() noexcept;
 }
 
 #endif

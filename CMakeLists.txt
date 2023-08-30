@@ -45,6 +45,8 @@ add_library(balltze SHARED
     src/balltze/engine/map.cpp
     src/balltze/engine/multiplayer.cpp
     src/balltze/engine/multiplayer.S
+    src/balltze/engine/renderer.cpp
+    src/balltze/engine/renderer.S
     src/balltze/engine/tag.cpp
     src/balltze/engine/tag.S
     src/balltze/engine/user_interface.cpp
