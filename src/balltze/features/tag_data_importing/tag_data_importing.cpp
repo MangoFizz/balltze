@@ -30,6 +30,7 @@ namespace Balltze::Features {
     class MapCache;
     class SecondaryMapCache;
 
+    static std::filesystem::path map_path;
     static std::unique_ptr<MapCache> map_cache;
     static std::unique_ptr<MapCache> preloaded_map_cache;
     static std::vector<std::shared_ptr<SecondaryMapCache>> secondary_maps_cache;
@@ -577,13 +578,16 @@ namespace Balltze::Features {
         virtual_tag_data->update_tag_data_header();
     }
 
+    void on_map_file_load(Event::MapFileLoadEvent const &event) {
+        map_path = event.args.map_path; 
+    }
+
     void prepare_to_load_map(Event::MapLoadEvent const &event) {
         if(event.time == Event::EVENT_TIME_BEFORE) {
             logger.info("Clearing preloaded maps cache...");
             preloaded_secondary_maps_cache.clear();
 
-            logger.info("Preparing to load map {}", event.args.name);
-            auto map_path = path_for_map_local(event.args.name.c_str());
+            logger.info("Preparing to load map {}", map_path.string());
             preloaded_map_cache = std::make_unique<MapCache>(map_path);
             if(preloaded_map_cache->header().head != MapHeader::HEAD_LITERAL || preloaded_map_cache->header().foot != MapHeader::FOOT_LITERAL) {
                 throw std::runtime_error("Map file is corrupted");
@@ -908,6 +912,7 @@ namespace Balltze::Features {
 
     void set_up_tag_data_importing() {
         Event::MapLoadEvent::subscribe_const(prepare_to_load_map, Event::EVENT_PRIORITY_HIGHEST);
+        Event::MapFileLoadEvent::subscribe(on_map_file_load);
         Event::MapFileDataReadEvent::subscribe(on_read_map_file_data);
 
         auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
