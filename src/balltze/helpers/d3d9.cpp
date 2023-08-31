@@ -2,8 +2,9 @@
 
 #include <map>
 #include <windows.h>
-#include <balltze/helpers/d3d9_sprite.hpp>
+#include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
+#include "../resources.hpp"
 #include "../logger.hpp"
 
 using namespace Gdiplus;
@@ -12,9 +13,20 @@ namespace Balltze {
     #define ASSERT_D3D(x, msg) if(x != D3D_OK) { logger.error("D3D9 assertion failed: {}", std::string(msg)); return; }
     #define ASSERT_D3D_EX(x, msg, ex) if(x != D3D_OK) { logger.error("D3D9 assertion failed: {}", std::string(msg)); ex; }
 
+    static HRESULT load_sprite_shader(IDirect3DDevice9 *device, IDirect3DPixelShader9 **shader) {
+        static auto shader_data = load_resource_data(get_current_module(), MAKEINTRESOURCEW(ID_SPRITE_SHADER), L"CSO");
+        if(!shader_data) {
+            return E_FAIL;
+        }
+        HRESULT hr = device->CreatePixelShader(reinterpret_cast<const DWORD *>(shader_data->data()), shader);
+        return hr;
+    }
+
     IDirect3DDevice9 *Sprite::device() {
         IDirect3DDevice9 *device = nullptr;
-        m_texture->GetDevice(&device);
+        if(m_texture) {
+            m_texture->GetDevice(&device);
+        }
         return device;
     }
 
@@ -22,7 +34,15 @@ namespace Balltze {
      * Reference: https://learn.microsoft.com/en-us/windows/win32/direct3d9/id3dxsprite--begin#remarks
      */
     void Sprite::begin() {
+        if(m_is_sprite_drawn) {
+            throw std::logic_error("Duplicated call to Sprite::begin()");
+        }
+
         auto *device = this->device();
+        if(!device) {
+            throw std::runtime_error("Failed to get device from texture!");
+        }
+
         D3DCAPS9 caps;
         device->GetDeviceCaps(&caps);
 
@@ -98,10 +118,23 @@ namespace Balltze {
         set_sampler_state(0, D3DSAMP_MIPFILTER, caps.TextureFilterCaps & D3DPTFILTERCAPS_MIPFLINEAR ? D3DTEXF_LINEAR : D3DTEXF_POINT);
         set_sampler_state(0, D3DSAMP_MIPMAPLODBIAS, 0);
         set_sampler_state(0, D3DSAMP_SRGBTEXTURE, 0);
+
+        device->GetPixelShader(&m_old_pixel_shader);
+        device->SetPixelShader(m_pixel_shader);
+
+        m_is_sprite_drawn = true;
     }
 
     void Sprite::end() {
+        if(!m_is_sprite_drawn) {
+            throw std::logic_error("Call to Sprite::end() without Sprite::begin()");
+        }
+
         auto *device = this->device();
+        if(!device) {
+            throw std::runtime_error("Failed to get device from texture!");
+        }
+
         for(auto &[type, value] : m_old_render_state) {
             device->SetRenderState(type, value);
         }
@@ -114,6 +147,89 @@ namespace Balltze {
         for(auto &[type, value] : m_old_sampler_stage_0_state) {
             device->SetSamplerState(0, type, value);
         }
+
+        device->SetPixelShader(m_old_pixel_shader);
+
+        m_is_sprite_drawn = false;
+    }
+
+    bool Sprite::draw(const Engine::Rectangle2DF *source_rect, const Engine::Point2D *center, const Engine::Point2D *position, const Engine::Vector2D *scale, const Engine::ColorARGBInt *color) {
+        if(!m_is_sprite_drawn) {
+            throw std::logic_error("Call to Sprite::draw() without Sprite::begin()");
+        }
+
+        auto *device = this->device();
+        if(!device) {
+            throw std::runtime_error("Failed to get device from texture!");
+        }
+
+        D3DMatrix translation_matrix;
+        if(position) {
+            CreateTranslationMatrix(translation_matrix, position->x, position->y, 0.0f);
+        }
+        else {
+            CreateTranslationMatrix(translation_matrix, 0.0f, 0.0f, 0.0f);
+        }
+        
+        D3DMatrix scaling_matrix;
+        if(scale) {
+            CreateScalingMatrix(scaling_matrix, scale->i, scale->j, 1.0f);
+        }
+        else {
+            CreateScalingMatrix(scaling_matrix, 1.0f, 1.0f, 1.0f);
+        }
+        
+        D3DMatrix final_transform;
+        MultiplyMatrix(scaling_matrix, translation_matrix, final_transform);
+
+        Engine::Rectangle2DF dest_rect;
+        D3DSURFACE_DESC desc;
+        m_texture->GetLevelDesc(0, &desc);
+        if(center) {
+            dest_rect.left = -(center->x * desc.Width);
+            dest_rect.top = -(center->y * desc.Height);
+            dest_rect.right = dest_rect.left + desc.Width;
+            dest_rect.bottom = dest_rect.top + desc.Height;
+        }
+        else {
+            dest_rect.left = 0;
+            dest_rect.top = 0;
+            dest_rect.right = desc.Width;
+            dest_rect.bottom = desc.Height;
+        }
+
+        // Create vertices for our sprite
+        Vertex vertices[4] = {
+            { dest_rect.left, dest_rect.top, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->left, source_rect->top },
+            { dest_rect.right, dest_rect.top, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->left, source_rect->bottom },
+            { dest_rect.left, dest_rect.bottom, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->right, source_rect->top },
+            { dest_rect.right, dest_rect.bottom, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->right, source_rect->bottom }
+        };
+
+        IDirect3DPixelShader9 *current_pixel_shader = nullptr;
+        device->GetPixelShader(&current_pixel_shader);
+        if(current_pixel_shader && current_pixel_shader == m_pixel_shader) {
+            if(color) {
+                float c_color_mask[4] = {
+                    static_cast<float>(color->red) / 255.0f,
+                    static_cast<float>(color->green) / 255.0f,
+                    static_cast<float>(color->blue) / 255.0f,
+                    static_cast<float>(color->alpha) / 255.0f
+                };
+                ASSERT_D3D_EX(device->SetPixelShaderConstantF(0, c_color_mask, 1), "Failed to set pixel shader constant", return false);
+            }
+            else {
+                float c_color_mask[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+                ASSERT_D3D_EX(device->SetPixelShaderConstantF(0, c_color_mask, 1), "Failed to set pixel shader constant", return false);
+            }
+        }
+
+        ASSERT_D3D_EX(device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1), "Failed to set FVF", return false);
+        ASSERT_D3D_EX(device->SetTexture(0, m_texture), "Failed to set texture", return false);
+        ASSERT_D3D_EX(device->SetTransform(D3DTS_WORLD, reinterpret_cast<const D3DMATRIX*>(&final_transform)), "Failed to set transform", return false);
+        ASSERT_D3D_EX(device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(Vertex)), "Failed to draw primitive", return false);
+
+        return true;
     }
 
     bool Sprite::draw(float pos_x, float pos_y, float width, float height) {
@@ -131,6 +247,13 @@ namespace Balltze {
             { right, bottom, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 1.0f }
         };
 
+        IDirect3DPixelShader9 *current_pixel_shader = nullptr;
+        device->GetPixelShader(&current_pixel_shader);
+        if(current_pixel_shader && current_pixel_shader == m_pixel_shader) {
+            float c_color_mask[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+            ASSERT_D3D_EX(device->SetPixelShaderConstantF(0, c_color_mask, 1), "Failed to set pixel shader constant", return false);
+        }
+
         ASSERT_D3D_EX(device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1), "Failed to set FVF", return false);
         ASSERT_D3D_EX(device->SetTexture(0, m_texture), "Failed to set texture", return false);
         ASSERT_D3D_EX(device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(Vertex)), "Failed to draw primitive", return false);
@@ -140,10 +263,13 @@ namespace Balltze {
 
     void Sprite::update_texture(IDirect3DTexture9 *texture) {
         m_texture = texture;
+        if(m_texture && !m_pixel_shader) {
+            load_sprite_shader(device(), &m_pixel_shader);
+        }
     }
 
-    Sprite::Sprite(IDirect3DTexture9 *texture) : m_texture(texture) {
-        m_is_sprite_drawn = false;
+    Sprite::Sprite(IDirect3DTexture9 *texture) {
+        update_texture(texture);
     }
 
     HRESULT load_texture_from_file(const wchar_t *filename, IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
@@ -182,8 +308,6 @@ namespace Balltze {
         return S_OK;
     }
 
-    
-
     HRESULT load_texture_from_resource(const wchar_t *resource_name, HMODULE module, IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
         GdiplusStartupInput gdiplus_startup_input;
         ULONG_PTR gdiplus_token;
@@ -220,5 +344,34 @@ namespace Balltze {
         GdiplusShutdown(gdiplus_token);
 
         return S_OK;
+    }
+
+    void MultiplyMatrix(const D3DMatrix& a, const D3DMatrix& b, D3DMatrix& result) {
+        for (int row = 0; row < 4; ++row) {
+            for (int col = 0; col < 4; ++col) {
+                result.m[row][col] = a.m[row][0] * b.m[0][col] +
+                                    a.m[row][1] * b.m[1][col] +
+                                    a.m[row][2] * b.m[2][col] +
+                                    a.m[row][3] * b.m[3][col];
+            }
+        }
+    }
+
+    void CreateTranslationMatrix(D3DMatrix& matrix, float x, float y, float z) {
+        matrix = D3DMatrix{
+            x, 0.0f, 0.0f, 0.0f,
+            0.0f, y, 0.0f, 0.0f,
+            0.0f, 0.0f, z, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
+
+    void CreateScalingMatrix(D3DMatrix& matrix, float scale_x, float scale_y, float scale_z) {
+        matrix = D3DMatrix{
+            scale_x, 0.0f, 0.0f, 0.0f,
+            0.0f, scale_y, 0.0f, 0.0f,
+            0.0f, 0.0f, scale_z, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
     }
 }

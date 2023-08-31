@@ -13,7 +13,7 @@
 #include <balltze/hook.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/event.hpp>
-#include <balltze/helpers/d3d9_sprite.hpp>
+#include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
 #include "../../config/config.hpp"
 #include "../../output/video.hpp"
@@ -100,7 +100,6 @@ namespace Balltze::Features {
         device->SetPixelShaderConstantF(2, &c_elapsed, 1);
         device->SetPixelShaderConstantF(3, &c_opacity, 1);
         sprite.draw(0, 0, desc.Width, desc.Height);
-        device->SetPixelShader(NULL);
         sprite.end();
 
         if(waiting_for_loading_screen_end) {

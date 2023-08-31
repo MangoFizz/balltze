@@ -87,8 +87,9 @@ add_library(balltze SHARED
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.S
     src/balltze/features/map_data_read_warden.cpp
-    src/balltze/helpers/d3d9_sprite.cpp
+    src/balltze/helpers/d3d9.cpp
     src/balltze/helpers/resources.cpp
+    src/balltze/helpers/sprite_shader.rc
     src/balltze/lua_library/library.cpp
     src/balltze/math/bezier.cpp
     src/balltze/math/trig.cpp
