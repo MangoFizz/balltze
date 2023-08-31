@@ -33,7 +33,19 @@ namespace Balltze::Plugins {
 
             if(dll.path().extension() == ".dll") {
                 try {
-                    plugins.emplace_back(std::make_unique<DLLPlugin>(dll.path()));
+                    auto &plugin = plugins.emplace_back(std::make_unique<DLLPlugin>(dll.path()));
+                    auto init_result = plugin->init();
+                    switch(init_result) {
+                        case PLUGIN_INIT_SUCCESS:
+                            logger.debug("Plugin {} initialized successfully.", plugin->name());
+                            break;
+                        case PLUGIN_INIT_FAILURE:
+                            logger.error("Plugin {} failed to initialize.", plugin->name());
+                            break;
+                        case PLUGIN_INIT_NOT_FOUND:
+                            logger.warning("Plugin {} does not implement plugin_init.", plugin->name());
+                            break;
+                    }
                 }
                 catch(std::runtime_error &) {
                     logger.error("Failed to load module {}", dll.path().filename().string());
@@ -51,7 +63,19 @@ namespace Balltze::Plugins {
 
             if(lua.path().extension() == ".lua") {
                 try {
-                    plugins.emplace_back(std::make_unique<LuaPlugin>(lua.path()));
+                    auto &plugin = plugins.emplace_back(std::make_unique<LuaPlugin>(lua.path()));
+                    auto init_result = plugin->init();
+                    switch(init_result) {
+                        case PLUGIN_INIT_SUCCESS:
+                            logger.debug("Plugin {} initialized successfully.", plugin->name());
+                            break;
+                        case PLUGIN_INIT_FAILURE:
+                            logger.error("Plugin {} failed to initialize.", plugin->name());
+                            break;
+                        case PLUGIN_INIT_NOT_FOUND:
+                            logger.warning("Plugin {} does not implement plugin_init.", plugin->name());
+                            break;
+                    }
                 }
                 catch(std::runtime_error &e) {
                     logger.error("Failed to read Lua script {}: {}", lua.path().filename().string(), e.what());
@@ -73,25 +97,8 @@ namespace Balltze::Plugins {
     void init_plugins() noexcept {
         init_plugins_path();
         logger.info("Initializing plugins...");
-        load_plugins_dlls();
+        load_plugins_dlls(); // Load DLL plugins first, so that Lua plugins can use them
         load_plugins_lua();
-        for(auto &plugin : plugins) {
-            if(plugin->loaded()) {
-                continue;
-            }
-            auto init_result = plugin->init();
-            switch(init_result) {
-                case PLUGIN_INIT_SUCCESS:
-                    logger.debug("Plugin {} initialized successfully.", plugin->name());
-                    break;
-                case PLUGIN_INIT_FAILURE:
-                    logger.error("Plugin {} failed to initialize.", plugin->name());
-                    break;
-                case PLUGIN_INIT_NOT_FOUND:
-                    logger.warning("Plugin {} does not implement plugin_init.", plugin->name());
-                    break;
-            }
-        }
     }
 
     void unload_plugins() noexcept {
