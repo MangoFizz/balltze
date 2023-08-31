@@ -12,6 +12,9 @@ load_bitmap_function_sig: .string "load_bitmap_function"
 
 .globl _load_bitmap_asm
 _load_bitmap_asm:
+    pushad
+    pushfd
+    
     cmp dword ptr load_bitmap_address, 0
     jnz load_bitmap_function_sig_found
     lea eax, load_bitmap_function_sig
@@ -21,18 +24,12 @@ _load_bitmap_asm:
     add esp, 4
     load_bitmap_function_sig_found:
 
-    push esi
-
-    ;# Get params
-    mov eax, [esp + 0x4]
-    mov ebx, [eax + 0x8]
-    mov ecx, [eax + 0xC]
-
-    push ecx
-    push ebx
-    mov esi, eax
+    mov eax, [esp + 0x28]
+    push [esp + 0x30]
+    push [esp + 0x30]
     call dword ptr load_bitmap_address
     add esp, 8
 
-    pop esi
+    popfd
+    popad
     ret

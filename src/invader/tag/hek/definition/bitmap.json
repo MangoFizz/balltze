@@ -290,18 +290,18 @@
                 "comment": "this is the ID of the texture cache entry that is created for the bitmap when it is loaded"
             },
             {
-                "name": "pixels_buffer",
-                "type": "Pointer",
-                "cache_only": true,
-                "endian": "little",
-                "comment": "this holds the address of the pixels buffer while it is being written to; it is set to null after the texture is created"
-            },
-            {
                 "name": "texture",
                 "type": "Pointer",
                 "cache_only": true,
                 "endian": "little",
                 "comment": "this is the pointer to the D3D9 texture interface"
+            },
+            {
+                "name": "pixels_buffer",
+                "type": "Pointer",
+                "cache_only": true,
+                "endian": "little",
+                "comment": "this holds the address of the pixels buffer while it is being written to; it is set to null after the texture is created"
             }
         ],
         "type": "struct",
