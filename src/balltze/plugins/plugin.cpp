@@ -379,6 +379,17 @@ namespace Balltze::Plugins {
         if(m_state) {
             luaL_openlibs(m_state);
             lua_open_balltze_api(m_state);
+
+            // Set package.path and package.cpath
+            lua_getglobal(m_state, "package");
+            auto new_lua_path = m_directory.string() + "\\?.lua";
+            lua_pushstring(m_state, new_lua_path.c_str());
+            lua_setfield(m_state, -2, "path");
+            auto new_lua_cpath = get_plugins_path().string() + "\\?.dll;" + m_directory.string() + "\\?.dll";
+            lua_pushstring(m_state, new_lua_cpath.c_str());
+            lua_setfield(m_state, -2, "cpath");
+            lua_pop(m_state, 1);
+
             if(luaL_loadfile(m_state, lua_file.string().c_str()) == LUA_OK) {
                 int res = lua_pcall(m_state, 0, 0, 0);
                 if(res != LUA_OK) {
