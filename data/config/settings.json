@@ -1,3 +1,7 @@
 {
-    "gamepad": "xbox_360_windows"
+    "gamepad": "xbox_360_windows",
+    "preload_map_textures": {
+        "enable": false,
+        "min_map_size": 384
+    }
 }
