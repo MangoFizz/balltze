@@ -163,6 +163,11 @@ namespace Balltze {
             throw std::runtime_error("Failed to get device from texture!");
         }
 
+        Engine::Rectangle2DF default_source_rect = { 0.0f, 0.0f, 1.0f, 1.0f };
+        if(!source_rect) {
+            source_rect = &default_source_rect;
+        }
+
         D3DMatrix translation_matrix;
         if(position) {
             CreateTranslationMatrix(translation_matrix, position->x, position->y, 0.0f);

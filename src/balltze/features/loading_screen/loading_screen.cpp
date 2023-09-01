@@ -13,6 +13,7 @@
 #include <balltze/hook.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/event.hpp>
+#include <balltze/engine/renderer.hpp>
 #include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
 #include "../../config/config.hpp"
@@ -155,20 +156,19 @@ namespace Balltze::Features {
         device = nullptr;
     }
 
-    static std::string map_to_load;
     static std::atomic<bool> map_load_thread_done = false;
 
-    static void update_map_name(Event::MapLoadEvent &event) {
-        if(event.time == Event::EVENT_TIME_BEFORE) {
-            auto map_name = event.args.name;
-            map_to_load = map_name == "ui" ? "levels\\ui\\ui" : map_name; // not sure why ui is a special case 
-        }
+    static void draw_loading_screen() {
+        static auto loading_screen_render_function_sig = Memory::get_signature("loading_screen_render_function");
+        static auto draw_func = reinterpret_cast<void(*)()>(loading_screen_render_function_sig->data());
+        draw_func();
     }
 
     extern "C" {
         void *load_map_function_address = nullptr;
         std::uint32_t load_map_function_result = false;
-        void load_map_override_asm(const char *);
+        void load_map_worker_asm(const char *);
+        void load_map_override_asm();
         void set_video_mode_asm();
         void *set_video_mode_return = nullptr;
 
@@ -179,55 +179,49 @@ namespace Balltze::Features {
             }
             map_load_thread_done = true;
         }
-    }
+    
+        std::uint32_t load_map_override(const char *map_to_load) {
+            // Load map in a separate thread so we can render the loading screen
+            std::thread map_load_thread(load_map_worker_asm, map_to_load);
 
-    static void draw_loading_screen() {
-        static auto loading_screen_render_function_sig = Memory::get_signature("loading_screen_render_function");
-        static auto draw_func = reinterpret_cast<void(*)()>(loading_screen_render_function_sig->data());
-        draw_func();
-    }
+            if(loading_screen_playback) {
+                map_load_thread.detach();
 
-    static std::uint32_t load_map_override() {
-        // Load map in a separate thread so we can render the loading screen
-        std::thread map_load_thread(load_map_override_asm, map_to_load.c_str());
-
-        if(loading_screen_playback) {
-            map_load_thread.detach();
-
-            // Continue rendering loading screen until map_load_thread is done
-            while(!map_load_thread_done) {
-                MSG message;
-                if(PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
-                    // Forward window messages so Windows doesn't think the game is frozen 
-                    TranslateMessage(&message);
-                    DispatchMessageA(&message);
-                }
-                else {
-                    auto hr = device->TestCooperativeLevel();
-                    if(hr == D3D_OK) {
-                        device->BeginScene();
-                        draw_loading_screen();
-                        device->EndScene();
-                        device->Present(NULL, NULL, NULL, NULL);
+                // Continue rendering loading screen until map_load_thread is done
+                while(!map_load_thread_done) {
+                    MSG message;
+                    if(PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
+                        // Forward window messages so Windows doesn't think the game is frozen 
+                        TranslateMessage(&message);
+                        DispatchMessageA(&message);
                     }
-                    else if(hr == D3DERR_DEVICENOTRESET) {
-                        texture->Release();
-                        texture = nullptr;
-                        pixel_shader->Release();
-                        pixel_shader = nullptr;
-                        device = nullptr;
+                    else {
+                        auto hr = device->TestCooperativeLevel();
+                        if(hr == D3D_OK) {
+                            device->BeginScene();
+                            draw_loading_screen();
+                            device->EndScene();
+                            device->Present(NULL, NULL, NULL, NULL);
+                        }
+                        else if(hr == D3DERR_DEVICENOTRESET) {
+                            texture->Release();
+                            texture = nullptr;
+                            pixel_shader->Release();
+                            pixel_shader = nullptr;
+                            device = nullptr;
+                        }
                     }
                 }
             }
-        }
-        else {
-            map_load_thread.join();
-        }
+            else {
+                map_load_thread.join();
+            }
 
-        // Reset thread exit flag
-        map_load_thread_done = false;
+            // Reset thread exit flag
+            map_load_thread_done = false;
 
-        return load_map_function_result;
+            return load_map_function_result;
+        }
     }
 
     std::uint32_t *game_loading_screen_flag = nullptr;
@@ -253,7 +247,6 @@ namespace Balltze::Features {
     void set_up_loading_screen() {
         Event::D3D9EndSceneEvent::subscribe(update_d3d9_device, Event::EVENT_PRIORITY_HIGHEST);
         Event::D3D9DeviceResetEvent::subscribe(on_device_reset, Event::EVENT_PRIORITY_HIGHEST);
-        Event::MapLoadEvent::subscribe(update_map_name);
 
         auto set_video_mode_sig = Memory::get_signature("set_video_mode");
         if(!set_video_mode_sig) {
@@ -275,8 +268,7 @@ namespace Balltze::Features {
                 return;
             }
             game_loading_screen_flag = *reinterpret_cast<std::uint32_t **>(loading_screen_render_function_sig->data() + 1);
-            std::function<void()> load_map_hook_callback = reinterpret_cast<void(*)()>(load_map_override);
-            Memory::override_function(load_map_function_sig->data(), load_map_hook_callback, load_map_function_address);
+            Memory::override_function(load_map_function_sig->data(), load_map_override_asm, load_map_function_address);
             Memory::hook_function(loading_screen_handler_sig->data(), loading_screen_hook);
             Memory::hook_function(loading_screen_render_function_call_sig->data(), std::function<bool()>(reinterpret_cast<bool (*)()>(loading_screen_render_hook)));
 

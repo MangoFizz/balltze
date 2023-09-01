@@ -10,6 +10,7 @@ namespace Balltze::Features {
     void set_up_sound_subtitles() noexcept;
     void set_up_loading_screen() noexcept;
     void set_up_map_data_read_warden() noexcept;
+    void set_up_map_textures_preloading() noexcept;
 
     inline void set_up_features() {
         try {
@@ -21,6 +22,7 @@ namespace Balltze::Features {
             set_up_sound_subtitles();
             set_up_tag_data_importing();
             set_up_loading_screen();
+            set_up_map_textures_preloading();
 #endif
         }
         catch(...) {

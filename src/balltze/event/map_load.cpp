@@ -6,26 +6,20 @@
 #include "../logger.hpp"
 
 namespace Balltze::Event {
-    static std::string last_map_name;
-
     extern "C" {
         void map_load_before_event();
         void map_load_after_event();
 
         void dispatch_map_load_event_before(const char *map_name) {
-            last_map_name = map_name;
-            if(last_map_name == "levels\\ui\\ui") {
-                last_map_name = "ui";
-            }
             MapLoadEventArgs args;
-            args.name = last_map_name;
+            args.name = map_name;
             MapLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
 
-        void dispatch_map_load_event_after() {
+        void dispatch_map_load_event_after(const char *map_name) {
             MapLoadEventArgs args;
-            args.name = last_map_name;
+            args.name = map_name;
             MapLoadEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -65,15 +59,16 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        auto *load_map_function_multiplayer_callload_map_path_sig = Memory::get_signature("load_map_function_multiplayer_call");
-        auto *load_map_function_singleplayer_call_sig = Memory::get_signature("load_map_function_singleplayer_call");
-        if(!load_map_function_multiplayer_callload_map_path_sig || !load_map_function_singleplayer_call_sig) {
-            logger.error("Failed to find map load event signatures");
-            return;
-        }
+        // This is dispatched by the loading screen thread
+        // auto *load_map_function_multiplayer_callload_map_path_sig = Memory::get_signature("load_map_function_multiplayer_call");
+        // auto *load_map_function_singleplayer_call_sig = Memory::get_signature("load_map_function_singleplayer_call");
+        // if(!load_map_function_multiplayer_callload_map_path_sig || !load_map_function_singleplayer_call_sig) {
+        //     logger.error("Failed to find map load event signatures");
+        //     return;
+        // }
 
-        Memory::hook_function(load_map_function_multiplayer_callload_map_path_sig->data(), map_load_before_event, map_load_after_event);
-        Memory::hook_function(load_map_function_singleplayer_call_sig->data(), map_load_before_event, map_load_after_event);
+        // Memory::hook_function(load_map_function_multiplayer_callload_map_path_sig->data(), map_load_before_event, map_load_after_event);
+        // Memory::hook_function(load_map_function_singleplayer_call_sig->data(), map_load_before_event, map_load_after_event);
 
         // Register debug command
         register_command("debug_map_load_event", "debug", "Debug map load event", "[enable]", debug_map_load_event, true, 0, 1);

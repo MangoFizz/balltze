@@ -87,6 +87,7 @@ add_library(balltze SHARED
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.S
     src/balltze/features/map_data_read_warden.cpp
+    src/balltze/features/map_textures_preloading.cpp
     src/balltze/helpers/d3d9.cpp
     src/balltze/helpers/resources.cpp
     src/balltze/helpers/sprite_shader.rc
