@@ -50,8 +50,10 @@ namespace Balltze::Features {
         }
     }
 
+    Event::EventListenerHandle<Event::TickEvent> map_textures_preloading_listener;
+
     void set_up_map_textures_preloading() noexcept {
-        Event::TickEvent::subscribe([](Event::TickEvent &event) {
+        map_textures_preloading_listener = Event::TickEvent::subscribe([](Event::TickEvent &event) {
             auto &config = Config::get_config();
             auto enable = config.get<bool>("preload_map_textures.enable").value_or(false);
             if(enable) {
@@ -59,6 +61,7 @@ namespace Balltze::Features {
                 Event::MapLoadEvent::subscribe(on_map_load, Event::EVENT_PRIORITY_LOWEST);
                 Event::MapFileLoadEvent::subscribe(on_map_file_load, Event::EVENT_PRIORITY_LOWEST);
             }
+            map_textures_preloading_listener.remove();
         });
     }
 }
