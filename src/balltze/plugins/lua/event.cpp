@@ -733,6 +733,94 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_event_map_load_remove_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1) {
+                remove_event_listener(state, "map_load", 1);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.map_load.remove_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_map_load_add_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 2) {
+                auto priority_str = luaL_checkstring(state, 2);
+                try {
+                    auto priority = Event::event_priority_from_string(priority_str);
+                    return add_event_listener(state, "map_load", 1, priority, lua_event_map_load_remove_listener);
+                }
+                catch(const std::invalid_argument &e) {
+                    return luaL_error(state, "Invalid priority argument in function events.map_load.add_listener: %s.", priority_str);
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.map_load.add_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_map_load_remove_all_listeners(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 0) {
+                remove_all_event_listeners(state, "map_load");
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.map_load.remove_all_listeners.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static void populate_map_load_events(Event::MapLoadEvent &context, Event::EventPriority priority) noexcept {
+        auto plugins = get_lua_plugins();
+        
+        for(auto *&plugin : plugins) {
+            auto *state = plugin->state();
+            create_event_data_table(state, context);
+
+            // Set arguments table
+            lua_newtable(state);
+            lua_pushstring(state, context.args.name.c_str());
+            lua_setfield(state, -2, "map_name");
+            lua_setfield(state, -2, "args");
+
+            call_events_by_priority(state, "map_load", priority, -1);
+
+            lua_pop(state, 1);
+        }
+    }
+
     void lua_set_event_table(lua_State *state) noexcept {
         set_up_events_registry_table(state);
 
@@ -744,6 +832,7 @@ namespace Balltze::Plugins {
         set_up_event_table(state, "server_connect", lua_event_server_connect_add_listener, lua_event_server_connect_remove_listener, lua_event_server_connect_remove_all_listeners);
         set_up_event_table(state, "camera", lua_event_camera_add_listener, lua_event_camera_remove_listener, lua_event_camera_remove_all_listeners);
         set_up_event_table(state, "game_input", lua_event_game_input_add_listener, lua_event_game_input_remove_listener, lua_event_game_input_remove_all_listeners);
+        set_up_event_table(state, "map_load", lua_event_map_load_add_listener, lua_event_map_load_remove_listener, lua_event_map_load_remove_all_listeners);
         lua_setfield(state, -2, "event");
 
         // Set up tick event
@@ -846,6 +935,23 @@ namespace Balltze::Plugins {
 
         static auto game_input_event_lowest = Event::GameInputEvent::subscribe([](Event::GameInputEvent &context) {
             populate_game_input_events(context, Event::EVENT_PRIORITY_LOWEST);
+        }, Event::EVENT_PRIORITY_LOWEST);
+
+        // Set up map load event
+        static auto map_load_event_highest = Event::MapLoadEvent::subscribe([](Event::MapLoadEvent &context) {
+            populate_map_load_events(context, Event::EVENT_PRIORITY_HIGHEST);
+        }, Event::EVENT_PRIORITY_HIGHEST);
+
+        static auto map_load_event_above_default = Event::MapLoadEvent::subscribe([](Event::MapLoadEvent &context) {
+            populate_map_load_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+        }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+
+        static auto map_load_event_default = Event::MapLoadEvent::subscribe([](Event::MapLoadEvent &context) {
+            populate_map_load_events(context, Event::EVENT_PRIORITY_DEFAULT);
+        }, Event::EVENT_PRIORITY_DEFAULT);
+
+        static auto map_load_event_lowest = Event::MapLoadEvent::subscribe([](Event::MapLoadEvent &context) {
+            populate_map_load_events(context, Event::EVENT_PRIORITY_LOWEST);
         }, Event::EVENT_PRIORITY_LOWEST);
     }
 }

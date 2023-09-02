@@ -258,27 +258,23 @@ namespace Balltze::Features {
         Memory::override_function(set_video_mode_address, set_video_mode_asm, set_video_mode_return);
         set_video_mode_return = set_video_mode_sig->data() + 5;
 
-        tick_event_listener_handle = Event::TickEvent::subscribe([](Event::TickEvent &) {
-            auto load_map_function_sig = Memory::get_signature("load_map_function");
-            auto loading_screen_handler_sig = Memory::get_signature("loading_screen_handler");
-            auto loading_screen_render_function_sig = Memory::get_signature("loading_screen_render_function");
-            auto loading_screen_render_function_call_sig = Memory::get_signature("loading_screen_background_render_call");
-            if(!load_map_function_sig || !loading_screen_handler_sig || !loading_screen_render_function_sig || !loading_screen_render_function_call_sig) {
-                logger.error("Failed to find signatures for loading screen.");
-                return;
-            }
-            game_loading_screen_flag = *reinterpret_cast<std::uint32_t **>(loading_screen_render_function_sig->data() + 1);
-            Memory::override_function(load_map_function_sig->data(), load_map_override_asm, load_map_function_address);
-            Memory::hook_function(loading_screen_handler_sig->data(), loading_screen_hook);
-            Memory::hook_function(loading_screen_render_function_call_sig->data(), std::function<bool()>(reinterpret_cast<bool (*)()>(loading_screen_render_hook)));
+        auto load_map_function_sig = Memory::get_signature("load_map_function");
+        auto loading_screen_handler_sig = Memory::get_signature("loading_screen_handler");
+        auto loading_screen_render_function_sig = Memory::get_signature("loading_screen_render_function");
+        auto loading_screen_render_function_call_sig = Memory::get_signature("loading_screen_background_render_call");
+        if(!load_map_function_sig || !loading_screen_handler_sig || !loading_screen_render_function_sig || !loading_screen_render_function_call_sig) {
+            logger.error("Failed to find signatures for loading screen.");
+            return;
+        }
+        game_loading_screen_flag = *reinterpret_cast<std::uint32_t **>(loading_screen_render_function_sig->data() + 1);
+        Memory::override_function(load_map_function_sig->data(), load_map_override_asm, load_map_function_address);
+        Memory::hook_function(loading_screen_handler_sig->data(), loading_screen_hook);
+        Memory::hook_function(loading_screen_render_function_call_sig->data(), std::function<bool()>(reinterpret_cast<bool (*)()>(loading_screen_render_hook)));
 
-            register_command("test_loading_screen", "debug", "Plays a random loading screen", std::nullopt, [](int arg_count, const char **args) -> bool {
-                loading_screen_demo = true;
-                play_loading_screen_background();
-                return true;
-            }, false, 0, 0);
-
-            tick_event_listener_handle.remove();
-        });
+        register_command("test_loading_screen", "debug", "Plays a random loading screen", std::nullopt, [](int arg_count, const char **args) -> bool {
+            loading_screen_demo = true;
+            play_loading_screen_background();
+            return true;
+        }, false, 0, 0);
     }
 }
