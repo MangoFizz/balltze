@@ -134,6 +134,7 @@ namespace Balltze::Features {
             std::fclose(file);
         }
 
+    public:
         void read_tag_data_from_file() {
             logger.info("Reading tag data for map {}", m_name);
             
@@ -148,7 +149,6 @@ namespace Balltze::Features {
             m_tag_array = reinterpret_cast<Tag *>(m_raw_tag_data.get() + sizeof(TagDataHeader));
         }
 
-    public:
         MapCache(std::string map_name) : m_name(map_name) {
             try {
                 m_path = path_for_map_local(m_name.c_str());
@@ -566,7 +566,6 @@ namespace Balltze::Features {
         // Initialize our stuff
         secondary_maps_cache = preloaded_secondary_maps_cache;
         map_cache = std::move(preloaded_map_cache);
-        map_cache->read_tag_data_from_buffer(tag_data_address);
         virtual_tag_data = std::make_unique<VirtualTagData>();
         virtual_tag_data->insert_tags_entries_front(tag_data_header.tag_array, tag_data_header.tag_count);
         
@@ -612,6 +611,23 @@ namespace Balltze::Features {
         auto file_name = file_path.filename();
 
         if(event.time == Event::EVENT_TIME_BEFORE) {
+            if(output == get_tag_data_address()) {
+                // Check if we're reading from the next map
+                if(file_name.stem().string() != preloaded_map_cache->name()) {
+                    logger.warning("Reading tag data from map {} instead of {}", file_name.stem().string(), preloaded_map_cache->name());
+                    preloaded_map_cache->name(file_name.stem().string());
+                }
+
+                // Read tag data from the next map
+                preloaded_map_cache->read_tag_data_from_file();
+                std::memcpy(output, preloaded_map_cache->tag_data(), size);
+                event.args.size = 0;
+
+                logger.info("Loading tag data from secondary maps...");
+                load_tag_data();
+                return;
+            }
+
             if(!map_cache || file_name.stem().string() != map_cache->name()) {
                 return;
             }
@@ -648,18 +664,6 @@ namespace Balltze::Features {
                     
                     buffer_cursor += map_tag_data_header.model_data_size;
                 }
-            }
-        }
-        else {
-            if(event.args.output_buffer == get_tag_data_address()) {
-                // Check if we're reading from the next map
-                if(file_name.stem().string() != preloaded_map_cache->name()) {
-                    logger.warning("Reading tag data from map {} instead of {}", file_name.stem().string(), preloaded_map_cache->name());
-                    preloaded_map_cache->name(file_name.stem().string());
-                }
-
-                logger.info("Loading tag data from secondary maps...");
-                load_tag_data();
             }
         }
     }
