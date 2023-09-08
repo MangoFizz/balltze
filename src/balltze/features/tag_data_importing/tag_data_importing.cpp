@@ -355,6 +355,20 @@ namespace Balltze::Features {
                 return TagHandle::null();
             }
 
+            auto tag_handle_resolver = [this](TagHandle tag_handle) -> TagHandle {
+                auto *broken_tag = this->get_raw_tag(tag_handle);
+                if(broken_tag) {
+                    auto new_tag_handle = this->load_tag(broken_tag, true);
+                    return new_tag_handle;
+                }
+                else {
+                    if(tag_handle != TagHandle::null()) {
+                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, m_name);
+                    }
+                    return tag_handle;
+                }
+            };
+
             auto data_base_offset = get_data_base_offset();
             auto model_data_base_offset = get_model_data_base_offset();
 
@@ -376,6 +390,11 @@ namespace Balltze::Features {
 
             // if current tag are indexed or if tags are already fixed, we can continue
             if(tag->indexed) {
+                if(tag->primary_class == TAG_CLASS_SOUND) {
+                    auto *sound_base_struct = reinterpret_cast<Sound *>(new_tag_entry.data);
+                    sound_base_struct->promotion_sound.tag_handle = tag_handle_resolver(sound_base_struct->promotion_sound.tag_handle);
+                }
+
                 return new_tag_entry.handle;
             }
 
@@ -388,19 +407,7 @@ namespace Balltze::Features {
                 return new_tag_entry.indexed ? offset : offset + data_base_offset;
             });
 
-            new_tag_entry.resolve_dependencies([this](TagHandle tag_handle) -> TagHandle {
-                auto *broken_tag = this->get_raw_tag(tag_handle);
-                if(broken_tag) {
-                    auto new_tag_handle = this->load_tag(broken_tag, true);
-                    return new_tag_handle;
-                }
-                else {
-                    if(tag_handle != TagHandle::null()) {
-                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, m_name);
-                    }
-                    return tag_handle;
-                }
-            });
+            new_tag_entry.resolve_dependencies(tag_handle_resolver);
 
             switch(new_tag_entry.primary_class) {
                 case TAG_CLASS_BITMAP: {
