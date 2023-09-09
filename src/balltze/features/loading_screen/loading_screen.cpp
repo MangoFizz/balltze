@@ -184,7 +184,11 @@ namespace Balltze::Features {
             // Load map in a separate thread so we can render the loading screen
             std::thread map_load_thread(load_map_worker_asm, map_to_load);
 
-            if(loading_screen_playback) {
+            if(std::strcmp(map_to_load, "levels\\ui\\ui") != 0) {
+                if(!loading_screen_playback) {
+                    play_loading_screen_background();
+                }
+
                 map_load_thread.detach();
 
                 // Continue rendering loading screen until map_load_thread is done
