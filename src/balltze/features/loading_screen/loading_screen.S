@@ -18,9 +18,7 @@ _load_map_worker_asm:
     call dword ptr [_load_map_function_address]
 
     ;# Dispatch callbacks after loading map
-    push [esp + 0x4]
     call _dispatch_map_load_event_after
-    add esp, 0x4
 
     ;# Set map load thread done flag
     mov _load_map_function_result, eax

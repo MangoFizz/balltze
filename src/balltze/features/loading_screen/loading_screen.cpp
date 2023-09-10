@@ -283,6 +283,26 @@ namespace Balltze::Features {
     }
 
     void set_up_loading_screen() {
+        register_command("enable_loading_screen", "features", "Set whether to enable loading screen at startup", "<boolean>", [](int arg_count, const char **args) -> bool {
+            auto &config = Config::get_config();
+            logger.mute_ingame(false);
+            if(arg_count == 1) {
+                bool enable = STR_TO_BOOL(args[0]);
+                config.set("loading_screen.enable", enable);
+                config.save();
+                logger.warning("You must restart the game for this change to take effect.");
+            }
+            auto enable = config.get<bool>("loading_screen.enable");
+            logger.info("Loading screen is {}", enable.value_or(true) ? "enabled" : "disabled");
+            logger.mute_ingame(true);
+            return true;
+        }, false, 0, 1);
+
+        auto enable = Config::get_config().get<bool>("loading_screen.enable");
+        if(!enable.value_or(true)) {
+            return;
+        }
+
         Event::D3D9EndSceneEvent::subscribe(update_d3d9_device, Event::EVENT_PRIORITY_HIGHEST);
         Event::D3D9DeviceResetEvent::subscribe(on_device_reset, Event::EVENT_PRIORITY_HIGHEST);
 

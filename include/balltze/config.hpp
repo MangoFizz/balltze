@@ -132,6 +132,28 @@ namespace Balltze::Config {
          * Set value in config
          * @param key Key to set value for
          * @param value Value to set
+         * @tparam T Type of value
+         */
+        template<typename T>
+        void set(std::string key, T value) {
+            auto keys = split_key(key);
+            nlohmann::json *slice = &config;
+            for(std::string key : keys) {
+                if(slice->contains(key)) {
+                    slice = &(*slice)[key];
+                }
+                else {
+                    (*slice)[key] = nlohmann::json::object();
+                    slice = &(*slice)[key];
+                }
+            }
+            *slice = value;
+        }
+
+        /**
+         * Set value in config
+         * @param key Key to set value for
+         * @param value Value to set
          */
         void set(std::string key, std::string value);
 
