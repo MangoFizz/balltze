@@ -67,7 +67,7 @@ namespace Balltze::Event {
         return true;
     }
 
-    template <>
+    template<>
     void EventHandler<SoundPlaybackEvent>::init() {
         static bool enabled = false;
         if(enabled) {

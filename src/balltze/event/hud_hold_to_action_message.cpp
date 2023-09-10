@@ -74,7 +74,7 @@ namespace Balltze::Event {
         }
     }
 
-    template <>
+    template<>
     void EventHandler<HudHoldForActionMessageEvent>::init() {
         static bool enabled = false;
         if(enabled) {

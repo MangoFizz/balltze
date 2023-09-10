@@ -58,7 +58,7 @@ namespace Balltze::Event {
         return true;
     }
 
-    template <>
+    template<>
     void EventHandler<MapFileDataReadEvent>::init() {
         static bool enabled = false;
         if(enabled) {

@@ -65,7 +65,7 @@ namespace Balltze::Event {
         return true;
     }
 
-    template <>
+    template<>
     void EventHandler<TickEvent>::init() {
         static bool enabled = false;
         if(enabled) {

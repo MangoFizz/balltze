@@ -24,7 +24,7 @@ namespace Balltze::Event {
         }
     }
 
-    template <>
+    template<>
     void EventHandler<D3D9DeviceResetEvent>::init() {
         static bool enabled = false;
         if(enabled) {

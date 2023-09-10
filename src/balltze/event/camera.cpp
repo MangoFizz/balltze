@@ -49,7 +49,7 @@ namespace Balltze::Event {
         return true;
     }
 
-    template <>
+    template<>
     void EventHandler<CameraEvent>::init() {
         static bool enabled = false;
         if(enabled) {

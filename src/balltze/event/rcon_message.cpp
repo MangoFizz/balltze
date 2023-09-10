@@ -46,7 +46,7 @@ namespace Balltze::Event {
         return true;
     }
 
-    template <>
+    template<>
     void EventHandler<RconMessageEvent>::init() {
         static bool enabled = false;
         if(enabled) {

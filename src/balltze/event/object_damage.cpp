@@ -52,7 +52,7 @@ namespace Balltze::Event {
         return true;
     }
 
-    template <>
+    template<>
     void EventHandler<ObjectDamageEvent>::init() {
         static bool enabled = false;
         if(enabled) {

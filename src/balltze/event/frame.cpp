@@ -14,7 +14,7 @@ namespace Balltze::Event {
         frame_event.dispatch();
     }
 
-    template <>
+    template<>
     void EventHandler<FrameEvent>::init() {
         static bool enabled = false;
         if(enabled) {

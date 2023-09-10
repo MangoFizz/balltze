@@ -25,7 +25,7 @@ namespace Balltze::Event {
         }
     }
 
-    template <>
+    template<>
     void EventHandler<ConsoleCommandEvent>::init() {
         static bool enabled = false;
         if(enabled) {

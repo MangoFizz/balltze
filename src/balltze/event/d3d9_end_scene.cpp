@@ -25,7 +25,7 @@ namespace Balltze::Event {
         }
     }
 
-    template <>
+    template<>
     void EventHandler<D3D9EndSceneEvent>::init() {
         static bool enabled = false;
         if(enabled) {

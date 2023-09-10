@@ -66,7 +66,7 @@ namespace Balltze::Event {
         return true;
     }
 
-    template <>
+    template<>
     void EventHandler<ServerConnectEvent>::init() {
         static bool enabled = false;
         if(enabled) {
