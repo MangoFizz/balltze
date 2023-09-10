@@ -17,6 +17,8 @@
 #include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
 #include "../../config/config.hpp"
+#include "../../config/chimera_preferences.hpp"
+#include "../../event/console_command.hpp"
 #include "../../output/video.hpp"
 #include "../../logger.hpp"
 #include "../../resources.hpp"
@@ -40,6 +42,8 @@ namespace Balltze::Features {
     static std::atomic<bool> waiting_for_loading_screen_end = false;
     static std::binary_semaphore wait_for_background_end_semaphore{0};
 
+    static bool loading_screen_is_blocked = false;
+
     static HRESULT load_loading_screen_background_texture(IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
         return load_texture_from_resource(MAKEINTRESOURCEW(ID_LOADING_SCREEN_BACKGROUND), get_current_module(), device, texture);
     }
@@ -59,12 +63,18 @@ namespace Balltze::Features {
     }
 
     static void end_loading_screen_background() {
+        if(!loading_screen_playback) {
+            return;
+        }
         loading_screen_playback = false;
         loading_screen_demo = false;
         loading_screen_start_time = std::nullopt;
     }
 
     static void play_loading_screen_background() {
+        if(loading_screen_is_blocked) {
+            return;
+        }
         alpha_channel = 255;
         waiting_for_loading_screen_end = false;
         loading_screen_playback = true;
@@ -164,6 +174,13 @@ namespace Balltze::Features {
         draw_func();
     }
 
+    static void wait_for_background_end() {
+        if(loading_screen_playback) {
+            waiting_for_loading_screen_end = true;
+            wait_for_background_end_semaphore.acquire();
+        }
+    }
+
     extern "C" {
         void *load_map_function_address = nullptr;
         std::uint32_t load_map_function_result = false;
@@ -173,10 +190,7 @@ namespace Balltze::Features {
         void *set_video_mode_return = nullptr;
 
         void set_map_load_thread_done_flag() {
-            if(loading_screen_playback) {
-                waiting_for_loading_screen_end = true;
-                wait_for_background_end_semaphore.acquire();
-            }
+            wait_for_background_end();
             map_load_thread_done = true;
         }
     
@@ -184,7 +198,7 @@ namespace Balltze::Features {
             // Load map in a separate thread so we can render the loading screen
             std::thread map_load_thread(load_map_worker_asm, map_to_load);
 
-            if(std::strcmp(map_to_load, "levels\\ui\\ui") != 0) {
+            if(device && std::strcmp(map_to_load, "levels\\ui\\ui") != 0) {
                 if(!loading_screen_playback) {
                     play_loading_screen_background();
                 }
@@ -199,7 +213,7 @@ namespace Balltze::Features {
                         TranslateMessage(&message);
                         DispatchMessageA(&message);
                     }
-                    else {
+                    else if(!loading_screen_is_blocked) {
                         auto hr = device->TestCooperativeLevel();
                         if(hr == D3D_OK) {
                             device->BeginScene();
@@ -246,7 +260,27 @@ namespace Balltze::Features {
         return true;
     }
 
-    static Event::EventListenerHandle<Event::TickEvent> tick_event_listener_handle;
+    static void chimera_block_loading_screen_listener(Event::ConsoleCommandEvent const &event) {
+        if(event.time == Event::EVENT_TIME_BEFORE) {
+            return;
+        }
+
+        auto args = split_arguments(event.args.command);
+        auto command = args[0];
+        args.erase(args.begin());
+
+        if(command == "chimera_block_loading_screen") {
+            if(!args.empty()) {
+                loading_screen_is_blocked = STR_TO_BOOL(args.front().c_str());
+                logger.debug("chimera_block_loading_screen is now set to {}", loading_screen_is_blocked ? "true" : "false");
+                if(loading_screen_is_blocked) {
+                    logger.mute_ingame(false);
+                    logger.warning("Loading screen is now disabled.");
+                    logger.mute_ingame(true);
+                }
+            }
+        }
+    }
 
     void set_up_loading_screen() {
         Event::D3D9EndSceneEvent::subscribe(update_d3d9_device, Event::EVENT_PRIORITY_HIGHEST);
@@ -274,6 +308,13 @@ namespace Balltze::Features {
         Memory::override_function(load_map_function_sig->data(), load_map_override_asm, load_map_function_address);
         Memory::hook_function(loading_screen_handler_sig->data(), loading_screen_hook);
         Memory::hook_function(loading_screen_render_function_call_sig->data(), std::function<bool()>(reinterpret_cast<bool (*)()>(loading_screen_render_hook)));
+
+        auto &preferences = Config::get_chimera_preferences();
+        auto settings = preferences.get_settings_for_command("chimera_block_loading_screen");
+        if(settings && !settings->empty()) {
+            loading_screen_is_blocked = STR_TO_BOOL(settings->front().c_str());
+        }
+        Event::ConsoleCommandEvent::subscribe_const(chimera_block_loading_screen_listener);
 
         register_command("test_loading_screen", "debug", "Plays a random loading screen", std::nullopt, [](int arg_count, const char **args) -> bool {
             loading_screen_demo = true;
