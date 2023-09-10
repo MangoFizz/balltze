@@ -72,9 +72,6 @@ namespace Balltze::Features {
     }
 
     static void play_loading_screen_background() {
-        if(loading_screen_is_blocked) {
-            return;
-        }
         alpha_channel = 255;
         waiting_for_loading_screen_end = false;
         loading_screen_playback = true;
@@ -213,7 +210,7 @@ namespace Balltze::Features {
                         TranslateMessage(&message);
                         DispatchMessageA(&message);
                     }
-                    else if(!loading_screen_is_blocked) {
+                    else {
                         auto hr = device->TestCooperativeLevel();
                         if(hr == D3D_OK) {
                             device->BeginScene();
@@ -249,7 +246,7 @@ namespace Balltze::Features {
         if(!loading_screen_playback && are_we_in_loading_screen) {
             play_loading_screen_background();
         }
-        else if(!loading_screen_demo && loading_screen_playback && !are_we_in_loading_screen) {
+        else if(!loading_screen_demo && loading_screen_playback && (!are_we_in_loading_screen || (loading_screen_is_blocked && *game_loading_screen_flag == 8))) {
             end_loading_screen_background();
         }
         draw_loading_screen_background();
@@ -273,11 +270,6 @@ namespace Balltze::Features {
             if(!args.empty()) {
                 loading_screen_is_blocked = STR_TO_BOOL(args.front().c_str());
                 logger.debug("chimera_block_loading_screen is now set to {}", loading_screen_is_blocked ? "true" : "false");
-                if(loading_screen_is_blocked) {
-                    logger.mute_ingame(false);
-                    logger.warning("Loading screen is now disabled.");
-                    logger.mute_ingame(true);
-                }
             }
         }
     }
