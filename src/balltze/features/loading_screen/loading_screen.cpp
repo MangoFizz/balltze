@@ -25,7 +25,7 @@ using namespace std::chrono_literals;
 
 namespace Balltze::Features {
     static constexpr auto loading_screen_fade_out_duration = 3000ms;
-    static constexpr auto loading_screen_shader_effect_duration = 5000ms;
+    static constexpr auto loading_screen_shader_effect_duration = 4000ms;
     static bool loading_screen_playback = false; 
     static bool loading_screen_demo = false;
     static std::optional<std::chrono::steady_clock::time_point> loading_screen_start_time;
@@ -105,8 +105,8 @@ namespace Balltze::Features {
 
         if(waiting_for_loading_screen_end) {
             auto duration = loading_screen_background_actual_duration();
-            auto time_left = duration - std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - *loading_screen_start_time) % duration;
-            if(time_left <= loading_screen_fade_out_duration) {
+            auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - *loading_screen_start_time);
+            if(duration - time_elapsed <= loading_screen_fade_out_duration) {
                 waiting_for_loading_screen_end = false;
                 wait_for_background_end_semaphore.release();
             }
