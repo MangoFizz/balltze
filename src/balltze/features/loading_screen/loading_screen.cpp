@@ -72,6 +72,9 @@ namespace Balltze::Features {
     }
 
     static void play_loading_screen_background() {
+        if(loading_screen_playback) {
+            return;
+        }
         alpha_channel = 255;
         waiting_for_loading_screen_end = false;
         loading_screen_playback = true;
@@ -229,6 +232,11 @@ namespace Balltze::Features {
                 }
             }
             else {
+                // End loading screen if it is playing... just in case
+                if(loading_screen_playback) {
+                    end_loading_screen_background();
+                }
+
                 map_load_thread.join();
             }
 
