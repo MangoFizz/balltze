@@ -3,6 +3,7 @@
 #include <map>
 #include <windows.h>
 #include <balltze/helpers/d3d9.hpp>
+#include <balltze/math.hpp>
 #include <balltze/helpers/resources.hpp>
 #include "../resources.hpp"
 #include "../logger.hpp"
@@ -153,7 +154,15 @@ namespace Balltze {
         m_is_sprite_drawn = false;
     }
 
-    bool Sprite::draw(const Engine::Rectangle2DF *source_rect, const Engine::Point2D *center, const Engine::Point2D *position, const Engine::Vector2D *scale, const Engine::ColorARGBInt *color) {
+    static Engine::Point2D rotate_point(const Engine::Point2D &point, const Engine::Point2D &center, float angle) {
+        Engine::Point2D rotated_point;
+        double rads = angle * PI / 180.0;
+        rotated_point.x = center.x + (point.x - center.x) * cos(rads) - (point.y - center.y) * sin(rads);
+        rotated_point.y = center.y + (point.x - center.x) * sin(rads) + (point.y - center.y) * cos(rads);
+        return rotated_point;
+    }
+
+    bool Sprite::draw(const Engine::Point2D *position, const Engine::Point2D *center, float angle, const Engine::Vector2D *scale, const Engine::ColorARGBInt *color) {
         if(!m_is_sprite_drawn) {
             throw std::logic_error("Call to Sprite::draw() without Sprite::begin()");
         }
@@ -163,52 +172,37 @@ namespace Balltze {
             throw std::runtime_error("Failed to get device from texture!");
         }
 
-        Engine::Rectangle2DF default_source_rect = { 0.0f, 0.0f, 1.0f, 1.0f };
-        if(!source_rect) {
-            source_rect = &default_source_rect;
-        }
-
-        D3DMatrix translation_matrix;
-        if(position) {
-            CreateTranslationMatrix(translation_matrix, position->x, position->y, 0.0f);
-        }
-        else {
-            CreateTranslationMatrix(translation_matrix, 0.0f, 0.0f, 0.0f);
-        }
-        
-        D3DMatrix scaling_matrix;
-        if(scale) {
-            CreateScalingMatrix(scaling_matrix, scale->i, scale->j, 1.0f);
-        }
-        else {
-            CreateScalingMatrix(scaling_matrix, 1.0f, 1.0f, 1.0f);
-        }
-        
-        D3DMatrix final_transform;
-        MultiplyMatrix(scaling_matrix, translation_matrix, final_transform);
-
         Engine::Rectangle2DF dest_rect;
         D3DSURFACE_DESC desc;
         m_texture->GetLevelDesc(0, &desc);
+
+        auto x = position->x;
+        auto y = position->y;
+        auto width = desc.Width * scale->i;
+        auto height = desc.Height * scale->j;
+
+        Engine::Point2D top_left = { x, y };
+        Engine::Point2D top_right = { x + width, y };
+        Engine::Point2D bottom_left = { x, y + height };
+        Engine::Point2D bottom_right = { x + width, y + height };
+
+        Engine::Point2D final_center = { x, y };
         if(center) {
-            dest_rect.left = -(center->x * desc.Width);
-            dest_rect.top = -(center->y * desc.Height);
-            dest_rect.right = dest_rect.left + desc.Width;
-            dest_rect.bottom = dest_rect.top + desc.Height;
-        }
-        else {
-            dest_rect.left = 0;
-            dest_rect.top = 0;
-            dest_rect.right = desc.Width;
-            dest_rect.bottom = desc.Height;
+            final_center = *center;
         }
 
-        // Create vertices for our sprite
+        if(angle) {
+            top_left = rotate_point(top_left, final_center, angle);
+            top_right = rotate_point(top_right, final_center, angle);
+            bottom_left = rotate_point(bottom_left, final_center, angle);
+            bottom_right = rotate_point(bottom_right, final_center, angle);
+        }
+
         Vertex vertices[4] = {
-            { dest_rect.left, dest_rect.top, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->left, source_rect->top },
-            { dest_rect.right, dest_rect.top, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->left, source_rect->bottom },
-            { dest_rect.left, dest_rect.bottom, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->right, source_rect->top },
-            { dest_rect.right, dest_rect.bottom, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), source_rect->right, source_rect->bottom }
+            { top_left.x, top_left.y, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), 0.0f, 0.0f },
+            { top_right.x, top_right.y, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 0.0f },
+            { bottom_left.x, bottom_left.y, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), 0.0f, 1.0f },
+            { bottom_right.x, bottom_right.y, 0.0f, 1.0f, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 1.0f }
         };
 
         IDirect3DPixelShader9 *current_pixel_shader = nullptr;
@@ -231,7 +225,6 @@ namespace Balltze {
 
         ASSERT_D3D_EX(device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1), "Failed to set FVF", return false);
         ASSERT_D3D_EX(device->SetTexture(0, m_texture), "Failed to set texture", return false);
-        ASSERT_D3D_EX(device->SetTransform(D3DTS_WORLD, reinterpret_cast<const D3DMATRIX*>(&final_transform)), "Failed to set transform", return false);
         ASSERT_D3D_EX(device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(Vertex)), "Failed to draw primitive", return false);
 
         return true;
@@ -364,10 +357,10 @@ namespace Balltze {
 
     void CreateTranslationMatrix(D3DMatrix& matrix, float x, float y, float z) {
         matrix = D3DMatrix{
-            x, 0.0f, 0.0f, 0.0f,
-            0.0f, y, 0.0f, 0.0f,
-            0.0f, 0.0f, z, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            x, y, z, 1.0f
         };
     }
 

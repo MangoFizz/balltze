@@ -39,7 +39,7 @@ namespace Balltze {
     public:
         void begin();
         void end();
-        bool draw(const Engine::Rectangle2DF *source_rect, const Engine::Point2D *center, const Engine::Point2D *position, const Engine::Vector2D *scale, const Engine::ColorARGBInt *color);
+        bool draw(const Engine::Point2D *position, const Engine::Point2D *center, float angle, const Engine::Vector2D *scale, const Engine::ColorARGBInt *color);
         bool draw(float pos_x, float pos_y, float width, float height);
         void update_texture(IDirect3DTexture9 *texture);
         Sprite(IDirect3DTexture9 *texture);
