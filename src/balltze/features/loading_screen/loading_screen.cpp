@@ -39,9 +39,6 @@ namespace Balltze::Features {
     static Sprite sprite;
     static std::uint8_t alpha_channel = 255;
 
-    static std::atomic<bool> waiting_for_loading_screen_end = false;
-    static std::binary_semaphore wait_for_background_end_semaphore{0};
-
     static bool loading_screen_is_blocked = false;
 
     static HRESULT load_loading_screen_background_texture(IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
@@ -76,7 +73,6 @@ namespace Balltze::Features {
             return;
         }
         alpha_channel = 255;
-        waiting_for_loading_screen_end = false;
         loading_screen_playback = true;
     }
 
@@ -112,15 +108,6 @@ namespace Balltze::Features {
         device->SetPixelShaderConstantF(3, &c_opacity, 1);
         sprite.draw(0, 0, desc.Width, desc.Height);
         sprite.end();
-
-        if(waiting_for_loading_screen_end) {
-            auto duration = loading_screen_background_actual_duration();
-            auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - *loading_screen_start_time);
-            if(duration - time_elapsed <= loading_screen_fade_out_duration) {
-                waiting_for_loading_screen_end = false;
-                wait_for_background_end_semaphore.release();
-            }
-        }
 
         if(loading_screen_demo) {
             auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - *loading_screen_start_time);
@@ -174,13 +161,6 @@ namespace Balltze::Features {
         draw_func();
     }
 
-    static void wait_for_background_end() {
-        if(loading_screen_playback) {
-            waiting_for_loading_screen_end = true;
-            wait_for_background_end_semaphore.acquire();
-        }
-    }
-
     extern "C" {
         void *load_map_function_address = nullptr;
         std::uint32_t load_map_function_result = false;
@@ -190,7 +170,6 @@ namespace Balltze::Features {
         void *set_video_mode_return = nullptr;
 
         void set_map_load_thread_done_flag() {
-            wait_for_background_end();
             map_load_thread_done = true;
         }
     
