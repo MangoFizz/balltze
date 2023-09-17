@@ -4,6 +4,7 @@
 #include <list>
 #include <stdexcept>
 #include <balltze/event.hpp>
+#include "d3d9_begin_scene.hpp"
 #include "console_command.hpp"
 
 namespace Balltze::Event {
@@ -94,6 +95,7 @@ namespace Balltze::Event {
     template class EventHandler<GameInputEvent>;
     template class EventHandler<MapFileLoadEvent>;
     template class EventHandler<SoundPlaybackEvent>;
+    template class EventHandler<D3D9BeginSceneEvent>;
     template class EventHandler<D3D9EndSceneEvent>;
     template class EventHandler<D3D9DeviceResetEvent>;
     template class EventHandler<FrameEvent>;
@@ -124,6 +126,7 @@ namespace Balltze::Event {
             EventHandler<MapLoadEvent>::init();
             
             first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
+                EventHandler<D3D9BeginSceneEvent>::init();
                 EventHandler<D3D9EndSceneEvent>::init();
                 EventHandler<D3D9DeviceResetEvent>::init();
                 first_tick_listener.remove();

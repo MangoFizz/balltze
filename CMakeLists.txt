@@ -57,6 +57,8 @@ add_library(balltze SHARED
     src/balltze/event/console_command.S
     src/balltze/event/d3d9_device_reset.cpp
     src/balltze/event/d3d9_device_reset.S
+    src/balltze/event/d3d9_begin_scene.cpp
+    src/balltze/event/d3d9_begin_scene.S
     src/balltze/event/d3d9_end_scene.cpp
     src/balltze/event/d3d9_end_scene.S
     src/balltze/event/event.cpp
