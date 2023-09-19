@@ -45,7 +45,7 @@ namespace Balltze::Event {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
                     logger.debug("Map file data read event ({}): file handle: {}, output buffer: {}, size: {}, overlapped: {}", time, reinterpret_cast<std::uint32_t>(arguments.file_handle), reinterpret_cast<std::uint32_t>(arguments.output_buffer), arguments.size, arguments.overlapped->Offset);
-                });
+                }, EVENT_PRIORITY_HIGHEST);
             }
             else {
                 if(handle) {

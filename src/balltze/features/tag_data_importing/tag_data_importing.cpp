@@ -23,6 +23,7 @@
 #include "map.hpp"
 
 namespace Balltze::Features {
+    namespace fs = std::filesystem;
     using namespace Engine;
     using namespace Engine::TagDefinitions;
 
@@ -30,9 +31,8 @@ namespace Balltze::Features {
     class MapCache;
     class SecondaryMapCache;
 
-    static std::filesystem::path map_path;
+    static fs::path map_file_path;
     static std::unique_ptr<MapCache> map_cache;
-    static std::unique_ptr<MapCache> preloaded_map_cache;
     static std::vector<std::shared_ptr<SecondaryMapCache>> secondary_maps_cache;
     static std::vector<std::shared_ptr<SecondaryMapCache>> preloaded_secondary_maps_cache;
     static std::unique_ptr<VirtualTagData> virtual_tag_data;
@@ -118,7 +118,7 @@ namespace Balltze::Features {
     class MapCache {
     protected:
         std::string m_name;
-        std::filesystem::path m_path;
+        fs::path m_path;
         MapHeader m_header;
         std::unique_ptr<std::byte[]> m_raw_tag_data;
         TagDataHeader *m_tag_data_header = nullptr;
@@ -126,18 +126,8 @@ namespace Balltze::Features {
         std::map<TagHandle, std::vector<TagHandle>> m_tags_copies;
         std::map<void *, void *> m_address_translations;
 
-        void read_header() {
-            logger.info("Reading header for map {}", m_name);
-
-            std::FILE *file = std::fopen(m_path.string().c_str(), "rb");
-            std::fread(&m_header, sizeof(MapHeader), 1, file);
-            std::fclose(file);
-        }
-
     public:
         void read_tag_data_from_file() {
-            logger.info("Reading tag data for map {}", m_name);
-            
             m_raw_tag_data = std::make_unique<std::byte[]>(m_header.tag_data_size);
 
             std::FILE *file = std::fopen(m_path.string().c_str(), "rb");
@@ -149,6 +139,24 @@ namespace Balltze::Features {
             m_tag_array = reinterpret_cast<Tag *>(m_raw_tag_data.get() + sizeof(TagDataHeader));
         }
 
+        void read_tag_data_from_buffer(std::byte *data) noexcept {
+            m_raw_tag_data = std::make_unique<std::byte[]>(m_header.tag_data_size);
+            std::memcpy(m_raw_tag_data.get(), data, m_header.tag_data_size);
+
+            m_tag_data_header = reinterpret_cast<TagDataHeader *>(m_raw_tag_data.get());
+            m_tag_array = reinterpret_cast<Tag *>(m_raw_tag_data.get() + sizeof(TagDataHeader));
+        }
+
+        void read_header_from_file() {
+            std::FILE *file = std::fopen(m_path.string().c_str(), "rb");
+            std::fread(&m_header, sizeof(MapHeader), 1, file);
+            std::fclose(file);
+        }
+
+        void read_header_from_current_map() noexcept {
+            m_header = get_map_header();
+        }
+
         MapCache(std::string map_name) : m_name(map_name) {
             try {
                 m_path = path_for_map_local(m_name.c_str());
@@ -156,15 +164,13 @@ namespace Balltze::Features {
             catch (std::runtime_error &e) {
                 throw;
             }
-            read_header();
         }
 
-        MapCache(std::filesystem::path map_path) : m_path(map_path) {
+        MapCache(fs::path map_path) : m_path(map_path) {
             m_name = m_path.stem().string();
-            if(!std::filesystem::exists(m_path)) {
+            if(!fs::exists(m_path)) {
                 throw std::runtime_error("Map file does not exist");
             }
-            read_header();
         }
 
         MapCache(MapCache &&other) {
@@ -180,8 +186,12 @@ namespace Balltze::Features {
             m_name = map_name;
         }
 
-        std::filesystem::path path() const noexcept {
+        fs::path path() const noexcept {
             return m_path;
+        }
+
+        void path(fs::path map_path) {
+            m_path = map_path;
         }
 
         MapHeader const &header() {
@@ -267,17 +277,6 @@ namespace Balltze::Features {
                 }
             }
             return nullptr;
-        }
-
-        /**
-         * Read the tag data from a buffer
-         */
-        void read_tag_data_from_buffer(std::byte *data) noexcept {
-            m_raw_tag_data = std::make_unique<std::byte[]>(m_header.tag_data_size);
-            std::memcpy(m_raw_tag_data.get(), data, m_header.tag_data_size);
-
-            m_tag_data_header = reinterpret_cast<TagDataHeader *>(m_raw_tag_data.get());
-            m_tag_array = reinterpret_cast<Tag *>(m_raw_tag_data.get() + sizeof(TagDataHeader));
         }
     };
 
@@ -453,6 +452,8 @@ namespace Balltze::Features {
 
     public:
         SecondaryMapCache(std::string map_name) : MapCache(map_name) {
+            read_header_from_file();
+
             if(m_header.engine_type == CACHE_FILE_CUSTOM_EDITION_COMPRESSED) {
                 throw std::runtime_error("Map file is compressed");
             } 
@@ -464,10 +465,12 @@ namespace Balltze::Features {
             read_tag_data_from_file();
         }
 
-        SecondaryMapCache(std::filesystem::path map_path) : MapCache(map_path) {
+        SecondaryMapCache(fs::path map_path) : MapCache(map_path) {
+            read_header_from_file();
+
             if(m_header.engine_type == CACHE_FILE_CUSTOM_EDITION_COMPRESSED) {
                 throw std::runtime_error("Map file is compressed");
-            } 
+            }
 
             if(m_header.engine_type != CACHE_FILE_CUSTOM_EDITION) {
                 throw std::runtime_error("Map file is not a Halo Custom Edition map");
@@ -566,39 +569,49 @@ namespace Balltze::Features {
         return true;
     }
 
-    static void load_tag_data() noexcept {
+    static void import_tag_data() {
         auto &tag_data_header = get_tag_data_header();
         auto *tag_data_address = get_tag_data_address();
 
+        // Reading main map data
+        logger.debug("Reading tag data from loaded map...");
+        map_cache = std::make_unique<MapCache>(map_file_path);
+        map_cache->read_header_from_file();
+        map_cache->read_tag_data_from_buffer(tag_data_address);
+
         // Initialize our stuff
+        logger.info("Initializing virtual tag data...");
         secondary_maps_cache = preloaded_secondary_maps_cache;
-        map_cache = std::move(preloaded_map_cache);
         virtual_tag_data = std::make_unique<VirtualTagData>();
         virtual_tag_data->insert_tags_entries_front(tag_data_header.tag_array, tag_data_header.tag_count);
         
-        logger.debug("Loading secondary maps data...");
+        logger.info("Importing tag data from other maps...");
         for(auto &map : secondary_maps_cache) {
             map->load_tag_data();
         }
         
+        logger.debug("Updating tag data header...");
         virtual_tag_data->update_tag_data_header();
     }
 
     void on_map_file_load(Event::MapFileLoadEvent const &event) {
-        map_path = event.args.map_path; 
+        // Get map file path
+        map_file_path = event.args.map_path; 
     }
 
     void prepare_to_load_map(Event::MapLoadEvent const &event) {
         if(event.time == Event::EVENT_TIME_BEFORE) {
-            logger.info("Clearing preloaded maps cache...");
+            logger.info("Preparing to load map {}", map_file_path.string());
             preloaded_secondary_maps_cache.clear();
-
-            logger.info("Preparing to load map {}", map_path.string());
-            preloaded_map_cache = std::make_unique<MapCache>(map_path);
-            if(preloaded_map_cache->header().head != MapHeader::HEAD_LITERAL || preloaded_map_cache->header().foot != MapHeader::FOOT_LITERAL) {
-                throw std::runtime_error("Map file is corrupted");
-            }
         }
+    }
+
+    static fs::path get_path_from_file_handle(HANDLE file_handle) {
+        // Get the name of the file we're reading from
+        char file_path_chars[MAX_PATH + 1] = {};
+        GetFinalPathNameByHandle(file_handle, file_path_chars, sizeof(file_path_chars) - 1, VOLUME_NAME_NONE);
+        auto file_path = fs::path(file_path_chars);
+        return file_path;
     }
 
     void on_read_map_file_data(Event::MapFileDataReadEvent &event) {      
@@ -611,30 +624,10 @@ namespace Balltze::Features {
         const std::size_t &size = event.args.size;
         std::size_t file_offset = event.args.overlapped->Offset;
 
-        // Get the name of the file we're reading from
-        char file_path_chars[MAX_PATH + 1] = {};
-        GetFinalPathNameByHandle(file_descriptor, file_path_chars, sizeof(file_path_chars) - 1, VOLUME_NAME_NONE);
-        auto file_path = std::filesystem::path(file_path_chars);
+        auto file_path = get_path_from_file_handle(file_descriptor);
         auto file_name = file_path.filename();
 
         if(event.time == Event::EVENT_TIME_BEFORE) {
-            if(output == get_tag_data_address()) {
-                // Check if we're reading from the next map
-                if(file_name.stem().string() != preloaded_map_cache->name()) {
-                    logger.warning("Reading tag data from map {} instead of {}", file_name.stem().string(), preloaded_map_cache->name());
-                    preloaded_map_cache->name(file_name.stem().string());
-                }
-
-                // Read tag data from the next map
-                preloaded_map_cache->read_tag_data_from_file();
-                std::memcpy(output, preloaded_map_cache->tag_data(), size);
-                event.args.size = 0;
-
-                logger.info("Loading tag data from secondary maps...");
-                load_tag_data();
-                return;
-            }
-
             if(!map_cache || file_name.stem().string() != map_cache->name()) {
                 return;
             }
@@ -677,7 +670,7 @@ namespace Balltze::Features {
 
     void import_tag_from_map(std::string map_name, std::string tag_path, TagClassInt tag_class) {
         try {
-            if(map_name == preloaded_map_cache->name()) {
+            if(map_name == map_file_path.stem()) {
                 return;
             }
             for(auto &map : preloaded_secondary_maps_cache) {
@@ -695,9 +688,9 @@ namespace Balltze::Features {
         }
     }
 
-    void import_tag_from_map(std::filesystem::path map_file, std::string tag_path, TagClassInt tag_class) {
+    void import_tag_from_map(fs::path map_file, std::string tag_path, TagClassInt tag_class) {
         try {
-            if(map_file == preloaded_map_cache->path()) {
+            if(map_file == map_file_path.stem()) {
                 return;
             }
             for(auto &map : preloaded_secondary_maps_cache) {
@@ -715,9 +708,9 @@ namespace Balltze::Features {
         }
     }
 
-    void import_tags_from_map(std::filesystem::path map_file) {
+    void import_tags_from_map(fs::path map_file) {
         try {
-            if(map_file == preloaded_map_cache->path()) {
+            if(map_file == map_file_path.stem()) {
                 return;
             }
             for(auto &map : preloaded_secondary_maps_cache) {
@@ -928,6 +921,9 @@ namespace Balltze::Features {
 
         auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
         auto *model_data_buffer_alloc_hook = Memory::hook_function(model_data_buffer_alloc_sig->data(), on_model_data_buffer_alloc_asm);
+
+        auto *tag_data_read_done_sig = Memory::get_signature("tag_data_read_done");
+        Memory::hook_function(tag_data_read_done_sig->data(), import_tag_data);
 
         register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps", std::nullopt, [](int arg_count, const char **args) -> bool {
             if(secondary_maps_cache.empty()) {
