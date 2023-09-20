@@ -55,12 +55,8 @@ add_library(balltze SHARED
     src/balltze/event/camera.cpp
     src/balltze/event/console_command.cpp
     src/balltze/event/console_command.S
-    src/balltze/event/d3d9_device_reset.cpp
-    src/balltze/event/d3d9_device_reset.S
-    src/balltze/event/d3d9_begin_scene.cpp
-    src/balltze/event/d3d9_begin_scene.S
-    src/balltze/event/d3d9_end_scene.cpp
-    src/balltze/event/d3d9_end_scene.S
+    src/balltze/event/d3d9.cpp
+    src/balltze/event/d3d9.S
     src/balltze/event/event.cpp
     src/balltze/event/frame.cpp
     src/balltze/event/game_input.cpp
@@ -75,6 +71,8 @@ add_library(balltze SHARED
     src/balltze/event/object_damage.cpp
     src/balltze/event/object_damage.S
     src/balltze/event/rcon_message.cpp
+    src/balltze/event/render.cpp
+    src/balltze/event/render.S
     src/balltze/event/server_connect.cpp
     src/balltze/event/server_connect.S
     src/balltze/event/sound_playback.cpp

@@ -106,8 +106,7 @@ namespace Balltze::Event {
     EventTime event_time_from_string(const std::string &time);
 }
 
-#include "events/d3d9_end_scene.hpp"
-#include "events/d3d9_device_reset.hpp"
+#include "events/d3d9.hpp"
 #include "events/frame.hpp"
 #include "events/tick.hpp"
 #include "events/game_input.hpp"
@@ -120,6 +119,7 @@ namespace Balltze::Event {
 #include "events/object_damage.hpp"
 #include "events/rcon_message.hpp"
 #include "events/map_load.hpp"
+#include "events/render.hpp"
 
 #endif
 

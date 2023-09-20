@@ -5,8 +5,7 @@
 #include <filesystem>
 #include <fmt/format.h>
 #include <balltze/engine/tag.hpp>
-#include <balltze/events/d3d9_device_reset.hpp>
-#include <balltze/events/d3d9_end_scene.hpp>
+#include <balltze/events/d3d9.hpp>
 #include <balltze/events/frame.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/utils.hpp>
