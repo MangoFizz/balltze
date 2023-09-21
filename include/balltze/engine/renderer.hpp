@@ -45,7 +45,7 @@ namespace Balltze::Engine {
      * @return          the render target
      * @throws          std::runtime_error if the index is out of bounds
      */
-    RenderTarget *get_render_target(std::size_t index = 0);
+    BALLTZE_API RenderTarget *get_render_target(std::size_t index = 0);
 
     /**
      * Render the UI
