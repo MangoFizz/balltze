@@ -3,6 +3,8 @@
 #ifndef BALLTZE_API__EVENTS__RENDER_HPP
 #define BALLTZE_API__EVENTS__RENDER_HPP
 
+#include "../engine/tag_definitions/bitmap.hpp"
+#include "../engine/user_interface.hpp"
 #include "../event.hpp"
 
 namespace Balltze::Event {
@@ -37,6 +39,50 @@ namespace Balltze::Event {
         }
 
         PostCarnageReportRenderEvent(EventTime time) : EventData(time) {}
+    };
+
+    struct WidgetRenderVertices {
+        struct Vertex {
+            float x, y, z, rhw;
+            float u, v;
+        };
+
+        Vertex top_left;
+        Vertex top_right;
+        Vertex bottom_right;
+        Vertex bottom_left;
+    };
+
+    struct HUDElementBitmapRenderEventArgs {
+        Engine::TagDefinitions::BitmapData *bitmap_data;
+        WidgetRenderVertices *vertices;
+    };
+
+    class HUDElementBitmapRenderEvent : public EventData<HUDElementBitmapRenderEvent> {
+    public:
+        HUDElementBitmapRenderEventArgs args;
+
+        bool cancellable() const {
+            return true;
+        }
+
+        HUDElementBitmapRenderEvent(EventTime time, HUDElementBitmapRenderEventArgs args) : EventData(time), args(args) {}
+    };
+
+    struct WidgetBackgroundRenderEventArgs {
+        Engine::Widget *widget;
+        WidgetRenderVertices *vertices;
+    };
+
+    class WidgetBackgroundRenderEvent : public EventData<WidgetBackgroundRenderEvent> {
+    public:
+        WidgetBackgroundRenderEventArgs args;
+
+        bool cancellable() const {
+            return true;
+        }
+
+        WidgetBackgroundRenderEvent(EventTime time, WidgetBackgroundRenderEventArgs args) : EventData(time), args(args) {}
     };
 }
 
