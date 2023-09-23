@@ -11,6 +11,7 @@
 #include "../plugins/loader.hpp"
 #include "../version.hpp"
 #include "../logger.hpp"
+#include "command.hpp"
 
 namespace Balltze {
     std::vector<std::shared_ptr<Command>> commands;
@@ -363,5 +364,8 @@ namespace Balltze {
         }, false, 0, 0);
 
         Event::ConsoleCommandEvent::subscribe(dispatch_commands, Event::EVENT_PRIORITY_DEFAULT);
+
+        set_up_commands_help();
+        set_up_commands_tab_completion();
     }
 }

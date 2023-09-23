@@ -8,6 +8,7 @@
 namespace Balltze {
     void set_up_commands();
     void set_up_commands_tab_completion();
+    void set_up_commands_help();
 }
 
 #endif
