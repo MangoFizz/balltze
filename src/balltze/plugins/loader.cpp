@@ -152,7 +152,7 @@ namespace Balltze::Plugins {
         init_plugins();
         firstTickListener = TickEvent::subscribe_const(load_plugins_first_tick, EVENT_PRIORITY_HIGHEST);
 
-        register_command("reload_plugins", "plugins", "Reloads all plugins", std::nullopt, [](int arg_count, const char **args) -> bool {
+        register_command("reload_plugins", "plugins", "Reloads all loaded plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
             unload_plugins();
             init_plugins();
             for(auto &plugin : plugins) {

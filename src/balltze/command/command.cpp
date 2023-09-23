@@ -356,7 +356,7 @@ namespace Balltze {
     }
 
     void set_up_commands() {
-        register_command("version", "balltze", "Prints the version of Balltze", std::nullopt, [](int arg_count, const char **args) -> bool {
+        register_command("version", "balltze", "Prints the current version of Balltze", std::nullopt, [](int arg_count, const char **args) -> bool {
             std::string version = BALLTZE_VERSION;
             Engine::console_printf("Balltze version %s", version.c_str());
             logger.info("Balltze version {}", version);

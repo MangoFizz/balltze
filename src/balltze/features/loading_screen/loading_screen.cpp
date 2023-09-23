@@ -262,7 +262,7 @@ namespace Balltze::Features {
     }
 
     void set_up_loading_screen() {
-        register_command("enable_loading_screen", "features", "Set whether to enable loading screen at startup", "<boolean>", [](int arg_count, const char **args) -> bool {
+        register_command("enable_loading_screen", "features", "Set whether to set up loading screen at startup", "<setting: boolean>", [](int arg_count, const char **args) -> bool {
             auto &config = Config::get_config();
             logger.mute_ingame(false);
             if(arg_count == 1) {
@@ -315,7 +315,7 @@ namespace Balltze::Features {
         }
         Event::ConsoleCommandEvent::subscribe_const(chimera_block_loading_screen_listener);
 
-        register_command("test_loading_screen", "debug", "Plays a random loading screen", std::nullopt, [](int arg_count, const char **args) -> bool {
+        register_command("test_loading_screen", "debug", "Plays loading screen demo.", std::nullopt, [](int arg_count, const char **args) -> bool {
             loading_screen_demo = true;
             play_loading_screen_background();
             return true;

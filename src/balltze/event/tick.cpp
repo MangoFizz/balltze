@@ -84,6 +84,6 @@ namespace Balltze::Event {
         auto *tick_event_hook = Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
 
         // Register debug command
-        register_command("debug_tick_event", "debug", "Debug tick event", "[enable]", debug_tick_event, true, 0, 1);
+        register_command("debug_tick_event", "debug", "Sets whenever to log tick event.", "[enable: boolean]", debug_tick_event, true, 0, 1);
     }
 }

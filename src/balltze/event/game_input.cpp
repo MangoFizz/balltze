@@ -95,6 +95,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_game_input_event", "debug", "Debug game input event", "[enable]", debug_game_input_event, true, 0, 1);
+        register_command("debug_game_input_event", "debug", "Sets whenever to log game input event.", "[enable: boolean]", debug_game_input_event, true, 0, 1);
     }
 }

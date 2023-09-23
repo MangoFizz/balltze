@@ -72,6 +72,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_camera_event", "debug", "Debug camera event", "[enable]", debug_camera_event, true, 0, 1);
+        register_command("debug_camera_event", "debug", "Sets whenever to log camera event.", "[enable: boolean]", debug_camera_event, true, 0, 1);
     }
 }

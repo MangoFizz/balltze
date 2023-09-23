@@ -73,6 +73,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_object_damage_event", "debug", "Debug object damage event", "[enable]", debug_object_damage_event, true, 0, 1);
+        register_command("debug_object_damage_event", "debug", "Sets whenever to log object damage event.", "[enable: boolean]", debug_object_damage_event, true, 0, 1);
     }
 }

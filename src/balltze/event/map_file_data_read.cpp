@@ -81,6 +81,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_map_file_data_read_event", "debug", "Debug map file data read event", "[enable]", debug_map_file_data_read_event, true, 0, 1);
+        register_command("debug_map_file_data_read_event", "debug", "Sets whenever to log map data read event", "[enable: boolean]", debug_map_file_data_read_event, true, 0, 1);
     }
 }

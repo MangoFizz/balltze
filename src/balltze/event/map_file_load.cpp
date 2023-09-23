@@ -58,6 +58,6 @@ namespace Balltze::Event {
         auto *load_map_path_hook = Memory::hook_function(load_map_path_addr, map_loading_asm);
 
         // Register debug command
-        register_command("debug_map_file_load_event", "debug", "Debug map file load event", "[enable]", debug_map_file_load_event, true, 0, 1);
+        register_command("debug_map_file_load_event", "debug", "Sets whenever to log map file load event.", "[enable: boolean]", debug_map_file_load_event, true, 0, 1);
     }
 }

@@ -69,6 +69,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_rcon_message_event", "debug", "Debug rcon message event", "[enable]", debug_rcon_message_event, true, 0, 1);
+        register_command("debug_rcon_message_event", "debug", "Sets whenever to log rcon message event.", "[enable: boolean]", debug_rcon_message_event, true, 0, 1);
     }
 }

@@ -258,7 +258,7 @@ namespace Balltze::Memory {
         FIND_SIGNATURE("help_command_function_command_list_address_1", 0x3, 0, {0x8b, 0x14, 0x8d, -1, -1, -1, -1, 0x8b, 0x4a, 0x10, 0x83, 0xc4, 0x04, 0x8d, 0x54, 0x24, 0x04, 0x8d, 0x49, 0x00});
         FIND_SIGNATURE("help_command_function_command_list_address_2", 0x3, 0, {0x8b, 0x2c, 0x85, -1, -1, -1, -1, 0x56, 0x8b, 0xd9, 0x8b, 0x4d, 0x04, 0x57, 0x51});
 
-        register_command("signature", "debug", "Get address for signature", "<signature name>", +[](int arg_count, const char **args) -> bool {
+        register_command("signature", "debug", "Get address for a signature", "<name: string>", +[](int arg_count, const char **args) -> bool {
             if(arg_count == 1) {
                 auto sig = get_signature(args[0]);
                 if(sig) {

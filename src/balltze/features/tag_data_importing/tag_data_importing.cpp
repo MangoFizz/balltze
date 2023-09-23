@@ -925,7 +925,7 @@ namespace Balltze::Features {
         auto *tag_data_read_done_sig = Memory::get_signature("tag_data_read_done");
         Memory::hook_function(tag_data_read_done_sig->data(), import_tag_data);
 
-        register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps", std::nullopt, [](int arg_count, const char **args) -> bool {
+        register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps.", std::nullopt, [](int arg_count, const char **args) -> bool {
             if(secondary_maps_cache.empty()) {
                 Engine::console_print("No tag data imported from secondary maps");
                 return true;

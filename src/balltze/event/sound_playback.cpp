@@ -88,6 +88,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_sound_playback_event", "debug", "Debug sound playback event", "[enable]", debug_sound_playback_event, true, 0, 1);
+        register_command("debug_sound_playback_event", "debug", "Sets whenever to log sound playback event.", "[enable: boolean]", debug_sound_playback_event, true, 0, 1);
     }
 }

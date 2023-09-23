@@ -77,6 +77,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_map_load_event", "debug", "Debug map load event", "[enable]", debug_map_load_event, true, 0, 1);
+        register_command("debug_map_load_event", "debug", "Sets whenever to log map load event.", "[enable: boolean]", debug_map_load_event, true, 0, 1);
     }
 }

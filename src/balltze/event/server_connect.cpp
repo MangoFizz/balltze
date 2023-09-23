@@ -89,6 +89,6 @@ namespace Balltze::Event {
         }
 
         // Register debug command
-        register_command("debug_server_connect_event", "debug", "Debug server connect event", "[enable]", debug_server_connect_event, true, 0, 1);
+        register_command("debug_server_connect_event", "debug", "Sets whenever to log server connect event.", "[enable: boolean]", debug_server_connect_event, true, 0, 1);
     }
 }
