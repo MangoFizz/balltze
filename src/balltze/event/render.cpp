@@ -134,10 +134,6 @@ namespace Balltze::Event {
                 handle = Event::HUDElementBitmapRenderEvent::subscribe([](HUDElementBitmapRenderEvent &event) {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
-                    if(event.time == Event::EVENT_TIME_BEFORE) {
-                        arguments.vertices->bottom_left.x += static_cast<float>(arguments.bitmap_data->width) / 8;
-                        arguments.vertices->bottom_right.x += static_cast<float>(arguments.bitmap_data->width) / 8;
-                    }
                     logger.debug("HUD element bitmap render event ({}): bitmap data: {}, vertices: {}", time, reinterpret_cast<std::uint32_t>(arguments.bitmap_data), reinterpret_cast<std::uint32_t>(&arguments.vertices));
                 });
             }
