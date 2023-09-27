@@ -47,7 +47,7 @@ namespace Balltze::Plugins {
     static void set_up_event_table(lua_State *state, const char *name, lua_CFunction add, lua_CFunction remove, lua_CFunction remove_all) noexcept {
         lua_newtable(state);
         lua_pushcfunction(state, add);
-        lua_setfield(state, -2, "add_listener");
+        lua_setfield(state, -2, "subscribe");
         lua_pushcfunction(state, remove);
         lua_setfield(state, -2, "remove_listener");
         lua_pushcfunction(state, remove_all);
@@ -101,7 +101,7 @@ namespace Balltze::Plugins {
             return 1;
         }
         else {
-            return luaL_error(state, "Invalid listener argument in function events.%s.add_listener.", name);
+            return luaL_error(state, "Invalid listener argument in function events.%s.subscribe.", name);
         }
     }
 
@@ -248,7 +248,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_event_tick_add_listener(lua_State *state) noexcept {
+    static int lua_event_tick_subscribe(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -259,11 +259,11 @@ namespace Balltze::Plugins {
                     return add_event_listener(state, "tick", 1, priority, lua_event_tick_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.tick.add_listener: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.tick.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.tick.add_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.tick.subscribe.");
             }
         }
         else {
@@ -329,7 +329,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_event_frame_add_listener(lua_State *state) noexcept {
+    static int lua_event_frame_subscribe(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -340,11 +340,11 @@ namespace Balltze::Plugins {
                     return add_event_listener(state, "frame", 1, priority, lua_event_frame_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.frame.add_listener: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.frame.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.frame.add_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.frame.subscribe.");
             }
         }
         else {
@@ -406,7 +406,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_event_map_file_load_add_listener(lua_State *state) noexcept {
+    static int lua_event_map_file_load_subscribe(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -417,11 +417,11 @@ namespace Balltze::Plugins {
                     return add_event_listener(state, "map_file_load", 1, priority, lua_event_map_file_load_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.map_file_load.add_listener: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.map_file_load.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_file_load.add_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.map_file_load.subscribe.");
             }
         }
         else {
@@ -487,7 +487,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_event_server_connect_add_listener(lua_State *state) noexcept {
+    static int lua_event_server_connect_subscribe(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -498,11 +498,11 @@ namespace Balltze::Plugins {
                     return add_event_listener(state, "server_connect", 1, priority, lua_event_server_connect_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.server_connect.add_listener: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.server_connect.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.server_connect.add_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.server_connect.subscribe.");
             }
         }
         else {
@@ -573,7 +573,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_event_camera_add_listener(lua_State *state) noexcept {
+    static int lua_event_camera_subscribe(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -584,11 +584,11 @@ namespace Balltze::Plugins {
                     return add_event_listener(state, "camera", 1, priority, lua_event_camera_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.camera.add_listener: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.camera.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.camera.add_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.camera.subscribe.");
             }
         }
         else {
@@ -654,7 +654,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_event_game_input_add_listener(lua_State *state) noexcept {
+    static int lua_event_game_input_subscribe(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -666,11 +666,11 @@ namespace Balltze::Plugins {
                     return add_event_listener(state, "game_input", 1, priority, lua_event_game_input_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.game_input.add_listener: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.game_input.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.game_input.add_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.game_input.subscribe.");
             }
         }
         else {
@@ -754,7 +754,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    static int lua_event_map_load_add_listener(lua_State *state) noexcept {
+    static int lua_event_map_load_subscribe(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -766,11 +766,11 @@ namespace Balltze::Plugins {
                     return add_event_listener(state, "map_load", 1, priority, lua_event_map_load_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.map_load.add_listener: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.map_load.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_load.add_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.map_load.subscribe.");
             }
         }
         else {
@@ -821,18 +821,455 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_event_ui_render_remove_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1) {
+                remove_event_listener(state, "ui_render", 1);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.ui_render.remove_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_ui_render_subscribe(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 2) {
+                auto priority_str = luaL_checkstring(state, 2);
+                try {
+                    auto priority = Event::event_priority_from_string(priority_str);
+                    return add_event_listener(state, "ui_render", 1, priority, lua_event_ui_render_remove_listener);
+                }
+                catch(const std::invalid_argument &e) {
+                    return luaL_error(state, "Invalid priority argument in function events.ui_render.subscribe: %s.", priority_str);
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.ui_render.subscribe.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_ui_render_remove_all_listeners(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 0) {
+                remove_all_event_listeners(state, "ui_render");
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.ui_render.remove_all_listeners.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static void populate_ui_render_events(Event::UIRenderEvent &context, Event::EventPriority priority) noexcept {
+        auto plugins = get_lua_plugins();
+        
+        for(auto *&plugin : plugins) {
+            auto *state = plugin->state();
+            create_event_data_table(state, context);
+
+            lua_newtable(state);
+            lua_setfield(state, -2, "args");
+            call_events_by_priority(state, "ui_render", priority, -1);
+
+            lua_pop(state, 1);
+        }
+    }
+
+    static int lua_event_hud_render_remove_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1) {
+                remove_event_listener(state, "hud_render", 1);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.hud_render.remove_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_hud_render_subscribe(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 2) {
+                auto priority_str = luaL_checkstring(state, 2);
+                try {
+                    auto priority = Event::event_priority_from_string(priority_str);
+                    return add_event_listener(state, "hud_render", 1, priority, lua_event_hud_render_remove_listener);
+                }
+                catch(const std::invalid_argument &e) {
+                    return luaL_error(state, "Invalid priority argument in function events.hud_render.subscribe: %s.", priority_str);
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.hud_render.subscribe.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_hud_render_remove_all_listeners(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 0) {
+                remove_all_event_listeners(state, "hud_render");
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.hud_render.remove_all_listeners.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static void populate_hud_render_events(Event::HUDRenderEvent &context, Event::EventPriority priority) noexcept {
+        auto plugins = get_lua_plugins();
+        
+        for(auto *&plugin : plugins) {
+            auto *state = plugin->state();
+            create_event_data_table(state, context);
+
+            lua_newtable(state);
+            lua_setfield(state, -2, "args");
+            call_events_by_priority(state, "hud_render", priority, -1);
+
+            lua_pop(state, 1);
+        }
+    }
+
+    static int lua_event_post_carnage_report_render_remove_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 1) {
+                remove_event_listener(state, "post_carnage_report_render", 1);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.post_carnage_report_render.remove_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_post_carnage_report_render_subscribe(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 2) {
+                auto priority_str = luaL_checkstring(state, 2);
+                try {
+                    auto priority = Event::event_priority_from_string(priority_str);
+                    return add_event_listener(state, "post_carnage_report_render", 1, priority, lua_event_post_carnage_report_render_remove_listener);
+                }
+                catch(const std::invalid_argument &e) {
+                    return luaL_error(state, "Invalid priority argument in function events.post_carnage_report_render.subscribe: %s.", priority_str);
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.post_carnage_report_render.subscribe.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static int lua_event_post_carnage_report_render_remove_all_listeners(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+
+            if(args == 0) {
+                remove_all_event_listeners(state, "post_carnage_report_render");
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.post_carnage_report_render.remove_all_listeners.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+
+        return 0;
+    }
+
+    static void populate_post_carnage_report_render_events(Event::PostCarnageReportRenderEvent &context, Event::EventPriority priority) noexcept {
+        auto plugins = get_lua_plugins();
+        
+        for(auto *&plugin : plugins) {
+            auto *state = plugin->state();
+            create_event_data_table(state, context);
+
+            lua_newtable(state);
+            lua_setfield(state, -2, "args");
+            call_events_by_priority(state, "post_carnage_report_render", priority, -1);
+
+            lua_pop(state, 1);
+        }
+    }
+
+    static int lua_event_hud_element_bitmap_render_remove_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 1) {
+                remove_event_listener(state, "hud_element_bitmap_render", 1);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.hud_element_bitmap_render.remove_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static int lua_event_hud_element_bitmap_render_subscribe(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 2) {
+                auto priority_str = luaL_checkstring(state, 2);
+                try {
+                    auto priority = Event::event_priority_from_string(priority_str);
+                    return add_event_listener(state, "hud_element_bitmap_render", 1, priority, lua_event_hud_element_bitmap_render_remove_listener);
+                }
+                catch(const std::invalid_argument &e) {
+                    return luaL_error(state, "Invalid priority argument in function events.hud_element_bitmap_render.subscribe: %s.", priority_str);
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.hud_element_bitmap_render.subscribe.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static int lua_event_hud_element_bitmap_render_remove_all_listeners(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 0) {
+                remove_all_event_listeners(state, "hud_element_bitmap_render");
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.hud_element_bitmap_render.remove_all_listeners.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    extern void lua_push_meta_engine_bitmap_data(lua_State *state, Engine::TagDefinitions::BitmapData &data) noexcept;
+
+    static void populate_hud_element_bitmap_render_events(Event::HUDElementBitmapRenderEvent &context, Event::EventPriority priority) noexcept {
+        auto plugins = get_lua_plugins();
+        
+        for(auto *&plugin : plugins) {
+            auto *state = plugin->state();
+            create_event_data_table(state, context);
+            
+            lua_newtable(state);
+            lua_push_meta_event_widget_render_vertices(state, *context.args.vertices);
+            lua_setfield(state, -2, "vertices");
+            lua_push_meta_engine_bitmap_data(state, *context.args.bitmap_data);
+            lua_setfield(state, -2, "bitmap_data");
+            lua_setfield(state, -2, "args");
+
+            call_events_by_priority(state, "hud_element_bitmap_render", priority, -1);
+            
+            lua_pop(state, 1);
+        }
+    }
+
+    static int lua_event_widget_background_render_remove_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 1) {
+                remove_event_listener(state, "widget_background_render", 1);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.widget_background_render.remove_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static int lua_event_widget_background_render_subscribe(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 2) {
+                auto priority_str = luaL_checkstring(state, 2);
+                try {
+                    auto priority = Event::event_priority_from_string(priority_str);
+                    return add_event_listener(state, "widget_background_render", 1, priority, lua_event_widget_background_render_remove_listener);
+                }
+                catch(const std::invalid_argument &e) {
+                    return luaL_error(state, "Invalid priority argument in function events.widget_background_render.subscribe: %s.", priority_str);
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.widget_background_render.subscribe.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static int lua_event_widget_background_render_remove_all_listeners(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 0) {
+                remove_all_event_listeners(state, "widget_background_render");
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.widget_background_render.remove_all_listeners.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static void populate_widget_background_render_events(Event::WidgetBackgroundRenderEvent &context, Event::EventPriority priority) noexcept {
+        auto plugins = get_lua_plugins();
+        
+        for(auto *&plugin : plugins) {
+            auto *state = plugin->state();
+            create_event_data_table(state, context);
+            
+            lua_newtable(state);
+            lua_push_meta_event_widget_render_vertices(state, *context.args.vertices);
+            lua_setfield(state, -2, "vertices");
+            lua_push_meta_engine_widget(state, *context.args.widget);
+            lua_setfield(state, -2, "widget");
+            lua_setfield(state, -2, "args");
+
+            call_events_by_priority(state, "widget_background_render", priority, -1);
+            
+            lua_pop(state, 1);
+        }
+    }
+
     void lua_set_event_table(lua_State *state) noexcept {
         set_up_events_registry_table(state);
 
         // Events functions table
         lua_newtable(state);
-        set_up_event_table(state, "tick", lua_event_tick_add_listener, lua_event_tick_remove_listener, lua_event_tick_remove_all_listeners);
-        set_up_event_table(state, "frame", lua_event_frame_add_listener, lua_event_frame_remove_listener, lua_event_frame_remove_all_listeners);
-        set_up_event_table(state, "map_file_load", lua_event_map_file_load_add_listener, lua_event_map_file_load_remove_listener, lua_event_map_file_load_remove_all_listeners);
-        set_up_event_table(state, "server_connect", lua_event_server_connect_add_listener, lua_event_server_connect_remove_listener, lua_event_server_connect_remove_all_listeners);
-        set_up_event_table(state, "camera", lua_event_camera_add_listener, lua_event_camera_remove_listener, lua_event_camera_remove_all_listeners);
-        set_up_event_table(state, "game_input", lua_event_game_input_add_listener, lua_event_game_input_remove_listener, lua_event_game_input_remove_all_listeners);
-        set_up_event_table(state, "map_load", lua_event_map_load_add_listener, lua_event_map_load_remove_listener, lua_event_map_load_remove_all_listeners);
+        set_up_event_table(state, "tick", lua_event_tick_subscribe, lua_event_tick_remove_listener, lua_event_tick_remove_all_listeners);
+        set_up_event_table(state, "frame", lua_event_frame_subscribe, lua_event_frame_remove_listener, lua_event_frame_remove_all_listeners);
+        set_up_event_table(state, "map_file_load", lua_event_map_file_load_subscribe, lua_event_map_file_load_remove_listener, lua_event_map_file_load_remove_all_listeners);
+        set_up_event_table(state, "server_connect", lua_event_server_connect_subscribe, lua_event_server_connect_remove_listener, lua_event_server_connect_remove_all_listeners);
+        set_up_event_table(state, "camera", lua_event_camera_subscribe, lua_event_camera_remove_listener, lua_event_camera_remove_all_listeners);
+        set_up_event_table(state, "game_input", lua_event_game_input_subscribe, lua_event_game_input_remove_listener, lua_event_game_input_remove_all_listeners);
+        set_up_event_table(state, "map_load", lua_event_map_load_subscribe, lua_event_map_load_remove_listener, lua_event_map_load_remove_all_listeners);
+        set_up_event_table(state, "ui_render", lua_event_ui_render_subscribe, lua_event_ui_render_remove_listener, lua_event_ui_render_remove_all_listeners);
+        set_up_event_table(state, "hud_render", lua_event_hud_render_subscribe, lua_event_hud_render_remove_listener, lua_event_hud_render_remove_all_listeners);
+        set_up_event_table(state, "post_carnage_report_render", lua_event_post_carnage_report_render_subscribe, lua_event_post_carnage_report_render_remove_listener, lua_event_post_carnage_report_render_remove_all_listeners);
+        set_up_event_table(state, "hud_element_bitmap_render", lua_event_hud_element_bitmap_render_subscribe, lua_event_hud_element_bitmap_render_remove_listener, lua_event_hud_element_bitmap_render_remove_all_listeners);
+        set_up_event_table(state, "widget_background_render", lua_event_widget_background_render_subscribe, lua_event_widget_background_render_remove_listener, lua_event_widget_background_render_remove_all_listeners);
         lua_setfield(state, -2, "event");
 
         // Set up tick event
@@ -952,6 +1389,91 @@ namespace Balltze::Plugins {
 
         static auto map_load_event_lowest = Event::MapLoadEvent::subscribe([](Event::MapLoadEvent &context) {
             populate_map_load_events(context, Event::EVENT_PRIORITY_LOWEST);
+        }, Event::EVENT_PRIORITY_LOWEST);
+
+        // Set up ui render event
+        static auto ui_render_event_highest = Event::UIRenderEvent::subscribe([](Event::UIRenderEvent &context) {
+            populate_ui_render_events(context, Event::EVENT_PRIORITY_HIGHEST);
+        }, Event::EVENT_PRIORITY_HIGHEST);
+
+        static auto ui_render_event_above_default = Event::UIRenderEvent::subscribe([](Event::UIRenderEvent &context) {
+            populate_ui_render_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+        }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+
+        static auto ui_render_event_default = Event::UIRenderEvent::subscribe([](Event::UIRenderEvent &context) {
+            populate_ui_render_events(context, Event::EVENT_PRIORITY_DEFAULT);
+        }, Event::EVENT_PRIORITY_DEFAULT);
+
+        static auto ui_render_event_lowest = Event::UIRenderEvent::subscribe([](Event::UIRenderEvent &context) {
+            populate_ui_render_events(context, Event::EVENT_PRIORITY_LOWEST);
+        }, Event::EVENT_PRIORITY_LOWEST);
+
+        // Set up hud render event
+        static auto hud_render_event_highest = Event::HUDRenderEvent::subscribe([](Event::HUDRenderEvent &context) {
+            populate_hud_render_events(context, Event::EVENT_PRIORITY_HIGHEST);
+        }, Event::EVENT_PRIORITY_HIGHEST);
+
+        static auto hud_render_event_above_default = Event::HUDRenderEvent::subscribe([](Event::HUDRenderEvent &context) {
+            populate_hud_render_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+        }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+
+        static auto hud_render_event_default = Event::HUDRenderEvent::subscribe([](Event::HUDRenderEvent &context) {
+            populate_hud_render_events(context, Event::EVENT_PRIORITY_DEFAULT);
+        }, Event::EVENT_PRIORITY_DEFAULT);
+
+        static auto hud_render_event_lowest = Event::HUDRenderEvent::subscribe([](Event::HUDRenderEvent &context) {
+            populate_hud_render_events(context, Event::EVENT_PRIORITY_LOWEST);
+        }, Event::EVENT_PRIORITY_LOWEST);
+
+        // Set up post carnage report render event
+        static auto post_carnage_report_render_event_highest = Event::PostCarnageReportRenderEvent::subscribe([](Event::PostCarnageReportRenderEvent &context) {
+            populate_post_carnage_report_render_events(context, Event::EVENT_PRIORITY_HIGHEST);
+        }, Event::EVENT_PRIORITY_HIGHEST);
+
+        static auto post_carnage_report_render_event_above_default = Event::PostCarnageReportRenderEvent::subscribe([](Event::PostCarnageReportRenderEvent &context) {
+            populate_post_carnage_report_render_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+        }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+
+        static auto post_carnage_report_render_event_default = Event::PostCarnageReportRenderEvent::subscribe([](Event::PostCarnageReportRenderEvent &context) {
+            populate_post_carnage_report_render_events(context, Event::EVENT_PRIORITY_DEFAULT);
+        }, Event::EVENT_PRIORITY_DEFAULT);
+
+        static auto post_carnage_report_render_event_lowest = Event::PostCarnageReportRenderEvent::subscribe([](Event::PostCarnageReportRenderEvent &context) {
+            populate_post_carnage_report_render_events(context, Event::EVENT_PRIORITY_LOWEST);
+        }, Event::EVENT_PRIORITY_LOWEST);
+
+        // Set up hud element bitmap render event
+        static auto hud_element_bitmap_render_event_highest = Event::HUDElementBitmapRenderEvent::subscribe([](Event::HUDElementBitmapRenderEvent &context) {
+            populate_hud_element_bitmap_render_events(context, Event::EVENT_PRIORITY_HIGHEST);
+        }, Event::EVENT_PRIORITY_HIGHEST);
+
+        static auto hud_element_bitmap_render_event_above_default = Event::HUDElementBitmapRenderEvent::subscribe([](Event::HUDElementBitmapRenderEvent &context) {
+            populate_hud_element_bitmap_render_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+        }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+
+        static auto hud_element_bitmap_render_event_default = Event::HUDElementBitmapRenderEvent::subscribe([](Event::HUDElementBitmapRenderEvent &context) {
+            populate_hud_element_bitmap_render_events(context, Event::EVENT_PRIORITY_DEFAULT);
+        }, Event::EVENT_PRIORITY_DEFAULT);
+
+        static auto hud_element_bitmap_render_event_lowest = Event::HUDElementBitmapRenderEvent::subscribe([](Event::HUDElementBitmapRenderEvent &context) {
+            populate_hud_element_bitmap_render_events(context, Event::EVENT_PRIORITY_LOWEST);
+        }, Event::EVENT_PRIORITY_LOWEST);
+
+        // Set up widget background render event
+        static auto widget_background_render_event_highest = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+            populate_widget_background_render_events(context, Event::EVENT_PRIORITY_HIGHEST);
+        }, Event::EVENT_PRIORITY_HIGHEST);
+
+        static auto widget_background_render_event_above_default = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+            populate_widget_background_render_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+        }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+
+        static auto widget_background_render_event_default = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+            populate_widget_background_render_events(context, Event::EVENT_PRIORITY_DEFAULT);
+        }, Event::EVENT_PRIORITY_DEFAULT);
+
+        static auto widget_background_render_event_lowest = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+            populate_widget_background_render_events(context, Event::EVENT_PRIORITY_LOWEST);
         }, Event::EVENT_PRIORITY_LOWEST);
     }
 }

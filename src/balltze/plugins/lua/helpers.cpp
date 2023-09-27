@@ -8866,4 +8866,132 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_player(lua_State *state, Engine::Player &player) noexcept {
         lua_push_meta_object(state, player, lua_engine_player__index, lua_engine_player__newindex);
     }
+
+    static int lua_event_widget_render_vertex__index(lua_State *state) noexcept {
+        auto *vertex = lua_from_meta_object<Event::WidgetRenderVertices::Vertex>(state, 1); 
+        auto *key = lua_tostring(state, 2);
+
+        if(key == nullptr) {
+            return luaL_error(state, "Invalid key type");
+        }
+        
+        std::string field = key;
+        if(field == "x") {
+            lua_pushnumber(state, vertex->x);
+        }
+        else if(field == "y") {
+            lua_pushnumber(state, vertex->y);
+        }
+        else if(field == "z") {
+            lua_pushnumber(state, vertex->z);
+        }
+        else if(field == "rhw") {
+            lua_pushnumber(state, vertex->rhw);
+        }
+        else if(field == "u") {
+            lua_pushnumber(state, vertex->u);
+        }
+        else if(field == "v") {
+            lua_pushnumber(state, vertex->v);
+        }
+        else {
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 1;
+    }
+
+    static int lua_event_widget_render_vertex__newindex(lua_State *state) noexcept {
+        auto *vertex = lua_from_meta_object<Event::WidgetRenderVertices::Vertex>(state, 1); 
+        auto *key = lua_tostring(state, 2);
+
+        if(key == nullptr) {
+            return luaL_error(state, "Invalid key type");
+        }
+        
+        std::string field = key;
+        if(field == "x") {
+            vertex->x = static_cast<float>(luaL_checknumber(state, 3));
+        }
+        else if(field == "y") {
+            vertex->y = static_cast<float>(luaL_checknumber(state, 3));
+        }
+        else if(field == "z") {
+            vertex->z = static_cast<float>(luaL_checknumber(state, 3));
+        }
+        else if(field == "rhw") {
+            vertex->rhw = static_cast<float>(luaL_checknumber(state, 3));
+        }
+        else if(field == "u") {
+            vertex->u = static_cast<float>(luaL_checknumber(state, 3));
+        }
+        else if(field == "v") {
+            vertex->v = static_cast<float>(luaL_checknumber(state, 3));
+        }
+        else {
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::WidgetRenderVertices::Vertex &vertex) noexcept {
+        lua_push_meta_object(state, vertex, lua_event_widget_render_vertex__index, lua_event_widget_render_vertex__newindex);
+    }
+    
+    static int lua_event_widget_render_vertices__index(lua_State *state) noexcept {
+        auto *vertices = lua_from_meta_object<Event::WidgetRenderVertices>(state, 1); 
+        auto *key = lua_tostring(state, 2);
+
+        if(key == nullptr) {
+            return luaL_error(state, "Invalid key type");
+        }
+        
+        std::string field = key;
+        if(field == "top_left") {
+            lua_push_meta_event_widget_render_vertex(state, vertices->top_left);
+        }
+        else if(field == "top_right") {
+            lua_push_meta_event_widget_render_vertex(state, vertices->top_right);
+        }
+        else if(field == "bottom_left") {
+            lua_push_meta_event_widget_render_vertex(state, vertices->bottom_left);
+        }
+        else if(field == "bottom_right") {
+            lua_push_meta_event_widget_render_vertex(state, vertices->bottom_right);
+        }
+        else {
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 1;
+    }
+
+    static int lua_event_widget_render_vertices__newindex(lua_State *state) noexcept {
+        auto *vertices = lua_from_meta_object<Event::WidgetRenderVertices>(state, 1); 
+        auto *key = lua_tostring(state, 2);
+
+        if(key == nullptr) {
+            return luaL_error(state, "Invalid key type");
+        }
+        
+        std::string field = key;
+        if(field == "top_left") {
+            return luaL_error(state, "Invalid operation");
+        }
+        else if(field == "top_right") {
+            return luaL_error(state, "Invalid operation");
+        }
+        else if(field == "bottom_left") {
+            return luaL_error(state, "Invalid operation");
+        }
+        else if(field == "bottom_right") {
+            return luaL_error(state, "Invalid operation");
+        }
+        else {
+            return luaL_error(state, "Invalid key"); 
+        }
+        return 0;
+    }
+
+    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::WidgetRenderVertices &vertices) noexcept {
+        lua_push_meta_object(state, vertices, lua_event_widget_render_vertices__index, lua_event_widget_render_vertices__newindex);
+    }
 }
