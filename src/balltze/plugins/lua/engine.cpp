@@ -1306,6 +1306,8 @@ namespace Balltze::Plugins {
     };
 
     void lua_set_engine_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "engine", engine_functions);
+        luaL_newlibtable(state, engine_functions);
+        luaL_setfuncs(state, engine_functions, 0);
+        lua_setglobal(state, "engine");
     }
 }

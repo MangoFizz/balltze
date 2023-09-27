@@ -20,16 +20,18 @@ namespace Balltze::Plugins {
         lua_newtable(state);
         lua_settable(state, LUA_REGISTRYINDEX);
 
-        // Set up funcion tables
+        // Set up Balltze funcion tables
         lua_newtable(state);
         lua_set_logger_table(state);
         lua_set_fmt_table(state);
-        lua_set_engine_table(state);
         lua_set_event_table(state);
         lua_set_features_table(state);
         lua_set_command_table(state);
         lua_set_output_table(state);
         lua_set_chimera_table(state);
         lua_setglobal(state, "balltze");
+
+        // Set up engine table
+        lua_set_engine_table(state);
     }
 }
