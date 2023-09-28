@@ -57,7 +57,8 @@ local function on_hud_element_bitmap_render(event)
             local screen_resolution = engine.get_resolution()
             local rotation_angle = 6
             local skew_angle = -6 
-            if screen_resolution.width / 2 < event.args.vertices.top_left.x then
+            local actual_width = (640 / (4 / 3)) * (screen_resolution.width / screen_resolution.height)
+            if actual_width / 2 < event.args.vertices.top_left.x then
                 rotation_angle = -6
                 skew_angle = 6
             end
