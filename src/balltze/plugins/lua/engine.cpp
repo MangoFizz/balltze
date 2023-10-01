@@ -8,7 +8,7 @@
 #include "helpers.hpp"
 
 extern "C" {
-    #include "lfmt.h"
+    #include "lua-fmt/lfmt.h"
 }
 
 namespace Balltze::Plugins {

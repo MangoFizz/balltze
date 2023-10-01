@@ -15,13 +15,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Include stuff
 include(lua/code_gen/tag_definitions.cmake)
-include(src/lua/lua.cmake)
-include(src/fmt/fmt.cmake)
-include(src/invader/invader.cmake)
+include(lib/lua/lua.cmake)
+include(lib/fmt/fmt.cmake)
+include(lib/invader/invader.cmake)
 include(src/sound-subtitles-stapler/sss.cmake)
 
 # Set include path
-include_directories(include src/lua src/)
+include_directories(include include/lua lib/)
 
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
@@ -118,7 +118,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/event.cpp
     src/balltze/plugins/lua/helpers.cpp
     src/balltze/plugins/lua/lfmt.cpp
-    src/balltze/plugins/lua/lfmt.c
+    src/balltze/plugins/lua/lua-fmt/lfmt.c
     src/balltze/plugins/lua/logger.cpp
     src/balltze/plugins/lua/output.cpp
     src/balltze/balltze.cpp

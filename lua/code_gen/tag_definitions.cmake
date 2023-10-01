@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 find_package(LuaRuntime REQUIRED)
 
 # Tag definitions
-set(TAG_DEFINITIONS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/invader/tag/hek/definition")
+set(TAG_DEFINITIONS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/invader/tag/hek/definition")
 file(GLOB TAG_DEFINITION_FILES ${TAG_DEFINITIONS_PATH}/*.json)
 
 # Output files
