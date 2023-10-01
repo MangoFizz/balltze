@@ -1830,7 +1830,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_color_a_r_g_b_int__index(lua_State *state) {
         auto *color = lua_from_meta_object<Engine::ColorARGBInt>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -1860,7 +1859,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_color_a_r_g_b_int__newindex(lua_State *state) {
         auto *color = lua_from_meta_object<Engine::ColorARGBInt>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -1891,7 +1889,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_tag_dependency__index(lua_State *state) {
         auto *dependency = lua_from_meta_object<Engine::TagDependency>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -1921,8 +1918,7 @@ namespace Balltze::Plugins {
 
     static int lua_engine_tag_dependency__newindex(lua_State *state) noexcept {
         auto *dependency = lua_from_meta_object<Engine::TagDependency>(state, 1); 
-        lua_pop(state, 1); 
-        auto *key = lua_tostring(state, 2);
+        auto *key = luaL_checkstring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
         }
@@ -1960,7 +1956,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_point2_d__index(lua_State *state) noexcept {
         auto *point = lua_from_meta_object<Engine::Point2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -1982,7 +1977,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_point2_d__newindex(lua_State *state) noexcept {
         auto *point = lua_from_meta_object<Engine::Point2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2007,7 +2001,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_point3_d__index(lua_State *state) noexcept {
         auto *point = lua_from_meta_object<Engine::Point3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2033,7 +2026,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_point3_d__newindex(lua_State *state) noexcept {
         auto *point = lua_from_meta_object<Engine::Point3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2061,7 +2053,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_tag_data_offset__index(lua_State *state) noexcept {
         auto *offset = lua_from_meta_object<Engine::TagDataOffset>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2103,7 +2094,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_tag_data_offset__newindex(lua_State *state) noexcept {
         auto *offset = lua_from_meta_object<Engine::TagDataOffset>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2134,7 +2124,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_color_a_r_g_b__index(lua_State *state) {
         auto *color = lua_from_meta_object<Engine::ColorARGB>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2164,7 +2153,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_color_a_r_g_b__newindex(lua_State *state) noexcept {
         auto *color = lua_from_meta_object<Engine::ColorARGB>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2195,7 +2183,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_rectangle2_d__index(lua_State *state) {
         auto *rectangle = lua_from_meta_object<Engine::Rectangle2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2225,7 +2212,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_rectangle2_d__newindex(lua_State *state) noexcept {
         auto *rectangle = lua_from_meta_object<Engine::Rectangle2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2256,7 +2242,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_rectangle2_d_f__index(lua_State *state) {
         auto *rectangle = lua_from_meta_object<Engine::Rectangle2DF>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2); 
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2286,7 +2271,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_rectangle2_d_f__newindex(lua_State *state) noexcept {
         auto *rectangle = lua_from_meta_object<Engine::Rectangle2DF>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2); 
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2317,7 +2301,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_point2_d_int__index(lua_State *state) {
         auto *point = lua_from_meta_object<Engine::Point2DInt>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2339,7 +2322,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_point2_d_int__newindex(lua_State *state) noexcept {
         auto *point = lua_from_meta_object<Engine::Point2DInt>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2364,7 +2346,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_euler2_d__index(lua_State *state) {
         auto *euler = lua_from_meta_object<Engine::Euler2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2386,7 +2367,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_euler2_d__newindex(lua_State *state) noexcept {
         auto *euler = lua_from_meta_object<Engine::Euler2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2411,7 +2391,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_euler3_d__index(lua_State *state) {
         auto *euler = lua_from_meta_object<Engine::Euler3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2437,7 +2416,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_euler3_d__newindex(lua_State *state) noexcept {
         auto *euler = lua_from_meta_object<Engine::Euler3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2465,7 +2443,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_euler3_d_p_y_r__index(lua_State *state) {
         auto *euler = lua_from_meta_object<Engine::Euler3DPYR>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2491,7 +2468,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_euler3_d_p_y_r__newindex(lua_State *state) noexcept {
         auto *euler = lua_from_meta_object<Engine::Euler3DPYR>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2519,7 +2495,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_vector2_d__index(lua_State *state) {
         auto *vector = lua_from_meta_object<Engine::Vector2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2541,7 +2516,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_vector2_d__newindex(lua_State *state) noexcept {
         auto *vector = lua_from_meta_object<Engine::Vector2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2566,7 +2540,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_vector3_d__index(lua_State *state) {
         auto *vector = lua_from_meta_object<Engine::Vector3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2592,7 +2565,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_vector3_d__newindex(lua_State *state) noexcept {
         auto *vector = lua_from_meta_object<Engine::Vector3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2620,7 +2592,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_color_r_g_b__index(lua_State *state) noexcept {
         auto *color = lua_from_meta_object<Engine::ColorRGB>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2646,7 +2617,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_color_r_g_b__newindex(lua_State *state) noexcept {
         auto *color = lua_from_meta_object<Engine::ColorRGB>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2674,7 +2644,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_quaternion__index(lua_State *state) noexcept {
         auto *quaternion = lua_from_meta_object<Engine::Quaternion>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2704,7 +2673,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_quaternion__newindex(lua_State *state) noexcept {
         auto *quaternion = lua_from_meta_object<Engine::Quaternion>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2735,7 +2703,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_plane3_d__index(lua_State *state) noexcept {
         auto *plane = lua_from_meta_object<Engine::Plane3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2753,7 +2720,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_plane3_d__newindex(lua_State *state) noexcept {
         auto *plane = lua_from_meta_object<Engine::Plane3D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2775,7 +2741,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_plane2_d__index(lua_State *state) noexcept {
         auto *plane = lua_from_meta_object<Engine::Plane2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2793,7 +2758,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_plane2_d__newindex(lua_State *state) noexcept {
         auto *plane = lua_from_meta_object<Engine::Plane2D>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2818,7 +2782,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_widget__index(lua_State *state) noexcept {
         auto *widget = lua_from_meta_object<Engine::Widget>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -2931,7 +2894,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_widget__newindex(lua_State *state) noexcept {
         auto *widget = lua_from_meta_object<Engine::Widget>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3041,7 +3003,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_camera_data__index(lua_State *state) noexcept {
         auto *camera = lua_from_meta_object<Engine::CameraData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3071,7 +3032,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_camera_data__newindex(lua_State *state) noexcept {
         auto *camera = lua_from_meta_object<Engine::CameraData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3100,7 +3060,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_rotation_matrix__index(lua_State *state) noexcept {
         auto *rotation_matrix = lua_from_meta_object<Engine::RotationMatrix>(state, 1); 
-        lua_pop(state, 1); 
         auto index = luaL_checkinteger(state, 2);
 
         if(index < 1 || index > 3) {  
@@ -3121,7 +3080,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_rotation_matrix__newindex(lua_State *state) noexcept {
         auto *rotation_matrix = lua_from_meta_object<Engine::RotationMatrix>(state, 1); 
-        lua_pop(state, 1); 
         auto index = luaL_checkinteger(state, 2);
 
         if(index < 1 || index > 3) {  
@@ -3146,7 +3104,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_model_node__index(lua_State *state) noexcept {
         auto *model_node = lua_from_meta_object<Engine::ModelNode>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3174,7 +3131,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_model_node__newindex(lua_State *state) noexcept {
         auto *model_node = lua_from_meta_object<Engine::ModelNode>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3203,7 +3159,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_flags__index(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::BaseObjectFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3276,7 +3231,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_flags__newindex(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::BaseObjectFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
@@ -3354,7 +3308,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_network__index(lua_State *state) noexcept {
         auto *object_network = lua_from_meta_object<Engine::BaseObjectNetwork>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3397,7 +3350,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_network__newindex(lua_State *state) noexcept {
         auto *object_network = lua_from_meta_object<Engine::BaseObjectNetwork>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3466,7 +3418,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_scenario_location__index(lua_State *state) noexcept {
         auto *location = lua_from_meta_object<Engine::ScenarioLocation>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3487,7 +3438,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_scenario_location__newindex(lua_State *state) noexcept {
         auto *location = lua_from_meta_object<Engine::ScenarioLocation>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3513,7 +3463,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_vitals_flags__index(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::BaseObjectVitalsFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3559,7 +3508,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_vitals_flags__newindex(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::BaseObjectVitalsFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
@@ -3610,7 +3558,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_vitals__index(lua_State *state) noexcept {
         auto *vitals = lua_from_meta_object<Engine::BaseObjectVitals>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3664,7 +3611,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_vitals__newindex(lua_State *state) noexcept {
         auto *vitals = lua_from_meta_object<Engine::BaseObjectVitals>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -3723,7 +3669,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_attachments_data__index(lua_State *state) noexcept {
         auto *attachments_data = lua_from_meta_object<Engine::BaseObjectAttachmentsData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3755,7 +3700,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_attachments_data__newindex(lua_State *state) noexcept {
         auto *attachments_data = lua_from_meta_object<Engine::BaseObjectAttachmentsData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -3806,7 +3750,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_region_destroyeds__index(lua_State *state) noexcept {
         auto *regions = lua_from_meta_object<Engine::BaseObjectRegionDestroyeds>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3845,7 +3788,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_region_destroyeds__newindex(lua_State *state) noexcept {
         auto *regions = lua_from_meta_object<Engine::BaseObjectRegionDestroyeds>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
@@ -3890,7 +3832,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_block_reference__index(lua_State *state) noexcept {
         auto *block_reference = lua_from_meta_object<Engine::BaseObjectBlockReference>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -3911,7 +3852,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object_block_reference__newindex(lua_State *state) noexcept {
         auto *block_reference = lua_from_meta_object<Engine::BaseObjectBlockReference>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isinteger(state, 3)) {  
@@ -3940,7 +3880,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object__index(lua_State *state) noexcept {
         auto *object = lua_from_meta_object<Engine::BaseObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4117,7 +4056,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_object__newindex(lua_State *state) noexcept {
         auto *object = lua_from_meta_object<Engine::BaseObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -4307,7 +4245,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_recent_damager__index(lua_State *state) noexcept {
         auto *object = lua_from_meta_object<Engine::UnitRecentDamager>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4334,7 +4271,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_recent_damager__newindex(lua_State *state) noexcept {
         auto *object = lua_from_meta_object<Engine::UnitRecentDamager>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -4366,7 +4302,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_flags__index(lua_State *state) {
         auto *flags = lua_from_meta_object<Engine::UnitFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4429,7 +4364,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_flags__newindex(lua_State *state) {
         auto *flags = lua_from_meta_object<Engine::UnitFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
@@ -4498,7 +4432,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_control_flags__index(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::UnitControlFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4558,7 +4491,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_control_flags__newindex(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::UnitControlFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
@@ -4624,7 +4556,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_animation_state_data__index(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitAnimationStateData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4645,7 +4576,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_animation_state_data__newindex(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitAnimationStateData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isinteger(state, 3)) {  
@@ -4672,7 +4602,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_animation_flags__index(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::UnitAnimationFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4699,7 +4628,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_animation_flags__newindex(lua_State *state) noexcept {
         auto *flags = lua_from_meta_object<Engine::UnitAnimationFlags>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
@@ -4732,7 +4660,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_animation_data__index(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitAnimationData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4804,7 +4731,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_animation_data__newindex(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitAnimationData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -4916,7 +4842,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_ai_communication_packet__index(lua_State *state) noexcept {
         auto *packet = lua_from_meta_object<Engine::AiCommunicationPacket>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -4937,7 +4862,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_ai_communication_packet__newindex(lua_State *state) noexcept {
         auto *packet = lua_from_meta_object<Engine::AiCommunicationPacket>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -4973,7 +4897,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_speech__index(lua_State *state) noexcept {
         auto *speech = lua_from_meta_object<Engine::UnitSpeech>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -5009,7 +4932,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_speech__newindex(lua_State *state) noexcept {
         auto *speech = lua_from_meta_object<Engine::UnitSpeech>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -5060,7 +4982,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_speech_data__index(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitSpeechData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -5120,7 +5041,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_speech_data__newindex(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitSpeechData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -5200,7 +5120,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_control_data__index(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitControlData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -5248,7 +5167,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_control_data__newindex(lua_State *state) noexcept {
         auto *data = lua_from_meta_object<Engine::UnitControlData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isnumber(state, 3)) {  
@@ -5304,7 +5222,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_object__index(lua_State *state) noexcept {
         auto *unit = lua_from_meta_object<Engine::UnitObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
             return luaL_error(state, "Invalid key type"); 
@@ -5593,7 +5510,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_unit_object__newindex(lua_State *state) noexcept {
         auto *unit = lua_from_meta_object<Engine::UnitObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -6127,7 +6043,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_biped_object__index(lua_State *state) noexcept {
         auto *biped = lua_from_meta_object<Engine::BipedObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -6209,7 +6124,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_biped_object__newindex(lua_State *state) noexcept {
         auto *biped = lua_from_meta_object<Engine::BipedObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -6554,7 +6468,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_vehicle_object__index(lua_State *state) noexcept {
         auto *vehicle = lua_from_meta_object<Engine::VehicleObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -6619,7 +6532,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_vehicle_object__newindex(lua_State *state) noexcept {
         auto *vehicle = lua_from_meta_object<Engine::VehicleObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -6690,7 +6602,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_item_object__index(lua_State *state) noexcept {
         auto *item = lua_from_meta_object<Engine::ItemObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -6736,7 +6647,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_item_object__newindex(lua_State *state) noexcept {
         auto *item = lua_from_meta_object<Engine::ItemObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -6786,7 +6696,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_garbage_object__index(lua_State *state) noexcept {
         auto *garbage = lua_from_meta_object<Engine::GarbageObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -6805,7 +6714,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_garbage_object__newindex(lua_State *state) noexcept {
         auto *garbage = lua_from_meta_object<Engine::GarbageObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -7236,7 +7144,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_weapon_object__index(lua_State *state) noexcept {
         auto *weapon = lua_from_meta_object<Engine::WeaponObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -7308,7 +7215,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_weapon_object__newindex(lua_State *state) noexcept {
         auto *weapon = lua_from_meta_object<Engine::WeaponObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -7376,7 +7282,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_equipment_network_data__index(lua_State *state) noexcept {
         auto *equipment_network_data = lua_from_meta_object<Engine::EquipmentNetworkData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -7401,7 +7306,6 @@ namespace Balltze::Plugins {
 
      static int lua_engine_equipment_network_data__newindex(lua_State *state) noexcept {
         auto *equipment_network_data = lua_from_meta_object<Engine::EquipmentNetworkData>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -7430,7 +7334,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_equipment_network__index(lua_State *state) noexcept {
         auto *equipment_network = lua_from_meta_object<Engine::EquipmentNetwork>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -7464,7 +7367,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_equipment_network__newindex(lua_State *state) noexcept {
         auto *equipment_network = lua_from_meta_object<Engine::EquipmentNetwork>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -7512,7 +7414,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_equipment_object__index(lua_State *state) noexcept {
         auto *equipment = lua_from_meta_object<Engine::EquipmentObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
@@ -7531,7 +7432,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_equipment_object__newindex(lua_State *state) noexcept {
         auto *equipment = lua_from_meta_object<Engine::EquipmentObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -7743,7 +7643,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_projectile_object__index(lua_State *state) noexcept {
         auto *projectile = lua_from_meta_object<Engine::ProjectileObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
@@ -7807,7 +7706,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_projectile_object__newindex(lua_State *state) noexcept {
         auto *projectile = lua_from_meta_object<Engine::ProjectileObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -7927,7 +7825,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_object__index(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
@@ -7961,7 +7858,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_object__newindex(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -8077,7 +7973,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_machine_object__index(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceMachineObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
@@ -8102,7 +7997,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_machine_object__newindex(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceMachineObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -8171,7 +8065,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_control_object__index(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceControlObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
@@ -8193,7 +8086,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_control_object__newindex(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceControlObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -8219,7 +8111,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_light_fixture_object__index(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceLightFixtureObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
@@ -8247,7 +8138,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_device_light_fixture_object__newindex(lua_State *state) noexcept {
         auto *device = lua_from_meta_object<Engine::DeviceLightFixtureObject>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
@@ -8279,7 +8169,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_player_multiplayer_statistics__index(lua_State *state) {
         auto *stats = lua_from_meta_object<Engine::PlayerMultiplayerStatistics>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
@@ -8325,7 +8214,6 @@ namespace Balltze::Plugins {
 
     static int lua_engine_player_multiplayer_statistics__newindex(lua_State *state) {
         auto *stats = lua_from_meta_object<Engine::PlayerMultiplayerStatistics>(state, 1); 
-        lua_pop(state, 1); 
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  

@@ -247,4 +247,38 @@ namespace Balltze::Event {
         // Register debug command
         register_command("debug_widget_background_render_event", "debug", "Sets whenever to log widget background render event.", "[enable: boolean]", debug_widget_background_render_event, true, 0, 1);
     }
+
+    static bool navpoints_render_event_before_dispatcher() {
+        NavPointsRenderEvent navpoints_render_event(EVENT_TIME_BEFORE);
+        navpoints_render_event.dispatch();
+        return navpoints_render_event.cancelled();
+    }
+
+    static void navpoints_render_event_after_dispatcher() {
+        NavPointsRenderEvent navpoints_render_event(EVENT_TIME_AFTER);
+        navpoints_render_event.dispatch();
+    }
+
+    static EventListenerHandle<TickEvent> navpoints_render_event_init_tick_event_handle;
+
+    template<>
+    void EventHandler<NavPointsRenderEvent>::init() {
+        static bool enabled = false;
+        if(enabled) {
+            return;
+        }
+        enabled = true;
+
+        navpoints_render_event_init_tick_event_handle = TickEvent::subscribe([](TickEvent const &event) {
+            auto *render_navpoint_function_call_sig = Memory::get_signature("render_navpoint_function_call");
+            if(!render_navpoint_function_call_sig) {
+                throw std::runtime_error("Could not find signature for navpoints render event");
+            }
+
+            auto *address = Memory::follow_32bit_jump(render_navpoint_function_call_sig->data()) + 9;
+            Memory::hook_function(address, std::function<bool()>(navpoints_render_event_before_dispatcher), navpoints_render_event_after_dispatcher);
+
+            navpoints_render_event_init_tick_event_handle.remove();
+        });
+    }
 }

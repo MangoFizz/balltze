@@ -110,6 +110,7 @@ namespace Balltze::Event {
     template class EventHandler<PostCarnageReportRenderEvent>;
     template class EventHandler<HUDElementBitmapRenderEvent>;
     template class EventHandler<WidgetBackgroundRenderEvent>;
+    template class EventHandler<NavPointsRenderEvent>;
 
     static EventListenerHandle<TickEvent> first_tick_listener;
 
@@ -133,6 +134,7 @@ namespace Balltze::Event {
             EventHandler<PostCarnageReportRenderEvent>::init();
             EventHandler<HUDElementBitmapRenderEvent>::init();
             EventHandler<WidgetBackgroundRenderEvent>::init();
+            EventHandler<NavPointsRenderEvent>::init();
             
             first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
                 EventHandler<D3D9BeginSceneEvent>::init();

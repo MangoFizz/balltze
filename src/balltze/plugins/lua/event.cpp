@@ -1253,6 +1253,90 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_event_navpoints_render_remove_listener(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 1) {
+                remove_event_listener(state, "navpoints_render", 1);
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.navpoints_render.remove_listener.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static int lua_event_navpoints_render_subscribe(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 2) {
+                auto priority_str = luaL_checkstring(state, 2);
+                try {
+                    auto priority = Event::event_priority_from_string(priority_str);
+                    return add_event_listener(state, "navpoints_render", 1, priority, lua_event_navpoints_render_remove_listener);
+                }
+                catch(const std::invalid_argument &e) {
+                    return luaL_error(state, "Invalid priority argument in function events.navpoints_render.subscribe: %s.", priority_str);
+                }
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.navpoints_render.subscribe.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static int lua_event_navpoints_render_remove_all_listeners(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            
+            if(args == 0) {
+                remove_all_event_listeners(state, "navpoints_render");
+                return 0;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function events.navpoints_render.remove_all_listeners.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        
+        return 0;
+    }
+
+    static void populate_navpoints_render_events(Event::NavPointsRenderEvent &context, Event::EventPriority priority) noexcept {
+        auto plugins = get_lua_plugins();
+        
+        for(auto *&plugin : plugins) {
+            auto *state = plugin->state();
+            create_event_data_table(state, context);
+
+            lua_newtable(state);
+            lua_setfield(state, -2, "args");
+            call_events_by_priority(state, "navpoints_render", priority, -1);
+            
+            lua_pop(state, 1);
+        }
+    }
+
     void lua_set_event_table(lua_State *state) noexcept {
         set_up_events_registry_table(state);
 
@@ -1270,6 +1354,7 @@ namespace Balltze::Plugins {
         set_up_event_table(state, "post_carnage_report_render", lua_event_post_carnage_report_render_subscribe, lua_event_post_carnage_report_render_remove_listener, lua_event_post_carnage_report_render_remove_all_listeners);
         set_up_event_table(state, "hud_element_bitmap_render", lua_event_hud_element_bitmap_render_subscribe, lua_event_hud_element_bitmap_render_remove_listener, lua_event_hud_element_bitmap_render_remove_all_listeners);
         set_up_event_table(state, "widget_background_render", lua_event_widget_background_render_subscribe, lua_event_widget_background_render_remove_listener, lua_event_widget_background_render_remove_all_listeners);
+        set_up_event_table(state, "navpoints_render", lua_event_navpoints_render_subscribe, lua_event_navpoints_render_remove_listener, lua_event_navpoints_render_remove_all_listeners);
         lua_setfield(state, -2, "event");
 
         // Set up tick event
@@ -1474,6 +1559,23 @@ namespace Balltze::Plugins {
 
         static auto widget_background_render_event_lowest = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
             populate_widget_background_render_events(context, Event::EVENT_PRIORITY_LOWEST);
+        }, Event::EVENT_PRIORITY_LOWEST);
+
+        // Set up navpoints render event
+        static auto navpoints_render_event_highest = Event::NavPointsRenderEvent::subscribe([](Event::NavPointsRenderEvent &context) {
+            populate_navpoints_render_events(context, Event::EVENT_PRIORITY_HIGHEST);
+        }, Event::EVENT_PRIORITY_HIGHEST);
+
+        static auto navpoints_render_event_above_default = Event::NavPointsRenderEvent::subscribe([](Event::NavPointsRenderEvent &context) {
+            populate_navpoints_render_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+        }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
+
+        static auto navpoints_render_event_default = Event::NavPointsRenderEvent::subscribe([](Event::NavPointsRenderEvent &context) {
+            populate_navpoints_render_events(context, Event::EVENT_PRIORITY_DEFAULT);
+        }, Event::EVENT_PRIORITY_DEFAULT);
+
+        static auto navpoints_render_event_lowest = Event::NavPointsRenderEvent::subscribe([](Event::NavPointsRenderEvent &context) {
+            populate_navpoints_render_events(context, Event::EVENT_PRIORITY_LOWEST);
         }, Event::EVENT_PRIORITY_LOWEST);
     }
 }

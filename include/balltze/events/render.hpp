@@ -84,6 +84,15 @@ namespace Balltze::Event {
 
         WidgetBackgroundRenderEvent(EventTime time, WidgetBackgroundRenderEventArgs args) : EventData(time), args(args) {}
     };
+
+    class NavPointsRenderEvent : public EventData<NavPointsRenderEvent> {
+    public:
+        bool cancellable() const {
+            return true;
+        }
+
+        NavPointsRenderEvent(EventTime time) : EventData(time) {}
+    };
 }
 
 #endif
