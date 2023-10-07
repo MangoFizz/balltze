@@ -111,6 +111,12 @@ add_library(balltze SHARED
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
     src/balltze/plugins/lua/api.cpp
+    src/balltze/plugins/lua/engine/core.cpp
+    src/balltze/plugins/lua/engine/game_state.cpp
+    src/balltze/plugins/lua/engine/map.cpp
+    src/balltze/plugins/lua/engine/multiplayer.cpp
+    src/balltze/plugins/lua/engine/tag.cpp
+    src/balltze/plugins/lua/engine/user_interface.cpp
     src/balltze/plugins/lua/chimera.cpp
     src/balltze/plugins/lua/command.cpp
     src/balltze/plugins/lua/engine.cpp

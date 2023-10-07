@@ -49,14 +49,14 @@ namespace Balltze::Engine {
     #define CONSOLE_COLOR_ERROR Balltze::Engine::ColorARGB{1.0, 0.0, 0.0, 1.0}
 
     /**
-     * Display a message of a color
+     * Print a message of a color in the console
      * @param color   Color to use in the message
      * @param message Message to use
      */
     BALLTZE_API void console_print(std::string message, ColorARGB color = {1.0f, 1.0f, 1.0f, 1.0f}) noexcept;
 
     /**
-     * Display a message of a color
+     * Print a message of a color in the console
      * @param color  Color to use in the message
      * @param format String format (passed to snprintf)
      * @param args   Additional arguments to pass
@@ -68,7 +68,7 @@ namespace Balltze::Engine {
     }
 
     /**
-     * Display a message (white)
+     * Print a message in the console
      * @param format String format (passed to snprintf)
      * @param args   Additional arguments to pass
      */
@@ -83,8 +83,8 @@ namespace Balltze::Engine {
     BALLTZE_API std::filesystem::path get_path();
 
     /**
-     * Get the current resolution of Halo.
-     * @return Return the current resolution of Halo.
+     * Get the current resolution of the game.
+     * @return Return the current resolution.
      */
     BALLTZE_API Resolution &get_resolution() noexcept;
 

@@ -87,7 +87,7 @@ namespace Balltze::Engine {
         BaseObject* get_object(std::uint32_t index) noexcept;
 
         /**
-         * Spawn an object with an tag handle.
+         * Spawn an object.
          * @param  tag_handle   Tag handle of the object.
          * @param  offset       Offset of the object.
          * @param  parent       Parent object.
@@ -1508,7 +1508,7 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(AntennaVertex) == 0x20);
 
-    enum NetworkColor : std::uint16_t {
+    enum NetworkPlayerColor : std::uint16_t {
         NETWORK_COLOR_WHITE   = 0,
         NETWORK_COLOR_BLACK,
         NETWORK_COLOR_RED,
@@ -1619,7 +1619,7 @@ namespace Balltze::Engine {
         wchar_t name2[12];
 
         /** Color of the player in respect to FFA */
-        NetworkColor color;
+        NetworkPlayerColor color;
 
         std::int16_t icon_index;
 

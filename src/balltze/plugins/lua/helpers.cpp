@@ -686,27 +686,40 @@ namespace Balltze::Plugins {
 
         auto primary_class = Engine::tag_class_to_string(tag->primary_class);
         lua_pushstring(state, primary_class.c_str());
-        lua_setfield(state, -2, "primary_class");
+        lua_setfield(state, -2, "primaryClass");
 
         auto secondary_class = Engine::tag_class_to_string(tag->secondary_class);
         lua_pushstring(state, secondary_class.c_str());
-        lua_setfield(state, -2, "secondary_class");
+        lua_setfield(state, -2, "secondaryClass");
 
         auto tertiary_class = Engine::tag_class_to_string(tag->tertiary_class);
         lua_pushstring(state, tertiary_class.c_str());
-        lua_setfield(state, -2, "tertiary_class");
+        lua_setfield(state, -2, "tertiaryClass");
 
         lua_pushinteger(state, tag->handle.handle);
-        lua_setfield(state, -2, "handle");
+        lua_push_engine_resource_handle(state, -2, "handle");
 
         lua_pushstring(state, tag->path);
         lua_setfield(state, -2, "path");
 
         lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag->data));
-        lua_setfield(state, -2, "data");
+        lua_setfield(state, -2, "dataAddress");
 
         lua_pushboolean(state, tag->indexed);
         lua_setfield(state, -2, "indexed");
+    }
+
+    void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept {
+        lua_newtable(state);
+
+        lua_pushinteger(state, handle->handle);
+        lua_setfield(state, -2, "handle");
+
+        lua_pushinteger(state, handle->id);
+        lua_setfield(state, -2, "id");
+
+        lua_pushinteger(state, handle->index);
+        lua_setfield(state, -2, "index");
     }
 
     std::string unit_throwing_grenade_state_to_string(Engine::UnitThrowingGrenadeState state) {
@@ -1687,7 +1700,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    std::string network_color_to_string(Engine::NetworkColor color) {
+    std::string network_color_to_string(Engine::NetworkPlayerColor color) {
         switch(color) {
             case Engine::NETWORK_COLOR_WHITE:
                 return "white";
@@ -1730,7 +1743,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    Engine::NetworkColor network_color_from_string(const std::string &color) {
+    Engine::NetworkPlayerColor network_color_from_string(const std::string &color) {
         if(color == "white") {
             return Engine::NETWORK_COLOR_WHITE;
         }
@@ -2067,7 +2080,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, offset->external);
             return 1; 
         }
-        else if(field == "file_offset") { 
+        else if(field == "fileOffset") { 
             auto file_offset = offset->file_offset;
             if(file_offset == 0) {
                 lua_pushnil(state);
@@ -2106,7 +2119,7 @@ namespace Balltze::Plugins {
         else if(field == "external") { 
             offset->external = lua_toboolean(state, 3);
         }
-        else if(field == "file_offset") { 
+        else if(field == "fileOffset") { 
             offset->file_offset = luaL_checkinteger(state, 3);
         }
         else if(field == "pointer") {
@@ -2788,7 +2801,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "definition_tag_handle") { 
+        if(field == "definitionTagHandle") { 
             lua_pushinteger(state, widget->definition_tag_handle.handle);
             return 1;
         }
@@ -2805,11 +2818,11 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "left_bound") {
+        else if(field == "leftBound") {
             lua_pushinteger(state, widget->left_bound);
             return 1;
         }
-        else if(field == "top_bound") {
+        else if(field == "topBound") {
             lua_pushinteger(state, widget->top_bound);
             return 1;
         }
@@ -2818,11 +2831,11 @@ namespace Balltze::Plugins {
             lua_pushstring(state, type.c_str());
             return 1;
         }
-        else if(field == "ms_to_close") {
+        else if(field == "msToClose") {
             lua_pushinteger(state, widget->ms_to_close);
             return 1;
         }
-        else if(field == "ms_to_close_fade_time") {
+        else if(field == "msToCloseFadeTime") {
             lua_pushinteger(state, widget->ms_to_close_fade_time);
             return 1;
         }
@@ -2830,7 +2843,7 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, widget->opacity);
             return 1;
         }
-        else if(field == "previous_widget") {
+        else if(field == "previousWidget") {
             if(widget->previous_widget == nullptr) {
                 lua_pushnil(state);
             }
@@ -2839,7 +2852,7 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "next_widget") {
+        else if(field == "nextWidget") {
             if(widget->next_widget == nullptr) {
                 lua_pushnil(state);
             }
@@ -2848,7 +2861,7 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "parent_widget") {
+        else if(field == "parentWidget") {
             if(widget->parent_widget == nullptr) {
                 lua_pushnil(state);
             }
@@ -2857,7 +2870,7 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "child_widget") {
+        else if(field == "childWidget") {
             if(widget->child_widget == nullptr) {
                 lua_pushnil(state);
             }
@@ -2866,7 +2879,7 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "focused_child") {
+        else if(field == "focusedChild") {
             if(widget->focused_child == nullptr) {
                 lua_pushnil(state);
             }
@@ -2879,11 +2892,11 @@ namespace Balltze::Plugins {
             lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<wchar_t *>(widget->text)));
             return 1;
         }
-        else if(field == "cursor_index") {
+        else if(field == "cursorIndex") {
             lua_pushinteger(state, widget->cursor_index);
             return 1;
         }
-        else if(field == "bitmap_index") {
+        else if(field == "bitmapIndex") {
             lua_pushinteger(state, widget->bitmap_index);
             return 1;
         }
@@ -2900,7 +2913,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key; 
-        if(field == "definition_tag_handle") { 
+        if(field == "definitionTagHandle") { 
             widget->definition_tag_handle.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "name") {
@@ -2909,10 +2922,10 @@ namespace Balltze::Plugins {
         else if(field == "hidden") {
             widget->hidden = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "left_bound") {
+        else if(field == "leftBound") {
             widget->left_bound = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "top_bound") {
+        else if(field == "topBound") {
             widget->top_bound = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "type") {
@@ -2924,10 +2937,10 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value");
             }
         }
-        else if(field == "ms_to_close") {
+        else if(field == "msToClose") {
             widget->ms_to_close = luaL_checkinteger(state, 3);
         }
-        else if(field == "ms_to_close_fade_time") {
+        else if(field == "msToCloseFadeTime") {
             widget->ms_to_close_fade_time = luaL_checkinteger(state, 3);
         }
         else if(field == "opacity") {
@@ -2937,7 +2950,7 @@ namespace Balltze::Plugins {
             }
             widget->opacity = opacity;
         }
-        else if(field == "previous_widget") {
+        else if(field == "previousWidget") {
             auto *previous_widget = lua_from_meta_object<Engine::Widget>(state, 3);
             if(previous_widget) {
                 widget->previous_widget = previous_widget;
@@ -2946,7 +2959,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value");
             }
         }
-        else if(field == "next_widget") {
+        else if(field == "nextWidget") {
             auto *next_widget = lua_from_meta_object<Engine::Widget>(state, 3);
             if(next_widget) {
                 widget->next_widget = next_widget;
@@ -2955,7 +2968,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value");
             }
         }
-        else if(field == "parent_widget") {
+        else if(field == "parentWidget") {
             auto *parent_widget = lua_from_meta_object<Engine::Widget>(state, 3);
             if(parent_widget) {
                 widget->parent_widget = parent_widget;
@@ -2964,7 +2977,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value");
             }
         }
-        else if(field == "child_widget") {
+        else if(field == "childWidget") {
             auto *child_widget = lua_from_meta_object<Engine::Widget>(state, 3);
             if(child_widget) {
                 widget->child_widget = child_widget;
@@ -2973,7 +2986,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value");
             }
         }
-        else if(field == "focused_child") {
+        else if(field == "focusedChild") {
             auto *focused_child = lua_from_meta_object<Engine::Widget>(state, 3);
             if(focused_child) {
                 widget->focused_child = focused_child;
@@ -2985,10 +2998,10 @@ namespace Balltze::Plugins {
         else if(field == "text") {
             return luaL_error(state, "Unsupported operation");
         }
-        else if(field == "cursor_index") {
+        else if(field == "cursorIndex") {
             widget->cursor_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "bitmap_index") {
+        else if(field == "bitmapIndex") {
             widget->bitmap_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
         else { 
@@ -3115,7 +3128,7 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, model_node->scale);
             return 1;
         }
-        else if(field == "rotation_matrix") {
+        else if(field == "rotationMatrix") {
             lua_push_meta_engine_rotation_matrix(state, model_node->rotation);
             return 1;
         }
@@ -3141,7 +3154,7 @@ namespace Balltze::Plugins {
         if(field == "scale") { 
             model_node->scale = luaL_checknumber(state, 3);
         }
-        else if(field == "rotation_matrix") {
+        else if(field == "rotationMatrix") {
             return luaL_error(state, "Invalid operation");
         }
         else if(field == "position") {
@@ -3166,61 +3179,61 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "no_collision") { 
+        if(field == "noCollision") { 
             lua_pushboolean(state, flags->no_collision);
         }
-        else if(field == "on_ground") {
+        else if(field == "onGround") {
             lua_pushboolean(state, flags->on_ground);
         }
-        else if(field == "ignore_gravity") {
+        else if(field == "ignoreGravity") {
             lua_pushboolean(state, flags->ignore_gravity);
         }
-        else if(field == "in_water") {
+        else if(field == "inWater") {
             lua_pushboolean(state, flags->in_water);
         }
         else if(field == "stationary") {
             lua_pushboolean(state, flags->stationary);
         }
-        else if(field == "no_collision2") {
+        else if(field == "noCollision2") {
             lua_pushboolean(state, flags->no_collision2);
         }
-        else if(field == "has_sound_looping_attachment") {
+        else if(field == "hasSoundLoopingAttachment") {
             lua_pushboolean(state, flags->has_sound_looping_attachment);
         }
-        else if(field == "connected_to_map") {
+        else if(field == "connectedToMap") {
             lua_pushboolean(state, flags->connected_to_map);
         }
-        else if(field == "not_placed_automatically") {
+        else if(field == "notPlacedAutomatically") {
             lua_pushboolean(state, flags->not_placed_automatically);
         }
-        else if(field == "is_device_machine") {
+        else if(field == "isDeviceMachine") {
             lua_pushboolean(state, flags->is_device_machine);
         }
-        else if(field == "is_elevator") {
+        else if(field == "isElevator") {
             lua_pushboolean(state, flags->is_elevator);
         }
-        else if(field == "is_elevator_2") {
+        else if(field == "isElevator_2") {
             lua_pushboolean(state, flags->is_elevator_2);
         }
-        else if(field == "is_garbage") {
+        else if(field == "isGarbage") {
             lua_pushboolean(state, flags->is_garbage);
         }
-        else if(field == "no_shadow") {
+        else if(field == "noShadow") {
             lua_pushboolean(state, flags->no_shadow);
         }
-        else if(field == "delete_at_deactivation") {
+        else if(field == "deleteAtDeactivation") {
             lua_pushboolean(state, flags->delete_at_deactivation);
         }
-        else if(field == "do_not_reactivate") {
+        else if(field == "doNotReactivate") {
             lua_pushboolean(state, flags->do_not_reactivate);
         }
-        else if(field == "outside_of_map") {
+        else if(field == "outsideOfMap") {
             lua_pushboolean(state, flags->outside_of_map);
         }
         else if(field == "collidable") {
             lua_pushboolean(state, flags->collidable);
         }
-        else if(field == "has_collision_model") {
+        else if(field == "hasCollisionModel") {
             lua_pushboolean(state, flags->has_collision_model);
         }
         else { 
@@ -3239,61 +3252,61 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         bool value = lua_toboolean(state, 3);
-        if(field == "no_collision") { 
+        if(field == "noCollision") { 
             flags->no_collision = value;
         }
-        else if(field == "on_ground") {
+        else if(field == "onGround") {
             flags->on_ground = value;
         }
-        else if(field == "ignore_gravity") {
+        else if(field == "ignoreGravity") {
             flags->ignore_gravity = value;
         }
-        else if(field == "in_water") {
+        else if(field == "inWater") {
             flags->in_water = value;
         }
         else if(field == "stationary") {
             flags->stationary = value;
         }
-        else if(field == "no_collision2") {
+        else if(field == "noCollision2") {
             flags->no_collision2 = value;
         }
-        else if(field == "has_sound_looping_attachment") {
+        else if(field == "hasSoundLoopingAttachment") {
             flags->has_sound_looping_attachment = value;
         }
-        else if(field == "connected_to_map") {
+        else if(field == "connectedToMap") {
             flags->connected_to_map = value;
         }
-        else if(field == "not_placed_automatically") {
+        else if(field == "notPlacedAutomatically") {
             flags->not_placed_automatically = value;
         }
-        else if(field == "is_device_machine") {
+        else if(field == "isDeviceMachine") {
             flags->is_device_machine = value;
         }
-        else if(field == "is_elevator") {
+        else if(field == "isElevator") {
             flags->is_elevator = value;
         }
-        else if(field == "is_elevator_2") {
+        else if(field == "isElevator2") {
             flags->is_elevator_2 = value;
         }
-        else if(field == "is_garbage") {
+        else if(field == "isGarbage") {
             flags->is_garbage = value;
         }
-        else if(field == "no_shadow") {
+        else if(field == "noShadow") {
             flags->no_shadow = value;
         }
-        else if(field == "delete_at_deactivation") {
+        else if(field == "deleteAtDeactivation") {
             flags->delete_at_deactivation = value;
         }
-        else if(field == "do_not_reactivate") {
+        else if(field == "doNotReactivate") {
             flags->do_not_reactivate = value;
         }
-        else if(field == "outside_of_map") {
+        else if(field == "outsideOfMap") {
             flags->outside_of_map = value;
         }
         else if(field == "collidable") {
             flags->collidable = value;
         }
-        else if(field == "has_collision_model") {
+        else if(field == "hasCollisionModel") {
             flags->has_collision_model = value;
         }
         else { 
@@ -3314,13 +3327,13 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "valid_position") { 
+        if(field == "validPosition") { 
             lua_pushboolean(state, object_network->valid_position);
         }
         else if(field == "position") {
             lua_push_meta_engine_vector3_d(state, object_network->position);
         }
-        else if(field == "valid_forward_and_up") { 
+        else if(field == "validForwardAndUp") { 
             lua_pushboolean(state, object_network->valid_forward_and_up);
         }
         else if(field == "orientation") {
@@ -3330,13 +3343,13 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_point3_d(state, object_network->orientation[1]);
             lua_rawseti(state, -2, 2);
         }
-        else if(field == "valid_transitional_velocity") { 
+        else if(field == "validTransitionalVelocity") { 
             lua_pushboolean(state, object_network->valid_transitional_velocity);
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             lua_push_meta_engine_vector3_d(state, object_network->transitional_velocity);
         }
-        else if(field == "valid_timestamp") { 
+        else if(field == "validTimestamp") { 
             lua_pushboolean(state, object_network->valid_timestamp);
         }
         else if(field == "timestamp") { 
@@ -3357,7 +3370,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "valid_position") { 
+        if(field == "validPosition") { 
             if(lua_isboolean(state, 3)) {
                 object_network->valid_position = lua_toboolean(state, 3);
             }
@@ -3368,7 +3381,7 @@ namespace Balltze::Plugins {
         else if(field == "position") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "valid_forward_and_up") { 
+        else if(field == "validForwardAndUp") { 
             if(lua_isboolean(state, 3)) {
                 object_network->valid_forward_and_up = lua_toboolean(state, 3);
             }
@@ -3379,7 +3392,7 @@ namespace Balltze::Plugins {
         else if(field == "orientation") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "valid_transitional_velocity") { 
+        else if(field == "validTransitionalVelocity") { 
             if(lua_isboolean(state, 3)) {
                 object_network->valid_transitional_velocity = lua_toboolean(state, 3);
             }
@@ -3387,10 +3400,10 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value");
             }
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "valid_timestamp") { 
+        else if(field == "validTimestamp") { 
             if(lua_isboolean(state, 3)) {
                 object_network->valid_timestamp = lua_toboolean(state, 3);
             }
@@ -3424,10 +3437,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "leaf_id") { 
+        if(field == "leafId") { 
             lua_pushinteger(state, location->leaf_id);
         }
-        else if(field == "cluster_id") {
+        else if(field == "clusterId") {
             lua_pushinteger(state, location->cluster_id);
         }
         else {
@@ -3445,10 +3458,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "leaf_id") { 
+        if(field == "leafId") { 
             location->leaf_id = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "cluster_id") {
+        else if(field == "clusterId") {
             location->cluster_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else {
@@ -3470,34 +3483,34 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "health_damage_effect_applied") { 
+        if(field == "healthDamageEffectApplied") { 
             lua_pushboolean(state, flags->health_damage_effect_applied);
         }
-        else if(field == "shield_damage_effect_applied") { 
+        else if(field == "shieldDamageEffectApplied") { 
             lua_pushboolean(state, flags->shield_damage_effect_applied);
         }
-        else if(field == "health_depleted") { 
+        else if(field == "healthDepleted") { 
             lua_pushboolean(state, flags->health_depleted);
         }
-        else if(field == "shield_depleted") { 
+        else if(field == "shieldDepleted") { 
             lua_pushboolean(state, flags->shield_depleted);
         }
         else if(field == "killed") { 
             lua_pushboolean(state, flags->killed);
         }
-        else if(field == "killed_silent") { 
+        else if(field == "killedSilent") { 
             lua_pushboolean(state, flags->killed_silent);
         }
-        else if(field == "cannot_melee_attack") { 
+        else if(field == "cannotMeleeAttack") { 
             lua_pushboolean(state, flags->cannot_melee_attack);
         }
         else if(field == "invulnerable") { 
             lua_pushboolean(state, flags->invulnerable);
         }
-        else if(field == "shield_recharging") { 
+        else if(field == "shieldRecharging") { 
             lua_pushboolean(state, flags->shield_recharging);
         }
-        else if(field == "killed_no_stats") { 
+        else if(field == "killedNoStats") { 
             lua_pushboolean(state, flags->killed_no_stats);
         }
         else {
@@ -3516,34 +3529,34 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         bool value = lua_toboolean(state, 3);
-        if(field == "health_damage_effect_applied") { 
+        if(field == "healthDamageEffectApplied") { 
             flags->health_damage_effect_applied = value;
         }
-        else if(field == "shield_damage_effect_applied") { 
+        else if(field == "shieldDamageEffectApplied") { 
             flags->shield_damage_effect_applied = value;
         }
-        else if(field == "health_depleted") { 
+        else if(field == "healthDepleted") { 
             flags->health_depleted = value;
         }
-        else if(field == "shield_depleted") { 
+        else if(field == "shieldDepleted") { 
             flags->shield_depleted = value;
         }
         else if(field == "killed") { 
             flags->killed = value;
         }
-        else if(field == "killed_silent") { 
+        else if(field == "killedSilent") { 
             flags->killed_silent = value;
         }
-        else if(field == "cannot_melee_attack") { 
+        else if(field == "cannotMeleeAttack") { 
             flags->cannot_melee_attack = value;
         }
         else if(field == "invulnerable") { 
             flags->invulnerable = value;
         }
-        else if(field == "shield_recharging") { 
+        else if(field == "shieldRecharging") { 
             flags->shield_recharging = value;
         }
-        else if(field == "killed_no_stats") { 
+        else if(field == "killedNoStats") { 
             flags->killed_no_stats = value;
         }
         else {
@@ -3564,10 +3577,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "base_health") { 
+        if(field == "baseHealth") { 
             lua_pushnumber(state, vitals->base_health);
         }
-        else if(field == "base_shield") {
+        else if(field == "baseShield") {
             lua_pushnumber(state, vitals->base_shield);
         }
         else if(field == "health") {
@@ -3576,28 +3589,28 @@ namespace Balltze::Plugins {
         else if(field == "shield") {
             lua_pushnumber(state, vitals->shield);
         }
-        else if(field == "current_shield_damage") {
+        else if(field == "currentShieldDamage") {
             lua_pushnumber(state, vitals->current_shield_damage);
         }
-        else if(field == "current_health_damage") {
+        else if(field == "currentHealthDamage") {
             lua_pushnumber(state, vitals->current_health_damage);
         }
-        else if(field == "entangled_object") {
+        else if(field == "entangledObject") {
             lua_pushinteger(state, vitals->entangled_object.handle);
         }
-        else if(field == "recent_shield_damage") {
+        else if(field == "recentShieldDamage") {
             lua_pushnumber(state, vitals->recent_shield_damage);
         }
-        else if(field == "recent_health_damage") {
+        else if(field == "recentHealthDamage") {
             lua_pushnumber(state, vitals->recent_health_damage);
         }
-        else if(field == "recent_shield_damage_time") {
+        else if(field == "recentShieldDamageTime") {
             lua_pushinteger(state, vitals->recent_shield_damage_time);
         }
-        else if(field == "recent_health_damage_time") {
+        else if(field == "recentHealthDamageTime") {
             lua_pushinteger(state, vitals->recent_health_damage_time);
         }
-        else if(field == "shield_stun_time") {
+        else if(field == "shieldStunTime") {
             lua_pushinteger(state, vitals->shield_stun_time);
         }
         else if(field == "flags") {
@@ -3618,10 +3631,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "base_health") { 
+        if(field == "baseHealth") { 
             vitals->base_health = luaL_checknumber(state, 3);
         }
-        else if(field == "base_shield") {
+        else if(field == "baseShield") {
             vitals->base_shield = luaL_checknumber(state, 3);
         }
         else if(field == "health") {
@@ -3630,28 +3643,28 @@ namespace Balltze::Plugins {
         else if(field == "shield") {
             vitals->shield = luaL_checknumber(state, 3);
         }
-        else if(field == "current_shield_damage") {
+        else if(field == "currentShieldDamage") {
             vitals->current_shield_damage = luaL_checknumber(state, 3);
         }
-        else if(field == "current_health_damage") {
+        else if(field == "currentHealthDamage") {
             vitals->current_health_damage = luaL_checknumber(state, 3);
         }
-        else if(field == "entangled_object") {
+        else if(field == "entangledObject") {
             vitals->entangled_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "recent_shield_damage") {
+        else if(field == "recentShieldDamage") {
             vitals->recent_shield_damage = luaL_checknumber(state, 3);
         }
-        else if(field == "recent_health_damage") {
+        else if(field == "recentHealthDamage") {
             vitals->recent_health_damage = luaL_checknumber(state, 3);
         }
-        else if(field == "recent_shield_damage_time") {
+        else if(field == "recentShieldDamageTime") {
             vitals->recent_shield_damage_time = static_cast<Engine::TickCount32>(luaL_checkinteger(state, 3));
         }
-        else if(field == "recent_health_damage_time") {
+        else if(field == "recentHealthDamageTime") {
             vitals->recent_health_damage_time = static_cast<Engine::TickCount32>(luaL_checkinteger(state, 3));
         }
-        else if(field == "shield_stun_time") {
+        else if(field == "shieldStunTime") {
             vitals->shield_stun_time = static_cast<Engine::TickCount16>(luaL_checkinteger(state, 3));
         }
         else if(field == "flags") {
@@ -3689,7 +3702,7 @@ namespace Balltze::Plugins {
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "first_widget") {
+        else if(field == "firstWidget") {
             lua_pushinteger(state, attachments_data->first_widget.handle);
         }
         else {
@@ -3735,7 +3748,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "first_widget") {
+        else if(field == "firstWidget") {
             attachments_data->first_widget.handle = luaL_checkinteger(state, 3);
         }
         else {
@@ -3756,28 +3769,28 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "region_0") { 
+        if(field == "region0") { 
             lua_pushboolean(state, regions->region_0);
         }
-        else if(field == "region_1") {
+        else if(field == "region1") {
             lua_pushboolean(state, regions->region_1);
         }
-        else if(field == "region_2") {
+        else if(field == "region2") {
             lua_pushboolean(state, regions->region_2);
         }
-        else if(field == "region_3") {
+        else if(field == "region3") {
             lua_pushboolean(state, regions->region_3);
         }
-        else if(field == "region_4") {
+        else if(field == "region4") {
             lua_pushboolean(state, regions->region_4);
         }
-        else if(field == "region_5") {
+        else if(field == "region5") {
             lua_pushboolean(state, regions->region_5);
         }
-        else if(field == "region_6") {
+        else if(field == "region6") {
             lua_pushboolean(state, regions->region_6);
         }
-        else if(field == "region_7") {
+        else if(field == "region7") {
             lua_pushboolean(state, regions->region_7);
         }
         else {
@@ -3796,28 +3809,28 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         bool value = lua_toboolean(state, 3);
-        if(field == "region_0") { 
+        if(field == "region0") { 
             regions->region_0 = value;
         }
-        else if(field == "region_1") {
+        else if(field == "region1") {
             regions->region_1 = value;
         }
-        else if(field == "region_2") {
+        else if(field == "region2") {
             regions->region_2 = value;
         }
-        else if(field == "region_3") {
+        else if(field == "region3") {
             regions->region_3 = value;
         }
-        else if(field == "region_4") {
+        else if(field == "region4") {
             regions->region_4 = value;
         }
-        else if(field == "region_5") {
+        else if(field == "region5") {
             regions->region_5 = value;
         }
-        else if(field == "region_6") {
+        else if(field == "region6") {
             regions->region_6 = value;
         }
-        else if(field == "region_7") {
+        else if(field == "region7") {
             regions->region_7 = value;
         }
         else {
@@ -3886,22 +3899,22 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "tag_handle") { 
-            lua_pushinteger(state, object->tag_handle.handle);
+        if(field == "tagHandle") { 
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->tag_handle));
         }
-        else if(field == "network_role") {
+        else if(field == "networkRole") {
             lua_pushstring(state, object_network_role_to_string(object->network_role).c_str());
         }
-        else if(field == "should_force_baseline_update") {
+        else if(field == "shouldForceBaselineUpdate") {
             lua_pushboolean(state, object->should_force_baseline_update == 1);
         }
-        else if(field == "existence_time") {
+        else if(field == "existenceTime") {
             lua_pushinteger(state, object->existence_time);
         }
         else if(field == "flags") {
             lua_push_meta_engine_object_flags(state, object->flags);
         }
-        else if(field == "object_marker_id") {
+        else if(field == "objectMarkerId") {
             lua_pushinteger(state, object->object_marker_id);
         }
         else if(field == "network") {
@@ -3920,16 +3933,16 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_point3_d(state, object->orientation[1]);
             lua_rawseti(state, -2, 2);
         }
-        else if(field == "rotation_velocity") {
+        else if(field == "rotationVelocity") {
             lua_push_meta_engine_euler3_d_p_y_r(state, object->rotation_velocity);
         }
-        else if(field == "scenario_location") {
+        else if(field == "scenarioLocation") {
             lua_push_meta_engine_scenario_location(state, object->scenario_location);
         }
-        else if(field == "center_position") {
+        else if(field == "centerPosition") {
             lua_push_meta_engine_point3_d(state, object->center_position);
         }
-        else if(field == "bounding_radius") {
+        else if(field == "boundingRadius") {
             lua_pushnumber(state, object->bounding_radius);
         }
         else if(field == "scale") {
@@ -3938,114 +3951,114 @@ namespace Balltze::Plugins {
         else if(field == "type") {
             lua_pushstring(state, object_type_to_string(object->type).c_str());
         }
-        else if(field == "team_owner") {
+        else if(field == "teamOwner") {
             lua_pushstring(state, lua_engine_scenario_team_index_to_string(object->team_owner).c_str());
         }
-        else if(field == "multiplayer_team_owner") {
+        else if(field == "multiplayerTeamOwner") {
             lua_pushstring(state, multiplayer_team_to_string(object->multiplayer_team_owner).c_str());
         }
-        else if(field == "name_list_index") {
+        else if(field == "nameListIndex") {
             lua_pushinteger(state, object->name_list_index);
         }
-        else if(field == "moving_time") {
+        else if(field == "movingTime") {
             lua_pushinteger(state, object->moving_time);
         }
-        else if(field == "variant_index") {
+        else if(field == "variantIndex") {
             lua_pushinteger(state, object->variant_index);
         }
         else if(field == "player") {
             lua_pushinteger(state, object->player.handle);
         }
-        else if(field == "owner_object") {
+        else if(field == "ownerObject") {
             lua_pushinteger(state, object->owner_object.handle);
         }
-        else if(field == "animation_tag_handle") {
+        else if(field == "animationTagHandle") {
             lua_pushinteger(state, object->animation_tag_handle.handle);
         }
-        else if(field == "animation_index") {
+        else if(field == "animationIndex") {
             lua_pushinteger(state, object->animation_index);
         }
-        else if(field == "animation_frame") {
+        else if(field == "animationFrame") {
             lua_pushinteger(state, object->animation_frame);
         }
-        else if(field == "animation_interpolation_frame") {
+        else if(field == "animationInterpolationFrame") {
             lua_pushinteger(state, object->animation_interpolation_frame);
         }
-        else if(field == "animation_interpolation_frame_count") {
+        else if(field == "animationInterpolationFrameCount") {
             lua_pushinteger(state, object->animation_interpolation_frame_count);
         }
         else if(field == "vitals") {
             lua_push_meta_engine_object_vitals(state, object->vitals);
         }
-        else if(field == "cluster_partition") {
+        else if(field == "clusterPartition") {
             lua_pushinteger(state, object->cluster_partition.handle);
         }
-        else if(field == "unknown_object") {
+        else if(field == "unknownObject") {
             lua_pushinteger(state, object->unknown_object.handle);
         }
-        else if(field == "next_object") {
+        else if(field == "nextObject") {
             lua_pushinteger(state, object->next_object.handle);
         }
-        else if(field == "first_object") {
+        else if(field == "firstObject") {
             lua_pushinteger(state, object->first_object.handle);
         }
-        else if(field == "parent_object") {
+        else if(field == "parentObject") {
             lua_pushinteger(state, object->parent_object.handle);
         }
-        else if(field == "parent_attachment_node") {
+        else if(field == "parentAttachmentNode") {
             lua_pushinteger(state, object->parent_attachment_node);
         }
-        else if(field == "force_shield_update") {
+        else if(field == "forceShieldUpdate") {
             lua_pushboolean(state, object->force_shield_update);
         }
-        else if(field == "attachment_data") {
+        else if(field == "attachmentData") {
             lua_push_meta_engine_object_attachments_data(state, object->attachment_data);
         }
-        else if(field == "cached_render_state") {
+        else if(field == "cachedRenderState") {
             lua_pushinteger(state, object->cached_render_state.handle);
         }
-        else if(field == "region_destroyeds") {
+        else if(field == "regionDestroyeds") {
             lua_push_meta_engine_object_region_destroyeds(state, object->region_destroyeds);
         }
-        else if(field == "shader_permutation") {
+        else if(field == "shaderPermutation") {
             lua_pushinteger(state, object->shader_permutation);
         }
-        else if(field == "region_healths") {
+        else if(field == "regionHealths") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(object->region_healths) / sizeof(object->region_healths[0]); i++) {
                 lua_pushinteger(state, object->region_healths[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "region_permutation_ids") {
+        else if(field == "regionPermutationIds") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(object->region_permutation_ids) / sizeof(object->region_permutation_ids[0]); i++) {
                 lua_pushinteger(state, object->region_permutation_ids[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "color_change") {
+        else if(field == "colorChange") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(object->color_change) / sizeof(object->color_change[0]); i++) {
                 lua_push_meta_engine_color_r_g_b(state, object->color_change[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "color_change_2") {
+        else if(field == "colorChange2") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(object->color_change_2) / sizeof(object->color_change_2[0]); i++) {
                 lua_push_meta_engine_color_r_g_b(state, object->color_change_2[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "node_orientations") {
+        else if(field == "nodeOrientations") {
             lua_newtable(state);
             lua_push_meta_engine_object_block_reference(state, object->node_orientations[0]);
             lua_rawseti(state, -2, 1);
             lua_push_meta_engine_object_block_reference(state, object->node_orientations[1]);
             lua_rawseti(state, -2, 2);
         }
-        else if(field == "node_matrices_block") {
+        else if(field == "nodeMatricesBlock") {
             lua_push_meta_engine_object_block_reference(state, object->node_matrices_block);
         }
         else {
@@ -4063,22 +4076,22 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "tag_handle") { 
+        if(field == "tagHandle") { 
             object->tag_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "network_role") {
+        else if(field == "networkRole") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "should_force_baseline_update") {
+        else if(field == "shouldForceBaselineUpdate") {
             object->should_force_baseline_update = luaL_checkinteger(state, 3);
         }
-        else if(field == "existence_time") {
+        else if(field == "existenceTime") {
             object->existence_time = static_cast<Engine::TickCount32>(luaL_checkinteger(state, 3));
         }
         else if(field == "flags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "object_marker_id") {
+        else if(field == "objectMarkerId") {
             object->object_marker_id = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "network") {
@@ -4093,16 +4106,16 @@ namespace Balltze::Plugins {
         else if(field == "orientation") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "rotation_velocity") {
+        else if(field == "rotationVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "scenario_location") {
+        else if(field == "scenarioLocation") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "center_position") {
+        else if(field == "centerPosition") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "bounding_radius") {
+        else if(field == "boundingRadius") {
             object->bounding_radius = luaL_checknumber(state, 3);
         }
         else if(field == "scale") {
@@ -4116,7 +4129,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "team_owner") {
+        else if(field == "teamOwner") {
             try {
                 object->team_owner = lua_engine_scenario_team_index_from_string(luaL_checkstring(state, 3));
             }
@@ -4124,7 +4137,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "multiplayer_team_owner") {
+        else if(field == "multiplayerTeamOwner") {
             try {
                 object->multiplayer_team_owner = multiplayer_team_from_string(luaL_checkstring(state, 3));
             }
@@ -4132,58 +4145,58 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "name_list_index") {
+        else if(field == "nameListIndex") {
             object->name_list_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "moving_time") {
+        else if(field == "movingTime") {
             object->moving_time = static_cast<Engine::TickCount16>(luaL_checkinteger(state, 3));
         }
-        else if(field == "variant_index") {
+        else if(field == "variantIndex") {
             object->variant_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "player") {
             object->player.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "owner_object") {
+        else if(field == "ownerObject") {
             object->owner_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "animation_tag_handle") {
+        else if(field == "animationTagHandle") {
             object->animation_tag_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "animation_index") {
+        else if(field == "animationIndex") {
             object->animation_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "animation_frame") {
+        else if(field == "animationFrame") {
             object->animation_frame = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "animation_interpolation_frame") {
+        else if(field == "animationInterpolationFrame") {
             object->animation_interpolation_frame = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "animation_interpolation_frame_count") {
+        else if(field == "animationInterpolationFrameCount") {
             object->animation_interpolation_frame_count = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "vitals") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "cluster_partition") {
+        else if(field == "clusterPartition") {
             object->cluster_partition.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "unknown_object") {
+        else if(field == "unknownObject") {
             object->unknown_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "next_object") {
+        else if(field == "nextObject") {
             object->next_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "first_object") {
+        else if(field == "firstObject") {
             object->first_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "parent_object") {
+        else if(field == "parentObject") {
             object->parent_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "parent_attachment_node") {
+        else if(field == "parentAttachmentNode") {
             object->parent_attachment_node = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "force_shield_update") {
+        else if(field == "forceShieldUpdate") {
             if(lua_isboolean(state, 3)) {
                 object->force_shield_update = lua_toboolean(state, 3);
             }
@@ -4191,19 +4204,19 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "attachment_data") {
+        else if(field == "attachmentData") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "cached_render_state") {
+        else if(field == "cachedRenderState") {
             object->cached_render_state.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "region_destroyeds") {
+        else if(field == "regionDestroyeds") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "shader_permutation") {
+        else if(field == "shaderPermutation") {
             object->shader_permutation = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "region_healths") {
+        else if(field == "regionHealths") {
             for(std::size_t i = 0; i < sizeof(object->region_healths) / sizeof(object->region_healths[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -4212,7 +4225,7 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "region_permutation_ids") {
+        else if(field == "regionPermutationIds") {
             for(std::size_t i = 0; i < sizeof(object->region_permutation_ids) / sizeof(object->region_permutation_ids[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -4221,16 +4234,16 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "color_change") {
+        else if(field == "colorChange") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "color_change_2") {
+        else if(field == "colorChange2") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "node_orientations") {
+        else if(field == "nodeOrientations") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "node_matrices_block") {
+        else if(field == "nodeMatricesBlock") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -4251,10 +4264,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "last_damage_time") {
+        if(field == "lastDamageTime") {
             lua_pushinteger(state, object->last_damage_time);
         }
-        else if(field == "total_damage") {
+        else if(field == "totalDamage") {
             lua_pushnumber(state, object->total_damage);
         }
         else if(field == "object") {
@@ -4278,10 +4291,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "last_damage_time") {
+        if(field == "lastDamageTime") {
             object->last_damage_time = static_cast<Engine::TickCount32>(luaL_checkinteger(state, 3));
         }
-        else if(field == "total_damage") {
+        else if(field == "totalDamage") {
             object->total_damage = luaL_checknumber(state, 3);
         }
         else if(field == "object") {
@@ -4308,13 +4321,13 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "unknown_biped_speech_related") {
+        if(field == "unknownBipedSpeechRelated") {
             lua_pushboolean(state, flags->unknown_biped_speech_related);
         }
-        else if(field == "power_up") {
+        else if(field == "powerUp") {
             lua_pushboolean(state, flags->power_up);
         }
-        else if(field == "power_up_addition") {
+        else if(field == "powerUpAddition") {
             lua_pushboolean(state, flags->power_up_addition);
         }
         else if(field == "controllable") {
@@ -4323,16 +4336,16 @@ namespace Balltze::Plugins {
         else if(field == "berserking") {
             lua_pushboolean(state, flags->berserking);
         }
-        else if(field == "unknown_integrated_light_related") {
+        else if(field == "unknownIntegratedLightRelated") {
             lua_pushboolean(state, flags->unknown_integrated_light_related);
         }
-        else if(field == "will_not_drop_items") {
+        else if(field == "willNotDropItems") {
             lua_pushboolean(state, flags->will_not_drop_items);
         }
         else if(field == "unknown") {
             lua_pushboolean(state, flags->unknown);
         }
-        else if(field == "can_blink") {
+        else if(field == "canBlink") {
             lua_pushboolean(state, flags->can_blink);
         }
         else if(field == "impervious") {
@@ -4344,16 +4357,16 @@ namespace Balltze::Plugins {
         else if(field == "blind") {
             lua_pushboolean(state, flags->blind);
         }
-        else if(field == "unknown_nv_related") {
+        else if(field == "unknownNvRelated") {
             lua_pushboolean(state, flags->unknown_nv_related);
         }
         else if(field == "possessed") {
             lua_pushboolean(state, flags->possessed);
         }
-        else if(field == "desires_flashlight_on") {
+        else if(field == "desiresFlashlightOn") {
             lua_pushboolean(state, flags->desires_flashlight_on);
         }
-        else if(field == "desires_flashlight_off") {
+        else if(field == "desiresFlashlightOff") {
             lua_pushboolean(state, flags->desires_flashlight_off);
         }
         else {
@@ -4372,13 +4385,13 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         bool value = lua_toboolean(state, 3);
-        if(field == "unknown_biped_speech_related") {
+        if(field == "unknownBipedSpeechRelated") {
             flags->unknown_biped_speech_related = value;
         }
-        else if(field == "power_up") {
+        else if(field == "powerUp") {
             flags->power_up = value;
         }
-        else if(field == "power_up_addition") {
+        else if(field == "powerUpAddition") {
             flags->power_up_addition = value;
         }
         else if(field == "controllable") {
@@ -4387,16 +4400,16 @@ namespace Balltze::Plugins {
         else if(field == "berserking") {
             flags->berserking = value;
         }
-        else if(field == "unknown_integrated_light_related") {
+        else if(field == "unknownIntegratedLightRelated") {
             flags->unknown_integrated_light_related = value;
         }
-        else if(field == "will_not_drop_items") {
+        else if(field == "willNotDropItems") {
             flags->will_not_drop_items = value;
         }
         else if(field == "unknown") {
             flags->unknown = value;
         }
-        else if(field == "can_blink") {
+        else if(field == "canBlink") {
             flags->can_blink = value;
         }
         else if(field == "impervious") {
@@ -4408,16 +4421,16 @@ namespace Balltze::Plugins {
         else if(field == "blind") {
             flags->blind = value;
         }
-        else if(field == "unknown_nv_related") {
+        else if(field == "unknownNvRelated") {
             flags->unknown_nv_related = value;
         }
         else if(field == "possessed") {
             flags->possessed = value;
         }
-        else if(field == "desires_flashlight_on") {
+        else if(field == "desiresFlashlightOn") {
             flags->desires_flashlight_on = value;
         }
-        else if(field == "desires_flashlight_off") {
+        else if(field == "desiresFlashlightOff") {
             flags->desires_flashlight_off = value;
         }
         else {
@@ -4453,7 +4466,7 @@ namespace Balltze::Plugins {
         else if(field == "light") {
             lua_pushboolean(state, flags->light);
         }
-        else if(field == "exact_facing") {
+        else if(field == "exactFacing") {
             lua_pushboolean(state, flags->exact_facing);
         }
         else if(field == "action") {
@@ -4462,25 +4475,25 @@ namespace Balltze::Plugins {
         else if(field == "melee") {
             lua_pushboolean(state, flags->melee);
         }
-        else if(field == "look_dont_turn") {
+        else if(field == "lookDontTurn") {
             lua_pushboolean(state, flags->look_dont_turn);
         }
-        else if(field == "force_alert") {
+        else if(field == "forceAlert") {
             lua_pushboolean(state, flags->force_alert);
         }
         else if(field == "reload") {
             lua_pushboolean(state, flags->reload);
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             lua_pushboolean(state, flags->primary_trigger);
         }
-        else if(field == "secondary_trigger") {
+        else if(field == "secondaryTrigger") {
             lua_pushboolean(state, flags->secondary_trigger);
         }
         else if(field == "grenade") {
             lua_pushboolean(state, flags->grenade);
         }
-        else if(field == "exchange_weapon") {
+        else if(field == "exchangeWeapon") {
             lua_pushboolean(state, flags->exchange_weapon);
         }
         else {
@@ -4514,7 +4527,7 @@ namespace Balltze::Plugins {
         else if(field == "light") {
             flags->light = value;
         }
-        else if(field == "exact_facing") {
+        else if(field == "exactFacing") {
             flags->exact_facing = value;
         }
         else if(field == "action") {
@@ -4523,25 +4536,25 @@ namespace Balltze::Plugins {
         else if(field == "melee") {
             flags->melee = value;
         }
-        else if(field == "look_dont_turn") {
+        else if(field == "lookDontTurn") {
             flags->look_dont_turn = value;
         }
-        else if(field == "force_alert") {
+        else if(field == "forceAlert") {
             flags->force_alert = value;
         }
         else if(field == "reload") {
             flags->reload = value;
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             flags->primary_trigger = value;
         }
-        else if(field == "secondary_trigger") {
+        else if(field == "secondaryTrigger") {
             flags->secondary_trigger = value;
         }
         else if(field == "grenade") {
             flags->grenade = value;
         }
-        else if(field == "exchange_weapon") {
+        else if(field == "exchangeWeapon") {
             flags->exchange_weapon = value;
         }
         else {
@@ -4562,10 +4575,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "animation_index") {
+        if(field == "animationIndex") {
             lua_pushinteger(state, data->animation_index);
         }
-        else if(field == "frame_index") {
+        else if(field == "frameIndex") {
             lua_pushinteger(state, data->frame_index);
         }
         else {
@@ -4584,10 +4597,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         std::int16_t value = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
-        if(field == "animation_index") {
+        if(field == "animationIndex") {
             data->animation_index = value;
         }
-        else if(field == "frame_index") {
+        else if(field == "frameIndex") {
             data->frame_index = value;
         }
         else {
@@ -4608,16 +4621,16 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "animation_bit0_unknown") {
+        if(field == "animationBit0Unknown") {
             lua_pushboolean(state, flags->animation_bit0_unknown);
         }
-        else if(field == "animation_bit1_unknown") {
+        else if(field == "animationBit1Unknown") {
             lua_pushboolean(state, flags->animation_bit1_unknown);
         }
-        else if(field == "animation_bit2_unknown") {
+        else if(field == "animationBit2Unknown") {
             lua_pushboolean(state, flags->animation_bit2_unknown);
         }
-        else if(field == "animation_bit3_unknown") {
+        else if(field == "animationBit3Unknown") {
             lua_pushboolean(state, flags->animation_bit3_unknown);
         }
         else {
@@ -4636,16 +4649,16 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         bool value = lua_toboolean(state, 3);
-        if(field == "animation_bit0_unknown") {
+        if(field == "animationBit0Unknown") {
             flags->animation_bit0_unknown = value;
         }
-        else if(field == "animation_bit1_unknown") {
+        else if(field == "animationBit1Unknown") {
             flags->animation_bit1_unknown = value;
         }
-        else if(field == "animation_bit2_unknown") {
+        else if(field == "animationBit2Unknown") {
             flags->animation_bit2_unknown = value;
         }
-        else if(field == "animation_bit3_unknown") {
+        else if(field == "animationBit3Unknown") {
             flags->animation_bit3_unknown = value;
         }
         else {
@@ -4669,58 +4682,58 @@ namespace Balltze::Plugins {
         if(field == "flags") {
             lua_push_meta_engine_unit_animation_flags(state, data->flags);
         }
-        else if(field == "unknown_some_animation_index_maybe") {
+        else if(field == "unknownSomeAnimationIndexMaybe") {
             lua_pushinteger(state, data->unknown_some_animation_index_maybe);
         }
-        else if(field == "unknown_some_animation_index") {
+        else if(field == "unknownSomeAnimationIndex") {
             lua_pushinteger(state, data->unknown_some_animation_index);
         }
-        else if(field == "seat_index") {
+        else if(field == "seatIndex") {
             lua_pushinteger(state, data->seat_index);
         }
-        else if(field == "seat_weapon_index") {
+        else if(field == "seatWeaponIndex") {
             lua_pushinteger(state, data->seat_weapon_index);
         }
-        else if(field == "weapon_type_index") {
+        else if(field == "weaponTypeIndex") {
             lua_pushinteger(state, data->weapon_type_index);
         }
         else if(field == "state") {
             lua_pushstring(state, unit_animation_state_to_string(data->state).c_str());
         }
-        else if(field == "replacement_state") {
+        else if(field == "replacementState") {
             lua_pushstring(state, unit_replacement_animation_state_to_string(data->replacement_state).c_str());
         }
-        else if(field == "overlay_state") {
+        else if(field == "overlayState") {
             lua_pushstring(state, unit_overlay_animation_state_to_string(data->overlay_state).c_str());
         }
-        else if(field == "desired_state") {
+        else if(field == "desiredState") {
             lua_pushstring(state, unit_animation_state_to_string(data->desired_state).c_str());
         }
-        else if(field == "base_seat") {
+        else if(field == "baseSeat") {
             lua_pushstring(state, unit_base_seat_to_string(data->base_seat).c_str());
         }
         else if(field == "emotion") {
             lua_pushinteger(state, data->emotion);
         }
-        else if(field == "replacement_animation") {
+        else if(field == "replacementAnimation") {
             lua_push_meta_engine_unit_animation_state_data(state, data->replacement_animation);
         }
-        else if(field == "overlay_state_animation") {
+        else if(field == "overlayStateAnimation") {
             lua_push_meta_engine_unit_animation_state_data(state, data->overlay_state_animation);
         }
-        else if(field == "weapon_ik") {
+        else if(field == "weaponIk") {
             lua_push_meta_engine_unit_animation_state_data(state, data->weapon_ik);
         }
-        else if(field == "update_look") {
+        else if(field == "updateLook") {
             lua_pushboolean(state, data->update_look);
         }
-        else if(field == "update_aim") {
+        else if(field == "updateAim") {
             lua_pushboolean(state, data->update_aim);
         }
-        else if(field == "looking_bounds") {
+        else if(field == "lookingBounds") {
             lua_push_meta_engine_rectangle2_d_f(state, data->looking_bounds);
         }
-        else if(field == "aiming_bounds") {
+        else if(field == "aimingBounds") {
             lua_push_meta_engine_rectangle2_d_f(state, data->aiming_bounds);
         }
         else {
@@ -4741,19 +4754,19 @@ namespace Balltze::Plugins {
         if(field == "flags") {
             lua_push_meta_engine_unit_animation_flags(state, data->flags);
         }
-        else if(field == "unknown_some_animation_index_maybe") {
+        else if(field == "unknownSomeAnimationIndexMaybe") {
             data->unknown_some_animation_index_maybe = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "unknown_some_animation_index") {
+        else if(field == "unknownSomeAnimationIndex") {
             data->unknown_some_animation_index = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "seat_index") {
+        else if(field == "seatIndex") {
             data->seat_index = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "seat_weapon_index") {
+        else if(field == "seatWeaponIndex") {
             data->seat_weapon_index = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "weapon_type_index") {
+        else if(field == "weaponTypeIndex") {
             data->weapon_type_index = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "state") {
@@ -4764,7 +4777,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "replacement_state") {
+        else if(field == "replacementState") {
             try {
                 data->replacement_state = unit_replacement_animation_state_from_string(luaL_checkstring(state, 3));
             }
@@ -4772,7 +4785,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "overlay_state") {
+        else if(field == "overlayState") {
             try {
                 data->overlay_state = unit_overlay_animation_state_from_string(luaL_checkstring(state, 3));
             }
@@ -4780,7 +4793,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "desired_state") {
+        else if(field == "desiredState") {
             try {
                 data->desired_state = unit_animation_state_from_string(luaL_checkstring(state, 3));
             }
@@ -4788,7 +4801,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "base_seat") {
+        else if(field == "baseSeat") {
             try {
                 data->base_seat = unit_base_seat_from_string(luaL_checkstring(state, 3));
             }
@@ -4799,16 +4812,16 @@ namespace Balltze::Plugins {
         else if(field == "emotion") {
             data->emotion = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "replacement_animation") {
+        else if(field == "replacementAnimation") {
             lua_push_meta_engine_unit_animation_state_data(state, data->replacement_animation);
         }
-        else if(field == "overlay_state_animation") {
+        else if(field == "overlayStateAnimation") {
             lua_push_meta_engine_unit_animation_state_data(state, data->overlay_state_animation);
         }
-        else if(field == "weapon_ik") {
+        else if(field == "weaponIk") {
             lua_push_meta_engine_unit_animation_state_data(state, data->weapon_ik);
         }
-        else if(field == "update_look") {
+        else if(field == "updateLook") {
             if(lua_isboolean(state, 3)) {
                 data->update_look = lua_toboolean(state, 3);
             }
@@ -4816,7 +4829,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "update_aim") {
+        else if(field == "updateAim") {
             if(lua_isboolean(state, 3)) {
                 data->update_aim = lua_toboolean(state, 3);
             }
@@ -4824,10 +4837,10 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "looking_bounds") {
+        else if(field == "lookingBounds") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "aiming_bounds") {
+        else if(field == "aimingBounds") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -4906,10 +4919,10 @@ namespace Balltze::Plugins {
         if(field == "priority") {
             lua_pushstring(state, unit_speech_priority_to_string(speech->priority).c_str());
         }
-        else if(field == "scream_type") {
+        else if(field == "screamType") {
             lua_pushstring(state, unit_scream_type_to_string(speech->scream_type).c_str());
         }
-        else if(field == "sound_tag") {
+        else if(field == "soundTag") {
             lua_pushinteger(state, speech->sound_tag.handle);
         }
         else if(field == "ticks") {
@@ -4921,7 +4934,7 @@ namespace Balltze::Plugins {
         else if(field == "unknown") {
             lua_pushinteger(state, speech->unknown);
         }
-        else if(field == "ai_communication_info") {
+        else if(field == "aiCommunicationInfo") {
             lua_push_meta_engine_ai_communication_packet(state, speech->ai_communication_info);
         }
         else {
@@ -4947,7 +4960,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "scream_type") {
+        else if(field == "screamType") {
             try {
                 speech->scream_type = unit_scream_type_from_string(luaL_checkstring(state, 3));
             }
@@ -4955,7 +4968,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "sound_tag") {
+        else if(field == "soundTag") {
             speech->sound_tag.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "ticks") {
@@ -4967,7 +4980,7 @@ namespace Balltze::Plugins {
         else if(field == "unknown") {
             speech->unknown = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "ai_communication_info") {
+        else if(field == "aiCommunicationInfo") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -5126,37 +5139,37 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "animation_state") {
+        if(field == "animationState") {
             lua_pushinteger(state, data->animation_state);
         }
-        else if(field == "aiming_speed") {
+        else if(field == "aimingSpeed") {
             lua_pushinteger(state, data->aiming_speed);
         }
-        else if(field == "control_flags") {
+        else if(field == "controlFlags") {
             lua_push_meta_engine_unit_control_flags(state, data->control_flags);
         }
-        else if(field == "weapon_index") {
+        else if(field == "weaponIndex") {
             lua_pushinteger(state, data->weapon_index);
         }
-        else if(field == "grenade_index") {
+        else if(field == "grenadeIndex") {
             lua_pushinteger(state, data->grenade_index);
         }
-        else if(field == "zoom_index") {
+        else if(field == "zoomIndex") {
             lua_pushinteger(state, data->zoom_index);
         }
         else if(field == "throttle") {
             lua_push_meta_engine_vector3_d(state, data->throttle);
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             lua_pushnumber(state, data->primary_trigger);
         }
-        else if(field == "facing_vector") {
+        else if(field == "facingVector") {
             lua_push_meta_engine_vector3_d(state, data->facing_vector);
         }
-        else if(field == "aiming_vector") {
+        else if(field == "aimingVector") {
             lua_push_meta_engine_vector3_d(state, data->aiming_vector);
         }
-        else if(field == "looking_vector") {
+        else if(field == "lookingVector") {
             lua_push_meta_engine_vector3_d(state, data->looking_vector);
         }
         else {
@@ -5174,37 +5187,37 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "animation_state") {
+        if(field == "animationState") {
             data->animation_state = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "aiming_speed") {
+        else if(field == "aimingSpeed") {
             data->aiming_speed = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "control_flags") {
+        else if(field == "controlFlags") {
             lua_push_meta_engine_unit_control_flags(state, data->control_flags);
         }
-        else if(field == "weapon_index") {
+        else if(field == "weaponIndex") {
             data->weapon_index = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "grenade_index") {
+        else if(field == "grenadeIndex") {
             data->grenade_index = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "zoom_index") {
+        else if(field == "zoomIndex") {
             data->zoom_index = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "throttle") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             data->primary_trigger = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "facing_vector") {
+        else if(field == "facingVector") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "aiming_vector") {
+        else if(field == "aimingVector") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "looking_vector") {
+        else if(field == "lookingVector") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -5231,97 +5244,97 @@ namespace Balltze::Plugins {
         if(field == "actor") {
             lua_pushinteger(state, unit->actor.handle);
         }
-        else if(field == "swarm_actor") {
+        else if(field == "swarmActor") {
             lua_pushinteger(state, unit->swarm.actor.handle);
         }
-        else if(field == "swarm_next_unir") {
+        else if(field == "swarmNextUnir") {
             lua_pushinteger(state, unit->swarm.next_unit.handle);
         }
-        else if(field == "swarm_previous_unit") {
+        else if(field == "swarmPreviousUnit") {
             lua_pushinteger(state, unit->swarm.previous_unit.handle);
         }
-        else if(field == "unit_flags") {
+        else if(field == "unitFlags") {
             lua_push_meta_engine_unit_flags(state, unit->unit_flags);
         }
-        else if(field == "unit_control_flags") {
+        else if(field == "unitControlFlags") {
             lua_push_meta_engine_unit_control_flags(state, unit->unit_control_flags);
         }
-        else if(field == "shield_snapping") {
+        else if(field == "shieldSnapping") {
             lua_pushinteger(state, unit->shield_snapping);
         }
-        else if(field == "base_seat_index") {
+        else if(field == "baseSeatIndex") {
             lua_pushinteger(state, unit->base_seat_index);
         }
-        else if(field == "persistent_control_ticks_remaining") {
+        else if(field == "persistentControlTicksRemaining") {
             lua_pushinteger(state, unit->persistent_control.ticks_remaining);
         }
-        else if(field == "persistent_control_control_flags") {
+        else if(field == "persistentControlControlFlags") {
             lua_push_meta_engine_unit_control_flags(state, unit->persistent_control.control_flags);
         }
-        else if(field == "controlling_player") {
+        else if(field == "controllingPlayer") {
             lua_pushinteger(state, unit->controlling_player.handle);
         }
-        else if(field == "ai_effect_type") {
+        else if(field == "aiEffectType") {
             lua_pushinteger(state, unit->ai_effect_type);
         }
-        else if(field == "emotion_animation_index") {
+        else if(field == "emotionAnimationIndex") {
             lua_pushinteger(state, unit->emotion_animation_index);
         }
-        else if(field == "next_ai_effect_tick") {
+        else if(field == "nextAiEffectTick") {
             lua_pushinteger(state, unit->next_ai_effect_tick);
         }
-        else if(field == "desired_facing_vector") {
+        else if(field == "desiredFacingVector") {
             lua_push_meta_engine_vector3_d(state, unit->desired_facing_vector);
         }
-        else if(field == "desired_aiming_vector") {
+        else if(field == "desiredAimingVector") {
             lua_push_meta_engine_vector3_d(state, unit->desired_aiming_vector);
         }
-        else if(field == "aiming_vector") {
+        else if(field == "aimingVector") {
             lua_push_meta_engine_vector3_d(state, unit->aiming_vector);
         }
-        else if(field == "aiming_velocity") {
+        else if(field == "aimingVelocity") {
             lua_push_meta_engine_vector3_d(state, unit->aiming_velocity);
         }
-        else if(field == "looking_angles") {
+        else if(field == "lookingAngles") {
             lua_push_meta_engine_euler3_d(state, unit->looking_angles);
         }
-        else if(field == "looking_vector") {
+        else if(field == "lookingVector") {
             lua_push_meta_engine_vector3_d(state, unit->looking_vector);
         }
-        else if(field == "looking_velocity") {
+        else if(field == "lookingVelocity") {
             lua_push_meta_engine_vector3_d(state, unit->looking_velocity);
         }
         else if(field == "throttle") {
             lua_push_meta_engine_vector3_d(state, unit->throttle);
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             lua_pushnumber(state, unit->primary_trigger);
         }
-        else if(field == "aiming_speed") {
+        else if(field == "aimingSpeed") {
             lua_pushinteger(state, unit->aiming_speed);
         }
-        else if(field == "melee_state") {
+        else if(field == "meleeState") {
             lua_pushinteger(state, unit->melee_state);
         }
-        else if(field == "melee_timer") {
+        else if(field == "meleeTimer") {
             lua_pushinteger(state, unit->melee_timer);
         }
-        else if(field == "ticks_until_flame_to_death") {
+        else if(field == "ticksUntilFlameToDeath") {
             lua_pushinteger(state, unit->ticks_until_flame_to_death);
         }
-        else if(field == "ping_animation_ticks_left") {
+        else if(field == "pingAnimationTicksLeft") {
             lua_pushinteger(state, unit->ping_animation_ticks_left);
         }
-        else if(field == "grenade_state") {
+        else if(field == "grenadeState") {
             lua_pushstring(state, unit_throwing_grenade_state_to_string(unit->grenade_state).c_str());
         }
-        else if(field == "unknown_725") {
+        else if(field == "unknown725") {
             lua_pushinteger(state, unit->unknown_725);
         }
-        else if(field == "unknown_726") {
+        else if(field == "unknown726") {
             lua_pushinteger(state, unit->unknown_726);
         }
-        else if(field == "grenade_projectile") {
+        else if(field == "grenadeProjectile") {
             lua_pushinteger(state, unit->grenade_projectile.handle);
         }
         else if(field == "animation") {
@@ -5333,16 +5346,16 @@ namespace Balltze::Plugins {
         else if(field == "illumination") {
             lua_pushnumber(state, unit->illumination);
         }
-        else if(field == "mouth_factor") {
+        else if(field == "mouthFactor") {
             lua_pushnumber(state, unit->mouth_factor);
         }
-        else if(field == "vehicle_seat_id") {
+        else if(field == "vehicleSeatId") {
             lua_pushinteger(state, unit->vehicle_seat_id);
         }
-        else if(field == "current_weapon_id") {
+        else if(field == "currentWeaponId") {
             lua_pushinteger(state, unit->current_weapon_id);
         }
-        else if(field == "next_weapon_id") {
+        else if(field == "nextWeaponId") {
             lua_pushinteger(state, unit->next_weapon_id);
         }
         else if(field == "weapons") {
@@ -5352,42 +5365,42 @@ namespace Balltze::Plugins {
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "weapon_ready_ticks") {
+        else if(field == "weaponReadyTicks") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 4; ++i) {
                 lua_pushinteger(state, unit->weapon_ready_ticks[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "equipment_handle") {
+        else if(field == "equipmentHandle") {
             lua_pushinteger(state, unit->equipment_handle.handle);
         }
-        else if(field == "current_grenade_index") {
+        else if(field == "currentGrenadeIndex") {
             lua_pushinteger(state, unit->current_grenade_index);
         }
-        else if(field == "next_grenade_index") {
+        else if(field == "nextGrenadeIndex") {
             lua_pushinteger(state, unit->next_grenade_index);
         }
-        else if(field == "grenade_counts") {
+        else if(field == "grenadeCounts") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 2; ++i) {
                 lua_pushinteger(state, unit->grenade_counts[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "zoom_level") {
+        else if(field == "zoomLevel") {
             lua_pushinteger(state, unit->zoom_level);
         }
-        else if(field == "desired_zoom_level") {
+        else if(field == "desiredZoomLevel") {
             lua_pushinteger(state, unit->desired_zoom_level);
         }
-        else if(field == "ticks_since_last_vehicle_speech") {
+        else if(field == "ticksSinceLastVehicleSpeech") {
             lua_pushinteger(state, unit->ticks_since_last_vehicle_speech);
         }
-        else if(field == "aiming_change") {
+        else if(field == "aimingChange") {
             lua_pushinteger(state, unit->aiming_change);
         }
-        else if(field == "powered_seats_riders") {
+        else if(field == "poweredSeatsRiders") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 2; ++i) {
                 lua_pushinteger(state, unit->powered_seats_riders[i].handle);
@@ -5397,109 +5410,109 @@ namespace Balltze::Plugins {
         else if(field == "_unknown22") {
             lua_pushinteger(state, unit->_unknown22.handle);
         }
-        else if(field == "_some_tick_time") {
+        else if(field == "_someTickTime") {
             lua_pushinteger(state, unit->_some_tick_time);
         }
-        else if(field == "encounter_id") {
+        else if(field == "encounterId") {
             lua_pushinteger(state, unit->encounter_id);
         }
-        else if(field == "squad_id") {
+        else if(field == "squadId") {
             lua_pushinteger(state, unit->squad_id);
         }
-        else if(field == "powered_seats_power") {
+        else if(field == "poweredSeatsPower") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 2; ++i) {
                 lua_pushnumber(state, unit->powered_seats_power[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "integrated_light_power") {
+        else if(field == "integratedLightPower") {
             lua_pushnumber(state, unit->integrated_light_power);
         }
-        else if(field == "integrated_light_toggle_power") {
+        else if(field == "integratedLightTogglePower") {
             lua_pushnumber(state, unit->integrated_light_toggle_power);
         }
-        else if(field == "integrated_night_vision_toggle_power") {
+        else if(field == "integratedNightVisionTogglePower") {
             lua_pushnumber(state, unit->integrated_night_vision_toggle_power);
         }
-        else if(field == "seat_related") {
+        else if(field == "seatRelated") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 4; ++i) {
                 lua_push_meta_engine_vector3_d(state, unit->seat_related[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "camo_power") {
+        else if(field == "camoPower") {
             lua_pushnumber(state, unit->camo_power);
         }
-        else if(field == "full_spectrum_vision_power") {
+        else if(field == "fullSpectrumVisionPower") {
             lua_pushnumber(state, unit->full_spectrum_vision_power);
         }
-        else if(field == "dialogue_definition") {
+        else if(field == "dialogueDefinition") {
             lua_pushinteger(state, unit->dialogue_definition.handle);
         }
         else if(field == "speech") {
             lua_push_meta_engine_unit_speech_data(state, unit->speech);
         }
-        else if(field == "damage_result_category") {
+        else if(field == "damageResultCategory") {
             lua_pushstring(state, lua_engine_damage_effect_category_to_string(unit->damage_result.category).c_str());
         }
-        else if(field == "damage_result_ai_ticks_until_handle") {
+        else if(field == "damageResultAiTicksUntilHandle") {
             lua_pushinteger(state, unit->damage_result.ai_ticks_until_handle);
         }
-        else if(field == "damage_result_amount") {
+        else if(field == "damageResultAmount") {
             lua_pushnumber(state, unit->damage_result.amount);
         }
-        else if(field == "damage_result_responsible_unit") {
+        else if(field == "damageResultResponsibleUnit") {
             lua_pushinteger(state, unit->damage_result.responsible_unit.handle);
         }
-        else if(field == "object_flame_causer") {
+        else if(field == "objectFlameCauser") {
             lua_pushinteger(state, unit->object_flame_causer.handle);
         }
         else if(field == "_unknown23") {
             lua_pushnumber(state, unit->_unknown23);
         }
-        else if(field == "died_at_tick") {
+        else if(field == "diedAtTick") {
             lua_pushinteger(state, unit->died_at_tick);
         }
-        else if(field == "feign_death_timer") {
+        else if(field == "feignDeathTimer") {
             lua_pushinteger(state, unit->feign_death_timer);
         }
-        else if(field == "camo_regrowth") {
+        else if(field == "camoRegrowth") {
             lua_pushboolean(state, unit->camo_regrowth);
         }
         else if(field == "stun") {
             lua_pushnumber(state, unit->stun);
         }
-        else if(field == "stun_ticks") {
+        else if(field == "stunTicks") {
             lua_pushinteger(state, unit->stun_ticks);
         }
-        else if(field == "spree_count") {
+        else if(field == "spreeCount") {
             lua_pushinteger(state, unit->spree_count);
         }
-        else if(field == "spree_starting_time") {
+        else if(field == "spreeStartingTime") {
             lua_pushinteger(state, unit->spree_starting_time);
         }
-        else if(field == "recent_damage") {
+        else if(field == "recentDamage") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 4; ++i) {
                 lua_push_meta_engine_unit_recent_damager(state, unit->recent_damage[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "opensauce_zoom_level") {
+        else if(field == "opensauceZoomLevel") {
             lua_pushinteger(state, unit->opensauce_zoom_level);
         }
-        else if(field == "opensauce_desired_zoom_level") {
+        else if(field == "opensauceDesiredZoomLevel") {
             lua_pushinteger(state, unit->opensauce_desired_zoom_level);
         }
-        else if(field == "control_data") {
+        else if(field == "controlData") {
             lua_push_meta_engine_unit_control_data(state, unit->control_data);
         }
-        else if(field == "last_completed_client_update_valid") {
+        else if(field == "lastCompletedClientUpdateValid") {
             lua_pushboolean(state, unit->last_completed_client_update_valid);
         }
-        else if(field == "last_completed_client_update_id") {
+        else if(field == "lastCompletedClientUpdateId") {
             lua_pushinteger(state, unit->last_completed_client_update_id);
         }
         else {
@@ -5520,97 +5533,97 @@ namespace Balltze::Plugins {
         if(field == "actor") {
             unit->actor.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "swarm_actor") {
+        else if(field == "swarmActor") {
             unit->swarm.actor.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "swarm_next_unir") {
+        else if(field == "swarmNextUnir") {
             unit->swarm.next_unit.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "swarm_previous_unit") {
+        else if(field == "swarmPreviousUnit") {
             unit->swarm.previous_unit.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "unit_flags") {
+        else if(field == "unitFlags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unit_control_flags") {
+        else if(field == "unitControlFlags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "shield_snapping") {
+        else if(field == "ShieldSnapping") {
             unit->shield_snapping = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "base_seat_index") {
+        else if(field == "BaseSeatIndex") {
             unit->base_seat_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "persistent_control_ticks_remaining") {
+        else if(field == "PersistentControlTicksRemaining") {
             unit->persistent_control.ticks_remaining = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "persistent_control_control_flags") {
+        else if(field == "persistentControlControlFlags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "controlling_player") {
+        else if(field == "controllingPlayer") {
             unit->controlling_player.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "ai_effect_type") {
+        else if(field == "aiEffectType") {
             unit->ai_effect_type = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "emotion_animation_index") {
+        else if(field == "emotionAnimationIndex") {
             unit->emotion_animation_index = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "next_ai_effect_tick") {
+        else if(field == "nextAiEffectTick") {
             unit->next_ai_effect_tick = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "desired_facing_vector") {
+        else if(field == "desiredFacingVector") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "desired_aiming_vector") {
+        else if(field == "desiredAimingVector") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "aiming_vector") {
+        else if(field == "aimingVector") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "aiming_velocity") {
+        else if(field == "aimingVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "looking_angles") {
+        else if(field == "lookingAngles") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "looking_vector") {
+        else if(field == "lookingVector") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "looking_velocity") {
+        else if(field == "lookingVelocity") {
             return luaL_error(state, "Invalid operation");
         }
         else if(field == "throttle") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             unit->primary_trigger = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "aiming_speed") {
+        else if(field == "aimingSpeed") {
             unit->aiming_speed = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "melee_state") {
+        else if(field == "meleeState") {
             unit->melee_state = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "melee_timer") {
+        else if(field == "meleeTimer") {
             unit->melee_timer = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "ticks_until_flame_to_death") {
+        else if(field == "ticksUntilFlameToDeath") {
             unit->ticks_until_flame_to_death = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "ping_animation_ticks_left") {
+        else if(field == "pingAnimationTicksLeft") {
             unit->ping_animation_ticks_left = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "grenade_state") {
+        else if(field == "grenadeState") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_725") {
+        else if(field == "unknown725") {
             unit->unknown_725 = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "unknown_726") {
+        else if(field == "unknown726") {
             unit->unknown_726 = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "grenade_projectile") {
+        else if(field == "grenadeProjectile") {
             unit->grenade_projectile.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "animation") {
@@ -5622,16 +5635,16 @@ namespace Balltze::Plugins {
         else if(field == "illumination") {
             unit->illumination = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "mouth_factor") {
+        else if(field == "mouthFactor") {
             unit->mouth_factor = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "vehicle_seat_id") {
+        else if(field == "vehicleSeatId") {
             unit->vehicle_seat_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "current_weapon_id") {
+        else if(field == "currentWeaponId") {
             unit->current_weapon_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "next_weapon_id") {
+        else if(field == "nextWeaponId") {
             unit->next_weapon_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "weapons") {
@@ -5643,7 +5656,7 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "weapon_ready_ticks") {
+        else if(field == "weaponReadyTicks") {
             for(std::size_t i = 0; i < sizeof(unit->weapon_ready_ticks) / sizeof(unit->weapon_ready_ticks[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -5652,16 +5665,16 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "equipment_handle") {
+        else if(field == "equipmentHandle") {
             unit->equipment_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "current_grenade_index") {
+        else if(field == "currentGrenadeIndex") {
             unit->current_grenade_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "next_grenade_index") {
+        else if(field == "nextGrenadeIndex") {
             unit->next_grenade_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "grenade_counts") {
+        else if(field == "grenadeCounts") {
             for(std::size_t i = 0; i < sizeof(unit->grenade_counts) / sizeof(unit->grenade_counts[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -5670,19 +5683,19 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "zoom_level") {
+        else if(field == "zoomLevel") {
             unit->zoom_level = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "desired_zoom_level") {
+        else if(field == "desiredZoomLevel") {
             unit->desired_zoom_level = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "ticks_since_last_vehicle_speech") {
+        else if(field == "ticksSinceLastVehicleSpeech") {
             unit->ticks_since_last_vehicle_speech = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "aiming_change") {
+        else if(field == "aimingChange") {
             unit->aiming_change = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "powered_seats_riders") {
+        else if(field == "poweredSeatsRiders") {
             for(std::size_t i = 0; i < sizeof(unit->powered_seats_riders) / sizeof(unit->powered_seats_riders[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -5694,16 +5707,16 @@ namespace Balltze::Plugins {
         else if(field == "_unknown22") {
             unit->_unknown22.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "_some_tick_time") {
+        else if(field == "_someTickTime") {
             unit->_some_tick_time = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "encounter_id") {
+        else if(field == "encounterId") {
             unit->encounter_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "squad_id") {
+        else if(field == "squadId") {
             unit->squad_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "powered_seats_power") {
+        else if(field == "poweredSeatsPower") {
             for(std::size_t i = 0; i < sizeof(unit->powered_seats_power) / sizeof(unit->powered_seats_power[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -5712,31 +5725,31 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "integrated_light_power") {
+        else if(field == "integratedLightPower") {
             unit->integrated_light_power = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "integrated_light_toggle_power") {
+        else if(field == "integratedLightTogglePower") {
             unit->integrated_light_toggle_power = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "integrated_night_vision_toggle_power") {
+        else if(field == "integratedNightVisionTogglePower") {
             unit->integrated_night_vision_toggle_power = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "seat_related") {
+        else if(field == "seatRelated") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "camo_power") {
+        else if(field == "camoPower") {
             unit->camo_power = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "full_spectrum_vision_power") {
+        else if(field == "fullSpectrumVisionPower") {
             unit->full_spectrum_vision_power = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "dialogue_definition") {
+        else if(field == "dialogueDefinition") {
             unit->dialogue_definition.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "speech") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "damage_result_catagory") {
+        else if(field == "damageResultCatagory") {
             try {
                 unit->damage_result.category = lua_engine_damage_effect_category_from_string(luaL_checkstring(state, 3));
             }
@@ -5744,28 +5757,28 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "damage_result_ai_ticks_until_handle") {
+        else if(field == "damageResultAiTicksUntilHandle") {
             unit->damage_result.ai_ticks_until_handle = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "damage_result_amount") {
+        else if(field == "damageResultAmount") {
             unit->damage_result.amount = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "damage_result_responsible_unit") {
+        else if(field == "damageResultResponsibleUnit") {
             unit->damage_result.responsible_unit.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "object_flame_causer") {
+        else if(field == "objectFlameCauser") {
             unit->object_flame_causer.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "_unknown23") {
             unit->_unknown23 = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "died_at_tick") {
+        else if(field == "diedAtTick") {
             unit->died_at_tick = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "feign_death_timer") {
+        else if(field == "feignDeathTimer") {
             unit->feign_death_timer = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "camo_regrowth") {
+        else if(field == "camoRegrowth") {
             if(lua_isboolean(state, 3)) {
                 unit->camo_regrowth = lua_toboolean(state, 3);
             }
@@ -5776,28 +5789,28 @@ namespace Balltze::Plugins {
         else if(field == "stun") {
             unit->stun = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "stun_ticks") {
+        else if(field == "stunTicks") {
             unit->stun_ticks = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "spree_count") {
+        else if(field == "spreeCount") {
             unit->spree_count = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "spree_starting_time") {
+        else if(field == "spreeStartingTime") {
             unit->spree_starting_time = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "recent_damage") {
+        else if(field == "recentDamage") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "opensauce_zoom_level") {
+        else if(field == "opensauceZoomLevel") {
             unit->opensauce_zoom_level = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "opensauce_desired_zoom_level") {
+        else if(field == "opensauceDesiredZoomLevel") {
             unit->opensauce_desired_zoom_level = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "control_data") {
+        else if(field == "controlData") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "last_completed_client_update_valid") {
+        else if(field == "lastCompletedClientUpdateValid") {
             if(lua_isboolean(state, 3)) {
                 unit->last_completed_client_update_valid = lua_toboolean(state, 3);
             }
@@ -5805,7 +5818,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "last_completed_client_update_id") {
+        else if(field == "lastCompletedClientUpdateId") {
             unit->last_completed_client_update_id = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
         else {
@@ -5833,13 +5846,13 @@ namespace Balltze::Plugins {
         else if(field == "slipping") {
             lua_pushboolean(state, flags->slipping);
         }
-        else if(field == "absolute_movement") {
+        else if(field == "absoluteMovement") {
             lua_pushboolean(state, flags->absolute_movement);
         }
-        else if(field == "no_collision") {
+        else if(field == "noCollision") {
             lua_pushboolean(state, flags->no_collision);
         }
-        else if(field == "passes_through_other_bipeds") {
+        else if(field == "passesThroughOtherBipeds") {
             lua_pushboolean(state, flags->passes_through_other_bipeds);
         }
         else if(field == "limping2") {
@@ -5866,13 +5879,13 @@ namespace Balltze::Plugins {
         else if(field == "slipping") {
             flags->slipping = lua_toboolean(state, 3);
         }
-        else if(field == "absolute_movement") {
+        else if(field == "absoluteMovement") {
             flags->absolute_movement = lua_toboolean(state, 3);
         }
-        else if(field == "no_collision") {
+        else if(field == "noCollision") {
             flags->no_collision = lua_toboolean(state, 3);
         }
-        else if(field == "passes_through_other_bipeds") {
+        else if(field == "passesThroughOtherBipeds") {
             flags->passes_through_other_bipeds = lua_toboolean(state, 3);
         }
         else if(field == "limping2") {
@@ -5897,20 +5910,20 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "grenade_counts") {
+        if(field == "grenadeCounts") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 2; ++i) {
                 lua_pushinteger(state, delta->grenade_counts[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "body_vitality") {
+        else if(field == "bodyVitality") {
             lua_pushnumber(state, delta->body_vitality);
         }
-        else if(field == "shield_vitality") {
+        else if(field == "shieldVitality") {
             lua_pushnumber(state, delta->shield_vitality);
         }
-        else if(field == "shield_stun_ticks_greater_than_zero") {
+        else if(field == "shieldStunTicksGreaterThanZero") {
             lua_pushboolean(state, delta->shield_stun_ticks_greater_than_zero);
         }
         else {
@@ -5928,7 +5941,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "grenade_counts") {
+        if(field == "grenadeCounts") {
             for(std::size_t i = 0; i < sizeof(delta->grenade_counts) / sizeof(delta->grenade_counts[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -5937,13 +5950,13 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "body_vitality") {
+        else if(field == "bodyVitality") {
             delta->body_vitality = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "shield_vitality") {
+        else if(field == "shieldVitality") {
             delta->shield_vitality = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "shield_stun_ticks_greater_than_zero") {
+        else if(field == "shieldStunTicksGreaterThanZero") {
             if(lua_isboolean(state, 3)) {
                 delta->shield_stun_ticks_greater_than_zero = lua_toboolean(state, 3);
             }
@@ -5970,22 +5983,22 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "baseline_valid") {
+        if(field == "baselineValid") {
             lua_pushboolean(state, network->baseline_valid);
         }
-        else if(field == "baseline_id") {
+        else if(field == "baselineId") {
             lua_pushinteger(state, network->baseline_id);
         }
-        else if(field == "message_id") {
+        else if(field == "messageId") {
             lua_pushinteger(state, network->message_id);
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             lua_push_meta_engine_biped_network_delta(state, network->update_baseline);
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             lua_pushboolean(state, network->delta_valid);
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             lua_push_meta_engine_biped_network_delta(state, network->update_delta);
         }
         else {
@@ -6003,7 +6016,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "baseline_valid") {
+        if(field == "baselineValid") {
             if(lua_isboolean(state, 3)) {
                 network->baseline_valid = lua_toboolean(state, 3);
             }
@@ -6011,16 +6024,16 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_id") {
+        else if(field == "baselineId") {
             network->baseline_id = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "message_id") {
+        else if(field == "messageId") {
             network->message_id = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             if(lua_isboolean(state, 3)) {
                 network->delta_valid = lua_toboolean(state, 3);
             }
@@ -6028,7 +6041,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -6050,67 +6063,67 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "biped_flags") {
+        if(field == "bipedFlags") {
             lua_push_meta_engine_biped_flags(state, biped->biped_flags);
         }
-        else if(field == "landing_timer") {
+        else if(field == "landingTimer") {
             lua_pushinteger(state, biped->landing_timer);
         }
-        else if(field == "landing_force") {
+        else if(field == "landingForce") {
             lua_pushinteger(state, biped->landing_force);
         }
-        else if(field == "movement_state") {
+        else if(field == "movementState") {
             lua_pushstring(state, biped_movement_state_to_string(biped->movement_state).c_str());
         }
-        else if(field == "_biped_unknown3") {
+        else if(field == "_bipedUnknown3") {
             lua_pushinteger(state, biped->_biped_unknown3);
         }
-        else if(field == "action_flags") {
+        else if(field == "actionFlags") {
             lua_pushinteger(state, biped->action_flags);
         }
-        else if(field == "_biped_unknown4") {
+        else if(field == "_bipedUnknown4") {
             lua_pushinteger(state, biped->_biped_unknown4);
         }
-        else if(field == "biped_position") {
+        else if(field == "bipedPosition") {
             lua_push_meta_engine_vector3_d(state, biped->biped_position);
         }
-        else if(field == "walking_counter") {
+        else if(field == "walkingCounter") {
             lua_pushinteger(state, biped->walking_counter);
         }
-        else if(field == "bump_object") {
+        else if(field == "bumpObject") {
             lua_pushinteger(state, biped->bump_object.handle);
         }
-        else if(field == "ticks_since_last_bump") {
+        else if(field == "ticksSinceLastBump") {
             lua_pushinteger(state, biped->ticks_since_last_bump);
         }
-        else if(field == "airborne_ticks") {
+        else if(field == "airborneTicks") {
             lua_pushinteger(state, biped->airborne_ticks);
         }
-        else if(field == "slipping_ticks") {
+        else if(field == "slippingTicks") {
             lua_pushinteger(state, biped->slipping_ticks);
         }
-        else if(field == "digital_throttle") {
+        else if(field == "digitalThrottle") {
             lua_pushinteger(state, biped->digital_throttle);
         }
-        else if(field == "jump_ticks") {
+        else if(field == "jumpTicks") {
             lua_pushinteger(state, biped->jump_ticks);
         }
-        else if(field == "melee_ticks") {
+        else if(field == "meleeTicks") {
             lua_pushinteger(state, biped->melee_ticks);
         }
-        else if(field == "melee_inflict_ticks") {
+        else if(field == "meleeInflictTicks") {
             lua_pushinteger(state, biped->melee_inflict_ticks);
         }
-        else if(field == "unknown_biped2") {
+        else if(field == "unknownBiped2") {
             lua_pushinteger(state, biped->unknown_biped2);
         }
-        else if(field == "crouch_scale") {
+        else if(field == "crouchScale") {
             lua_pushnumber(state, biped->crouch_scale);
         }
-        else if(field == "unknown_biped1") {
+        else if(field == "unknownBiped1") {
             lua_pushnumber(state, biped->unknown_biped1);
         }
-        else if(field == "unknown_biped_physics_related") {
+        else if(field == "unknownBipedPhysicsRelated") {
             lua_push_meta_engine_plane3_d(state, biped->unknown_biped_physics_related);
         }
         else if(field == "network") {
@@ -6131,16 +6144,16 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "biped_flags") {
+        if(field == "bipedFlags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "landing_timer") {
+        else if(field == "landingTimer") {
             biped->landing_timer = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "landing_force") {
+        else if(field == "landingForce") {
             biped->landing_force = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "movement_state") {
+        else if(field == "movementState") {
             try {
                 biped->movement_state = biped_movement_state_from_string(luaL_checkstring(state, 3));
             }
@@ -6148,55 +6161,55 @@ namespace Balltze::Plugins {
                 return luaL_error(state, e.what());
             }
         }
-        else if(field == "_biped_unknown3") {
+        else if(field == "_bipedUnknown3") {
             biped->_biped_unknown3 = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "action_flags") {
+        else if(field == "actionFlags") {
             biped->action_flags = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "_biped_unknown4") {
+        else if(field == "_bipedUnknown4") {
             biped->_biped_unknown4 = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "biped_position") {
+        else if(field == "bipedPosition") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "walking_counter") {
+        else if(field == "walkingCounter") {
             biped->walking_counter = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "bump_object") {
+        else if(field == "bumpObject") {
             biped->bump_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "ticks_since_last_bump") {
+        else if(field == "ticksSinceLastBump") {
             biped->ticks_since_last_bump = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "airborne_ticks") {
+        else if(field == "airborneTicks") {
             biped->airborne_ticks = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "slipping_ticks") {
+        else if(field == "slippingTicks") {
             biped->slipping_ticks = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "digital_throttle") {
+        else if(field == "digitalThrottle") {
             biped->digital_throttle = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "jump_ticks") {
+        else if(field == "jumpTicks") {
             biped->jump_ticks = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "melee_ticks") {
+        else if(field == "meleeTicks") {
             biped->melee_ticks = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "melee_inflict_ticks") {
+        else if(field == "meleeInflictTicks") {
             biped->melee_inflict_ticks = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "unknown_biped2") {
+        else if(field == "unknownBiped2") {
             biped->unknown_biped2 = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "crouch_scale") {
+        else if(field == "crouchScale") {
             biped->crouch_scale = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "unknown_biped1") {
+        else if(field == "unknownBiped1") {
             biped->unknown_biped1 = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "unknown_biped_physics_related") {
+        else if(field == "unknownBipedPhysicsRelated") {
             return luaL_error(state, "Invalid operation");
         }
         else if(field == "network") {
@@ -6221,7 +6234,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "vehicle_unknown0") {
+        if(field == "vehicleUnknown0") {
             lua_pushboolean(state, flags->vehicle_unknown0);
         }
         else if(field == "hovering") {
@@ -6233,10 +6246,10 @@ namespace Balltze::Plugins {
         else if(field == "jumping") {
             lua_pushboolean(state, flags->jumping);
         }
-        else if(field == "unknown_vehicle1") {
+        else if(field == "unknownVehicle1") {
             lua_pushboolean(state, flags->unknown_vehicle1);
         }
-        else if(field == "unknown_vehicle2") {
+        else if(field == "unknownVehicle2") {
             lua_pushinteger(state, flags->unknown_vehicle2);
         }
         else {
@@ -6254,7 +6267,7 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "vehicle_unknown0") {
+        if(field == "vehicleUnknown0") {
             flags->vehicle_unknown0 = lua_toboolean(state, 3);
         }
         else if(field == "hovering") {
@@ -6266,10 +6279,10 @@ namespace Balltze::Plugins {
         else if(field == "jumping") {
             flags->jumping = lua_toboolean(state, 3);
         }
-        else if(field == "unknown_vehicle1") {
+        else if(field == "unknownVehicle1") {
             flags->unknown_vehicle1 = lua_toboolean(state, 3);
         }
-        else if(field == "unknown_vehicle2") {
+        else if(field == "unknownVehicle2") {
             flags->unknown_vehicle2 = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
         else {
@@ -6366,34 +6379,34 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "time_valid") {
+        if(field == "timeValid") {
             lua_pushboolean(state, network->time_valid);
         }
-        else if(field == "baseline_valid") {
+        else if(field == "baselineValid") {
             lua_pushboolean(state, network->baseline_valid);
         }
-        else if(field == "baseline_id") {
+        else if(field == "baselineId") {
             lua_pushinteger(state, network->baseline_id);
         }
-        else if(field == "message_id") {
+        else if(field == "messageId") {
             lua_pushinteger(state, network->message_id);
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             lua_push_meta_engine_vehicle_network_data(state, network->update_baseline);
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             lua_pushboolean(state, network->delta_valid);
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             lua_push_meta_engine_vehicle_network_data(state, network->update_delta);
         }
-        else if(field == "last_moved_at_tick") {
+        else if(field == "lastMovedAtTick") {
             lua_pushinteger(state, network->last_moved_at_tick);
         }
-        else if(field == "scenario_respawn_id") {
+        else if(field == "scenarioRespawnId") {
             lua_pushinteger(state, network->scenario_respawn_id);
         }
-        else if(field == "respawn_position") {
+        else if(field == "respawnPosition") {
             lua_push_meta_engine_vector3_d(state, network->respawn_position);
         }
         else {
@@ -6411,7 +6424,7 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "time_valid") {
+        if(field == "timeValid") {
             if(lua_isboolean(state, 3)) {
                 network->time_valid = lua_toboolean(state, 3);
             }
@@ -6419,7 +6432,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_valid") {
+        else if(field == "baselineValid") {
             if(lua_isboolean(state, 3)) {
                 network->baseline_valid = lua_toboolean(state, 3);
             }
@@ -6427,16 +6440,16 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_id") {
+        else if(field == "baselineId") {
             network->baseline_id = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "message_id") {
+        else if(field == "messageId") {
             network->message_id = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             if(lua_isboolean(state, 3)) {
                 network->delta_valid = lua_toboolean(state, 3);
             }
@@ -6444,16 +6457,16 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "last_moved_at_tick") {
+        else if(field == "lastMovedAtTick") {
             network->last_moved_at_tick = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "scenario_respawn_id") {
+        else if(field == "scenarioRespawnId") {
             network->scenario_respawn_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "respawn_position") {
+        else if(field == "respawnPosition") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -6475,7 +6488,7 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "vehicle_flags") {
+        if(field == "vehicleFlags") {
             lua_push_meta_engine_vehicle_flags(state, vehicle->vehicle_flags);
         }
         else if(field == "speed") {
@@ -6487,13 +6500,13 @@ namespace Balltze::Plugins {
         else if(field == "turn") {
             lua_pushnumber(state, vehicle->turn);
         }
-        else if(field == "tire_position") {
+        else if(field == "tirePosition") {
             lua_pushnumber(state, vehicle->tire_position);
         }
-        else if(field == "thread_position_left") {
+        else if(field == "threadPositionLeft") {
             lua_pushnumber(state, vehicle->thread_position_left);
         }
-        else if(field == "thread_position_right") {
+        else if(field == "threadPositionRight") {
             lua_pushnumber(state, vehicle->thread_position_right);
         }
         else if(field == "hover") {
@@ -6502,23 +6515,23 @@ namespace Balltze::Plugins {
         else if(field == "thrust") {
             lua_pushnumber(state, vehicle->thrust);
         }
-        else if(field == "suspension_states") {
+        else if(field == "suspensionStates") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(vehicle->suspension_states) / sizeof(vehicle->suspension_states[0]); i++) {
                 lua_pushinteger(state, vehicle->suspension_states[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "hover_position") {
+        else if(field == "hoverPosition") {
             lua_push_meta_engine_vector3_d(state, vehicle->hover_position);
         }
-        else if(field == "unknown_vehicle3") {
+        else if(field == "unknownVehicle3") {
             lua_push_meta_engine_vector3_d(state, vehicle->unknown_vehicle3);
         }
-        else if(field == "unknown_vehicle4") {
+        else if(field == "unknownVehicle4") {
             lua_push_meta_engine_vector3_d(state, vehicle->unknown_vehicle4);
         }
-        else if(field == "unknown_vehicle5") {
+        else if(field == "unknownVehicle5") {
             lua_pushinteger(state, vehicle->unknown_vehicle5);
         }
         else if(field == "network") {
@@ -6539,7 +6552,7 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "vehicle_flags") {
+        if(field == "vehicleFlags") {
             return luaL_error(state, "Invalid operation");
         }
         else if(field == "speed") {
@@ -6551,13 +6564,13 @@ namespace Balltze::Plugins {
         else if(field == "turn") {
             vehicle->turn = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "tire_position") {
+        else if(field == "tirePosition") {
             vehicle->tire_position = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "thread_position_left") {
+        else if(field == "threadPositionLeft") {
             vehicle->thread_position_left = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "thread_position_right") {
+        else if(field == "threadPositionRight") {
             vehicle->thread_position_right = static_cast<float>(luaL_checknumber(state, 3));
         }
         else if(field == "hover") {
@@ -6566,7 +6579,7 @@ namespace Balltze::Plugins {
         else if(field == "thrust") {
             vehicle->thrust = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "suspension_states") {
+        else if(field == "suspensionStates") {
             for(std::size_t i = 0; i < sizeof(vehicle->suspension_states) / sizeof(vehicle->suspension_states[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -6575,16 +6588,16 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "hover_position") {
+        else if(field == "hoverPosition") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_vehicle3") {
+        else if(field == "unknownVehicle3") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_vehicle4") {
+        else if(field == "unknownVehicle4") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_vehicle5") {
+        else if(field == "unknownVehicle5") {
             vehicle->unknown_vehicle5 = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "network") {
@@ -6612,31 +6625,31 @@ namespace Balltze::Plugins {
         if(field == "flags") {
             lua_pushinteger(state, item->flags);
         }
-        else if(field == "ticks_until_detonation") {
+        else if(field == "ticksUntilDetonation") {
             lua_pushinteger(state, item->ticks_until_detonation);
         }
-        else if(field == "bsp_collision_surface_id") {
+        else if(field == "bspCollisionSurfaceId") {
             lua_pushinteger(state, item->bsp_collision.surface_id);
         }
-        else if(field == "bsp_collision_reference_id") {
+        else if(field == "bspCollisionReferenceId") {
             lua_pushinteger(state, item->bsp_collision.reference_id);
         }
-        else if(field == "dropped_by_unit") {
+        else if(field == "droppedByUnit") {
             lua_pushinteger(state, item->dropped_by_unit.handle);
         }
-        else if(field == "last_update_tick") {
+        else if(field == "lastUpdateTick") {
             lua_pushinteger(state, item->last_update_tick);
         }
-        else if(field == "object_collision_object") {
+        else if(field == "objectCollisionObject") {
             lua_pushinteger(state, item->object_collision.object.handle);
         }
-        else if(field == "object_collision_object_position") {
+        else if(field == "objectCollisionObjectPosition") {
             lua_push_meta_engine_vector3_d(state, item->object_collision.object_position);
         }
-        else if(field == "unknown_collision_position") {
+        else if(field == "unknownCollisionPosition") {
             lua_push_meta_engine_vector3_d(state, item->unknown_collision_position);
         }
-        else if(field == "unknown_collision_angle") {
+        else if(field == "unknownCollisionAngle") {
             lua_push_meta_engine_euler2_d(state, item->unknown_collision_angle);
         }
         else {
@@ -6657,31 +6670,31 @@ namespace Balltze::Plugins {
         if(field == "flags") {
             item->flags = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "ticks_until_detonation") {
+        else if(field == "ticksUntilDetonation") {
             item->ticks_until_detonation = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "bsp_collision_surface_id") {
+        else if(field == "bspCollisionSurfaceId") {
             item->bsp_collision.surface_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "bsp_collision_reference_id") {
+        else if(field == "bspCollisionReferenceId") {
             item->bsp_collision.reference_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "dropped_by_unit") {
+        else if(field == "droppedByUnit") {
             item->dropped_by_unit.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "last_update_tick") {
+        else if(field == "lastUpdateTick") {
             item->last_update_tick = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "object_collision_object") {
+        else if(field == "objectCollisionObject") {
             item->object_collision.object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "object_collision_object_position") {
+        else if(field == "objectCollisionObjectPosition") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_collision_position") {
+        else if(field == "unknownCollisionPosition") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_collision_angle") {
+        else if(field == "unknownCollisionAngle") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -6703,7 +6716,7 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "ticks_until_garbage_collection") {
+        if(field == "ticksUntilGarbageCollection") {
             lua_pushinteger(state, garbage->ticks_until_garbage_collection);
         }
         else {
@@ -6721,7 +6734,7 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "ticks_until_garbage_collection") {
+        if(field == "ticksUntilGarbageCollection") {
             garbage->ticks_until_garbage_collection = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else {
@@ -6743,40 +6756,40 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "idle_time") {
+        if(field == "idleTime") {
             lua_pushinteger(state, trigger->idle_time);
         }
         else if(field == "state") {
             lua_pushstring(state, weapon_state_to_string(trigger->state).c_str());
         }
-        else if(field == "trigger_time") {
+        else if(field == "triggerTime") {
             lua_pushinteger(state, trigger->trigger_time);
         }
-        else if(field == "not_firing") {
+        else if(field == "notFiring") {
             lua_pushinteger(state, trigger->not_firing);
         }
-        else if(field == "auto_reload") {
+        else if(field == "autoReload") {
             lua_pushinteger(state, trigger->auto_reload);
         }
-        else if(field == "rounds_since_last_tracer") {
+        else if(field == "roundsSinceLastTracer") {
             lua_pushinteger(state, trigger->rounds_since_last_tracer);
         }
-        else if(field == "rate_of_fire") {
+        else if(field == "rateOfFire") {
             lua_pushnumber(state, trigger->rate_of_fire);
         }
-        else if(field == "ejection_port_recovery_time") {
+        else if(field == "ejectionPortRecoveryTime") {
             lua_pushnumber(state, trigger->ejection_port_recovery_time);
         }
-        else if(field == "illumination_recovery_time") {
+        else if(field == "illuminationRecoveryTime") {
             lua_pushnumber(state, trigger->illumination_recovery_time);
         }
-        else if(field == "projectile_error_related") {
+        else if(field == "projectileErrorRelated") {
             lua_pushnumber(state, trigger->projectile_error_related);
         }
-        else if(field == "charing_effect") {
+        else if(field == "charingEffect") {
             lua_pushinteger(state, trigger->charing_effect.handle);
         }
-        else if(field == "network_delay_ticks") {
+        else if(field == "networkDelayTicks") {
             lua_pushinteger(state, trigger->network_delay_ticks);
         }
         else {
@@ -6794,40 +6807,40 @@ namespace Balltze::Plugins {
         }
 
         std::string field = key;
-        if(field == "idle_time") {
+        if(field == "idleTime") {
             trigger->idle_time = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "state") {
             trigger->state = weapon_state_from_string(luaL_checkstring(state, 3));
         }
-        else if(field == "trigger_time") {
+        else if(field == "triggerTime") {
             trigger->trigger_time = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "not_firing") {
+        else if(field == "notFiring") {
             trigger->not_firing = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "auto_reload") {
+        else if(field == "autoReload") {
             trigger->auto_reload = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "rounds_since_last_tracer") {
+        else if(field == "roundsSinceLastTracer") {
             trigger->rounds_since_last_tracer = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "rate_of_fire") {
+        else if(field == "rateOfFire") {
             trigger->rate_of_fire = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "ejection_port_recovery_time") {
+        else if(field == "ejectionPortRecoveryTime") {
             trigger->ejection_port_recovery_time = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "illumination_recovery_time") {
+        else if(field == "illuminationRecoveryTime") {
             trigger->illumination_recovery_time = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "projectile_error_related") {
+        else if(field == "projectileErrorRelated") {
             trigger->projectile_error_related = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "charing_effect") {
+        else if(field == "charingEffect") {
             trigger->charing_effect.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "network_delay_ticks") {
+        else if(field == "networkDelayTicks") {
             trigger->network_delay_ticks = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
         else {
@@ -6852,19 +6865,19 @@ namespace Balltze::Plugins {
         if(field == "state") {
             lua_pushstring(state, weapon_magazine_state_to_string(magazine->state).c_str());
         }
-        else if(field == "reload_ticks_remaining") {
+        else if(field == "reloadTicksRemaining") {
             lua_pushinteger(state, magazine->reload_ticks_remaining);
         }
-        else if(field == "reload_ticks") {
+        else if(field == "reloadTicks") {
             lua_pushinteger(state, magazine->reload_ticks);
         }
-        else if(field == "rounds_unloaded") {
+        else if(field == "roundsUnloaded") {
             lua_pushinteger(state, magazine->rounds_unloaded);
         }
-        else if(field == "rounds_loaded") {
+        else if(field == "roundsLoaded") {
             lua_pushinteger(state, magazine->rounds_loaded);
         }
-        else if(field == "rounds_left_to_recharge") {
+        else if(field == "roundsLeftToRecharge") {
             lua_pushinteger(state, magazine->rounds_left_to_recharge);
         }
         else if(field == "unknown") {
@@ -6891,19 +6904,19 @@ namespace Balltze::Plugins {
         if(field == "state") {
             magazine->state = weapon_magazine_state_from_string(luaL_checkstring(state, 3));
         }
-        else if(field == "reload_ticks_remaining") {
+        else if(field == "reloadTicksRemaining") {
             magazine->reload_ticks_remaining = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "reload_ticks") {
+        else if(field == "reloadTicks") {
             magazine->reload_ticks = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "rounds_unloaded") {
+        else if(field == "roundsUnloaded") {
             magazine->rounds_unloaded = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "rounds_loaded") {
+        else if(field == "roundsLoaded") {
             magazine->rounds_loaded = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "rounds_left_to_recharge") {
+        else if(field == "roundsLeftToRecharge") {
             magazine->rounds_left_to_recharge = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "unknown") {
@@ -6931,14 +6944,14 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "total_rounds") {
+        if(field == "totalRounds") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(data->total_rounds) / sizeof(data->total_rounds[0]); i++) {
                 lua_pushinteger(state, data->total_rounds[i]);
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "loaded_rounds") {
+        else if(field == "loadedRounds") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(data->loaded_rounds) / sizeof(data->loaded_rounds[0]); i++) {
                 lua_pushinteger(state, data->loaded_rounds[i]);
@@ -6960,7 +6973,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "total_rounds") {
+        if(field == "totalRounds") {
             for(std::size_t i = 0; i < sizeof(data->total_rounds) / sizeof(data->total_rounds[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -6969,7 +6982,7 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
         }
-        else if(field == "loaded_rounds") {
+        else if(field == "loadedRounds") {
             for(std::size_t i = 0; i < sizeof(data->loaded_rounds) / sizeof(data->loaded_rounds[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -7000,13 +7013,13 @@ namespace Balltze::Plugins {
         if(field == "position") {
             lua_push_meta_engine_vector3_d(state, data->position);
         } 
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             lua_push_meta_engine_vector3_d(state, data->transitional_velocity);
         }
-        else if(field == "angular_velocity") {
+        else if(field == "angularVelocity") {
             lua_push_meta_engine_vector3_d(state, data->angular_velocity);
         }
-        else if(field == "magazine_rounds_total") {
+        else if(field == "magazineRoundsTotal") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(data->magazine_rounds_total) / sizeof(data->magazine_rounds_total[0]); i++) {
                 lua_pushinteger(state, data->magazine_rounds_total[i]);
@@ -7034,13 +7047,13 @@ namespace Balltze::Plugins {
         if(field == "position") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "angular_velocity") {
+        else if(field == "angularVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "magazine_rounds_total") {
+        else if(field == "magazineRoundsTotal") {
             for(std::size_t i = 0; i < sizeof(data->magazine_rounds_total) / sizeof(data->magazine_rounds_total[0]); i++) {
                 lua_rawgeti(state, 3, i + 1);
                 if(!lua_isnil(state, -1)) {
@@ -7071,22 +7084,22 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "baseline_valid") {
+        if(field == "baselineValid") {
             lua_pushboolean(state, network->baseline_valid);
         }
-        else if(field == "baseline_index") {
+        else if(field == "baselineIndex") {
             lua_pushinteger(state, network->baseline_index);
         }
-        else if(field == "message_index") {
+        else if(field == "messageIndex") {
             lua_pushinteger(state, network->message_index);
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             lua_push_meta_engine_weapon_network_data(state, network->update_baseline);
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             lua_pushboolean(state, network->delta_valid);
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             lua_push_meta_engine_weapon_network_data(state, network->update_delta);
         }
         else {
@@ -7104,7 +7117,7 @@ namespace Balltze::Plugins {
         } 
 
         std::string field = key;
-        if(field == "baseline_valid") {
+        if(field == "baselineValid") {
             if(lua_isboolean(state, 3)) {
                 network->baseline_valid = lua_toboolean(state, 3);
             }
@@ -7112,16 +7125,16 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_index") {
+        else if(field == "baselineIndex") {
             network->baseline_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "message_index") {
+        else if(field == "messageIndex") {
             network->message_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             if(lua_isboolean(state, 3)) {
                 network->delta_valid = lua_toboolean(state, 3);
             }
@@ -7129,7 +7142,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -7154,16 +7167,16 @@ namespace Balltze::Plugins {
         if(field == "flags") {
             lua_pushinteger(state, weapon->flags);
         }
-        else if(field == "owner_unit_flags") {
+        else if(field == "ownerUnitFlags") {
             lua_pushinteger(state, weapon->owner_unit_flags);
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             lua_pushnumber(state, weapon->primary_trigger);
         }
-        else if(field == "weapon_state") {
+        else if(field == "weaponState") {
             lua_pushstring(state, weapon_state_to_string(weapon->weapon_state).c_str());
         }
-        else if(field == "ready_ticks") {
+        else if(field == "readyTicks") {
             lua_pushinteger(state, weapon->ready_ticks);
         }
         else if(field == "heat") {
@@ -7172,16 +7185,16 @@ namespace Balltze::Plugins {
         else if(field == "age") {
             lua_pushnumber(state, weapon->age);
         }
-        else if(field == "illumination_fraction") {
+        else if(field == "illuminationFraction") {
             lua_pushnumber(state, weapon->illumination_fraction);
         }
-        else if(field == "integrated_light_power") {
+        else if(field == "integratedLightPower") {
             lua_pushnumber(state, weapon->integrated_light_power);
         }
-        else if(field == "tracked_object") {
+        else if(field == "trackedObject") {
             lua_pushinteger(state, weapon->tracked_object.handle);
         }
-        else if(field == "alt_shots_loaded") {
+        else if(field == "altShotsLoaded") {
             lua_pushinteger(state, weapon->alt_shots_loaded);
         }
         else if(field == "triggers") {
@@ -7198,10 +7211,10 @@ namespace Balltze::Plugins {
                 lua_rawseti(state, -2, i + 1);
             }
         }
-        else if(field == "last_trigger_fire_tick") {
+        else if(field == "lastTriggerFireTick") {
             lua_pushinteger(state, weapon->last_trigger_fire_tick);
         }
-        else if(field == "reload_starting_point") {
+        else if(field == "reloadStartingPoint") {
             lua_push_meta_engine_weapon_reload_start_data(state, weapon->reload_starting_point);
         }
         else if(field == "network") {
@@ -7225,16 +7238,16 @@ namespace Balltze::Plugins {
         if(field == "flags") {
             weapon->flags = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "owner_unit_flags") {
+        else if(field == "ownerUnitFlags") {
             weapon->owner_unit_flags = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "primary_trigger") {
+        else if(field == "primaryTrigger") {
             weapon->primary_trigger = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "weapon_state") {
+        else if(field == "weaponState") {
             weapon->weapon_state = weapon_state_from_string(luaL_checkstring(state, 3));
         }
-        else if(field == "ready_ticks") {
+        else if(field == "readyTicks") {
             weapon->ready_ticks = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "heat") {
@@ -7243,16 +7256,16 @@ namespace Balltze::Plugins {
         else if(field == "age") {
             weapon->age = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "illumination_fraction") {
+        else if(field == "illuminationFraction") {
             weapon->illumination_fraction = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "integrated_light_power") {
+        else if(field == "integratedLightPower") {
             weapon->integrated_light_power = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "tracked_object") {
+        else if(field == "trackedObject") {
             weapon->tracked_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "alt_shots_loaded") {
+        else if(field == "altShotsLoaded") {
             weapon->alt_shots_loaded = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "triggers") {
@@ -7261,10 +7274,10 @@ namespace Balltze::Plugins {
         else if(field == "magazines") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "last_trigger_fire_tick") {
+        else if(field == "lastTriggerFireTick") {
             weapon->last_trigger_fire_tick = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "reload_starting_point") {
+        else if(field == "reloadStartingPoint") {
             return luaL_error(state, "Invalid operation");
         }
         else if(field == "network") {
@@ -7292,10 +7305,10 @@ namespace Balltze::Plugins {
         if(field == "position") {
             lua_push_meta_engine_vector3_d(state, equipment_network_data->position);
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             lua_push_meta_engine_vector3_d(state, equipment_network_data->transitional_velocity);
         }
-        else if(field == "angular_velocity") {
+        else if(field == "angularVelocity") {
             lua_push_meta_engine_vector3_d(state, equipment_network_data->angular_velocity);
         }
         else {
@@ -7316,10 +7329,10 @@ namespace Balltze::Plugins {
         if(field == "position") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "angular_velocity") {
+        else if(field == "angularVelocity") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -7341,22 +7354,22 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "baseline_valid") {
+        if(field == "baselineValid") {
             lua_pushboolean(state, equipment_network->baseline_valid);
         }
-        else if(field == "baseline_index") {
+        else if(field == "baselineIndex") {
             lua_pushinteger(state, equipment_network->baseline_index);
         }
-        else if(field == "message_index") {
+        else if(field == "messageIndex") {
             lua_pushinteger(state, equipment_network->message_index);
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             lua_push_meta_engine_equipment_network_data(state, equipment_network->update_baseline);
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             lua_pushboolean(state, equipment_network->delta_valid);
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             lua_push_meta_engine_equipment_network_data(state, equipment_network->update_delta);
         }
         else {
@@ -7374,7 +7387,7 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "baseline_valid") {
+        if(field == "baselineValid") {
             if(lua_isboolean(state, 3)) {
                 equipment_network->baseline_valid = lua_toboolean(state, 3);
             }
@@ -7382,16 +7395,16 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_index") {
+        else if(field == "baselineIndex") {
             equipment_network->baseline_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "message_index") {
+        else if(field == "messageIndex") {
             equipment_network->message_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             if(lua_isboolean(state, 3)) {
                 equipment_network->delta_valid = lua_toboolean(state, 3);
             }
@@ -7399,7 +7412,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -7464,7 +7477,7 @@ namespace Balltze::Plugins {
         if(field == "tracer") {
             lua_pushboolean(state, flags->tracer);
         }
-        else if(field == "projectile_unknown_bit") {
+        else if(field == "projectileUnknownBit") {
             lua_pushboolean(state, flags->projectile_unknown_bit);
         }
         else if(field == "attached") {
@@ -7488,7 +7501,7 @@ namespace Balltze::Plugins {
         if(field == "tracer") {
             flags->tracer = lua_toboolean(state, 3);
         }
-        else if(field == "projectile_unknown_bit") {
+        else if(field == "projectileUnknownBit") {
             flags->projectile_unknown_bit = lua_toboolean(state, 3);
         }
         else if(field == "attached") {
@@ -7516,7 +7529,7 @@ namespace Balltze::Plugins {
         if(field == "position") {
             lua_push_meta_engine_vector3_d(state, flags->position);
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             lua_push_meta_engine_vector3_d(state, flags->transitional_velocity);
         }
         else {
@@ -7537,7 +7550,7 @@ namespace Balltze::Plugins {
         if(field == "position") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -7562,22 +7575,22 @@ namespace Balltze::Plugins {
         if(field == "unknown") {
             lua_pushboolean(state, network->unknown);
         }
-        else if(field == "baseline_valid") {
+        else if(field == "baselineValid") {
             lua_pushboolean(state, network->baseline_valid);
         }
-        else if(field == "baseline_index") {
+        else if(field == "baselineIndex") {
             lua_pushinteger(state, network->baseline_index);
         }
-        else if(field == "message_index") {
+        else if(field == "messageIndex") {
             lua_pushinteger(state, network->message_index);
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             lua_push_meta_engine_projectile_network_data(state, network->update_baseline);
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             lua_pushboolean(state, network->delta_valid);
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             lua_push_meta_engine_projectile_network_data(state, network->update_delta);
         }
         else {
@@ -7603,7 +7616,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_valid") {
+        else if(field == "baselineValid") {
             if(lua_isboolean(state, 3)) {
                 network->baseline_valid = lua_toboolean(state, 3);
             }
@@ -7611,16 +7624,16 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_index") {
+        else if(field == "baselineIndex") {
             network->baseline_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "message_index") {
+        else if(field == "messageIndex") {
             network->message_index = static_cast<std::int8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "update_baseline") {
+        else if(field == "updateBaseline") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "delta_valid") {
+        else if(field == "deltaValid") {
             if(lua_isboolean(state, 3)) {
                 network->delta_valid = lua_toboolean(state, 3);
             }
@@ -7628,7 +7641,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "update_delta") {
+        else if(field == "updateDelta") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -7650,49 +7663,49 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "projectile_flags") {
+        if(field == "projectileFlags") {
             lua_push_meta_engine_projectile_object_flags(state, projectile->projectile_flags);
         }
-        else if(field == "action_enum") {
+        else if(field == "actionEnum") {
             lua_pushinteger(state, projectile->action_enum);
         }
-        else if(field == "material_id") {
+        else if(field == "materialId") {
             lua_pushinteger(state, projectile->material_id);
         }
-        else if(field == "source_unit") {
+        else if(field == "sourceUnit") {
             lua_pushinteger(state, projectile->source_unit.handle);
         }
-        else if(field == "target_object") {
+        else if(field == "targetObject") {
             lua_pushinteger(state, projectile->target_object.handle);
         }
-        else if(field == "contrail_attachment_block_id") {
+        else if(field == "contrailAttachmentBlockId") {
             lua_pushinteger(state, projectile->contrail_attachment_block_id);
         }
-        else if(field == "time_remaining") {
+        else if(field == "timeRemaining") {
             lua_pushnumber(state, projectile->time_remaining);
         }
-        else if(field == "arming_rate") {
+        else if(field == "armingRate") {
             lua_pushnumber(state, projectile->arming_rate);
         }
-        else if(field == "unknown_proj_float1") {
+        else if(field == "unknownProjFloat1") {
             lua_pushnumber(state, projectile->unknown_proj_float1);
         }
-        else if(field == "unknown_proj_float2") {
+        else if(field == "unknownProjFloat2") {
             lua_pushnumber(state, projectile->unknown_proj_float2);
         }
-        else if(field == "distance_travelled") {
+        else if(field == "distanceTravelled") {
             lua_pushnumber(state, projectile->distance_travelled);
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             lua_push_meta_engine_vector3_d(state, projectile->transitional_velocity);
         }
-        else if(field == "water_damage_upper_bound") {
+        else if(field == "waterDamageUpperBound") {
             lua_pushnumber(state, projectile->water_damage_upper_bound);
         }
-        else if(field == "angular_velocity") {
+        else if(field == "angularVelocity") {
             lua_push_meta_engine_vector3_d(state, projectile->angular_velocity);
         }
-        else if(field == "unknown_euler") {
+        else if(field == "unknownEuler") {
             lua_push_meta_engine_euler2_d(state, projectile->unknown_euler);
         }
         else if(field == "network") {
@@ -7713,49 +7726,49 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "projectile_flags") {
+        if(field == "projectileFlags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "action_enum") {
+        else if(field == "actionEnum") {
             projectile->action_enum = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "material_id") {
+        else if(field == "materialId") {
             projectile->material_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "source_unit") {
+        else if(field == "sourceUnit") {
             projectile->source_unit.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "target_object") {
+        else if(field == "targetObject") {
             projectile->target_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "contrail_attachment_block_id") {
+        else if(field == "contrailAttachmentBlockId") {
             projectile->contrail_attachment_block_id = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "time_remaining") {
+        else if(field == "timeRemaining") {
             projectile->time_remaining = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "arming_rate") {
+        else if(field == "armingRate") {
             projectile->arming_rate = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "unknown_proj_float1") {
+        else if(field == "unknownProjFloat1") {
             projectile->unknown_proj_float1 = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "unknown_proj_float2") {
+        else if(field == "unknownProjFloat2") {
             projectile->unknown_proj_float2 = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "distance_travelled") {
+        else if(field == "distanceTravelled") {
             projectile->distance_travelled = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "transitional_velocity") {
+        else if(field == "transitionalVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "water_damage_upper_bound") {
+        else if(field == "waterDamageUpperBound") {
             projectile->water_damage_upper_bound = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "angular_velocity") {
+        else if(field == "angularVelocity") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_euler") {
+        else if(field == "unknownEuler") {
             return luaL_error(state, "Invalid operation");
         }
         else if(field == "network") {
@@ -7780,7 +7793,7 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "device_group_id") {
+        if(field == "deviceGroupId") {
             lua_pushinteger(state, state_data->device_group_id);
         }
         else if(field == "value") {
@@ -7804,7 +7817,7 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "device_group_id") {
+        if(field == "deviceGroupId") {
             state_data->device_group_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "value") {
@@ -7832,10 +7845,10 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "position_reversed") {
+        if(field == "positionReversed") {
             lua_pushboolean(state, device->position_reversed);
         }
-        else if(field == "not_usable_from_any_side") {
+        else if(field == "notUsableFromAnySide") {
             lua_pushboolean(state, device->not_usable_from_any_side);
         }
         else if(field == "power") {
@@ -7844,10 +7857,10 @@ namespace Balltze::Plugins {
         else if(field == "position") {
             lua_push_meta_engine_device_object_state(state, device->position);
         }
-        else if(field == "one_sided") {
+        else if(field == "oneSided") {
             lua_pushboolean(state, device->one_sided);
         }
-        else if(field == "operates_automatically") {
+        else if(field == "operatesAutomatically") {
             lua_pushboolean(state, device->operates_automatically);
         }
         else {
@@ -7865,7 +7878,7 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "position_reversed") {
+        if(field == "positionReversed") {
             if(lua_isboolean(state, 3)) {
                 device->position_reversed = lua_toboolean(state, 3);
             }
@@ -7873,7 +7886,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "not_usable_from_any_side") {
+        else if(field == "notUsableFromAnySide") {
             if(lua_isboolean(state, 3)) {
                 device->not_usable_from_any_side = lua_toboolean(state, 3);
             }
@@ -7887,7 +7900,7 @@ namespace Balltze::Plugins {
         else if(field == "position") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "one_sided") {
+        else if(field == "oneSided") {
             if(lua_isboolean(state, 3)) {
                 device->one_sided = lua_toboolean(state, 3);
             }
@@ -7895,7 +7908,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "operates_automatically") {
+        else if(field == "operatesAutomatically") {
             if(lua_isboolean(state, 3)) {
                 device->operates_automatically = lua_toboolean(state, 3);
             }
@@ -7922,16 +7935,16 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "does_not_operate_automatically") {
+        if(field == "doesNotOperateAutomatically") {
             lua_pushboolean(state, flags->does_not_operate_automatically);
         }
-        else if(field == "machine_one_sided") {
+        else if(field == "machineOneSided") {
             lua_pushboolean(state, flags->machine_one_sided);
         }
-        else if(field == "never_appears_locked") {
+        else if(field == "neverAppearsLocked") {
             lua_pushboolean(state, flags->never_appears_locked);
         }
-        else if(field == "opened_by_melee_attack") {
+        else if(field == "openedByMeleeAttack") {
             lua_pushboolean(state, flags->opened_by_melee_attack);
         }
         else {
@@ -7949,16 +7962,16 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "does_not_operate_automatically") {
+        if(field == "doesNotOperateAutomatically") {
             flags->does_not_operate_automatically = lua_toboolean(state, 3);
         }
-        else if(field == "machine_one_sided") {
+        else if(field == "machineOneSided") {
             flags->machine_one_sided = lua_toboolean(state, 3);
         }
-        else if(field == "never_appears_locked") {
+        else if(field == "neverAppearsLocked") {
             flags->never_appears_locked = lua_toboolean(state, 3);
         }
-        else if(field == "opened_by_melee_attack") {
+        else if(field == "openedByMeleeAttack") {
             flags->opened_by_melee_attack = lua_toboolean(state, 3);
         }
         else {
@@ -7980,13 +7993,13 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "device_flags") {
+        if(field == "deviceFlags") {
             lua_push_meta_engine_device_machine_object_flags(state, device->device_flags);
         }
-        else if(field == "ticks_since_started_opening") {
+        else if(field == "ticksSinceStartedOpening") {
             lua_pushinteger(state, device->ticks_since_started_opening);
         }
-        else if(field == "elevator_position") {
+        else if(field == "elevatorPosition") {
             lua_push_meta_engine_vector3_d(state, device->elevator_position);
         }
         else {
@@ -8004,13 +8017,13 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "device_flags") {
+        if(field == "deviceFlags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "ticks_since_started_opening") {
+        else if(field == "ticksSinceStartedOpening") {
             device->ticks_since_started_opening = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "elevator_position") {
+        else if(field == "elevatorPosition") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -8032,7 +8045,7 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "usable_from_both_sides") {
+        if(field == "usableFromBothSides") {
             lua_pushboolean(state, flags->usable_from_both_sides);
         }
         else {
@@ -8050,7 +8063,7 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "usable_from_both_sides") {
+        if(field == "usableFromBothSides") {
             flags->usable_from_both_sides = lua_toboolean(state, 3);
         }
         else {
@@ -8072,10 +8085,10 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "device_control_flags") {
+        if(field == "deviceControlFlags") {
             lua_push_meta_engine_device_control_object_flags(state, device->device_control_flags);
         }
-        else if(field == "custom_name_id") {
+        else if(field == "customNameId") {
             lua_pushinteger(state, device->custom_name_id);
         }
         else {
@@ -8093,10 +8106,10 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "device_control_flags") {
+        if(field == "deviceControlFlags") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "custom_name_id") {
+        else if(field == "customNameId") {
             device->custom_name_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else {
@@ -8118,16 +8131,16 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "light_color") {
+        if(field == "lightColor") {
             lua_push_meta_engine_color_r_g_b(state, device->light_color);
         }
-        else if(field == "light_intensity") {
+        else if(field == "lightIntensity") {
             lua_pushnumber(state, device->light_intensity);
         }
-        else if(field == "light_falloff_angle") {
+        else if(field == "lightFalloffAngle") {
             lua_pushnumber(state, device->light_falloff_angle);
         }
-        else if(field == "light_cutoff_angle") {
+        else if(field == "lightCutoffAngle") {
             lua_pushnumber(state, device->light_cutoff_angle);
         }
         else {
@@ -8148,13 +8161,13 @@ namespace Balltze::Plugins {
         if(field == "light_color") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "light_intensity") {
+        else if(field == "lightIntensity") {
             device->light_intensity = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "light_falloff_angle") {
+        else if(field == "lightFalloffAngle") {
             device->light_falloff_angle = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "light_cutoff_angle") {
+        else if(field == "lightCutoffAngle") {
             device->light_cutoff_angle = static_cast<float>(luaL_checknumber(state, 3));
         }
         else {
@@ -8176,34 +8189,34 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "ctf_flag_grabs") {
+        if(field == "ctfFlagGrabs") {
             lua_pushinteger(state, stats->ctf.flag_grabs);
         }
-        else if(field == "ctf_flag_returns") {
+        else if(field == "ctfFlagReturns") {
             lua_pushinteger(state, stats->ctf.flag_returns);
         }
-        else if(field == "ctf_flag_scores") {
+        else if(field == "ctfFlagScores") {
             lua_pushinteger(state, stats->ctf.flag_scores);
         }
-        else if(field == "oddball_target_kills") {
+        else if(field == "oddballTargetKills") {
             lua_pushinteger(state, stats->oddball.target_kills);
         }
-        else if(field == "oddball_kills") {
+        else if(field == "oddballKills") {
             lua_pushinteger(state, stats->oddball.kills);
         }
-        else if(field == "oddball_unknown") {
+        else if(field == "oddballUnknown") {
             lua_pushinteger(state, stats->oddball.unknown);
         }
-        else if(field == "king_hill_score") {
+        else if(field == "kingHillScore") {
             lua_pushinteger(state, stats->king.hill_score);
         }
-        else if(field == "race_time") {
+        else if(field == "raceTime") {
             lua_pushinteger(state, stats->race.time);
         }
-        else if(field == "race_laps") {
+        else if(field == "raceLaps") {
             lua_pushinteger(state, stats->race.laps);
         }
-        else if(field == "race_best_time") {
+        else if(field == "raceBestTime") {
             lua_pushinteger(state, stats->race.best_time);
         }
         else {
@@ -8221,34 +8234,34 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "ctf_flag_grabs") {
+        if(field == "ctfFlagGrabs") {
             stats->ctf.flag_grabs = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "ctf_flag_returns") {
+        else if(field == "ctfFlagReturns") {
             stats->ctf.flag_returns = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "ctf_flag_scores") {
+        else if(field == "ctfFlagScores") {
             stats->ctf.flag_scores = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "oddball_target_kills") {
+        else if(field == "oddballTargetKills") {
             stats->oddball.target_kills = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "oddball_kills") {
+        else if(field == "oddballKills") {
             stats->oddball.kills = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "oddball_unknown") {
+        else if(field == "oddballUnknown") {
             stats->oddball.unknown = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "king_hill_score") {
+        else if(field == "kingHillScore") {
             stats->king.hill_score = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "race_time") {
+        else if(field == "raceTime") {
             stats->race.time = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "race_laps") {
+        else if(field == "raceLaps") {
             stats->race.laps = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "race_best_time") {
+        else if(field == "raceBestTime") {
             stats->race.best_time = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else {
@@ -8270,52 +8283,52 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "player_id") {
+        if(field == "playerId") {
             lua_pushinteger(state, player->player_id);
         }
-        else if(field == "local_handle") {
+        else if(field == "localHandle") {
             lua_pushinteger(state, player->local_handle);
         }
         else if(field == "name") {
             lua_pushstring(state, reinterpret_cast<const char *>(player->name));
         }
-        else if(field == "unknown_handle") {
+        else if(field == "unknownHandle") {
             lua_pushinteger(state, player->unknown_handle.handle);
         }
         else if(field == "team") {
             lua_pushinteger(state, player->team);
         }
-        else if(field == "interaction_object_handle") {
+        else if(field == "interactionObjectHandle") {
             lua_pushinteger(state, player->interaction_object_handle.handle);
         }
-        else if(field == "interaction_object_type") {
+        else if(field == "interactionObjectType") {
             lua_pushinteger(state, player->interaction_object_type);
         }
-        else if(field == "interaction_object_seat") {
+        else if(field == "interactionObjectSeat") {
             lua_pushinteger(state, player->interaction_object_seat);
         }
-        else if(field == "respawn_time") {
+        else if(field == "respawnTime") {
             lua_pushinteger(state, player->respawn_time);
         }
-        else if(field == "respawn_time_growth") {
+        else if(field == "respawnTimeGrowth") {
             lua_pushinteger(state, player->respawn_time_growth);
         }
-        else if(field == "object_handle") {
+        else if(field == "objectHandle") {
             lua_pushinteger(state, player->object_handle.handle);
         }
-        else if(field == "prev_object_handle") {
+        else if(field == "prevObjectHandle") {
             lua_pushinteger(state, player->prev_object_handle.handle);
         }
-        else if(field == "bsp_cluster_id") {
+        else if(field == "bspClusterId") {
             lua_pushinteger(state, player->bsp_cluster_id);
         }
-        else if(field == "weapon_swap_result") {
+        else if(field == "weaponSwapResult") {
             lua_pushboolean(state, player->weapon_swap_result);
         }
-        else if(field == "auto_aim_target_object") {
+        else if(field == "autoAimTargetObject") {
             lua_pushinteger(state, player->auto_aim_target_object.handle);
         }
-        else if(field == "last_fire_time") {
+        else if(field == "lastFireTime") {
             lua_pushinteger(state, player->last_fire_time);
         }
         else if(field == "name2") {
@@ -8324,13 +8337,13 @@ namespace Balltze::Plugins {
         else if(field == "color") {
             lua_pushstring(state, network_color_to_string(player->color).c_str());
         }
-        else if(field == "icon_index") {
+        else if(field == "iconIndex") {
             lua_pushinteger(state, player->icon_index);
         }
-        else if(field == "machine_index") {
+        else if(field == "machineIndex") {
             lua_pushinteger(state, player->machine_index);
         }
-        else if(field == "controller_index") {
+        else if(field == "controllerIndex") {
             lua_pushinteger(state, player->controller_index);
         }
         else if(field == "team2") {
@@ -8339,46 +8352,46 @@ namespace Balltze::Plugins {
         else if(field == "index") {
             lua_pushinteger(state, player->index);
         }
-        else if(field == "invisibility_time") {
+        else if(field == "invisibilityTime") {
             lua_pushinteger(state, player->invisibility_time);
         }
-        else if(field == "other_powerup_time_left") {
+        else if(field == "otherPowerupTimeLeft") {
             lua_pushinteger(state, player->other_powerup_time_left);
         }
         else if(field == "speed") {
             lua_pushnumber(state, player->speed);
         }
-        else if(field == "teleporter_flag_handle") {
+        else if(field == "teleporterFlagHandle") {
             lua_pushinteger(state, player->teleporter_flag_handle.handle);
         }
-        else if(field == "objective_mode") {
+        else if(field == "objectiveMode") {
             lua_pushstring(state, player_objective_mode_to_string(player->objective_mode).c_str());
         }
-        else if(field == "objective_player_handle") {
+        else if(field == "objectivePlayerHandle") {
             lua_pushinteger(state, player->objective_player_handle.handle);
         }
-        else if(field == "target_player") {
+        else if(field == "targetPlayer") {
             lua_pushinteger(state, player->target_player.handle);
         }
-        else if(field == "target_time") {
+        else if(field == "targetTime") {
             lua_pushinteger(state, player->target_time);
         }
-        else if(field == "last_death_time") {
+        else if(field == "lastDeathTime") {
             lua_pushinteger(state, player->last_death_time);
         }
-        else if(field == "slayer_target") {
+        else if(field == "slayerTarget") {
             lua_pushinteger(state, player->slayer_target.handle);
         }
-        else if(field == "odd_man_out") {
+        else if(field == "oddManOut") {
             lua_pushboolean(state, player->odd_man_out);
         }
-        else if(field == "kill_streak") {
+        else if(field == "killStreak") {
             lua_pushinteger(state, player->kill_streak);
         }
         else if(field == "multikill") {
             lua_pushinteger(state, player->multikill);
         }
-        else if(field == "last_kill_time") {
+        else if(field == "lastKillTime") {
             lua_pushinteger(state, player->last_kill_time);
         }
         else if(field == "kills") {
@@ -8404,19 +8417,19 @@ namespace Balltze::Plugins {
         else if(field == "suicides") {
             lua_pushinteger(state, player->suicides);
         }
-        else if(field == "team_kills") {
+        else if(field == "teamKills") {
             lua_pushinteger(state, player->team_kills);
         }
-        else if(field == "multiplayer_statistics") {
+        else if(field == "multiplayerStatistics") {
             lua_push_meta_engine_player_multiplayer_statistics(state, player->multiplayer_statistics);
         }
-        else if(field == "telefrag_timer") {
+        else if(field == "telefragTimer") {
             lua_pushinteger(state, player->telefrag_timer);
         }
-        else if(field == "quit_time") {
+        else if(field == "quitTime") {
             lua_pushinteger(state, player->quit_time);
         }
-        else if(field == "telefrag_danger") {
+        else if(field == "telefragDanger") {
             lua_pushboolean(state, player->telefrag_danger);
         }
         else if(field == "quit") {
@@ -8425,10 +8438,10 @@ namespace Balltze::Plugins {
         else if(field == "ping") {
             lua_pushinteger(state, player->ping);
         }
-        else if(field == "team_kill_count") {
+        else if(field == "teamKillCount") {
             lua_pushinteger(state, player->team_kill_count);
         }
-        else if(field == "team_kill_ticks_since_last") {
+        else if(field == "teamKillTicksSinceLast") {
             lua_pushinteger(state, player->team_kill_ticks_since_last);
         }
         else if(field == "position") {
@@ -8446,31 +8459,31 @@ namespace Balltze::Plugins {
         else if(field == "reload") {
             lua_pushboolean(state, player->reload == 1);
         }
-        else if(field == "baseline_update_xy_aim") {
+        else if(field == "baselineUpdateXYAim") {
             lua_pushnumber(state, player->baseline_update_xy_aim);
         }
-        else if(field == "baseline_update_z_aim") {
+        else if(field == "baselineUpdateZAim") {
             lua_pushnumber(state, player->baseline_update_z_aim);
         }
-        else if(field == "baseline_update_forward") {
+        else if(field == "baselineUpdateForward") {
             lua_pushnumber(state, player->baseline_update_forward);
         }
-        else if(field == "baseline_update_left") {
+        else if(field == "baselineUpdateLeft") {
             lua_pushnumber(state, player->baseline_update_left);
         }
-        else if(field == "baseline_update_rate_of_fire") {
+        else if(field == "baselineUpdateRateOfFire") {
             lua_pushnumber(state, player->baseline_update_rate_of_fire);
         }
-        else if(field == "baseline_update_weapon_slot") {
+        else if(field == "baselineUpdateWeaponSlot") {
             lua_pushinteger(state, player->baseline_update_weapon_slot);
         }
-        else if(field == "baseline_update_grenade_slot") {
+        else if(field == "baselineUpdateGrenadeSlot") {
             lua_pushinteger(state, player->baseline_update_grenade_slot);
         }
-        else if(field == "update_aiming") {
+        else if(field == "updateAiming") {
             lua_push_meta_engine_point3_d(state, player->update_aiming);
         }
-        else if(field == "update_position") {
+        else if(field == "updatePosition") {
             lua_push_meta_engine_point3_d(state, player->update_position);
         }
         else {
@@ -8488,46 +8501,46 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "player_id") {
+        if(field == "playerId") {
             player->player_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "local_handle") {
+        else if(field == "localHandle") {
             player->local_handle = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "name") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "unknown_handle") {
+        else if(field == "unknownHandle") {
             player->unknown_handle.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "team") {
             player->team = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "interaction_object_handle") {
+        else if(field == "interactionObjectHandle") {
             player->interaction_object_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "interaction_object_type") {
+        else if(field == "interactionObjectType") {
             player->interaction_object_type = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "interaction_object_seat") {
+        else if(field == "interactionObjectSeat") {
             player->interaction_object_seat = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "respawn_time") {
+        else if(field == "respawnTime") {
             player->respawn_time = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "respawn_time_growth") {
+        else if(field == "respawnTimeGrowth") {
             player->respawn_time_growth = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "object_handle") {
+        else if(field == "objectHandle") {
             player->object_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "prev_object_handle") {
+        else if(field == "prevObjectHandle") {
             player->prev_object_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "bsp_cluster_id") {
+        else if(field == "bspClusterId") {
             player->bsp_cluster_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "weapon_swap_result") {
+        else if(field == "weaponSwapResult") {
             if(lua_isboolean(state, 3)) {
                 player->weapon_swap_result = lua_toboolean(state, 3);
             }
@@ -8535,10 +8548,10 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "auto_aim_target_object") {
+        else if(field == "autoAimTargetObject") {
             player->auto_aim_target_object.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "last_fire_time") {
+        else if(field == "lastFireTime") {
             player->last_fire_time = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "name2") {
@@ -8552,13 +8565,13 @@ namespace Balltze::Plugins {
                 return luaL_error(state, exception.what());
             }
         }
-        else if(field == "icon_index") {
+        else if(field == "iconIndex") {
             player->icon_index = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "machine_index") {
+        else if(field == "machineIndex") {
             player->machine_index = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "controller_index") {
+        else if(field == "controllerIndex") {
             player->controller_index = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "team2") {
@@ -8567,19 +8580,19 @@ namespace Balltze::Plugins {
         else if(field == "index") {
             player->index = static_cast<std::uint8_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "invisibility_time") {
+        else if(field == "invisibilityTime") {
             player->invisibility_time = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "other_powerup_time_left") {
+        else if(field == "otherPowerupTimeLeft") {
             player->other_powerup_time_left = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "speed") {
             player->speed = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "teleporter_flag_handle") {
+        else if(field == "teleporterFlagHandle") {
             player->teleporter_flag_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "objective_mode") {
+        else if(field == "objectiveMode") {
             try {
                 player->objective_mode = player_objective_mode_from_string(luaL_checkstring(state, 3));
             }
@@ -8587,22 +8600,22 @@ namespace Balltze::Plugins {
                 return luaL_error(state, exception.what());
             }
         }
-        else if(field == "objective_player_handle") {
+        else if(field == "objectivePlayerHandle") {
             player->objective_player_handle.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "target_player") {
+        else if(field == "targetPlayer") {
             player->target_player.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "target_time") {
+        else if(field == "targetTime") {
             player->target_time = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "last_death_time") {
+        else if(field == "lastDeathTime") {
             player->last_death_time = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "slayer_target") {
+        else if(field == "slayerTarget") {
             player->slayer_target.handle = luaL_checkinteger(state, 3);
         }
-        else if(field == "odd_man_out") {
+        else if(field == "oddManOut") {
             if(lua_isboolean(state, 3)) {
                 player->odd_man_out = lua_toboolean(state, 3);
             }
@@ -8610,13 +8623,13 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "kill_streak") {
+        else if(field == "killStreak") {
             player->kill_streak = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "multikill") {
             player->multikill = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "last_kill_time") {
+        else if(field == "lastKillTime") {
             player->last_kill_time = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "kills") {
@@ -8646,19 +8659,19 @@ namespace Balltze::Plugins {
         else if(field == "suicides") {
             player->suicides = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "team_kills") {
+        else if(field == "teamKills") {
             player->team_kills = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "multiplayer_statistics") {
+        else if(field == "multiplayerStatistics") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "telefrag_timer") {
+        else if(field == "telefragTimer") {
             player->telefrag_timer = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "quit_time") {
+        else if(field == "quitTime") {
             player->quit_time = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "telefrag_danger") {
+        else if(field == "telefragDanger") {
             if(lua_isboolean(state, 3)) {
                 player->telefrag_danger = lua_toboolean(state, 3);
             }
@@ -8677,10 +8690,10 @@ namespace Balltze::Plugins {
         else if(field == "ping") {
             player->ping = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "team_kill_count") {
+        else if(field == "teamKillCount") {
             player->team_kill_count = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "team_kill_ticks_since_last") {
+        else if(field == "teamKillTicksSinceLast") {
             player->team_kill_ticks_since_last = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "position") {
@@ -8718,31 +8731,31 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value type");
             }
         }
-        else if(field == "baseline_update_xy_aim") {
+        else if(field == "baselineUpdateXYAim") {
             player->baseline_update_xy_aim = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "baseline_update_z_aim") {
+        else if(field == "baselineUpdateZAim") {
             player->baseline_update_z_aim = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "baseline_update_forward") {
+        else if(field == "baselineUpdateForward") {
             player->baseline_update_forward = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "baseline_update_left") {
+        else if(field == "baselineUpdateLeft") {
             player->baseline_update_left = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "baseline_update_rate_of_fire") {
+        else if(field == "baselineUpdateRateOfFire") {
             player->baseline_update_rate_of_fire = static_cast<float>(luaL_checknumber(state, 3));
         }
-        else if(field == "baseline_update_weapon_slot") {
+        else if(field == "baselineUpdateWeaponSlot") {
             player->baseline_update_weapon_slot = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "baseline_update_grenade_slot") {
+        else if(field == "baselineUpdateGrenadeSlot") {
             player->baseline_update_grenade_slot = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "update_aiming") {
+        else if(field == "updateAiming") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "update_position") {
+        else if(field == "updatePosition") {
             return luaL_error(state, "Invalid operation");
         }
         else {
@@ -8834,16 +8847,16 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "top_left") {
+        if(field == "topLeft") {
             lua_push_meta_event_widget_render_vertex(state, vertices->top_left);
         }
-        else if(field == "top_right") {
+        else if(field == "topRight") {
             lua_push_meta_event_widget_render_vertex(state, vertices->top_right);
         }
-        else if(field == "bottom_left") {
+        else if(field == "bottomLeft") {
             lua_push_meta_event_widget_render_vertex(state, vertices->bottom_left);
         }
-        else if(field == "bottom_right") {
+        else if(field == "bottomRight") {
             lua_push_meta_event_widget_render_vertex(state, vertices->bottom_right);
         }
         else {
@@ -8861,16 +8874,16 @@ namespace Balltze::Plugins {
         }
         
         std::string field = key;
-        if(field == "top_left") {
+        if(field == "topLeft") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "top_right") {
+        else if(field == "topRight") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "bottom_left") {
+        else if(field == "bottomLeft") {
             return luaL_error(state, "Invalid operation");
         }
-        else if(field == "bottom_right") {
+        else if(field == "bottomRight") {
             return luaL_error(state, "Invalid operation");
         }
         else {

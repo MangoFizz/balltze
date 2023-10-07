@@ -57,6 +57,8 @@ namespace Balltze::Plugins {
 
     void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept;
 
+    void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept;
+
     std::string unit_throwing_grenade_state_to_string(Engine::UnitThrowingGrenadeState state);
     std::string unit_animation_state_to_string(Engine::UnitAnimationState state);
     std::string unit_replacement_animation_state_to_string(Engine::UnitReplacementAnimationState state);
@@ -68,7 +70,7 @@ namespace Balltze::Plugins {
     std::string biped_movement_state_to_string(Engine::BipedMovementState state);
     std::string weapon_state_to_string(Engine::WeaponState state);
     std::string weapon_magazine_state_to_string(Engine::WeaponMagazineState state);
-    std::string network_color_to_string(Engine::NetworkColor color);
+    std::string network_color_to_string(Engine::NetworkPlayerColor color);
     std::string player_objective_mode_to_string(Engine::PlayerObjectiveMode mode);
 
     Engine::UnitThrowingGrenadeState unit_throwing_grenade_state_from_string(const std::string &state);
@@ -82,7 +84,7 @@ namespace Balltze::Plugins {
     Engine::BipedMovementState biped_movement_state_from_string(const std::string &state);
     Engine::WeaponState weapon_state_from_string(const std::string &state);
     Engine::WeaponMagazineState weapon_magazine_state_from_string(const std::string &state);
-    Engine::NetworkColor network_color_from_string(const std::string &color);
+    Engine::NetworkPlayerColor network_color_from_string(const std::string &color);
     Engine::PlayerObjectiveMode player_objective_mode_from_string(const std::string &mode);
 
     void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
