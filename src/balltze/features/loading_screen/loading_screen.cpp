@@ -285,7 +285,7 @@ namespace Balltze::Features {
         Event::D3D9EndSceneEvent::subscribe(update_d3d9_device, Event::EVENT_PRIORITY_HIGHEST);
         Event::D3D9DeviceResetEvent::subscribe(on_device_reset, Event::EVENT_PRIORITY_HIGHEST);
 
-        auto set_video_mode_sig = Memory::get_signature("set_video_mode");
+        auto set_video_mode_sig = Memory::get_signature("d3d9_set_video_mode");
         if(!set_video_mode_sig) {
             logger.error("Failed to find signatures for loading screen.");
             return;

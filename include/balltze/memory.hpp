@@ -264,9 +264,8 @@ namespace Balltze::Memory {
          * @param signature Signature bytes
          * @param lenght    Number of bytes
          * @param offset    Offset from the signature
-         * @param match_num Match number
          */
-        Signature(std::string name, const short *signature, std::size_t lenght, std::uint16_t offset, std::size_t match_num);
+        Signature(std::string name, const short *signature, std::size_t lenght, std::uint16_t offset);
 
     private:
         /** Signature name */
