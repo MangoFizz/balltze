@@ -96,91 +96,10 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Unknown plugin.");
         }
     }
-    
-    void lua_attach_tag_data_metatable(lua_State *state) noexcept;
-    
-    static int lua_engine_get_tag_data(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1 || args == 2) {
-                Engine::Tag *tag_entry = nullptr;
-                if(args == 2 && lua_isstring(state, 1)) {
-                    const char *tag_path = lua_tostring(state, 1);
-                    const char *tag_class_str = lua_tostring(state, 2);
-                    auto tag_class = Engine::tag_class_from_string(tag_class_str);
-                    if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
-                        tag_entry = Engine::get_tag(tag_path, tag_class);
-                    }
-                    else {
-                        return luaL_error(state, "Invalid tag class.");
-                    }
-                }
-                else {
-                    std::uint32_t tag_handle_or_index;
-                    if(lua_istable(state, 1)) {
-                        lua_getfield(state, 1, "handle");
-                        tag_handle_or_index = lua_tointeger(state, -1);
-                        lua_pop(state, 1);
-                    }
-                    else {
-                        tag_handle_or_index = lua_tointeger(state, 1);
-                    }
-
-                    if(tag_handle_or_index < 0xFFFF) {
-                        tag_entry = Engine::get_tag(tag_handle_or_index);
-                    }
-                    else {
-                        Engine::TagHandle tag_handle;
-                        tag_handle.handle = tag_handle_or_index;
-                        tag_entry = Engine::get_tag(tag_handle);
-                    }
-                }
-
-                if(!tag_entry) {
-                    lua_pushnil(state);
-                    return 1;
-                }
-
-                if(args == 2) {
-                    const char *tag_class_str = lua_tostring(state, 2);
-                    auto tag_class = Engine::tag_class_from_string(tag_class_str);
-                    if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
-                        if(tag_entry->primary_class != tag_class) {
-                            return luaL_error(state, "Tag class does not match.");
-                        }
-                    }
-                    else {
-                        return luaL_error(state, "Invalid tag class.");
-                    }
-                }
-
-                lua_newtable(state);
-                lua_pushlightuserdata(state, tag_entry->data);
-                lua_setfield(state, -2, "_tag_data");
-                lua_pushinteger(state, tag_entry->primary_class);
-                lua_setfield(state, -2, "_tag_class");
-                lua_pushinteger(state, tag_entry->handle.handle);
-                lua_setfield(state, -2, "_tag_handle");
-
-                lua_attach_tag_data_metatable(state);
-
-                return 1;
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_tag_data.");
-            }
-        }
-        else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
-        }
-    }
 
     static const luaL_Reg engine_tag_functions[] = {
         {"getTagDataHeader", lua_engine_get_tag_data_header},
         {"getTag", lua_engine_get_tag},
-        {"getTagData", lua_engine_get_tag_data},
         {nullptr, nullptr}
     };
 

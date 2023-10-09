@@ -795,7 +795,7 @@ for enumName, enum in pairs(enums) do
 end
 
 add([[
-    void lua_attach_tag_data_metatable(lua_State *state) noexcept {
+    void lua_engine_attach_tag_data_metatable(lua_State *state) noexcept {
         lua_getfield(state, -1, "_tag_class");
         auto tag_class_int = static_cast<TagClassInt>(luaL_checkinteger(state, -1));
         lua_pop(state, 1);

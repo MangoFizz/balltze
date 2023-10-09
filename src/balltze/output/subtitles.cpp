@@ -36,7 +36,7 @@ namespace Balltze {
 
         for(auto c : text) {
             if (c == ' ') {
-                if(text_pixel_length(line.c_str(), subtitle_font) < subtitle_width) {
+                if(get_text_pixel_length(line.c_str(), subtitle_font) < subtitle_width) {
                     if(!line.empty()) {
                         line += ' ';
                     }
@@ -77,7 +77,7 @@ namespace Balltze {
 
         for(auto c : text) {
             if (c == L' ') {
-                if(text_pixel_length(line.c_str(), subtitle_font) < subtitle_width) {
+                if(get_text_pixel_length(line.c_str(), subtitle_font) < subtitle_width) {
                     if(!line.empty()) {
                         line += L' ';
                     }
@@ -125,7 +125,7 @@ namespace Balltze {
         }
 
         std::size_t lines_height() {
-            return lines_count * font_pixel_height(subtitle_font);
+            return lines_count * get_font_pixel_height(subtitle_font);
         }
 
         Subtitle(std::string text, Engine::ColorARGB color, std::chrono::milliseconds duration) {
@@ -236,7 +236,7 @@ namespace Balltze {
         screen_width = std::round(width);
         subtitle_width = std::round(width * 0.8);
         subtitle_y_base_offset = screen_height - bottom_margin;
-        font_height = font_pixel_height(subtitle_font);
+        font_height = get_font_pixel_height(subtitle_font);
 
         curve = Math::QuadraticBezier::ease_out();
 

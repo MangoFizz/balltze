@@ -2,164 +2,164 @@
 
 local paths = {
     meters = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\meters",
-    meters_alphas = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\alphas",
-    weapon_icons = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\hud_weapon_icons_final",
+    metersAlphas = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\alphas",
+    weaponIcons = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\hud_weapon_icons_final",
     numbers = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\hud_counter_numbers",
-    percentage_sign = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\plasma percentage" 
+    percentageSign = "[shm]\\halo_4\\ui\\hud\\bitmaps\\combined\\plasma percentage" 
 }
 
-local hud_element_render_event_listener = nil
-local navpoints_render_event_listener = nil
-local is_rendering_navpoints = false
-local last_digit_vertices = nil
-local digit_count = 0
+local hudElementRenderEventListener = nil
+local navpointsRenderEventListener = nil
+local isRenderingNavpoints = false
+local lastDigitVertices = nil
+local digitCount = 0
 
-local function save_digit_vertices(vertices) 
-    last_digit_vertices = {
-        top_left = {x = vertices.top_left.x, y = vertices.top_left.y},
-        top_right = {x = vertices.top_right.x, y = vertices.top_right.y},
-        bottom_left = {x = vertices.bottom_left.x, y = vertices.bottom_left.y},
-        bottom_right = {x = vertices.bottom_right.x, y = vertices.bottom_right.y}
+local function saveDigitVertices(vertices) 
+    lastDigitVertices = {
+        topLeft = {x = vertices.topLeft.x, y = vertices.topLeft.y},
+        topRight = {x = vertices.topRight.x, y = vertices.topRight.y},
+        bottomLeft = {x = vertices.bottomLeft.x, y = vertices.bottomLeft.y},
+        bottomRight = {x = vertices.bottomRight.x, y = vertices.bottomRight.y}
     }
 end
 
-local function starts_with(str, prefix)
+local function startsWith(str, prefix)
     return string.sub(str, 1, string.len(prefix)) == prefix
 end
 
-local function rotate_vertex(vertex, cx, cy, angle)
-    local cos_a = math.cos(angle)
-    local sin_a = math.sin(angle)
-    local new_x = cos_a * (vertex.x - cx) - sin_a * (vertex.y - cy) + cx
-    local new_y = sin_a * (vertex.x - cx) + cos_a * (vertex.y - cy) + cy
-    return {x = new_x, y = new_y}
+local function rotateVertex(vertex, cx, cy, angle)
+    local cosA = math.cos(angle)
+    local sinA = math.sin(angle)
+    local newX = cosA * (vertex.x - cx) - sinA * (vertex.y - cy) + cx
+    local newY = sinA * (vertex.x - cx) + cosA * (vertex.y - cy) + cy
+    return {x = newX, y = newY}
 end
 
-local function rotate_rectangle(vertices, angle)
-    local center_x = vertices.top_left.x + (vertices.top_right.x - vertices.top_left.x) / 2
-    local center_y = vertices.top_left.y + (vertices.bottom_left.y - vertices.top_left.y) / 2
+local function rotateRectangle(vertices, angle)
+    local centerX = vertices.topLeft.x + (vertices.topRight.x - vertices.topLeft.x) / 2
+    local centerY = vertices.topLeft.y + (vertices.bottomLeft.y - vertices.topLeft.y) / 2
 
     local rotate = function(vertex) 
-        local new_vertex = rotate_vertex(vertex, center_x, center_y, angle)
-        vertex.x = new_vertex.x
-        vertex.y = new_vertex.y
+        local newVertex = rotateVertex(vertex, centerX, centerY, angle)
+        vertex.x = newVertex.x
+        vertex.y = newVertex.y
     end
 
-    rotate(vertices.top_left)
-    rotate(vertices.top_right)
-    rotate(vertices.bottom_left)
-    rotate(vertices.bottom_right)
+    rotate(vertices.topLeft)
+    rotate(vertices.topRight)
+    rotate(vertices.bottomLeft)
+    rotate(vertices.bottomRight)
 end
 
-local function skew_rectangle_horizontally(vertices, angle)
-    local skew = function(top_vertex, bottom_vertex) 
-        local center_x = top_vertex.x
-        local center_y = top_vertex.y + (bottom_vertex.y - top_vertex.y) / 2
-        local top = rotate_vertex(top_vertex, center_x, center_y, angle)
-        local bottom = rotate_vertex(bottom_vertex, center_x, center_y, angle)
-        top_vertex.x = top.x
-        top_vertex.y = top.y
-        bottom_vertex.x = bottom.x
-        bottom_vertex.y = bottom.y
+local function skewRectangleHorizontally(vertices, angle)
+    local skew = function(topVertex, bottomVertex) 
+        local centerX = topVertex.x
+        local centerX = topVertex.y + (bottomVertex.y - topVertex.y) / 2
+        local top = rotateVertex(topVertex, centerX, centerX, angle)
+        local bottom = rotateVertex(bottomVertex, centerX, centerX, angle)
+        topVertex.x = top.x
+        topVertex.y = top.y
+        bottomVertex.x = bottom.x
+        bottomVertex.y = bottom.y
     end
 
-    skew(vertices.top_left, vertices.bottom_left)
-    skew(vertices.top_right, vertices.bottom_right)
+    skew(vertices.topLeft, vertices.bottomLeft)
+    skew(vertices.topRight, vertices.bottomRight)
 end
 
-local function displace_rectangle(vertices, x, y)
+local function displaceRectangle(vertices, x, y)
     local displace = function(vertex) 
         vertex.x = vertex.x + x
         vertex.y = vertex.y + y
     end
 
-    displace(vertices.top_left)
-    displace(vertices.top_right)
-    displace(vertices.bottom_left)
-    displace(vertices.bottom_right)
+    displace(vertices.topLeft)
+    displace(vertices.topRight)
+    displace(vertices.bottomLeft)
+    displace(vertices.bottomRight)
 end
 
-local function on_hud_element_bitmap_render(event)
+local function onHudElementBitmapRender(event)
     if event.time == "before" then
-        local tag_handle = event.args.bitmap_data.bitmap_tag_handle
-        local tag_entry = engine.get_tag(tag_handle) 
+        local tagHandle = event.args.bitmapData.bitmapTagHandle
+        local tagEntry = Engine.tag.getTag(tagHandle) 
 
         local found = false
         for _, path in pairs(paths) do
-            if(starts_with(tag_entry.path, path)) then
+            if(startsWith(tagEntry.path, path)) then
                 found = true
                 break
             end
         end
         
-        if found and not is_rendering_navpoints then
+        if found and not isRenderingNavpoints then
             -- Get the angle to rotate the rectangle
-            local screen_resolution = engine.get_resolution()
-            local actual_width = (640 / (4 / 3)) * (screen_resolution.width / screen_resolution.height)
-            local rightSide = actual_width / 2 < event.args.vertices.top_left.x
+            local screenResolution = Engine.core.getResolution()
+            local actualWidth = (640 / (4 / 3)) * (screenResolution.width / screenResolution.height)
+            local rightSide = actualWidth / 2 < event.args.vertices.topLeft.x
 
-            if tag_entry.path == paths.numbers then
-                if not last_digit_vertices then
-                    save_digit_vertices(event.args.vertices)
-                    digit_count = 1
+            if tagEntry.path == paths.numbers then
+                if not lastDigitVertices then
+                    saveDigitVertices(event.args.vertices)
+                    digitCount = 1
                 else
-                    rightSide = actual_width / 2 < last_digit_vertices.top_left.x
-                    local rectangle_height = last_digit_vertices.bottom_left.y - last_digit_vertices.top_left.y
-                    local offset = (rectangle_height * 0.05) * digit_count * -1
+                    rightSide = actualWidth / 2 < lastDigitVertices.topLeft.x
+                    local rectangleHeight = lastDigitVertices.bottomLeft.y - lastDigitVertices.topLeft.y
+                    local offset = (rectangleHeight * 0.05) * digitCount * -1
                     if rightSide then
                         offset = -offset
                     end
-                    displace_rectangle(event.args.vertices, 0, offset)
-                    digit_count = digit_count + 1
+                    displaceRectangle(event.args.vertices, 0, offset)
+                    digitCount = digitCount + 1
                 end
             else
-                last_digit_vertices = nil
+                lastDigitVertices = nil
             end
 
-            local rotation_angle = 6
-            local skew_angle = -6 
+            local rotationAngle = 6
+            local skewAngle = -6 
             if rightSide then
-                rotation_angle = -6
-                skew_angle = 6
+                rotationAngle = -6
+                skewAngle = 6
             end
             
             -- Rotate the rectangle
-            rotate_rectangle(event.args.vertices, math.rad(rotation_angle))
+            rotateRectangle(event.args.vertices, math.rad(rotationAngle))
 
             -- Skew the rectangle horizontally
-            skew_rectangle_horizontally(event.args.vertices, math.rad(skew_angle))
+            skewRectangleHorizontally(event.args.vertices, math.rad(skewAngle))
         end
     end
 end
 
-local function on_navpoints_render(event) 
+local function onNavpointsRender(event) 
     if event.time == "before" then
-        is_rendering_navpoints = true
+        isRenderingNavpoints = true
     else 
-        is_rendering_navpoints = false
+        isRenderingNavpoints = false
     end
 end
 
-local function on_map_load(event)
+local function onMapLoad(event)
     if event.time == "before" then
-        if(event.args.map_name == "forge_island_dev") then
-            hud_element_render_event_listener = balltze.event.hud_element_bitmap_render.subscribe(on_hud_element_bitmap_render, "highest")
-            navpoints_render_event_listener = balltze.event.navpoints_render.subscribe(on_navpoints_render, "highest")
+        if(event.args.mapName == "forge_island_dev") then
+            hudElementRenderEventListener = Balltze.event.hudElementBitmapRender.subscribe(onHudElementBitmapRender, "highest")
+            navpointsRenderEventListener = Balltze.event.navpointsRender.subscribe(onNavpointsRender, "highest")
         else 
-            if(hud_element_render_event_listener) then
-                hud_element_render_event_listener:remove()
+            if(hudElementRenderEventListener) then
+                hudElementRenderEventListener:remove()
             end
-            if(navpoints_render_event_listener) then
-                navpoints_render_event_listener:remove()
+            if(navpointsRenderEventListener) then
+                navpointsRenderEventListener:remove()
             end
         end
     end
 end
 
-function plugin_init() 
+function PluginInit() 
     return true
 end
 
-function plugin_load() 
-    balltze.event.map_load.subscribe(on_map_load, "highest")
+function PluginLoad() 
+    Balltze.event.mapLoad.subscribe(onMapLoad, "highest")
 end

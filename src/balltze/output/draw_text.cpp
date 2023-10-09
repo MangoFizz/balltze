@@ -195,7 +195,7 @@ namespace Balltze {
         }
 
         std::size_t start = 0;
-        auto font_height = font_pixel_height(font);
+        auto font_height = get_font_pixel_height(font);
         std::size_t tabs = 0;
         auto original_align = align;
         auto &font_data = get_current_font_data();
@@ -453,7 +453,7 @@ namespace Balltze {
         text_list.clear();
     }
 
-    std::int16_t font_pixel_height(const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
+    std::int16_t get_font_pixel_height(const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
         // Find the font
         Engine::TagHandle font_tag = get_generic_font_if_generic(font);
         auto *override_font = get_override_font(font);
@@ -567,11 +567,11 @@ namespace Balltze {
         return length;
     }
 
-    std::int16_t text_pixel_length(const char *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
+    std::int16_t get_text_pixel_length(const char *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
         return text_pixel_length_t(text, font);
     }
 
-    std::int16_t text_pixel_length(const wchar_t *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
+    std::int16_t get_text_pixel_length(const wchar_t *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
         return text_pixel_length_t(text, font);
     }
 

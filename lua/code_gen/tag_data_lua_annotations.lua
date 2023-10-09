@@ -35,21 +35,44 @@ add([[
 -- SPDX-License-Identifier: GPL-3.0-only
 -- This file is used to document the Lua plugins engine API. It should not be included.
 
+---@meta _
+
 ]])
 
 for definitionName, definition in pairs(definitions) do
     -- generate and write header
     local definitionDependencies = dependencies[definitionName]
 
-    local function isEnum(value)
-        for dependencyName, fields in pairs(definitionDependencies) do
+    local function isMeta(value)
+        for _, enum in ipairs(definition.enums) do
+            if parser.snakeCaseToCamelCase(enum.name) == value then
+                return false
+            end
+        end
+        for enumName, _ in pairs(parser.commonEnums) do
+            if parser.snakeCaseToCamelCase(enumName) == value then
+                return false
+            end
+        end
+        for _, fields in pairs(definitionDependencies) do
             for dataType, fieldType in pairs(fields) do
                 if fieldType == "enum" and parser.snakeCaseToCamelCase(dataType) == value then
-                    return true
+                    return false
                 end
             end
         end
-        return false
+        if value == "TagFourCC" or value == "TagHandle" or value == "ScenarioScriptNodeValue" then
+            return false
+        end
+        return true
+    end
+
+    local function isCommon(value) 
+        for structName, _ in pairs(parser.commonStructs) do
+            if parser.snakeCaseToCamelCase(structName) == value then
+                return true
+            end
+        end
     end
 
     for _, enum in ipairs(definition.enums) do
@@ -93,11 +116,23 @@ for definitionName, definition in pairs(definitions) do
                 elseif field.type == "TagReflexive" then
                     add("table<MetaEngineTagData" .. parser.snakeCaseToCamelCase(field.struct) .. ">")
                 else
-                    if isEnum(field.type) then
-                        add("EngineTagData" .. parser.snakeCaseToCamelCase(field.type))
-                    else
-                        add("MetaEngineTagData" .. parser.snakeCaseToCamelCase(field.type))
+                    if isMeta(field.type) then
+                        add("Meta")
                     end
+
+                    add("Engine")
+
+                    if not isCommon(field.type) then
+                        add("TagData")
+                    end
+
+                    local fieldName = field.type
+
+                    if fieldName == "TagFourCC" then
+                        fieldName = "TagClass"
+                    end
+
+                    add(parser.snakeCaseToCamelCase(fieldName))
                 end
                 add(" \n")
             end

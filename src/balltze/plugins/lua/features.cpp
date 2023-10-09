@@ -294,14 +294,14 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg features_functions[] = {
-        {"import_tag_from_map", lua_import_tag_from_map},
-        {"import_tags_from_map", lua_import_tags_from_map},
-        {"clear_tag_imports", lua_clear_tag_imports},
-        {"reload_tag_data", lua_reload_tag_data},
-        {"replace_tag_references", lua_replace_tag_references},
-        {"clone_tag", lua_clone_tag},
-        {"get_tag_copy", lua_get_tag_copy},
-        {"get_imported_tag", lua_get_imported_tag},
+        {"importTagFromMap", lua_import_tag_from_map},
+        {"importTagsFromMap", lua_import_tags_from_map},
+        {"clearTagImports", lua_clear_tag_imports},
+        {"reloadTagData", lua_reload_tag_data},
+        {"replaceTagReferences", lua_replace_tag_references},
+        {"cloneTag", lua_clone_tag},
+        {"getTagCopy", lua_get_tag_copy},
+        {"getImportedTag", lua_get_imported_tag},
         {nullptr, nullptr}
     };
 

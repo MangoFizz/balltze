@@ -49,9 +49,9 @@ namespace Balltze::Plugins {
         lua_pushcfunction(state, add);
         lua_setfield(state, -2, "subscribe");
         lua_pushcfunction(state, remove);
-        lua_setfield(state, -2, "remove_listener");
+        lua_setfield(state, -2, "removeListener");
         lua_pushcfunction(state, remove_all);
-        lua_setfield(state, -2, "remove_all_listeners");
+        lua_setfield(state, -2, "removeAllListeners");
         lua_setfield(state, -2, name);
 
         lua_get_events_registry_table(state);
@@ -300,9 +300,9 @@ namespace Balltze::Plugins {
             // Set arguments table
             lua_newtable(state);
             lua_pushinteger(state, context.args.tick_count);
-            lua_setfield(state, -2, "tick_count");
+            lua_setfield(state, -2, "tickCount");
             lua_pushinteger(state, context.args.delta_time_ms);
-            lua_setfield(state, -2, "delta_time_ms");
+            lua_setfield(state, -2, "deltaTimeMs");
             lua_setfield(state, -2, "args");
 
             call_events_by_priority(state, "tick", priority, -1);
@@ -393,11 +393,11 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 1) {
-                remove_event_listener(state, "map_file_load", 1);
+                remove_event_listener(state, "mapFileLoad", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_file_load.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.mapFileLoad.remove_listener.");
             }
         }
         else {
@@ -414,14 +414,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "map_file_load", 1, priority, lua_event_map_file_load_remove_listener);
+                    return add_event_listener(state, "mapFileLoad", 1, priority, lua_event_map_file_load_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.map_file_load.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.mapFileLoad.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_file_load.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.mapFileLoad.subscribe.");
             }
         }
         else {
@@ -435,11 +435,11 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                remove_all_event_listeners(state, "map_file_load");
+                remove_all_event_listeners(state, "mapFileLoad");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_file_load.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.mapFileLoad.remove_all_listeners.");
             }
         }
         else {
@@ -458,12 +458,12 @@ namespace Balltze::Plugins {
             // Set arguments table
             lua_newtable(state);
             lua_pushstring(state, context.args.map_name.c_str());
-            lua_setfield(state, -2, "map_name");
+            lua_setfield(state, -2, "mapName");
             lua_pushstring(state, context.args.map_path.c_str());
-            lua_setfield(state, -2, "map_file");
+            lua_setfield(state, -2, "mapFile");
             lua_setfield(state, -2, "args");
 
-            call_events_by_priority(state, "map_file_load", priority, -1);
+            call_events_by_priority(state, "mapFileLoad", priority, -1);
 
             lua_pop(state, 1);
         }
@@ -474,11 +474,11 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 1) {
-                remove_event_listener(state, "server_connect", 1);
+                remove_event_listener(state, "serverConnect", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.server_connect.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.serverConnect.remove_listener.");
             }
         }
         else {
@@ -495,14 +495,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "server_connect", 1, priority, lua_event_server_connect_remove_listener);
+                    return add_event_listener(state, "serverConnect", 1, priority, lua_event_server_connect_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.server_connect.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.serverConnect.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.server_connect.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.serverConnect.subscribe.");
             }
         }
         else {
@@ -516,11 +516,11 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                remove_all_event_listeners(state, "server_connect");
+                remove_all_event_listeners(state, "serverConnect");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.server_connect.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.serverConnect.remove_all_listeners.");
             }
         }
         else {
@@ -549,7 +549,7 @@ namespace Balltze::Plugins {
             lua_setfield(state, -2, "password");
             lua_setfield(state, -2, "args");
 
-            call_events_by_priority(state, "server_connect", priority, -1);
+            call_events_by_priority(state, "serverConnect", priority, -1);
 
             lua_pop(state, 1);
         }
@@ -641,11 +641,11 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args >= 1) {
-                remove_event_listener(state, "game_input", 1);
+                remove_event_listener(state, "gameInput", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.game_input.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.gameInput.remove_listener.");
             }
         }
         else {
@@ -663,14 +663,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "game_input", 1, priority, lua_event_game_input_remove_listener);
+                    return add_event_listener(state, "gameInput", 1, priority, lua_event_game_input_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.game_input.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.gameInput.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.game_input.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.gameInput.subscribe.");
             }
         }
         else {
@@ -685,11 +685,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 0) {
-                remove_all_event_listeners(state, "game_input");
+                remove_all_event_listeners(state, "gameInput");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.game_input.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.gameInput.remove_all_listeners.");
             }
         }
         else {
@@ -727,7 +727,7 @@ namespace Balltze::Plugins {
             lua_setfield(state, -2, "button");
             lua_setfield(state, -2, "args");
 
-            call_events_by_priority(state, "game_input", priority, -1);
+            call_events_by_priority(state, "gameInput", priority, -1);
 
             lua_pop(state, 1);
         }
@@ -739,11 +739,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 1) {
-                remove_event_listener(state, "map_load", 1);
+                remove_event_listener(state, "mapLoad", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_load.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.mapLoad.remove_listener.");
             }
         }
         else {
@@ -763,14 +763,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "map_load", 1, priority, lua_event_map_load_remove_listener);
+                    return add_event_listener(state, "mapLoad", 1, priority, lua_event_map_load_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.map_load.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.mapLoad.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_load.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.mapLoad.subscribe.");
             }
         }
         else {
@@ -787,11 +787,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 0) {
-                remove_all_event_listeners(state, "map_load");
+                remove_all_event_listeners(state, "mapLoad");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.map_load.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.mapLoad.remove_all_listeners.");
             }
         }
         else {
@@ -812,10 +812,10 @@ namespace Balltze::Plugins {
             // Set arguments table
             lua_newtable(state);
             lua_pushstring(state, context.args.name.c_str());
-            lua_setfield(state, -2, "map_name");
+            lua_setfield(state, -2, "mapName");
             lua_setfield(state, -2, "args");
 
-            call_events_by_priority(state, "map_load", priority, -1);
+            call_events_by_priority(state, "mapLoad", priority, -1);
 
             lua_pop(state, 1);
         }
@@ -827,11 +827,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 1) {
-                remove_event_listener(state, "ui_render", 1);
+                remove_event_listener(state, "uiRender", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.ui_render.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.uiRender.remove_listener.");
             }
         }
         else {
@@ -851,14 +851,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "ui_render", 1, priority, lua_event_ui_render_remove_listener);
+                    return add_event_listener(state, "uiRender", 1, priority, lua_event_ui_render_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.ui_render.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.uiRender.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.ui_render.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.uiRender.subscribe.");
             }
         }
         else {
@@ -875,11 +875,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 0) {
-                remove_all_event_listeners(state, "ui_render");
+                remove_all_event_listeners(state, "uiRender");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.ui_render.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.uiRender.remove_all_listeners.");
             }
         }
         else {
@@ -899,7 +899,7 @@ namespace Balltze::Plugins {
 
             lua_newtable(state);
             lua_setfield(state, -2, "args");
-            call_events_by_priority(state, "ui_render", priority, -1);
+            call_events_by_priority(state, "uiRender", priority, -1);
 
             lua_pop(state, 1);
         }
@@ -911,11 +911,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 1) {
-                remove_event_listener(state, "hud_render", 1);
+                remove_event_listener(state, "hudRender", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.hud_render.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.hudRender.remove_listener.");
             }
         }
         else {
@@ -935,14 +935,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "hud_render", 1, priority, lua_event_hud_render_remove_listener);
+                    return add_event_listener(state, "hudRender", 1, priority, lua_event_hud_render_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.hud_render.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.hudRender.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.hud_render.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.hudRender.subscribe.");
             }
         }
         else {
@@ -959,11 +959,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 0) {
-                remove_all_event_listeners(state, "hud_render");
+                remove_all_event_listeners(state, "hudRender");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.hud_render.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.hudRender.remove_all_listeners.");
             }
         }
         else {
@@ -983,7 +983,7 @@ namespace Balltze::Plugins {
 
             lua_newtable(state);
             lua_setfield(state, -2, "args");
-            call_events_by_priority(state, "hud_render", priority, -1);
+            call_events_by_priority(state, "hudRender", priority, -1);
 
             lua_pop(state, 1);
         }
@@ -995,11 +995,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 1) {
-                remove_event_listener(state, "post_carnage_report_render", 1);
+                remove_event_listener(state, "postCarnageReportRender", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.post_carnage_report_render.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.postCarnageReportRender.remove_listener.");
             }
         }
         else {
@@ -1019,14 +1019,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "post_carnage_report_render", 1, priority, lua_event_post_carnage_report_render_remove_listener);
+                    return add_event_listener(state, "postCarnageReportRender", 1, priority, lua_event_post_carnage_report_render_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.post_carnage_report_render.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.postCarnageReportRender.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.post_carnage_report_render.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.postCarnageReportRender.subscribe.");
             }
         }
         else {
@@ -1043,11 +1043,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 0) {
-                remove_all_event_listeners(state, "post_carnage_report_render");
+                remove_all_event_listeners(state, "postCarnageReportRender");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.post_carnage_report_render.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.postCarnageReportRender.remove_all_listeners.");
             }
         }
         else {
@@ -1067,7 +1067,7 @@ namespace Balltze::Plugins {
 
             lua_newtable(state);
             lua_setfield(state, -2, "args");
-            call_events_by_priority(state, "post_carnage_report_render", priority, -1);
+            call_events_by_priority(state, "postCarnageReportRender", priority, -1);
 
             lua_pop(state, 1);
         }
@@ -1079,11 +1079,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             
             if(args == 1) {
-                remove_event_listener(state, "hud_element_bitmap_render", 1);
+                remove_event_listener(state, "hudElementBitmapRender", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.hud_element_bitmap_render.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.hudElementBitmapRender.remove_listener.");
             }
         }
         else {
@@ -1103,14 +1103,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "hud_element_bitmap_render", 1, priority, lua_event_hud_element_bitmap_render_remove_listener);
+                    return add_event_listener(state, "hudElementBitmapRender", 1, priority, lua_event_hud_element_bitmap_render_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.hud_element_bitmap_render.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.hudElementBitmapRender.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.hud_element_bitmap_render.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.hudElementBitmapRender.subscribe.");
             }
         }
         else {
@@ -1127,11 +1127,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             
             if(args == 0) {
-                remove_all_event_listeners(state, "hud_element_bitmap_render");
+                remove_all_event_listeners(state, "hudElementBitmapRender");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.hud_element_bitmap_render.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.hudElementBitmapRender.remove_all_listeners.");
             }
         }
         else {
@@ -1155,10 +1155,10 @@ namespace Balltze::Plugins {
             lua_push_meta_event_widget_render_vertices(state, *context.args.vertices);
             lua_setfield(state, -2, "vertices");
             lua_push_meta_engine_bitmap_data(state, *context.args.bitmap_data);
-            lua_setfield(state, -2, "bitmap_data");
+            lua_setfield(state, -2, "bitmapData");
             lua_setfield(state, -2, "args");
 
-            call_events_by_priority(state, "hud_element_bitmap_render", priority, -1);
+            call_events_by_priority(state, "hudElementBitmapRender", priority, -1);
             
             lua_pop(state, 1);
         }
@@ -1170,11 +1170,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             
             if(args == 1) {
-                remove_event_listener(state, "widget_background_render", 1);
+                remove_event_listener(state, "widgetBackgroundRender", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.widget_background_render.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.widgetBackgroundRender.remove_listener.");
             }
         }
         else {
@@ -1194,14 +1194,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "widget_background_render", 1, priority, lua_event_widget_background_render_remove_listener);
+                    return add_event_listener(state, "widgetBackgroundRender", 1, priority, lua_event_widget_background_render_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.widget_background_render.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.widgetBackgroundRender.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.widget_background_render.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.widgetBackgroundRender.subscribe.");
             }
         }
         else {
@@ -1218,11 +1218,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             
             if(args == 0) {
-                remove_all_event_listeners(state, "widget_background_render");
+                remove_all_event_listeners(state, "widgetBackgroundRender");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.widget_background_render.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.widgetBackgroundRender.remove_all_listeners.");
             }
         }
         else {
@@ -1247,7 +1247,7 @@ namespace Balltze::Plugins {
             lua_setfield(state, -2, "widget");
             lua_setfield(state, -2, "args");
 
-            call_events_by_priority(state, "widget_background_render", priority, -1);
+            call_events_by_priority(state, "widgetBackgroundRender", priority, -1);
             
             lua_pop(state, 1);
         }
@@ -1259,11 +1259,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             
             if(args == 1) {
-                remove_event_listener(state, "navpoints_render", 1);
+                remove_event_listener(state, "navpointsRender", 1);
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.navpoints_render.remove_listener.");
+                return luaL_error(state, "Invalid number of arguments in function events.navpointsRender.remove_listener.");
             }
         }
         else {
@@ -1283,14 +1283,14 @@ namespace Balltze::Plugins {
                 auto priority_str = luaL_checkstring(state, 2);
                 try {
                     auto priority = Event::event_priority_from_string(priority_str);
-                    return add_event_listener(state, "navpoints_render", 1, priority, lua_event_navpoints_render_remove_listener);
+                    return add_event_listener(state, "navpointsRender", 1, priority, lua_event_navpoints_render_remove_listener);
                 }
                 catch(const std::invalid_argument &e) {
-                    return luaL_error(state, "Invalid priority argument in function events.navpoints_render.subscribe: %s.", priority_str);
+                    return luaL_error(state, "Invalid priority argument in function events.navpointsRender.subscribe: %s.", priority_str);
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.navpoints_render.subscribe.");
+                return luaL_error(state, "Invalid number of arguments in function events.navpointsRender.subscribe.");
             }
         }
         else {
@@ -1307,11 +1307,11 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             
             if(args == 0) {
-                remove_all_event_listeners(state, "navpoints_render");
+                remove_all_event_listeners(state, "navpointsRender");
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function events.navpoints_render.remove_all_listeners.");
+                return luaL_error(state, "Invalid number of arguments in function events.navpointsRender.remove_all_listeners.");
             }
         }
         else {
@@ -1331,7 +1331,7 @@ namespace Balltze::Plugins {
 
             lua_newtable(state);
             lua_setfield(state, -2, "args");
-            call_events_by_priority(state, "navpoints_render", priority, -1);
+            call_events_by_priority(state, "navpointsRender", priority, -1);
             
             lua_pop(state, 1);
         }
@@ -1344,17 +1344,17 @@ namespace Balltze::Plugins {
         lua_newtable(state);
         set_up_event_table(state, "tick", lua_event_tick_subscribe, lua_event_tick_remove_listener, lua_event_tick_remove_all_listeners);
         set_up_event_table(state, "frame", lua_event_frame_subscribe, lua_event_frame_remove_listener, lua_event_frame_remove_all_listeners);
-        set_up_event_table(state, "map_file_load", lua_event_map_file_load_subscribe, lua_event_map_file_load_remove_listener, lua_event_map_file_load_remove_all_listeners);
-        set_up_event_table(state, "server_connect", lua_event_server_connect_subscribe, lua_event_server_connect_remove_listener, lua_event_server_connect_remove_all_listeners);
+        set_up_event_table(state, "mapFileLoad", lua_event_map_file_load_subscribe, lua_event_map_file_load_remove_listener, lua_event_map_file_load_remove_all_listeners);
+        set_up_event_table(state, "serverConnect", lua_event_server_connect_subscribe, lua_event_server_connect_remove_listener, lua_event_server_connect_remove_all_listeners);
         set_up_event_table(state, "camera", lua_event_camera_subscribe, lua_event_camera_remove_listener, lua_event_camera_remove_all_listeners);
-        set_up_event_table(state, "game_input", lua_event_game_input_subscribe, lua_event_game_input_remove_listener, lua_event_game_input_remove_all_listeners);
-        set_up_event_table(state, "map_load", lua_event_map_load_subscribe, lua_event_map_load_remove_listener, lua_event_map_load_remove_all_listeners);
-        set_up_event_table(state, "ui_render", lua_event_ui_render_subscribe, lua_event_ui_render_remove_listener, lua_event_ui_render_remove_all_listeners);
-        set_up_event_table(state, "hud_render", lua_event_hud_render_subscribe, lua_event_hud_render_remove_listener, lua_event_hud_render_remove_all_listeners);
-        set_up_event_table(state, "post_carnage_report_render", lua_event_post_carnage_report_render_subscribe, lua_event_post_carnage_report_render_remove_listener, lua_event_post_carnage_report_render_remove_all_listeners);
-        set_up_event_table(state, "hud_element_bitmap_render", lua_event_hud_element_bitmap_render_subscribe, lua_event_hud_element_bitmap_render_remove_listener, lua_event_hud_element_bitmap_render_remove_all_listeners);
-        set_up_event_table(state, "widget_background_render", lua_event_widget_background_render_subscribe, lua_event_widget_background_render_remove_listener, lua_event_widget_background_render_remove_all_listeners);
-        set_up_event_table(state, "navpoints_render", lua_event_navpoints_render_subscribe, lua_event_navpoints_render_remove_listener, lua_event_navpoints_render_remove_all_listeners);
+        set_up_event_table(state, "gameInput", lua_event_game_input_subscribe, lua_event_game_input_remove_listener, lua_event_game_input_remove_all_listeners);
+        set_up_event_table(state, "mapLoad", lua_event_map_load_subscribe, lua_event_map_load_remove_listener, lua_event_map_load_remove_all_listeners);
+        set_up_event_table(state, "uiRender", lua_event_ui_render_subscribe, lua_event_ui_render_remove_listener, lua_event_ui_render_remove_all_listeners);
+        set_up_event_table(state, "hudRender", lua_event_hud_render_subscribe, lua_event_hud_render_remove_listener, lua_event_hud_render_remove_all_listeners);
+        set_up_event_table(state, "postCarnageReportRender", lua_event_post_carnage_report_render_subscribe, lua_event_post_carnage_report_render_remove_listener, lua_event_post_carnage_report_render_remove_all_listeners);
+        set_up_event_table(state, "hudElementBitmapRender", lua_event_hud_element_bitmap_render_subscribe, lua_event_hud_element_bitmap_render_remove_listener, lua_event_hud_element_bitmap_render_remove_all_listeners);
+        set_up_event_table(state, "widgetBackgroundRender", lua_event_widget_background_render_subscribe, lua_event_widget_background_render_remove_listener, lua_event_widget_background_render_remove_all_listeners);
+        set_up_event_table(state, "navpointsRender", lua_event_navpoints_render_subscribe, lua_event_navpoints_render_remove_listener, lua_event_navpoints_render_remove_all_listeners);
         lua_setfield(state, -2, "event");
 
         // Set up tick event

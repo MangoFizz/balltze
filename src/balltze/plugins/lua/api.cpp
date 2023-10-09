@@ -29,7 +29,7 @@ namespace Balltze::Plugins {
         lua_set_command_table(state);
         lua_set_output_table(state);
         lua_set_chimera_table(state);
-        lua_setglobal(state, "balltze");
+        lua_setglobal(state, "Balltze");
 
         // Set up engine table
         lua_set_engine_table(state);

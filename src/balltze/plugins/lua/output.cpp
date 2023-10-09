@@ -49,7 +49,7 @@ namespace Balltze::Plugins {
                     return luaL_error(state, "Invalid argument type in function text_pixel_length.");
                 }
 
-                auto length = text_pixel_length(text, font);
+                auto length = get_text_pixel_length(text, font);
                 lua_pushinteger(state, length);
                 return 1;
             }
@@ -82,7 +82,7 @@ namespace Balltze::Plugins {
                     return luaL_error(state, "Invalid argument type in function font_pixel_height.");
                 }
 
-                auto height = font_pixel_height(font);
+                auto height = get_font_pixel_height(font);
                 lua_pushinteger(state, height);
                 return 1;
             }
@@ -141,11 +141,11 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg output_functions[] = {
-        {"get_generic_font", lua_get_generic_font},
-        {"text_pixel_length", lua_text_pixel_length},
-        {"font_pixel_height", lua_font_pixel_height},
-        {"add_subtitle", lua_add_subtitle},
-        {"play_bik_video", lua_play_bik_video},
+        {"getGenericFont", lua_get_generic_font},
+        {"getTextPixelLength", lua_text_pixel_length},
+        {"getFontPixelHeight", lua_font_pixel_height},
+        {"addSubtitle", lua_add_subtitle},
+        {"playBikVideo", lua_play_bik_video},
         {nullptr, nullptr}
     };
 

@@ -67,7 +67,7 @@ namespace Balltze {
      * @param  font the font
      * @return      the length in pixels
      */
-    BALLTZE_API std::int16_t text_pixel_length(const char *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept;
+    BALLTZE_API std::int16_t get_text_pixel_length(const char *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept;
 
     /**
      * Get the number of pixels a string takes up given a font.
@@ -75,14 +75,14 @@ namespace Balltze {
      * @param  font the font
      * @return      the length in pixels
      */
-    BALLTZE_API std::int16_t text_pixel_length(const wchar_t *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept;
+    BALLTZE_API std::int16_t get_text_pixel_length(const wchar_t *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept;
 
     /**
      * Get the height of the font
      * @param  font the font
      * @return      the height in pixels
      */
-    BALLTZE_API std::int16_t font_pixel_height(const std::variant<Engine::TagHandle, GenericFont> &font) noexcept;
+    BALLTZE_API std::int16_t get_font_pixel_height(const std::variant<Engine::TagHandle, GenericFont> &font) noexcept;
 
     /**
      * Display text on the screen for one frame.

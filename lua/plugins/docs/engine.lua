@@ -1,6 +1,8 @@
 -- SPDX-License-Identifier: GPL-3.0-only
 -- This file is used to document the Lua plugins engine API. It should not be included.
 
+---@meta _
+
 ---@diagnostic disable: missing-return 
 ---@diagnostic disable: unused-local 
 
@@ -18,6 +20,15 @@ Engine = {}
 
 ---@class MetaEngineColorARGB: EngineColorARGB
 
+---@class EngineColorARGBInt
+---@field alpha integer
+---@field red integer
+---@field green integer
+---@field blue integer
+
+---@class MetaEngineColorARGBInt: EngineColorARGBInt
+---@class MetaEngineTagDataColorARGBInt: EngineColorARGBInt
+
 ---@class EngineColorRGB
 ---@field red number
 ---@field green number
@@ -31,12 +42,24 @@ Engine = {}
 
 ---@class MetaEnginePoint2D: EnginePoint2D
 
+---@class EnginePoint2DInt
+---@field x integer
+---@field y integer
+
+---@class MetaEnginePoint2DInt: EnginePoint2DInt
+
 ---@class EnginePoint3D
 ---@field x number
 ---@field y number
 ---@field z number
 
 ---@class MetaEnginePoint3D: EnginePoint3D
+
+---@class EngineVector2D
+---@field i number
+---@field j number
+
+---@class MetaEngineVector2D: EngineVector2D
 
 ---@class EngineVector3D
 ---@field i number
@@ -74,6 +97,14 @@ Engine = {}
 
 ---@class MetaEngineEuler3D: EngineEuler3D
 
+---@class EngineRectangle2D
+---@field top number
+---@field left number
+---@field bottom number
+---@field right number
+
+---@class MetaEngineRectangle2D: EngineRectangle2D
+
 ---@class EngineRectangle2DF
 ---@field top number
 ---@field left number
@@ -81,6 +112,12 @@ Engine = {}
 ---@field right number
 
 ---@class MetaEngineRectangle2DF: EngineRectangle2DF
+
+---@class EnginePlane2D
+---@field i number
+---@field j number
+
+---@class MetaEnginePlane2D: EnginePlane2D
 
 ---@class EnginePlane3D: EngineVector3D
 ---@field w number
@@ -114,6 +151,53 @@ Engine = {}
 
 ---@class MetaEngineFraction: EngineFraction
 
+---@class EngineQuaternion
+---@field i number
+---@field j number
+---@field k number
+---@field w number
+
+---@class MetaEngineQuaternion: EngineQuaternion
+
+---@class EngineMatrix: table<table<number>>
+
+---@class MetaEngineMatrix: EngineMatrix
+
+---@class EngineScenarioScriptNodeValue
+---@field float number
+---@field integer integer
+---@field tag EngineTagHandle
+
+---@class MetaEngineScenarioScriptNodeValue: EngineScenarioScriptNodeValue
+
+---@alias EngineGenericFont
+---| "console"
+---| "system"
+---| "small"
+---| "smaller"
+---| "large"
+---| "ticker"
+
+---@alias EngineInputDevice
+---| "keyboard"
+---| "mouse"
+---| "gamepad"
+---| "unknown"
+
+---@class EngineWidgetRenderVertex
+---@field x number
+---@field y number
+---@field z number
+---@field rhw number
+---@field u number
+---@field v number
+
+---@class EngineWidgetRenderVertices
+---@field topLeft EngineWidgetRenderVertex
+---@field topRight EngineWidgetRenderVertex
+---@field bottomLeft EngineWidgetRenderVertex
+---@field bottomRight EngineWidgetRenderVertex
+
 -------------------------------------------------------
 -- Engine.core
 -------------------------------------------------------
@@ -127,12 +211,12 @@ Engine.core = {}
 ---@overload fun(format: string, ...: string)
 function Engine.core.consolePrint(color, format, ...) end
 
----@class Resolution
+---@class EngineResolution
 ---@field height integer
 ---@field width integer
 
 -- Get the current resolution of the game
----@return Resolution
+---@return EngineResolution
 function Engine.core.getResolution() end
 
 -- Get the number of ticks since the engine started
@@ -148,7 +232,7 @@ function Engine.core.getTickCount() end
 ---@return EngineEdition
 function Engine.core.getEngineEdition() end
 
----@alias CameraType
+---@alias EngineCameraType
 ---| 'first_person'
 ---| 'vehicle'
 ---| 'cinematic'
@@ -156,16 +240,16 @@ function Engine.core.getEngineEdition() end
 ---| 'unknown'
 
 -- Get the camera type
----@return CameraType
+---@return EngineCameraType
 function Engine.core.getCameraType() end
 
----@class CameraData
+---@class EngineCameraData
 ---@field position EnginePoint3D
 ---@field orientation table<EnginePoint3D>
 ---@field fov number
 
 -- Get the camera data
----@return CameraData
+---@return EngineCameraData
 function Engine.core.getCameraData() end
 
 -------------------------------------------------------
@@ -1072,7 +1156,7 @@ function Engine.tag.getTagDataHeader() end
 ---| 'weapon_hud_interface'
 ---| 'none'
 
----@class Tag
+---@class EngineTag
 ---@field primaryClass EngineTagClass
 ---@field secondaryClass integer
 ---@field tertiaryClass integer
@@ -1081,13 +1165,427 @@ function Engine.tag.getTagDataHeader() end
 ---@field dataAddress integer
 ---@field indexed boolean
 
--- Get a tag
----@param tagHandle integer @The handle of the tag
----@return Tag @The tag
----@overload fun(tagPath: string, tagClass: EngineTagClass): Tag
-function Engine.tag.getTag(tagHandle) end
+---@class EngineActorTag: EngineTag
+---@field data MetaEngineTagDataActor
+
+---@class EngineActorVariantTag: EngineTag
+---@field data MetaEngineTagDataActorVariant
+
+---@class EngineAntennaTag: EngineTag
+---@field data MetaEngineTagDataAntenna
+
+---@class EngineModelAnimationsTag: EngineTag
+---@field data MetaEngineTagDataModelAnimations
+
+---@class EngineBipedTag: EngineTag
+---@field data MetaEngineTagDataBiped
+
+---@class EngineBitmapTag: EngineTag
+---@field data MetaEngineTagDataBitmap
+
+---@class EngineContinuousDamageEffectTag: EngineTag
+---@field data MetaEngineTagDataContinuousDamageEffect
+
+---@class EngineModelCollisionGeometryTag: EngineTag
+---@field data MetaEngineTagDataModelCollisionGeometry
+
+---@class EngineColorTableTag: EngineTag
+---@field data MetaEngineTagDataColorTable
+
+---@class EngineContrailTag: EngineTag
+---@field data MetaEngineTagDataContrail
+
+---@class EngineDeviceControlTag: EngineTag
+---@field data MetaEngineTagDataDeviceControl
+
+---@class EngineDecalTag: EngineTag
+---@field data MetaEngineTagDataDecal
+
+---@class EngineUiWidgetDefinitionTag: EngineTag
+---@field data MetaEngineTagDataUiWidgetDefinition
+
+---@class EngineInputDeviceDefaultsTag: EngineTag
+---@field data MetaEngineTagDataInputDeviceDefaults
+
+---@class EngineDeviceTag: EngineTag
+---@field data MetaEngineTagDataDevice
+
+---@class EngineDetailObjectCollectionTag: EngineTag
+---@field data MetaEngineTagDataDetailObjectCollection
+
+---@class EngineEffectTag: EngineTag
+---@field data MetaEngineTagDataEffect
+
+---@class EngineEquipmentTag: EngineTag
+---@field data MetaEngineTagDataEquipment
+
+---@class EngineFlagTag: EngineTag
+---@field data MetaEngineTagDataFlag
+
+---@class EngineFogTag: EngineTag
+---@field data MetaEngineTagDataFog
+
+---@class EngineFontTag: EngineTag
+---@field data MetaEngineTagDataFont
+
+---@class EngineLightningTag: EngineTag
+---@field data MetaEngineTagDataLightning
+
+---@class EngineMaterialEffectsTag: EngineTag
+---@field data MetaEngineTagDataMaterialEffects
+
+---@class EngineGarbageTag: EngineTag
+---@field data MetaEngineTagDataGarbage
+
+---@class EngineGlowTag: EngineTag
+---@field data MetaEngineTagDataGlow
+
+---@class EngineGrenadeHudInterfaceTag: EngineTag
+---@field data MetaEngineTagDataGrenadeHudInterface
+
+---@class EngineHudMessageTextTag: EngineTag
+---@field data MetaEngineTagDataHudMessageText
+
+---@class EngineHudNumberTag: EngineTag
+---@field data MetaEngineTagDataHudNumber
+
+---@class EngineHudGlobalsTag: EngineTag
+---@field data MetaEngineTagDataHudGlobals
+
+---@class EngineItemTag: EngineTag
+---@field data MetaEngineTagDataItem
+
+---@class EngineItemCollectionTag: EngineTag
+---@field data MetaEngineTagDataItemCollection
+
+---@class EngineDamageEffectTag: EngineTag
+---@field data MetaEngineTagDataDamageEffect
+
+---@class EngineLensFlareTag: EngineTag
+---@field data MetaEngineTagDataLensFlare
+
+---@class EngineDeviceLightFixtureTag: EngineTag
+---@field data MetaEngineTagDataDeviceLightFixture
+
+---@class EngineLightTag: EngineTag
+---@field data MetaEngineTagDataLight
+
+---@class EngineSoundLoopingTag: EngineTag
+---@field data MetaEngineTagDataSoundLooping
+
+---@class EngineDeviceMachineTag: EngineTag
+---@field data MetaEngineTagDataDeviceMachine
+
+---@class EngineGlobalsTag: EngineTag
+---@field data MetaEngineTagDataGlobals
+
+---@class EngineMeterTag: EngineTag
+---@field data MetaEngineTagDataMeter
+
+---@class EngineLightVolumeTag: EngineTag
+---@field data MetaEngineTagDataLightVolume
+
+---@class EngineGbxmodelTag: EngineTag
+---@field data MetaEngineTagDataGbxmodel
+
+---@class EngineModelTag: EngineTag
+---@field data MetaEngineTagDataModel
+
+---@class EngineMultiplayerScenarioDescriptionTag: EngineTag
+---@field data MetaEngineTagDataMultiplayerScenarioDescription
+
+---@class EnginePreferencesNetworkGameTag: EngineTag
+---@field data MetaEngineTagDataPreferencesNetworkGame
+
+---@class EngineObjectTag: EngineTag
+---@field data MetaEngineTagDataObject
+
+---@class EngineParticleTag: EngineTag
+---@field data MetaEngineTagDataParticle
+
+---@class EngineParticleSystemTag: EngineTag
+---@field data MetaEngineTagDataParticleSystem
+
+---@class EnginePhysicsTag: EngineTag
+---@field data MetaEngineTagDataPhysics
+
+---@class EnginePlaceholderTag: EngineTag
+---@field data MetaEngineTagDataPlaceholder
+
+---@class EnginePointPhysicsTag: EngineTag
+---@field data MetaEngineTagDataPointPhysics
+
+---@class EngineProjectileTag: EngineTag
+---@field data MetaEngineTagDataProjectile
+
+---@class EngineWeatherParticleSystemTag: EngineTag
+---@field data MetaEngineTagDataWeatherParticleSystem
+
+---@class EngineScenarioStructureBspTag: EngineTag
+---@field data MetaEngineTagDataScenarioStructureBsp
+
+---@class EngineSceneryTag: EngineTag
+---@field data MetaEngineTagDataScenery
+
+---@class EngineShaderTransparentChicagoExtendedTag: EngineTag
+---@field data MetaEngineTagDataShaderTransparentChicagoExtended
+
+---@class EngineShaderTransparentChicagoTag: EngineTag
+---@field data MetaEngineTagDataShaderTransparentChicago
+
+---@class EngineScenarioTag: EngineTag
+---@field data MetaEngineTagDataScenario
+
+---@class EngineShaderEnvironmentTag: EngineTag
+---@field data MetaEngineTagDataShaderEnvironment
+
+---@class EngineShaderTransparentGlassTag: EngineTag
+---@field data MetaEngineTagDataShaderTransparentGlass
+
+---@class EngineShaderTag: EngineTag
+---@field data MetaEngineTagDataShader
+
+---@class EngineSkyTag: EngineTag
+---@field data MetaEngineTagDataSky
+
+---@class EngineShaderTransparentMeterTag: EngineTag
+---@field data MetaEngineTagDataShaderTransparentMeter
+
+---@class EngineSoundTag: EngineTag
+---@field data MetaEngineTagDataSound
+
+---@class EngineSoundEnvironmentTag: EngineTag
+---@field data MetaEngineTagDataSoundEnvironment
+
+---@class EngineShaderModelTag: EngineTag
+---@field data MetaEngineTagDataShaderModel
+
+---@class EngineShaderTransparentGenericTag: EngineTag
+---@field data MetaEngineTagDataShaderTransparentGeneric
+
+---@class MetaEngineTagDataUiWidgetCollection: MetaEngineTagDataTagCollection
+
+---@class EngineUiWidgetCollectionTag: EngineTag
+---@field data MetaEngineTagDataUiWidgetCollection
+
+---@class EngineShaderTransparentPlasmaTag: EngineTag
+---@field data MetaEngineTagDataShaderTransparentPlasma
+
+---@class EngineSoundSceneryTag: EngineTag
+---@field data MetaEngineTagDataSoundScenery
+
+---@class EngineStringListTag: EngineTag
+---@field data MetaEngineTagDataStringList
+
+---@class EngineShaderTransparentWaterTag: EngineTag
+---@field data MetaEngineTagDataShaderTransparentWater
+
+---@class EngineTagCollectionTag: EngineTag
+---@field data MetaEngineTagDataTagCollection
+
+---@class EngineCameraTrackTag: EngineTag
+---@field data MetaEngineTagDataCameraTrack
+
+---@class EngineUnitHudInterfaceTag: EngineTag
+---@field data MetaEngineTagDataUnitHudInterface
+
+---@class EngineUnitTag: EngineTag
+---@field data MetaEngineTagDataUnit
+
+---@class EngineUnicodeStringListTag: EngineTag
+---@field data MetaEngineTagDataUnicodeStringList
+
+---@class EngineVirtualKeyboardTag: EngineTag
+---@field data MetaEngineTagDataVirtualKeyboard
+
+---@class EngineVehicleTag: EngineTag
+---@field data MetaEngineTagDataVehicle
+
+---@class EngineWeaponTag: EngineTag
+---@field data MetaEngineTagDataWeapon
+
+---@class EngineWindTag: EngineTag
+---@field data MetaEngineTagDataWind
+
+---@class EngineWeaponHudInterfaceTag: EngineTag
+---@field data MetaEngineTagDataWeaponHudInterface
 
 -- Get a tag
----@param tagHandle integer @The handle of the tag
----@overload fun(tagPath: string, tagClass: EngineTagClass): Tag
-function Engine.tag.getTagData(tagHandle) end
+---@param tagHandleOrPath integer @The handle or path of the tag
+---@param tagClass? EngineTagClass @The class of the tag; If first argument is a handle, this argument can be skipped
+---@return EngineTag|nil @The tag; nil if not found
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "actor"): EngineActorTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "actor_variant"): EngineActorVariantTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "antenna"): EngineAntennaTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "model_animations"): EngineModelAnimationsTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "biped"): EngineBipedTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "bitmap"): EngineBitmapTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "continuous_damage_effect"): EngineContinuousDamageEffectTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "model_collision_geometry"): EngineModelCollisionGeometryTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "color_table"): EngineColorTableTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "contrail"): EngineContrailTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "device_control"): EngineDeviceControlTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "decal"): EngineDecalTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "ui_widget_definition"): EngineUiWidgetDefinitionTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "input_device_defaults"): EngineInputDeviceDefaultsTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "device"): EngineDeviceTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "detail_object_collection"): EngineDetailObjectCollectionTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "effect"): EngineEffectTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "equipment"): EngineEquipmentTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "flag"): EngineFlagTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "fog"): EngineFogTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "font"): EngineFontTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "lightning"): EngineLightningTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "material_effects"): EngineMaterialEffectsTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "garbage"): EngineGarbageTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "glow"): EngineGlowTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "grenade_hud_interface"): EngineGrenadeHudInterfaceTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "hud_message_text"): EngineHudMessageTextTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "hud_number"): EngineHudNumberTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "hud_globals"): EngineHudGlobalsTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "item"): EngineItemTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "item_collection"): EngineItemCollectionTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "damage_effect"): EngineDamageEffectTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "lens_flare"): EngineLensFlareTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "device_light_fixture"): EngineDeviceLightFixtureTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "light"): EngineLightTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "sound_looping"): EngineSoundLoopingTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "device_machine"): EngineDeviceMachineTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "globals"): EngineGlobalsTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "meter"): EngineMeterTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "light_volume"): EngineLightVolumeTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "gbxmodel"): EngineGbxmodelTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "model"): EngineModelTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "multiplayer_scenario_description"): EngineMultiplayerScenarioDescriptionTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "preferences_network_game"): EnginePreferencesNetworkGameTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "object"): EngineObjectTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "particle"): EngineParticleTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "particle_system"): EngineParticleSystemTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "physics"): EnginePhysicsTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "placeholder"): EnginePlaceholderTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "point_physics"): EnginePointPhysicsTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "projectile"): EngineProjectileTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "weather"): EngineWeatherParticleSystemTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "scenario_structure_bsp"): EngineScenarioStructureBspTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "scenery"): EngineSceneryTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_transparent_chicago_extended"): EngineShaderTransparentChicagoExtendedTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_transparent_chicago"): EngineShaderTransparentChicagoTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "scenario"): EngineScenarioTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_environment"): EngineShaderEnvironmentTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "transparent_glass"): EngineShaderTransparentGlassTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader"): EngineShaderTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "sky"): EngineSkyTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_transparent_meter"): EngineShaderTransparentMeterTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "sound"): EngineSoundTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "sound_environment"): EngineSoundEnvironmentTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_model"): EngineShaderModelTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_transparent_generic"): EngineShaderTransparentGenericTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "ui_widget_collection"): EngineUiWidgetCollectionTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_transparent_plasma"): EngineShaderTransparentPlasmaTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "sound_scenery"): EngineSoundSceneryTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "string_list"): EngineStringListTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "shader_transparent_water"): EngineShaderTransparentWaterTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "tag_collection"): EngineTagCollectionTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "camera_track"): EngineCameraTrackTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "unit_hud_interface"): EngineUnitHudInterfaceTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "unit"): EngineUnitTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "unicode_string_list"): EngineUnicodeStringListTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "virtual_keyboard"): EngineVirtualKeyboardTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "vehicle"): EngineVehicleTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "weapon"): EngineWeaponTag |nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "wind"): EngineWindTag|nil
+---@overload fun(tagHandleOrPath: string|integer, tagClass: "weapon_hud_interface"): EngineWeaponHudInterfaceTag|nil
+function Engine.tag.getTag(tagHandleOrPath, tagClass) end
+
+-------------------------------------------------------
+-- Engine.userInterface
+-------------------------------------------------------
+
+Engine.userInterface = {}
+
+---@class EngineWidget
+---@field definitionTagHandle EngineTagHandle
+---@field name string
+---@field hidden boolean
+---@field leftBound integer
+---@field topBound integer
+---@field type EngineTagDataUIWidgetType
+---@field msToClose integer
+---@field msToCloseFadeTime integer
+---@field opacity number
+---@field previousWidget MetaEngineWidget|nil
+---@field nextWidget MetaEngineWidget|nil
+---@field parentWidget MetaEngineWidget|nil
+---@field childWidget MetaEngineWidget|nil
+---@field focusedWidget MetaEngineWidget|nil
+---@field textAddress integer @The address of the text; null (0) if the widget is not a text widget, be careful!
+---@field cursorIndex integer
+---@field bitmapIndex integer
+
+---@class MetaEngineWidget: EngineWidget
+
+-- Find a widget from a given widget definition; it only returns the first coincidence
+---@param definitionTagHandleOrPath integer|string @The handle or path of the widget definition
+---@param baseWidget? MetaEngineWidget @The base widget to start the search from; If nil, the search will start from the root widget
+---@return MetaEngineWidget|nil @Found widget; nil if not found
+function Engine.userInterface.findWidget(definitionTagHandleOrPath, baseWidget) end
+
+-- Find all widgets from a given widget definition
+---@param definitionTagHandleOrPath integer|string @The handle or path of the widget definition
+---@param baseWidget? MetaEngineWidget @The base widget to start the search from; If nil, the search will start from the root widget
+---@return table<MetaEngineWidget>|nil @Found widgets; nil if any widget was found
+function Engine.userInterface.findWidgets(definitionTagHandleOrPath, baseWidget) end
+
+-- Open a widget
+---@param definitionTagHandleOrPath integer|string @The handle or path of the widget definition
+---@param pushHistory? boolean @If the widget should be pushed to the history; false by default
+---@return MetaEngineWidget|nil @Created widget; nil if failed
+function Engine.userInterface.openWidget(definitionTagHandleOrPath, pushHistory) end
+
+-- Close current root widget; return to the previous one in history
+function Engine.userInterface.closeWidget() end
+
+-- Replace a widget
+---@param targetWidget MetaEngineWidget @The widget to replace
+---@param widgetDefinition integer|string @The handle or path of the widget definition
+---@return MetaEngineWidget|nil @Created widget; nil if failed
+function Engine.userInterface.replaceWidget(targetWidget, widgetDefinition) end
+
+-- Reload a widget; replaces the widget with a new one with the same definition and state 
+---@param targetWidget MetaEngineWidget @The widget to reload
+---@return MetaEngineWidget|nil @New widget; nil if failed
+function Engine.userInterface.reloadWidget(targetWidget) end
+
+-- Focus a widget
+---@param targetWidget MetaEngineWidget @The widget to focus
+function Engine.userInterface.focusWidget(targetWidget) end
+
+-- Open the pause menu
+function Engine.userInterface.openPauseMenu() end
+
+-- Gets the HUD globals tag data
+---@return MetaEngineTagDataHudGlobals @The HUD globals tag data of the current map
+function Engine.userInterface.getHudGlobals() end
+
+-- Gets the size of a sprite in a bitmap
+---@param bitmap MetaEngineTagDataBitmap @Bitmap data
+---@param sequenceIndex integer @A valid sequence index of the bitmap
+---@param spriteIndex integer @A valid sprite index of the bitmap
+---@return EngineResolution|nil @The size of the sprite; nil if failed
+function Engine.userInterface.getBitmapSpriteResolution(bitmap, sequenceIndex, spriteIndex) end
+
+-- Draws a icon bitmap on a HUD message.
+---@param bitmap MetaEngineTagDataBitmap @Bitmap data
+---@param sequenceIndex integer @A valid sequence index of the bitmap
+---@param spriteIndex integer @A valid sprite index of the bitmap
+---@param position EnginePoint2D @The position of the sprite
+---@param color EngineColorARGBInt @The color of the sprite
+function Engine.userInterface.drawHudMessageSprite(bitmap, sequenceIndex, spriteIndex, position, color) end
+
+-- Play a sound from a given tag
+---@param soundTagHandleOrPath integer|string @The handle or path of the sound tag
+function Engine.userInterface.playSound(soundTagHandleOrPath) end
+
+-- Get the duration of a sound permutation
+---@param soundPermutation MetaEngineTagDataSoundPermutation @The sound permutation
+function Engine.userInterface.getSoundPermutationSamplesDuration(soundPermutation) end

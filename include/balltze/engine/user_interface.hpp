@@ -633,8 +633,8 @@ namespace Balltze::Engine {
     BALLTZE_API std::string get_widget_navigation_sound_name(WidgetNavigationSound sound) noexcept;
     
     /**
-     * Find a widget from a given widget definition.
-     * This is the function used by the game; it only returns the first coincidence.
+     * Find a widget from a given widget definition
+     * This is the function used by the game; it only returns the first coincidence
      * @param widget_definition     Widget definition tag handle of the widget to find
      * @param widget_base           Widget where to look
      * @return                      Pointer to widget if found, nullptr if not
@@ -642,7 +642,7 @@ namespace Balltze::Engine {
     BALLTZE_API Widget *find_widget(TagHandle widget_definition, Widget *widget_base = nullptr) noexcept;
 
     /**
-     * Find widgets from a given widget definition.
+     * Find widgets from a given widget definition
      * @param widget_definition     Widget definition tag handle of the widget to find
      * @param widget_base           Widget where to look
      * @return                      Vector of widgets
@@ -652,13 +652,13 @@ namespace Balltze::Engine {
     /**
      * Open a widget
      * @param widget_definition     Tag handle of widget definition
-     * @param push_history          Push or not the current root widget to menu history.
+     * @param push_history          Push or not the current root widget to menu history
      * @return                      Pointer to the new widget
      */
     BALLTZE_API Widget *open_widget(TagHandle widget_definition, bool push_history = true) noexcept;
 
     /**
-     * Close current root widget; return to the previous one in history.
+     * Close current root widget; return to the previous one in history
      */
     BALLTZE_API void close_widget() noexcept;
 
@@ -671,14 +671,14 @@ namespace Balltze::Engine {
     BALLTZE_API Widget *replace_widget(Widget *widget, TagHandle widget_definition) noexcept;
 
     /**
-     * Reload a widget.
+     * Reload a widget; replaces the widget with a new one with the same definition and state
      * @param widget    Widget to reload
      * @return          Pointer to the new widget
      */
     BALLTZE_API Widget *reload_widget(Widget *widget) noexcept;
 
     /**
-     * Focus a widget.
+     * Focus a widget
      * @param widget    Widget to be focused
      */
     BALLTZE_API void focus_widget(Widget *widget) noexcept;
@@ -689,8 +689,8 @@ namespace Balltze::Engine {
     BALLTZE_API void open_pause_menu() noexcept;
 
     /**
-     * Gets the HUD globals tag.
-     * @return  The HUD globals tag.
+     * Gets the HUD globals
+     * @return  The HUD globals tag data
      */
     BALLTZE_API HudGlobals &get_hud_globals();
 

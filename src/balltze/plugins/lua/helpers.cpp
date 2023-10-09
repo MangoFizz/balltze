@@ -681,6 +681,8 @@ namespace Balltze::Plugins {
         return color;
     }
 
+    void lua_engine_attach_tag_data_metatable(lua_State *state) noexcept;
+
     void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
         lua_newtable(state);
 
@@ -696,8 +698,8 @@ namespace Balltze::Plugins {
         lua_pushstring(state, tertiary_class.c_str());
         lua_setfield(state, -2, "tertiaryClass");
 
-        lua_pushinteger(state, tag->handle.handle);
-        lua_push_engine_resource_handle(state, -2, "handle");
+        lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&tag->handle));
+        lua_setfield(state, -2, "handle");
 
         lua_pushstring(state, tag->path);
         lua_setfield(state, -2, "path");
@@ -707,6 +709,16 @@ namespace Balltze::Plugins {
 
         lua_pushboolean(state, tag->indexed);
         lua_setfield(state, -2, "indexed");
+        
+        lua_newtable(state);
+        lua_pushlightuserdata(state, tag->data);
+        lua_setfield(state, -2, "_tag_data");
+        lua_pushinteger(state, tag->primary_class);
+        lua_setfield(state, -2, "_tag_class");
+        lua_pushinteger(state, tag->handle.handle);
+        lua_setfield(state, -2, "_tag_handle");
+        lua_engine_attach_tag_data_metatable(state);
+        lua_setfield(state, -2, "data");
     }
 
     void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept {
@@ -2888,7 +2900,7 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "text") {
+        else if(field == "textAddress") {
             lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<wchar_t *>(widget->text)));
             return 1;
         }
@@ -2995,7 +3007,7 @@ namespace Balltze::Plugins {
                 return luaL_error(state, "Invalid value");
             }
         }
-        else if(field == "text") {
+        else if(field == "textAddress") {
             return luaL_error(state, "Unsupported operation");
         }
         else if(field == "cursorIndex") {

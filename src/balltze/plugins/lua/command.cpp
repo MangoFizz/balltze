@@ -164,7 +164,7 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg command_functions[] = {
-        {"register_command", lua_command_register_command},
+        {"registerCommand", lua_command_register_command},
         {nullptr, nullptr}
     };
 

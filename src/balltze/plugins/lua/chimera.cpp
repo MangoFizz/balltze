@@ -135,7 +135,7 @@ namespace Balltze::Plugins {
             auto plugins = get_lua_plugins();
             for(auto *&plugin : plugins) {
                 logger.debug("Populating chimera table on Lua plugin {}...", plugin->name());
-                lua_getglobal(plugin->state(), "balltze");
+                lua_getglobal(plugin->state(), "Balltze");
                 lua_set_chimera_table(plugin->state());
                 lua_pop(plugin->state(), 1);
             }

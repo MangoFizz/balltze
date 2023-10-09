@@ -162,7 +162,7 @@ namespace Balltze::Plugins {
                 lua_setfield(state, -2, "fatal");
 
                 lua_pushcfunction(state, lua_logger_set_file);
-                lua_setfield(state, -2, "set_file");
+                lua_setfield(state, -2, "setFile");
 
                 // Set the garbage collector metatable
                 lua_createtable(state, 0, 1);
@@ -183,7 +183,7 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg logger_functions[] = {
-        {"create_logger", lua_create_logger},
+        {"createLogger", lua_create_logger},
         {nullptr, nullptr}
     };
 
