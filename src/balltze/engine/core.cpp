@@ -58,12 +58,6 @@ namespace Balltze::Engine {
         return path.value();
     }
 
-    Resolution &get_resolution() noexcept {
-        static auto *resolution_sig = Memory::get_signature("resolution");
-        static Resolution *resolution = *reinterpret_cast<Resolution **>(resolution_sig->data());
-        return *resolution;
-    }
-
     std::size_t get_tick_count() noexcept {
         static std::int32_t *tick_count = nullptr;
         static auto *tick_count_sig = Memory::get_signature("tick_counter");
@@ -71,18 +65,6 @@ namespace Balltze::Engine {
             tick_count = reinterpret_cast<std::int32_t *>(**reinterpret_cast<std::byte ***>(tick_count_sig->data()) + 0xC);
         }
         return *tick_count;
-    }
-
-    WindowGlobals *get_window_globals() {
-        static std::optional<WindowGlobals *> window_globals;
-        if(!window_globals.has_value()) {
-            auto *window_globals_sig = Memory::get_signature("window_globals");
-            if(!window_globals_sig) {
-                throw std::runtime_error("window_globals signature not found");
-            }
-            window_globals = *reinterpret_cast<WindowGlobals **>(window_globals_sig->data());
-        }
-        return *window_globals;
     }
 
     EngineEdition get_engine_edition() {
@@ -107,24 +89,5 @@ namespace Balltze::Engine {
             }
         }
         return *engine_type;
-    }
-
-    CameraType get_camera_type() noexcept {
-        static auto *cta = reinterpret_cast<CameraType *>(*reinterpret_cast<std::byte **>(Memory::get_signature("camera_type")->data()) + 0x56);
-        return *cta;
-    }
-
-    CameraData &get_camera_data() noexcept {
-        static std::optional<CameraData *> camera_coord_addr;
-        if(!camera_coord_addr.has_value()) {
-            camera_coord_addr = reinterpret_cast<CameraData *>(*reinterpret_cast<std::byte **>(Memory::get_signature("camera_coord")->data()) - 0x8);
-        }
-        return **camera_coord_addr;
-    }
-
-    std::uint8_t get_master_volume() noexcept {
-        static auto *master_volume_sig = Memory::get_signature("master_volume");
-        static auto *master_volume = *reinterpret_cast<std::uint8_t **>(master_volume_sig->data()) + 0xB78;
-        return *master_volume;
     }
 }

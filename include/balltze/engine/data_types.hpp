@@ -255,6 +255,11 @@ namespace Balltze::Engine {
         RotationMatrix &operator =(const RotationMatrix &) noexcept = default;
     };
 
+    struct Resolution {
+        std::uint16_t height;
+        std::uint16_t width;
+    };
+
 	union ScenarioScriptNodeValue {
         std::int8_t bool_int;
         std::int16_t short_int;

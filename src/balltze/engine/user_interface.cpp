@@ -342,6 +342,12 @@ namespace Balltze::Engine {
         play_sound_asm(tag_sound);
     }
 
+    std::uint8_t get_master_volume() noexcept {
+        static auto *master_volume_sig = Memory::get_signature("master_volume");
+        static auto *master_volume = *reinterpret_cast<std::uint8_t **>(master_volume_sig->data()) + 0xB78;
+        return *master_volume;
+    }
+
     std::chrono::milliseconds get_sound_permutation_samples_duration(TagDefinitions::SoundPermutation *permutation) {
         if(!permutation) {
             throw std::runtime_error("Invalid permutation");

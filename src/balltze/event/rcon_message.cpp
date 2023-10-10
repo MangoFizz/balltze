@@ -3,7 +3,7 @@
 #include <balltze/event.hpp>
 #include <balltze/engine/game_state.hpp>
 #include <balltze/hook.hpp>
-#include <balltze/features.hpp>
+#include <balltze/api.hpp>
 #include <balltze/command.hpp>
 #include "../logger.hpp"
 
@@ -55,8 +55,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize navpoints render event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 

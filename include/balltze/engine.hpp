@@ -4,6 +4,7 @@
 #include "engine/core.hpp"
 #include "engine/map.hpp"
 #include "engine/multiplayer.hpp"
+#include "engine/renderer.hpp"
 #include "engine/tag.hpp"
 #include "engine/tag_definitions.hpp"
 #include "engine/tag_classes.hpp"

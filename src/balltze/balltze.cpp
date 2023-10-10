@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <balltze/event.hpp>
+#include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
 #include "features/features.hpp"
@@ -18,7 +19,7 @@ namespace Balltze {
     
     Logger logger("Balltze");
     
-    static Features::BalltzeSide balltze_side;
+    static BalltzeSide balltze_side;
     static EventListenerHandle<TickEvent> firstTickListener;
 
     static void initialize_balltze() noexcept {
@@ -34,17 +35,28 @@ namespace Balltze {
         try {
             balltze_side = Memory::find_signatures();
 
-            if(balltze_side == Features::BALLTZE_SIDE_CLIENT) {
+            if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
                 Event::set_up_events();
                 Features::set_up_features();
                 Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
+
+                firstTickListener = TickEvent::subscribe_const(+[](TickEvent const &context) {
+                    logger.debug("First tick");
+
+                    // Initialize stuff
+                    set_up_text_hook();
+                    set_up_subtitles();
+
+                    firstTickListener.remove();
+                }, EVENT_PRIORITY_HIGHEST);
             }
-            else if(balltze_side == Features::BALLTZE_SIDE_DEDICATED_SERVER) {
+            else if(balltze_side == BALLTZE_SIDE_DEDICATED_SERVER) {
                 logger.info("loading dedicated server...");
                 Event::set_up_events();
+                Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
             }
@@ -60,16 +72,6 @@ namespace Balltze {
             std::terminate();
         }
 
-        firstTickListener = TickEvent::subscribe_const(+[](TickEvent const &context) {
-            logger.debug("First tick");
-
-            // Initialize stuff
-            set_up_text_hook();
-            set_up_subtitles();
-
-            firstTickListener.remove();
-        }, EVENT_PRIORITY_HIGHEST);
-
         register_command("console_debug", "debug", "Sets whenever to print log messages to the in-game console.", "[enable: boolean]", [](int arg_count, const char **args) -> bool {
             if(arg_count == 1) {
                 bool new_setting = STR_TO_BOOL(args[0]);
@@ -84,10 +86,8 @@ namespace Balltze {
         }, true, 0, 1);
     }
 
-    namespace Features {
-        BalltzeSide get_balltze_side() noexcept {
-            return balltze_side;
-        }
+    BalltzeSide get_balltze_side() noexcept {
+        return balltze_side;
     }
 }
 

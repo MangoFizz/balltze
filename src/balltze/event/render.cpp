@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <balltze/event.hpp>
-#include <balltze/features.hpp>
+#include <balltze/api.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
@@ -36,8 +36,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize UI render event: not client");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 
@@ -68,8 +67,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize HUD render event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 
@@ -100,8 +98,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize post carnage report render event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 
@@ -174,8 +171,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize HUD element bitmap render event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 
@@ -253,8 +249,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize widget background render event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 
@@ -295,8 +290,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize navpoints render event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 

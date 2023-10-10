@@ -4,7 +4,7 @@
 #define BALLTZE__MEMORY__MEMORY_HPP
 
 namespace Balltze::Memory {
-    Features::BalltzeSide find_signatures();
+    BalltzeSide find_signatures();
 }
 
 #endif

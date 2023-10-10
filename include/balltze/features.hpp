@@ -9,11 +9,6 @@
 #include "api.hpp"
 
 namespace Balltze::Features { 
-    enum BalltzeSide {
-        BALLTZE_SIDE_CLIENT,
-        BALLTZE_SIDE_DEDICATED_SERVER,
-    };
-
     /**
      * Indexes a tag from another map to load it at the next map load
      * @param map_name    Name of the map to import the tag from
@@ -71,11 +66,6 @@ namespace Balltze::Features {
      * @return            Pointer to the tag entry
      */
     BALLTZE_API Engine::Tag *get_imported_tag(std::string const &map_name, std::string const &tag_path, Engine::TagClassInt tag_class) noexcept;
-
-    /**
-     * Get whether the game is running on the client or the dedicated server
-     */
-    BALLTZE_API BalltzeSide get_balltze_side() noexcept;
 }
 
 #endif

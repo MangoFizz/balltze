@@ -2,7 +2,7 @@
 
 #include <stack>
 #include <utility>
-#include <balltze/features.hpp>
+#include <balltze/api.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
 #include <balltze/events/sound_playback.hpp>
@@ -76,8 +76,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize sound playback event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 

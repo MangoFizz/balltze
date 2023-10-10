@@ -58,29 +58,6 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    static int lua_engine_get_resolution(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 0) {
-                auto resolution = Engine::get_resolution();
-                lua_newtable(state);
-                lua_pushinteger(state, resolution.width);
-                lua_setfield(state, -2, "width");
-                lua_pushinteger(state, resolution.height);
-                lua_setfield(state, -2, "height");
-                return 1;
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_resolution.");
-            }
-        }
-        else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
-        }
-    }
-
     static int lua_engine_get_tick_count(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
@@ -131,51 +108,10 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_get_camera_data(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 0) {
-                auto &camera_data = Engine::get_camera_data();
-                lua_push_meta_engine_camera_data(state, camera_data);
-                return 1;
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_data.");
-            }
-        }
-        else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
-        }
-    }
-
-    static int lua_engine_get_camera_type(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 0) {
-                auto camera_type = Engine::get_camera_type();
-                lua_pushinteger(state, camera_type);
-                return 1;
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_type.");
-            }
-        }
-        else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
-        }
-    }
-
     static const luaL_Reg engine_core_functions[] = {
         {"consolePrint", lua_engine_console_print},
-        {"getResolution", lua_engine_get_resolution},
         {"getTickCount", lua_engine_get_tick_count},
         {"getEngineEdition", lua_engine_get_engine_edition},
-        {"getCameraType", lua_engine_get_camera_type},
-        {"getCameraData", lua_engine_get_camera_data},
         {nullptr, nullptr}
     };
 

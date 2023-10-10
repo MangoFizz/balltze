@@ -286,6 +286,44 @@ namespace Balltze::Plugins {
         return 0;
     }
 
+    static int lua_engine_get_camera_data(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                auto &camera_data = Engine::get_camera_data();
+                lua_push_meta_engine_camera_data(state, camera_data);
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_data.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
+    static int lua_engine_get_camera_type(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                auto camera_type = Engine::get_camera_type();
+                lua_pushinteger(state, camera_type);
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_type.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
     static const luaL_Reg engine_game_state_functions[] = {
         {"getObject", lua_engine_get_object},
         {"createObject", lua_engine_create_object},
@@ -293,6 +331,8 @@ namespace Balltze::Plugins {
         {"unitEnterVehicle", lua_unit_enter_vehicle},
         {"getPlayer", lua_get_player},
         {"getPlayerByRconHandle", lua_get_player_by_rcon_handle},
+        {"getCameraType", lua_engine_get_camera_type},
+        {"getCameraData", lua_engine_get_camera_data},
         {nullptr, nullptr}
     };
 

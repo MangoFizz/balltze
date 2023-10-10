@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <balltze/utils.hpp>
 #include <balltze/memory.hpp>
-#include <balltze/features.hpp>
+#include <balltze/api.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/event.hpp>
 #include "../logger.hpp"
@@ -84,8 +84,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize hold for action hud message event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 

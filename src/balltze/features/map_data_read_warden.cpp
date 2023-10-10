@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/events/map_file_data_read.hpp>
+#include <balltze/events/map_load.hpp>
 #include <balltze/utils.hpp>
 #include "../logger.hpp"
 

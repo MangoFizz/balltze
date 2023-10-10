@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/features.hpp>
+#include <balltze/api.hpp>
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
 #include "../logger.hpp"
@@ -24,8 +24,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize frame event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 

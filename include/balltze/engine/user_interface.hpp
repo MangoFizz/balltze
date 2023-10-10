@@ -734,6 +734,12 @@ namespace Balltze::Engine {
     BALLTZE_API void play_sound(TagHandle tag_sound);
 
     /**
+     * Get the master volume.
+     * @return Return the master volume.
+     */
+    BALLTZE_API std::uint8_t get_master_volume() noexcept;
+
+    /**
      * Get the duration of a sound permutation
      * @param sound                 Pointer to sound tag data
      * @param permutation           Pointer to sound permutation 

@@ -3,7 +3,7 @@
 #include <chrono>
 #include <balltze/engine/core.hpp>
 #include <balltze/event.hpp>
-#include <balltze/features.hpp>
+#include <balltze/api.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/utils.hpp>
@@ -63,8 +63,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize D3D9 begin scene event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 
@@ -89,8 +88,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize D3D9 end scene event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 
@@ -124,8 +122,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize D3D9 device reset event: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 

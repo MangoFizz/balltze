@@ -365,7 +365,11 @@ namespace Balltze {
 
         Event::ConsoleCommandEvent::subscribe(dispatch_commands, Event::EVENT_PRIORITY_DEFAULT);
 
-        set_up_commands_help();
         set_up_commands_tab_completion();
+
+        // client-side only by now
+        if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
+            set_up_commands_help();
+        }
     }
 }

@@ -4,6 +4,7 @@
 #include <variant>
 #include <filesystem>
 #include <fmt/format.h>
+#include <balltze/engine/renderer.hpp>
 #include <balltze/engine/tag.hpp>
 #include <balltze/events/d3d9.hpp>
 #include <balltze/events/frame.hpp>

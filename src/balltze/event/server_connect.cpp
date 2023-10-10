@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <memory>
-#include <balltze/features.hpp>
+#include <balltze/api.hpp>
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
@@ -75,8 +75,7 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
-            logger.debug("Failed to initialize server connect event handler: client side event only");
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
             return;
         }
 

@@ -1,8 +1,27 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <optional>
 #include <balltze/engine/renderer.hpp>
 
 namespace Balltze::Engine {
+    WindowGlobals *get_window_globals() {
+        static std::optional<WindowGlobals *> window_globals;
+        if(!window_globals.has_value()) {
+            auto *window_globals_sig = Memory::get_signature("window_globals");
+            if(!window_globals_sig) {
+                throw std::runtime_error("window_globals signature not found");
+            }
+            window_globals = *reinterpret_cast<WindowGlobals **>(window_globals_sig->data());
+        }
+        return *window_globals;
+    }
+    
+    Resolution &get_resolution() noexcept {
+        static auto *resolution_sig = Memory::get_signature("resolution");
+        static Resolution *resolution = *reinterpret_cast<Resolution **>(resolution_sig->data());
+        return *resolution;
+    }
+
     extern "C" {
         void *load_bitmap_function_address = nullptr;
         IDirect3DTexture9 *load_bitmap_asm(TagDefinitions::BitmapData *bitmap_data, bool immediate, bool force_pixels_read);

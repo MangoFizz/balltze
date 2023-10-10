@@ -211,14 +211,6 @@ Engine.core = {}
 ---@overload fun(format: string, ...: string)
 function Engine.core.consolePrint(color, format, ...) end
 
----@class EngineResolution
----@field height integer
----@field width integer
-
--- Get the current resolution of the game
----@return EngineResolution
-function Engine.core.getResolution() end
-
 -- Get the number of ticks since the engine started
 ---@return integer
 function Engine.core.getTickCount() end
@@ -231,26 +223,6 @@ function Engine.core.getTickCount() end
 -- Get the game engine used
 ---@return EngineEdition
 function Engine.core.getEngineEdition() end
-
----@alias EngineCameraType
----| 'first_person'
----| 'vehicle'
----| 'cinematic'
----| 'debug'
----| 'unknown'
-
--- Get the camera type
----@return EngineCameraType
-function Engine.core.getCameraType() end
-
----@class EngineCameraData
----@field position EnginePoint3D
----@field orientation table<EnginePoint3D>
----@field fov number
-
--- Get the camera data
----@return EngineCameraData
-function Engine.core.getCameraData() end
 
 -------------------------------------------------------
 -- Engine.gameState
@@ -979,6 +951,26 @@ function Engine.gameState.getPlayer(playerIndexOrHandle) end
 ---@return MetaEnginePlayer @The player
 function Engine.gameState.getPlayerByRconHandle(playerRconHandle) end
 
+---@alias EngineCameraType
+---| 'first_person'
+---| 'vehicle'
+---| 'cinematic'
+---| 'debug'
+---| 'unknown'
+
+-- Get the camera type
+---@return EngineCameraType
+function Engine.core.getCameraType() end
+
+---@class EngineCameraData
+---@field position EnginePoint3D
+---@field orientation table<EnginePoint3D>
+---@field fov number
+
+-- Get the camera data
+---@return EngineCameraData
+function Engine.core.getCameraData() end
+
 -------------------------------------------------------
 -- Engine.map
 -------------------------------------------------------
@@ -1589,3 +1581,15 @@ function Engine.userInterface.playSound(soundTagHandleOrPath) end
 -- Get the duration of a sound permutation
 ---@param soundPermutation MetaEngineTagDataSoundPermutation @The sound permutation
 function Engine.userInterface.getSoundPermutationSamplesDuration(soundPermutation) end
+
+-------------------------------------------------------
+-- Engine.renderer
+-------------------------------------------------------
+
+---@class EngineResolution
+---@field height integer
+---@field width integer
+
+-- Get the current resolution of the game
+---@return EngineResolution
+function Engine.core.getResolution() end

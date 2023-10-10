@@ -8,6 +8,43 @@
 #include "../api.hpp"
 
 namespace Balltze::Engine {
+    struct WindowGlobals {
+        /** A handle to the application instance. */
+        HINSTANCE hInstance;
+
+        /** Halo's main window handle. */
+        HWND hWnd;
+
+        /** possibly used for error dialog menus? */
+        HWND hWndUnknown;
+
+        /** 
+         * wShow from GetStartupInfo(), if the STARTF_USESHOWWINDOW flag is set. 
+         * Otherwise, takes on the value `SW_SHOWDEFAULT`.
+         */ 
+        int nCmdShow;
+
+        /** The WindowProc callback function as registered with the window class. */
+        WNDPROC lpfnWndProc;
+        
+        /** Halo's small icon resource. */
+        HICON hIconSm;
+    };
+    static_assert(sizeof(WindowGlobals) == 0x18);
+
+    /**
+     * Get the window globals.
+     * @return      Reference to the window globals.
+     * @exception   If window globals signature was not found... yet
+     */
+    BALLTZE_API WindowGlobals *get_window_globals();
+
+    /**
+     * Get the current resolution of the game.
+     * @return Return the current resolution.
+     */
+    BALLTZE_API Resolution &get_resolution() noexcept;
+
     /**
      * This struct represents one of those render targets.
      * 

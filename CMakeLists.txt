@@ -64,9 +64,6 @@ add_library(balltze SHARED
     src/balltze/event/game_input.S
     src/balltze/event/hud_hold_to_action_message.cpp
     src/balltze/event/hud_hold_to_action_message.S
-    src/balltze/event/map_file_data_read.cpp
-    src/balltze/event/map_file_data_read.S
-    src/balltze/event/map_file_load.cpp
     src/balltze/event/map_load.cpp
     src/balltze/event/map_load.S
     src/balltze/event/object_damage.cpp
@@ -115,6 +112,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/engine/game_state.cpp
     src/balltze/plugins/lua/engine/map.cpp
     src/balltze/plugins/lua/engine/multiplayer.cpp
+    src/balltze/plugins/lua/engine/renderer.cpp
     src/balltze/plugins/lua/engine/tag.cpp
     src/balltze/plugins/lua/engine/user_interface.cpp
     src/balltze/plugins/lua/chimera.cpp

@@ -9,6 +9,7 @@
 #include <chrono>
 #include <balltze/math.hpp>
 #include <balltze/engine/core.hpp>
+#include <balltze/engine/renderer.hpp>
 #include <balltze/events/frame.hpp>
 #include "../output/draw_text.hpp"
 #include "../logger.hpp"

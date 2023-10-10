@@ -3,7 +3,7 @@
 #ifndef BALLTZE_API__EVENTS__CAMERA_HPP
 #define BALLTZE_API__EVENTS__CAMERA_HPP
 
-#include "../engine/core.hpp"
+#include "../engine/game_state.hpp"
 #include "../event.hpp"
 
 namespace Balltze::Event {

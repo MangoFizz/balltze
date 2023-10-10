@@ -11,35 +11,6 @@
 #include "../api.hpp"
 
 namespace Balltze::Engine {
-    struct WindowGlobals {
-        /** A handle to the application instance. */
-        HINSTANCE hInstance;
-
-        /** Halo's main window handle. */
-        HWND hWnd;
-
-        /** possibly used for error dialog menus? */
-        HWND hWndUnknown;
-
-        /** 
-         * wShow from GetStartupInfo(), if the STARTF_USESHOWWINDOW flag is set. 
-         * Otherwise, takes on the value `SW_SHOWDEFAULT`.
-         */ 
-        int nCmdShow;
-
-        /** The WindowProc callback function as registered with the window class. */
-        WNDPROC lpfnWndProc;
-        
-        /** Halo's small icon resource. */
-        HICON hIconSm;
-    };
-    static_assert(sizeof(WindowGlobals) == 0x18);
-
-    struct Resolution {
-        std::uint16_t height;
-        std::uint16_t width;
-    };
-
     enum EngineEdition {
         ENGINE_TYPE_CUSTOM_EDITION,
         ENGINE_TYPE_RETAIL,
@@ -83,12 +54,6 @@ namespace Balltze::Engine {
     BALLTZE_API std::filesystem::path get_path();
 
     /**
-     * Get the current resolution of the game.
-     * @return Return the current resolution.
-     */
-    BALLTZE_API Resolution &get_resolution() noexcept;
-
-    /**
      * Returns the number of ticks since the engine started.
      */
     BALLTZE_API std::size_t get_tick_count() noexcept;
@@ -97,63 +62,6 @@ namespace Balltze::Engine {
      * Get the game engine used
      */
     BALLTZE_API EngineEdition get_engine_edition();
-
-    /**
-     * Get the window globals.
-     * @return      Reference to the window globals.
-     * @exception   If window globals signature was not found... yet
-     */
-    BALLTZE_API WindowGlobals *get_window_globals();
-
-    /**
-     * This is the state the camera is in.
-     */
-    enum CameraType : std::uint16_t {
-        /** First person view; rendering the player's weapon */
-        CAMERA_FIRST_PERSON = 0,
-
-        /** Vehicle view (third person); can be controlled by the player */
-        CAMERA_VEHICLE,
-
-        /** Cinematic camera */
-        CAMERA_CINEMATIC,
-
-        /** Devcam or death cam */
-        CAMERA_DEBUG
-    };
-
-    /**
-     * Get the camera type.
-     * @return Return the camera type.
-     */
-    BALLTZE_API CameraType get_camera_type() noexcept;
-
-    struct CameraData {
-        /** This is the position of the camera. */
-        Point3D position;
-
-        /** More stuff */
-        std::uint32_t unknown[5];
-
-        /** Orientation/rotation of the camera. */
-        Point3D orientation[2];
-
-        /** FOV (radians) */
-        float fov;
-    };
-    static_assert(sizeof(CameraData) == 0x3C);
-
-    /**
-     * Get the camera data.
-     * @return Return a reference to the camera data.
-     */
-    BALLTZE_API CameraData &get_camera_data() noexcept;
-
-    /**
-     * Get the master volume.
-     * @return Return the master volume.
-     */
-    BALLTZE_API std::uint8_t get_master_volume() noexcept;
 }
 
 #endif
