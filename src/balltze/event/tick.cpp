@@ -78,10 +78,20 @@ namespace Balltze::Event {
             throw std::runtime_error("Could not find signature for tick event");
         }
 
-        // Workaround for Chimera hook (NEEDS TO BE FIXED)
-        std::byte *ptr = Memory::follow_32bit_jump(tick_event_sig->data()) + 23;
-        auto *tick_event_after_chimera_hook = Memory::hook_function(ptr, tick_event_after_dispatcher);
-        auto *tick_event_hook = Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
+        try {
+            std::uint8_t instruction_byte = *reinterpret_cast<std::uint8_t *>(tick_event_sig->data());
+            if(instruction_byte == 0xE8) {
+                Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher, tick_event_after_dispatcher);
+            }
+            else {
+                std::byte *ptr = Memory::follow_32bit_jump(tick_event_sig->data()) + 23;
+                auto *tick_event_after_chimera_hook = Memory::hook_function(ptr, tick_event_after_dispatcher);
+                Memory::hook_function(tick_event_sig->data(), tick_event_before_dispatcher);
+            }
+        }
+        catch(const std::runtime_error &e) {
+            throw std::runtime_error("failed to initialize tick event: " + std::string(e.what()));
+        }
 
         // Register debug command
         register_command("debug_tick_event", "debug", "Sets whenever to log tick event.", "[enable: boolean]", debug_tick_event, true, 0, 1);

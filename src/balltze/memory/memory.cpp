@@ -5,6 +5,7 @@
 #include <cstring>
 #include <sstream>
 #include <stdexcept>
+#include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/command.hpp>
 #include <balltze/engine/core.hpp>
@@ -138,7 +139,7 @@ namespace Balltze::Memory {
         FIND_SIGNATURE("current_gametype", 0x0, {0x83, 0x3D, -1, -1, -1, -1, 0x04, 0x8B, 0x4F, 0x6C, 0x89, 0x4C, 0x24, 0x34, 0x75});
         FIND_SIGNATURE("map_index", 0xA, { 0x3B, 0x05, -1, -1, -1, -1, 0x7D, -1, 0x8B, 0x0D, -1, -1, -1, -1 });
         FIND_SIGNATURE("get_tag_handle", 0x0, {0xA0, -1, -1, -1, -1, 0x53, 0x83, 0xCB, 0xFF, 0x84, 0xC0, 0x55, 0x8B, 0x6C, 0x24, 0x0C, 0x74, 0x5B, 0xA1, -1, -1, -1, -1, 0x8B, 0x48, 0x0C});
-        FIND_SIGNATURE("on_tick", 0x0, {-1, -1, -1, -1, -1, 0xA1, -1, -1, -1, -1, 0x8B, 0x50, 0x14, 0x8B, 0x48, 0x0C});
+        FIND_SIGNATURE("on_tick", 0x0, {0xE8, -1, -1, -1, -1, 0xA1, -1, -1, -1, -1, 0x8B, 0x50, 0x14, 0x8B, 0x48, 0x0C});
         FIND_SIGNATURE("on_frame", 0x0, { /*0xE8*/ -1, -1, -1, -1, -1, 0x83, 0xC4, 0x08, 0x89, 0x3D });
 
         /** Map loading */
@@ -287,7 +288,7 @@ namespace Balltze::Memory {
         return true;
     }
 
-    EngineType find_signatures() {
+    Features::BalltzeSide find_signatures() {
         auto core_found = find_core_signatures();
         auto client_found = find_client_signatures();
         auto dedicated_server_found = find_dedicated_server_signatures();
@@ -312,10 +313,10 @@ namespace Balltze::Memory {
 
         if(core_found) {
             if(client_found) {
-                return ENGINE_TYPE_CUSTOM_EDITION_CLIENT;
+                return Features::BALLTZE_SIDE_CLIENT;
             }
             else if(dedicated_server_found) {
-                return ENGINE_TYPE_CUSTOM_EDITION_DEDICATED_SERVER;
+                return Features::BALLTZE_SIDE_DEDICATED_SERVER;
             }
         }
 

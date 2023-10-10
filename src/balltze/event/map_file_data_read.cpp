@@ -66,15 +66,18 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        auto *read_map_file_data_call_1_sig = Memory::get_signature("read_map_file_data_call_1");
-        auto *read_map_file_data_call_2_sig = Memory::get_signature("read_map_file_data_call_2");
-        if(!read_map_file_data_call_1_sig || !read_map_file_data_call_2_sig) {
-            throw std::runtime_error("Could not find signature for map file data read event");
-        }
-
         try {
+            auto *read_map_file_data_call_1_sig = Memory::get_signature("read_map_file_data_call_1");
+            if(!read_map_file_data_call_1_sig) {
+                throw std::runtime_error("Could not find signature for map file data read event");
+            }
             Memory::hook_function(read_map_file_data_call_1_sig->data(), map_file_data_read_event_before, map_file_data_read_event_after);
-            Memory::hook_function(read_map_file_data_call_2_sig->data(), map_file_data_read_event_before, map_file_data_read_event_after);
+            
+            // Client-only
+            auto *read_map_file_data_call_2_sig = Memory::get_signature("read_map_file_data_call_2");
+            if(read_map_file_data_call_2_sig) {
+                Memory::hook_function(read_map_file_data_call_2_sig->data(), map_file_data_read_event_before, map_file_data_read_event_after);
+            }
         }
         catch(std::runtime_error &e) {
             throw std::runtime_error("Could not hook map file data read event: " + std::string(e.what()));

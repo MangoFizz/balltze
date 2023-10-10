@@ -91,7 +91,7 @@ namespace Balltze {
 
     Logger::Logger(std::string name) noexcept : m_name(name) {
         #define CREATE_LOGGER_STREAM(name, level) \
-            name = LoggerStream(this, Logger::level, name_for_log_level(Logger::level), "{} {} [{}] {}\n", "{} {} [{}] {}\n", "[{}] {}\n", style_for_log_level(Logger::level))
+            name = LoggerStream(this, Logger::level, name_for_log_level(Logger::level), "\r{} {} [{}] {}\n", "{} {} [{}] {}\n", "[{}] {}\n", style_for_log_level(Logger::level))
 
         CREATE_LOGGER_STREAM(debug, LOG_LEVEL_DEBUG);
         CREATE_LOGGER_STREAM(info, LOG_LEVEL_INFO);

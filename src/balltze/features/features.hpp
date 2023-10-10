@@ -3,6 +3,8 @@
 #ifndef BALLTZE__FEATURES__FEATURES_HPP
 #define BALLTZE__FEATURES__FEATURES_HPP
 
+#include <balltze/features.hpp>
+
 namespace Balltze::Features {
     void set_up_hud_button_prompts();
     void set_up_gamepad_pause_button();

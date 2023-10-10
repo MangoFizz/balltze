@@ -53,9 +53,14 @@ namespace Balltze::Event {
         }
         enabled = true;
 
-        auto *load_map_path_sig = Memory::get_signature("map_load_path");
-        auto *load_map_path_addr = Memory::follow_32bit_jump(load_map_path_sig->data()) + 14; // let Chimera overwrite the map path
-        auto *load_map_path_hook = Memory::hook_function(load_map_path_addr, map_loading_asm);
+        try {
+            auto *load_map_path_sig = Memory::get_signature("map_load_path");
+            auto *load_map_path_addr = Memory::follow_32bit_jump(load_map_path_sig->data()) + 14; // let Chimera overwrite the map path
+            auto *load_map_path_hook = Memory::hook_function(load_map_path_addr, map_loading_asm);
+        }
+        catch(std::runtime_error &e) {
+            logger.error("failed to initialize map loading event: {}", e.what());
+        }
 
         // Register debug command
         register_command("debug_map_file_load_event", "debug", "Sets whenever to log map file load event.", "[enable: boolean]", debug_map_file_load_event, true, 0, 1);

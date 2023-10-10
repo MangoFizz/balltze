@@ -18,6 +18,7 @@ namespace Balltze {
     
     Logger logger("Balltze");
     
+    static Features::BalltzeSide balltze_side;
     static EventListenerHandle<TickEvent> firstTickListener;
 
     static void initialize_balltze() noexcept {
@@ -31,12 +32,26 @@ namespace Balltze {
         logger.info << logger.endl;
 
         try {
-            Memory::find_signatures();
-            Event::set_up_events();
-            Features::set_up_features();
-            Plugins::set_up_plugins();
-            set_up_commands();
-            load_commands_settings();
+            balltze_side = Memory::find_signatures();
+
+            if(balltze_side == Features::BALLTZE_SIDE_CLIENT) {
+                logger.info("loading client...");
+                Event::set_up_events();
+                Features::set_up_features();
+                Plugins::set_up_plugins();
+                set_up_commands();
+                load_commands_settings();
+            }
+            else if(balltze_side == Features::BALLTZE_SIDE_DEDICATED_SERVER) {
+                logger.info("loading dedicated server...");
+                Event::set_up_events();
+                set_up_commands();
+                load_commands_settings();
+            }
+            else {
+                logger.fatal("failed to detect engine type");
+                std::exit(EXIT_FAILURE);
+            }
 
             logger.info("initialized successfully!");
         }
@@ -67,6 +82,12 @@ namespace Balltze {
             }
             return true;
         }, true, 0, 1);
+    }
+
+    namespace Features {
+        BalltzeSide get_balltze_side() noexcept {
+            return balltze_side;
+        }
     }
 }
 

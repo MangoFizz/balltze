@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <balltze/features.hpp>
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
+#include "../logger.hpp"
 
 namespace Balltze::Event {
     static void frame_event_before_dispatcher() {
@@ -22,6 +24,11 @@ namespace Balltze::Event {
         }
         enabled = true;
 
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize frame event: client side event only");
+            return;
+        }
+
         auto *frame_event_sig = Memory::get_signature("on_frame");
         if(!frame_event_sig) {
             throw std::runtime_error("Could not find signature for frame event");
@@ -31,6 +38,11 @@ namespace Balltze::Event {
         std::byte *ptr = Memory::follow_32bit_jump(frame_event_sig->data()) + 23;
         auto *tick_event_after_chimera_hook = Memory::hook_function(ptr, frame_event_after_dispatcher);
 
-        auto *tick_event_hook = Memory::hook_function(frame_event_sig->data(), frame_event_before_dispatcher);
+        try {
+            auto *tick_event_hook = Memory::hook_function(frame_event_sig->data(), frame_event_before_dispatcher);
+        }
+        catch(std::runtime_error &e) {
+            throw std::runtime_error("Could not hook frame event: " + std::string(e.what()));
+        }
     }
 }

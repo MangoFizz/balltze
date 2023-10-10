@@ -3,6 +3,7 @@
 #include <balltze/engine/user_interface.hpp>
 #include <balltze/event.hpp>
 #include <balltze/memory.hpp>
+#include <balltze/features.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
 #include "../logger.hpp"
@@ -66,6 +67,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize game input event: client side event only");
+            return;
+        }
 
         static auto *keyboard_input_sig = Memory::get_signature("keyboard_input");
         if(!keyboard_input_sig) {

@@ -3,8 +3,10 @@
 #include <stdexcept>
 #include <balltze/utils.hpp>
 #include <balltze/memory.hpp>
+#include <balltze/features.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/event.hpp>
+#include "../logger.hpp"
 
 namespace Balltze::Event {
     static std::wstring new_text;
@@ -81,6 +83,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize hold for action hud message event: client side event only");
+            return;
+        }
 
         static auto *hold_for_weapon_hud_button_name_draw_sig = Memory::get_signature("hold_for_weapon_hud_button_name_draw");
         if(!hold_for_weapon_hud_button_name_draw_sig) {

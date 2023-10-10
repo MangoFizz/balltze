@@ -3,6 +3,7 @@
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
+#include <balltze/features.hpp>
 #include "../logger.hpp"
 
 namespace Balltze::Event {
@@ -56,6 +57,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize camera event: client side event only");
+            return;
+        }
 
         auto *camera_data_read_sig = Memory::get_signature("camera_data_read");
         if(!camera_data_read_sig) {

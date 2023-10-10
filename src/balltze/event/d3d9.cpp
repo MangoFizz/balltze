@@ -3,9 +3,11 @@
 #include <chrono>
 #include <balltze/engine/core.hpp>
 #include <balltze/event.hpp>
+#include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/utils.hpp>
+#include "../logger.hpp"
 
 namespace Balltze::Event {
     extern "C" {
@@ -61,6 +63,11 @@ namespace Balltze::Event {
         }
         enabled = true;
 
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize D3D9 begin scene event: client side event only");
+            return;
+        }
+
         auto *d3d9_begin_scene_sig = Memory::get_signature("d3d9_call_begin_scene");
         if(!d3d9_begin_scene_sig) {
             throw std::runtime_error("Could not find signature for D3D9 begin scene event");
@@ -81,6 +88,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize D3D9 end scene event: client side event only");
+            return;
+        }
 
         auto *d3d9_end_scene_sig = Memory::get_signature("d3d9_call_end_scene");
         if(!d3d9_end_scene_sig) {
@@ -111,6 +123,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize D3D9 device reset event: client side event only");
+            return;
+        }
 
         auto *d3d9_device_reset_sig = Memory::get_signature("d3d9_call_reset");
         if(!d3d9_device_reset_sig) {

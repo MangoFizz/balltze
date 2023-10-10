@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <balltze/event.hpp>
+#include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
@@ -35,6 +36,11 @@ namespace Balltze::Event {
         }
         enabled = true;
 
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize UI render event: not client");
+            return;
+        }
+
         auto *render_ui_sig = Memory::get_signature("render_ui_function_call");
         if(!render_ui_sig) {
             throw std::runtime_error("Could not find signature for UI render event");
@@ -62,6 +68,11 @@ namespace Balltze::Event {
         }
         enabled = true;
 
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize HUD render event: client side event only");
+            return;
+        }
+
         auto *render_hud_sig = Memory::get_signature("render_hud_function_call");
         if(!render_hud_sig) {
             throw std::runtime_error("Could not find signature for HUD render event");
@@ -88,6 +99,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize post carnage report render event: client side event only");
+            return;
+        }
 
         auto *render_post_carnage_report_call_sig = Memory::get_signature("render_post_carnage_report_call");
         if(!render_post_carnage_report_call_sig) {
@@ -157,6 +173,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize HUD element bitmap render event: client side event only");
+            return;
+        }
 
         hud_element_bitmap_render_event_init_tick_event_handle = TickEvent::subscribe([](TickEvent const &event) {
             auto *render_hud_element_bitmap_function_call_sig = Memory::get_signature("render_hud_element_bitmap_function_call");
@@ -232,6 +253,11 @@ namespace Balltze::Event {
         }
         enabled = true;
 
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize widget background render event: client side event only");
+            return;
+        }
+
         widget_background_render_event_init_tick_event_handle = TickEvent::subscribe([](TickEvent const &event) {
             auto *render_widget_background_function_call_sig = Memory::get_signature("render_widget_background_function_call");
             if(!render_widget_background_function_call_sig) {
@@ -268,6 +294,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize navpoints render event: client side event only");
+            return;
+        }
 
         navpoints_render_event_init_tick_event_handle = TickEvent::subscribe([](TickEvent const &event) {
             auto *render_navpoint_function_call_sig = Memory::get_signature("render_navpoint_function_call");

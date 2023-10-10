@@ -58,19 +58,21 @@ namespace Balltze {
     }
 
     void set_up_commands_help() {
-        Event::ConsoleCommandEvent::subscribe(on_console_command_event);
         auto *command_list_address = Memory::get_signature("find_console_command_entry_function_command_list_address");
         auto *command_list_count = Memory::get_signature("find_console_command_entry_function_command_list_count");
         auto *command_list_address_2 = Memory::get_signature("help_command_function_command_list_address_1");
         auto *command_list_address_3 = Memory::get_signature("help_command_function_command_list_address_2");
 
         if(!command_list_address || !command_list_count || !command_list_address_2 || !command_list_address_3) {
-            throw std::runtime_error("failed to set up commands help: could not find signatures");
+            logger.warning("failed to set up commands help: could not find signatures");
+            return;
         }
 
         entries_ptr_1 = reinterpret_cast<HscFunctionEntry ***>(command_list_address->data());
         entries_ptr_2 = reinterpret_cast<HscFunctionEntry ***>(command_list_address_2->data());
         entries_ptr_3 = reinterpret_cast<HscFunctionEntry ***>(command_list_address_3->data());
         entry_count = reinterpret_cast<std::uint16_t *>(command_list_count->data());
+
+        Event::ConsoleCommandEvent::subscribe(on_console_command_event);
     }
 }

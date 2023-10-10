@@ -4,12 +4,7 @@
 #define BALLTZE__MEMORY__MEMORY_HPP
 
 namespace Balltze::Memory {
-    enum EngineType {
-        ENGINE_TYPE_CUSTOM_EDITION_CLIENT,
-        ENGINE_TYPE_CUSTOM_EDITION_DEDICATED_SERVER,
-    };
-
-    EngineType find_signatures();
+    Features::BalltzeSide find_signatures();
 }
 
 #endif

@@ -3,6 +3,7 @@
 #include <balltze/event.hpp>
 #include <balltze/engine/game_state.hpp>
 #include <balltze/hook.hpp>
+#include <balltze/features.hpp>
 #include <balltze/command.hpp>
 #include "../logger.hpp"
 
@@ -53,6 +54,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize navpoints render event: client side event only");
+            return;
+        }
 
         auto *rcon_message_function_call_sig = Memory::get_signature("rcon_message_function_call");
         if(!rcon_message_function_call_sig) {

@@ -72,8 +72,13 @@ namespace Balltze::Event {
                 return;
             }
 
-            Memory::hook_function(load_map_function_multiplayer_callload_map_path_sig->data(), map_load_before_event, map_load_after_event);
-            Memory::hook_function(load_map_function_singleplayer_call_sig->data(), map_load_before_event, map_load_after_event);
+            try {
+                Memory::hook_function(load_map_function_multiplayer_callload_map_path_sig->data(), map_load_before_event, map_load_after_event);
+                Memory::hook_function(load_map_function_singleplayer_call_sig->data(), map_load_before_event, map_load_after_event);
+            }
+            catch(std::runtime_error &e) {
+                logger.error("failed to initialize map load event: {}", e.what());
+            }
         }
 
         // Register debug command

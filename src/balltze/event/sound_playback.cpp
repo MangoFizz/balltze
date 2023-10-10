@@ -2,6 +2,7 @@
 
 #include <stack>
 #include <utility>
+#include <balltze/features.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/command.hpp>
 #include <balltze/events/sound_playback.hpp>
@@ -74,6 +75,11 @@ namespace Balltze::Event {
             return;
         }
         enabled = true;
+
+        if(Features::get_balltze_side() != Features::BALLTZE_SIDE_CLIENT) {
+            logger.debug("Failed to initialize sound playback event: client side event only");
+            return;
+        }
 
         auto *enqueue_sound_permutation_function_sig = Memory::get_signature("enqueue_sound_function");
         if(!enqueue_sound_permutation_function_sig) {
