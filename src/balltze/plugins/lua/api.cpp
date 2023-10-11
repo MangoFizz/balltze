@@ -6,13 +6,13 @@
 
 namespace Balltze::Plugins {
     void lua_set_logger_table(lua_State *state) noexcept;
-    void lua_set_fmt_table(lua_State *state) noexcept;
     void lua_set_engine_table(lua_State *state) noexcept;
     void lua_set_event_table(lua_State *state) noexcept;
     void lua_set_features_table(lua_State *state) noexcept;
     void lua_set_command_table(lua_State *state) noexcept;
     void lua_set_chimera_table(lua_State *state) noexcept;
     void lua_set_output_table(lua_State *state) noexcept;
+    void lua_set_preloaded_libraries(lua_State *state) noexcept;
 
     void lua_open_balltze_api(lua_State *state) {
         // Set up balltze registry table
@@ -36,7 +36,7 @@ namespace Balltze::Plugins {
         // Set up engine table
         lua_set_engine_table(state);
 
-        // Set up fmt library table
-        lua_set_fmt_table(state);
+        // Set up prelaoded libraries
+        lua_set_preloaded_libraries(state);
     }
 }

@@ -121,7 +121,8 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/features.cpp
     src/balltze/plugins/lua/event.cpp
     src/balltze/plugins/lua/helpers.cpp
-    src/balltze/plugins/lua/lfmt.cpp
+    src/balltze/plugins/lua/preloaded_libraries.cpp
+    src/balltze/plugins/lua/preloaded_libraries.rc
     src/balltze/plugins/lua/lua-fmt/lfmt.c
     src/balltze/plugins/lua/logger.cpp
     src/balltze/plugins/lua/output.cpp
