@@ -40,10 +40,13 @@ namespace Balltze::Plugins {
                             logger.debug("Plugin {} initialized successfully.", plugin->name());
                             break;
                         case PLUGIN_INIT_FAILURE:
-                            logger.error("Plugin {} failed to initialize.", plugin->name());
+                            logger.warning("Plugin {} failed to initialize.", plugin->name());
+                            break;
+                        case PLUGIN_INIT_INCOMPATIBLE:
+                            logger.warning("Failed to initialize plugin {}: plugin is not compatible with this version of Balltze.", plugin->name());
                             break;
                         case PLUGIN_INIT_NOT_FOUND:
-                            logger.warning("Plugin {} does not implement plugin_init.", plugin->name());
+                            logger.warning("Could not find plugin_init function in plugin {}.", plugin->name());
                             break;
                     }
                 }
@@ -70,10 +73,13 @@ namespace Balltze::Plugins {
                             logger.debug("Plugin {} initialized successfully.", plugin->name());
                             break;
                         case PLUGIN_INIT_FAILURE:
-                            logger.error("Plugin {} failed to initialize.", plugin->name());
+                            logger.warning("Plugin {} failed to initialize.", plugin->name());
+                            break;
+                        case PLUGIN_INIT_INCOMPATIBLE:
+                            logger.warning("Failed to initialize plugin {}: plugin is not compatible with this version of Balltze.", plugin->name());
                             break;
                         case PLUGIN_INIT_NOT_FOUND:
-                            logger.warning("Plugin {} does not implement plugin_init.", plugin->name());
+                            logger.warning("Could not find PluginInit function in plugin {}.", plugin->name());
                             break;
                     }
                 }

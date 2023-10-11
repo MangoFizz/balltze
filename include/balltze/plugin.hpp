@@ -6,6 +6,7 @@
 #define BALLTZE_PLUGIN_API extern "C" __declspec(dllexport)
 
 #include <string>
+#include <semver.hpp>
 
 namespace Balltze {
     struct VersionNumber {
@@ -18,8 +19,8 @@ namespace Balltze {
     struct PluginMetadata {
         std::string name;
         std::string author;
-        VersionNumber version;
-        VersionNumber balltze_version;
+        semver::version version;
+        semver::version balltze_version;
         bool reloadable;
     };
 

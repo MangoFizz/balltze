@@ -73,8 +73,16 @@ namespace Balltze {
         m_mute_debug = setting;
     }
 
+    bool Logger::mute_debug() const noexcept {
+        return m_mute_debug;
+    }
+
     void Logger::mute_ingame(bool setting) noexcept {
         m_mute_ingame = setting;
+    }
+
+    bool Logger::mute_ingame() const noexcept {
+        return m_mute_ingame;
     }
 
     void Logger::lock() {

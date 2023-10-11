@@ -196,7 +196,7 @@ namespace Balltze::LuaLibrary {
 
         // Set balltze version
         lua_pushstring(state, "version");
-        lua_pushstring(state, BALLTZE_VERSION);
+        lua_pushstring(state, balltze_version.to_string().c_str());
         lua_settable(state, -3);
 
         // Set balltze functions

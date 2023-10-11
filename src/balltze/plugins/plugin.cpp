@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "../logger.hpp"
 #include "lua/api.hpp"
 #include "lua/helpers.hpp"
 #include "../config/config.hpp"
+#include "../logger.hpp"
+#include "../version.hpp"
 #include "plugin.hpp"
 
 namespace Balltze::Plugins {
@@ -22,23 +23,23 @@ namespace Balltze::Plugins {
     }
 
     std::string Plugin::name() const noexcept {
-        return m_metadata.name;
+        return m_metadata->name;
     }
 
     std::string Plugin::author() const noexcept {
-        return m_metadata.author;
+        return m_metadata->author;
     }
 
-    VersionNumber Plugin::version() const noexcept {
-        return m_metadata.version;
+    semver::version Plugin::version() const noexcept {
+        return m_metadata->version;
     }
 
-    VersionNumber Plugin::balltze_version() const noexcept {
-        return m_metadata.balltze_version;
+    semver::version Plugin::balltze_version() const noexcept {
+        return m_metadata->balltze_version;
     }
 
     bool Plugin::reloadable() const noexcept {
-        return m_metadata.reloadable;
+        return m_metadata->reloadable;
     }
 
     std::filesystem::path Plugin::directory() const noexcept {
@@ -73,13 +74,14 @@ namespace Balltze::Plugins {
         }
         else {
             logger.warning("Could not find plugin_metadata function in plugin {}.", m_filename);
-            m_metadata.name = m_filepath.stem().string();
-            m_metadata.reloadable = false;
+            m_metadata = PluginMetadata();
+            m_metadata->name = m_filepath.stem().string();
+            m_metadata->reloadable = false;
         }
     }
 
     void DLLPlugin::get_directory() {
-        m_directory = get_plugins_path() / m_metadata.name;
+        m_directory = get_plugins_path() / m_metadata->name;
     }
 
     HMODULE DLLPlugin::handle() {
@@ -92,6 +94,12 @@ namespace Balltze::Plugins {
         }
 
         logger.info("Initializing plugin {}...", m_filename);
+
+        // check if plugin is compatible with the current version of Balltze
+        if(m_metadata && m_metadata->balltze_version > Balltze::balltze_version) {
+            return PluginInitResult::PLUGIN_INIT_INCOMPATIBLE;
+        }
+
         auto init_proc = GetProcAddress(m_handle, "plugin_init");
         if(init_proc) {
             try {
@@ -102,12 +110,11 @@ namespace Balltze::Plugins {
                 }
             }
             catch(std::runtime_error& e) {
-                logger.error("Could not initialize plugin {}: {}", m_metadata.name, e.what());
+                logger.error("Failed to initialize plugin {}: {}", m_metadata->name, e.what());
             }
             return PluginInitResult::PLUGIN_INIT_FAILURE;
         }
         else {
-            logger.warning("Could not find plugin_init function in plugin {}.", m_metadata.name);
             return PluginInitResult::PLUGIN_INIT_NOT_FOUND;
         }
     }
@@ -164,40 +171,43 @@ namespace Balltze::Plugins {
     }
 
     void LuaPlugin::read_metadata() {
+        m_metadata = PluginMetadata();
         lua_getglobal(m_state, "PluginMetadata");
         if(lua_isfunction(m_state, -1)) {
             lua_pcall(m_state, 0, 1, 0);
             if(lua_istable(m_state, -1)) {
                 lua_getfield(m_state, -1, "name");
                 if(lua_isstring(m_state, -1)) {
-                    m_metadata.name = lua_tostring(m_state, -1);
+                    m_metadata->name = lua_tostring(m_state, -1);
                 }
                 else {
                     logger.warning("Could not read name in plugin {}.", m_filename);
-                    m_metadata.name = m_filepath.stem().string();
+                    m_metadata->name = m_filepath.stem().string();
                 }
                 lua_pop(m_state, 1);
                 
                 lua_getfield(m_state, -1, "author");
                 if(lua_isstring(m_state, -1)) {
-                    m_metadata.author = lua_tostring(m_state, -1);
+                    m_metadata->author = lua_tostring(m_state, -1);
                 }
                 else {
                     logger.warning("Could not read author in plugin {}.", m_filename);
-                    m_metadata.author = "Unknown";
+                    m_metadata->author = "Unknown";
                 }
                 lua_pop(m_state, 1);
                 
                 try {
                     lua_getfield(m_state, -1, "version");
                     if(lua_istable(m_state, -1)) {
-                        m_metadata.version = lua_check_version_number(m_state, -1);
+                        auto *version_str = luaL_checkstring(m_state, -1); 
+                        m_metadata->version = semver::version{version_str};
                     }
                     lua_pop(m_state, 1);
                     
                     lua_getfield(m_state, -1, "balltze_version");
                     if(lua_istable(m_state, -1)) {
-                        m_metadata.balltze_version = lua_check_version_number(m_state, -1);
+                        auto *version_str = luaL_checkstring(m_state, -1); 
+                        m_metadata->balltze_version = semver::version{version_str};
                     }
                     lua_pop(m_state, 1);
                 }
@@ -207,28 +217,28 @@ namespace Balltze::Plugins {
 
                 lua_getfield(m_state, -1, "reloadable");
                 if(lua_isboolean(m_state, -1)) {
-                    m_metadata.reloadable = lua_toboolean(m_state, -1);
+                    m_metadata->reloadable = lua_toboolean(m_state, -1);
                 }
                 else {
                     Balltze::logger.warning("Could not read reloadable in plugin {}.", m_filename);
-                    m_metadata.reloadable = false;
+                    m_metadata->reloadable = false;
                 }
                 lua_pop(m_state, 1);
             }
             else {
                 Balltze::logger.warning("PluginMetadata function did not return a table in plugin {}.", m_filename);
-                m_metadata.name = m_filepath.stem().string();
+                m_metadata->name = m_filepath.stem().string();
             }
             lua_pop(m_state, 1);
         }
         else {
             Balltze::logger.warning("Could not find PluginMetadata function in plugin {}.", m_filename);
-            m_metadata.name = m_filepath.stem().string();
+            m_metadata->name = m_filepath.stem().string();
         }
     }
 
     void LuaPlugin::get_directory() {
-        m_directory =  get_plugins_path() / ("lua_" + m_metadata.name);
+        m_directory =  get_plugins_path() / ("lua_" + m_metadata->name);
     }
 
     lua_State* LuaPlugin::state() noexcept {
@@ -286,8 +296,14 @@ namespace Balltze::Plugins {
         if(m_loaded) {
             throw std::runtime_error("Plugin cannot be initialized after loading.");
         }
-
+        
         Balltze::logger.info("Initializing plugin {}...", m_filename);
+
+        // check if plugin is compatible with the current version of Balltze
+        if(m_metadata && m_metadata->balltze_version > Balltze::balltze_version) {
+            return PluginInitResult::PLUGIN_INIT_INCOMPATIBLE;
+        }
+
         lua_getglobal(m_state, "PluginInit");
         if(lua_isfunction(m_state, -1)) {
             auto res = lua_pcall(m_state, 0, 1, 0);
@@ -295,23 +311,18 @@ namespace Balltze::Plugins {
                 if(lua_isboolean(m_state, -1)) {
                     bool result = lua_toboolean(m_state, -1);
                     if(result) {
-                        Balltze::logger.debug("Plugin {} initialized successfully.", m_filename);
                         return PluginInitResult::PLUGIN_INIT_SUCCESS;
                     }
-                }
-                else {
-                    Balltze::logger.warning("PluginInit function did not return a boolean in plugin {}.", m_filename);
                 }
             }
             else {
                 const char *err = lua_tostring(m_state, -1);
-                Balltze::logger.error("Error while initializing plugin {}: {}", m_filename, err);
+                Balltze::logger.error("Failed to initialize plugin {}: {}", m_filename, err);
                 lua_pop(m_state, 1);
             }
             return PluginInitResult::PLUGIN_INIT_FAILURE;
         }
         else {
-            Balltze::logger.warning("Could not find PluginInit function in plugin {}.", m_filename);
             return PluginInitResult::PLUGIN_INIT_NOT_FOUND;
         }
     }

@@ -18,12 +18,13 @@ namespace Balltze::Plugins {
     enum PluginInitResult {
         PLUGIN_INIT_SUCCESS,
         PLUGIN_INIT_FAILURE,
+        PLUGIN_INIT_INCOMPATIBLE,
         PLUGIN_INIT_NOT_FOUND
     };
 
     class Plugin {
     protected:
-        PluginMetadata m_metadata;
+        std::optional<PluginMetadata> m_metadata;
         std::string m_filename;
         std::filesystem::path m_filepath;
         std::filesystem::path m_directory;
@@ -37,8 +38,8 @@ namespace Balltze::Plugins {
         std::filesystem::path filepath() const noexcept;
         std::string name() const noexcept;
         std::string author() const noexcept;
-        VersionNumber version() const noexcept;
-        VersionNumber balltze_version() const noexcept;
+        semver::version version() const noexcept;
+        semver::version balltze_version() const noexcept;
         bool reloadable() const noexcept;
         std::filesystem::path directory() const noexcept;
         bool path_is_valid(std::filesystem::path path) const noexcept;
