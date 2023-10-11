@@ -24,19 +24,19 @@ namespace Balltze::Plugins {
         // Set up Balltze funcion tables
         lua_newtable(state);
         lua_set_logger_table(state);
-        lua_set_fmt_table(state);
         lua_set_event_table(state);
         lua_set_command_table(state);
-
         if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
             lua_set_output_table(state);
             lua_set_features_table(state);
             lua_set_chimera_table(state);
         }
-
         lua_setglobal(state, "Balltze");
 
         // Set up engine table
         lua_set_engine_table(state);
+
+        // Set up fmt library table
+        lua_set_fmt_table(state);
     }
 }

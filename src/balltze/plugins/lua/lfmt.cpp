@@ -13,6 +13,8 @@ namespace Balltze::Plugins {
     };
 
     void lua_set_fmt_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "fmt", fmt_functions);
+        luaL_newlibtable(state, fmt_functions);
+        luaL_setfuncs(state, fmt_functions, 0);
+        lua_setglobal(state, "Fmt");
     }
 }
