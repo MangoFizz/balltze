@@ -82,6 +82,6 @@ namespace Balltze::Plugins {
     void set_engine_multiplayer_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_multiplayer_functions);
         luaL_setfuncs(state, engine_multiplayer_functions, 0);
-        lua_setglobal(state, "multiplayer");
+        lua_setfield(state, -2, "multiplayer");
     }
 }

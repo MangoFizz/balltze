@@ -106,6 +106,6 @@ namespace Balltze::Plugins {
     void set_engine_tag_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_tag_functions);
         luaL_setfuncs(state, engine_tag_functions, 0);
-        lua_setglobal(state, "tag");
+        lua_setfield(state, -2, "tag");
     }
 }

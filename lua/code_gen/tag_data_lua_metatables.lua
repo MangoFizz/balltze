@@ -179,6 +179,7 @@ for structName, struct in pairs(structs) do
     for _, field in ipairs(struct.fields) do
         local sneakCaseFieldType = definitionParser.camelCaseToSnakeCase(field.type)
         local camelCaseFieldType = definitionParser.snakeCaseToCamelCase(sneakCaseFieldType)
+        local lowerCamelCaseFieldName = definitionParser.snakeCaseToLowerCamelCase(field.name)
 
         if(field.name == nil) then
             goto continue_index_fields
@@ -195,7 +196,7 @@ for structName, struct in pairs(structs) do
         end
 
         indent(2)
-        add("else if(field == \"" .. field.name .. "\") { \n");
+        add("else if(field == \"" .. lowerCamelCaseFieldName .. "\") { \n");
         indent(3)
 
         local size = field.size or 1
@@ -365,6 +366,7 @@ for structName, struct in pairs(structs) do
     for _, field in ipairs(struct.fields) do
         local sneakCaseFieldType = definitionParser.camelCaseToSnakeCase(field.type)
         local camelCaseFieldType = definitionParser.snakeCaseToCamelCase(sneakCaseFieldType)
+        local lowerCamelCaseFieldName = definitionParser.snakeCaseToLowerCamelCase(field.name)
 
         if(field.name == nil) then
             goto continue_new_index_fields
@@ -381,7 +383,7 @@ for structName, struct in pairs(structs) do
         end
 
         indent(2)
-        add("else if(field == \"" .. field.name .. "\") { \n");
+        add("else if(field == \"" .. lowerCamelCaseFieldName .. "\") { \n");
         indent(3)
 
         local size = field.size or 1

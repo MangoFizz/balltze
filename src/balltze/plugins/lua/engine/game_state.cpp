@@ -339,6 +339,6 @@ namespace Balltze::Plugins {
     void set_engine_game_state_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_game_state_functions);
         luaL_setfuncs(state, engine_game_state_functions, 0);
-        lua_setglobal(state, "gameState");
+        lua_setfield(state, -2, "gameState");
     }
 }

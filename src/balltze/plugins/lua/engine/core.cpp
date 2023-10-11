@@ -118,6 +118,6 @@ namespace Balltze::Plugins {
     void set_engine_core_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_core_functions);
         luaL_setfuncs(state, engine_core_functions, 0);
-        lua_setglobal(state, "core");
+        lua_setfield(state, -2, "core");
     }
 }

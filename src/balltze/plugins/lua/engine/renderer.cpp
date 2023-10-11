@@ -39,6 +39,6 @@ namespace Balltze::Plugins {
     void set_engine_renderer_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_renderer_functions);
         luaL_setfuncs(state, engine_renderer_functions, 0);
-        lua_setglobal(state, "renderer");
+        lua_setfield(state, -2, "renderer");
     }
 }

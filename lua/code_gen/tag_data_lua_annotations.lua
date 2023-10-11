@@ -87,8 +87,7 @@ for definitionName, definition in pairs(definitions) do
     for _, bitfield in ipairs(definition.bitfields) do
         add("---@class MetaEngineTagData" .. parser.snakeCaseToCamelCase(bitfield.name) .. " \n")
         for _, field in ipairs(bitfield.fields) do
-            local camelCaseName = parser.snakeCaseToCamelCase(field)
-            local lowerCamelCaseName = camelCaseName:sub(1, 1):lower() .. camelCaseName:sub(2)
+            local lowerCamelCaseName = parser.snakeCaseToLowerCamelCase(field)
             add("---@field " .. lowerCamelCaseName .. " boolean \n")
         end
         add("\n")
@@ -102,8 +101,7 @@ for definitionName, definition in pairs(definitions) do
         add(" \n")
         for _, field in ipairs(struct.fields) do
             if field.type and field.name then
-                local camelCaseName = parser.snakeCaseToCamelCase(field.name)
-                local lowerCamelCaseName = camelCaseName:sub(1, 1):lower() .. camelCaseName:sub(2)
+                local lowerCamelCaseName = parser.snakeCaseToLowerCamelCase(field.name)
                 add("---@field " .. lowerCamelCaseName .. " ")
                 if field.type == "uint32" or field.type == "uint16" or field.type == "uint8" then
                     add("integer")

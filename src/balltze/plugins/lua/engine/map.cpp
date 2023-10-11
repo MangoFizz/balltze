@@ -143,6 +143,6 @@ namespace Balltze::Plugins {
     void set_engine_map_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_map_functions);
         luaL_setfuncs(state, engine_map_functions, 0);
-        lua_setglobal(state, "map");
+        lua_setfield(state, -2, "map");
     }
 }

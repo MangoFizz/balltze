@@ -235,6 +235,14 @@ local function snakeCaseToCamelCase(str)
     return nil
 end
 
+local function snakeCaseToLowerCamelCase(str) 
+    str = snakeCaseToCamelCase(str)
+    if str then
+        return str:sub(1, 1):lower() .. str:sub(2)
+    end
+    return nil
+end
+
 ---Parse a struct definition
 ---@param structDefinition DefinitionElement
 ---@return Struct
@@ -444,6 +452,7 @@ return {
     camelCaseToSnakeCase = camelCaseToSnakeCase,
     normalToSnakeCase = normalToSnakeCase,
     snakeCaseToCamelCase = snakeCaseToCamelCase,
+    snakeCaseToLowerCamelCase = snakeCaseToLowerCamelCase,
     dashAndSentenceToSnakeCase = dashAndSentenceToSnakeCase,
     parseDefinition = parseDefinition,
     getDependencies = getDependencies,

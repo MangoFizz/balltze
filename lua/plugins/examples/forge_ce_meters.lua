@@ -14,6 +14,9 @@ local isRenderingNavpoints = false
 local lastDigitVertices = nil
 local digitCount = 0
 
+---@type Logger
+local logger = {}
+
 local function saveDigitVertices(vertices) 
     lastDigitVertices = {
         topLeft = {x = vertices.topLeft.x, y = vertices.topLeft.y},
@@ -54,9 +57,9 @@ end
 local function skewRectangleHorizontally(vertices, angle)
     local skew = function(topVertex, bottomVertex) 
         local centerX = topVertex.x
-        local centerX = topVertex.y + (bottomVertex.y - topVertex.y) / 2
-        local top = rotateVertex(topVertex, centerX, centerX, angle)
-        local bottom = rotateVertex(bottomVertex, centerX, centerX, angle)
+        local centerY = topVertex.y + (bottomVertex.y - topVertex.y) / 2
+        local top = rotateVertex(topVertex, centerX, centerY, angle)
+        local bottom = rotateVertex(bottomVertex, centerX, centerY, angle)
         topVertex.x = top.x
         topVertex.y = top.y
         bottomVertex.x = bottom.x
@@ -79,6 +82,7 @@ local function displaceRectangle(vertices, x, y)
     displace(vertices.bottomRight)
 end
 
+---@type BalltzeHudElementBitmapRenderEventCallback
 local function onHudElementBitmapRender(event)
     if event.time == "before" then
         local tagHandle = event.args.bitmapData.bitmapTagHandle
@@ -94,7 +98,7 @@ local function onHudElementBitmapRender(event)
         
         if found and not isRenderingNavpoints then
             -- Get the angle to rotate the rectangle
-            local screenResolution = Engine.core.getResolution()
+            local screenResolution = Engine.renderer.getResolution()
             local actualWidth = (640 / (4 / 3)) * (screenResolution.width / screenResolution.height)
             local rightSide = actualWidth / 2 < event.args.vertices.topLeft.x
 
@@ -142,7 +146,7 @@ end
 
 local function onMapLoad(event)
     if event.time == "before" then
-        if(event.args.mapName == "forge_island_dev") then
+        if(event.args.mapName == "forge_island_dev" and not hudElementRenderEventListener and not navpointsRenderEventListener) then
             hudElementRenderEventListener = Balltze.event.hudElementBitmapRender.subscribe(onHudElementBitmapRender, "highest")
             navpointsRenderEventListener = Balltze.event.navpointsRender.subscribe(onNavpointsRender, "highest")
         else 
@@ -156,10 +160,27 @@ local function onMapLoad(event)
     end
 end
 
+function PluginMetadata()
+    return {
+        name = "Forge CE Meters",
+        author = "MangoFizz",
+        version = "1.0.0",
+        balltze_version = "1.0.0-rc.1",
+        reloadable = true
+    }
+end
+
 function PluginInit() 
+    logger = Balltze.logger.createLogger("Forge CE Meters")
     return true
 end
 
 function PluginLoad() 
     Balltze.event.mapLoad.subscribe(onMapLoad, "highest")
+    
+    local mapHeader = Engine.map.getCurrentMapHeader()
+    if mapHeader.name == "forge_island_dev" then
+        hudElementRenderEventListener = Balltze.event.hudElementBitmapRender.subscribe(onHudElementBitmapRender, "highest")
+        navpointsRenderEventListener = Balltze.event.navpointsRender.subscribe(onNavpointsRender, "highest")
+    end
 end

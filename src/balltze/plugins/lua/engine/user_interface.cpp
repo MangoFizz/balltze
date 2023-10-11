@@ -490,6 +490,6 @@ namespace Balltze::Plugins {
     void set_engine_user_interface_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_user_interface_functions);
         luaL_setfuncs(state, engine_user_interface_functions, 0);
-        lua_setglobal(state, "userInterface");
+        lua_setfield(state, -2, "userInterface");
     }
 }
