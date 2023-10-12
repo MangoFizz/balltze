@@ -86,7 +86,11 @@ end
 local function onHudElementBitmapRender(event)
     if event.time == "before" then
         local tagHandle = event.args.bitmapData.bitmapTagHandle
-        local tagEntry = Engine.tag.getTag(tagHandle) 
+        local tagEntry = Engine.tag.getTag(tagHandle.handle) 
+
+        if not tagEntry then
+            return
+        end
 
         local found = false
         for _, path in pairs(paths) do

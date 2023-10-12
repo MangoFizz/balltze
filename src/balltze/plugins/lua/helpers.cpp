@@ -1887,7 +1887,7 @@ namespace Balltze::Plugins {
         
         std::string field = key; 
         if(field == "handle") { 
-            lua_pushinteger(state, dependency->tag_handle.handle); 
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&dependency->tag_handle));
             return 1; 
         }
         else if(field == "class") {
@@ -2780,7 +2780,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "definitionTagHandle") { 
-            lua_pushinteger(state, widget->definition_tag_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&widget->definition_tag_handle));
             return 1;
         }
         else if(field == "name") {
@@ -3574,7 +3574,7 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, vitals->current_health_damage);
         }
         else if(field == "entangledObject") {
-            lua_pushinteger(state, vitals->entangled_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&vitals->entangled_object));
         }
         else if(field == "recentShieldDamage") {
             lua_pushnumber(state, vitals->recent_shield_damage);
@@ -3676,12 +3676,12 @@ namespace Balltze::Plugins {
         else if(field == "attachments") {
             lua_newtable(state);
             for(std::size_t i = 0; i < sizeof(attachments_data->attachments) / sizeof(attachments_data->attachments[0]); i++) {
-                lua_pushinteger(state, attachments_data->attachments[i].handle);
+                lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&attachments_data->attachments[i]));
                 lua_rawseti(state, -2, i + 1);
             }
         }
         else if(field == "firstWidget") {
-            lua_pushinteger(state, attachments_data->first_widget.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&attachments_data->first_widget));
         }
         else {
             return luaL_error(state, "Invalid key"); 
@@ -3945,13 +3945,13 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, object->variant_index);
         }
         else if(field == "player") {
-            lua_pushinteger(state, object->player.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->player));
         }
         else if(field == "ownerObject") {
-            lua_pushinteger(state, object->owner_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->owner_object));
         }
         else if(field == "animationTagHandle") {
-            lua_pushinteger(state, object->animation_tag_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->animation_tag_handle));
         }
         else if(field == "animationIndex") {
             lua_pushinteger(state, object->animation_index);
@@ -3969,19 +3969,19 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_object_vitals(state, object->vitals);
         }
         else if(field == "clusterPartition") {
-            lua_pushinteger(state, object->cluster_partition.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->cluster_partition));
         }
         else if(field == "unknownObject") {
-            lua_pushinteger(state, object->unknown_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->unknown_object));
         }
         else if(field == "nextObject") {
-            lua_pushinteger(state, object->next_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->next_object));
         }
         else if(field == "firstObject") {
-            lua_pushinteger(state, object->first_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->first_object));
         }
         else if(field == "parentObject") {
-            lua_pushinteger(state, object->parent_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->parent_object));
         }
         else if(field == "parentAttachmentNode") {
             lua_pushinteger(state, object->parent_attachment_node);
@@ -3993,7 +3993,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_object_attachments_data(state, object->attachment_data);
         }
         else if(field == "cachedRenderState") {
-            lua_pushinteger(state, object->cached_render_state.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->cached_render_state));
         }
         else if(field == "regionDestroyeds") {
             lua_push_meta_engine_object_region_destroyeds(state, object->region_destroyeds);
@@ -4249,10 +4249,10 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, object->total_damage);
         }
         else if(field == "object") {
-            lua_pushinteger(state, object->object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->object));
         }
         else if(field == "player") {
-            lua_pushinteger(state, object->player.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&object->player));
         }
         else {
             return luaL_error(state, "Invalid key"); 
@@ -4901,7 +4901,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, unit_scream_type_to_string(speech->scream_type).c_str());
         }
         else if(field == "soundTag") {
-            lua_pushinteger(state, speech->sound_tag.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&speech->sound_tag));
         }
         else if(field == "ticks") {
             lua_pushinteger(state, speech->ticks);
@@ -5220,16 +5220,16 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "actor") {
-            lua_pushinteger(state, unit->actor.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->actor));
         }
         else if(field == "swarmActor") {
-            lua_pushinteger(state, unit->swarm.actor.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm.actor));
         }
-        else if(field == "swarmNextUnir") {
-            lua_pushinteger(state, unit->swarm.next_unit.handle);
+        else if(field == "swarmNextUnit") {
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm.next_unit));
         }
         else if(field == "swarmPreviousUnit") {
-            lua_pushinteger(state, unit->swarm.previous_unit.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm.previous_unit));
         }
         else if(field == "unitFlags") {
             lua_push_meta_engine_unit_flags(state, unit->unit_flags);
@@ -5250,7 +5250,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_unit_control_flags(state, unit->persistent_control.control_flags);
         }
         else if(field == "controllingPlayer") {
-            lua_pushinteger(state, unit->controlling_player.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->controlling_player));
         }
         else if(field == "aiEffectType") {
             lua_pushinteger(state, unit->ai_effect_type);
@@ -5313,7 +5313,7 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, unit->unknown_726);
         }
         else if(field == "grenadeProjectile") {
-            lua_pushinteger(state, unit->grenade_projectile.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->grenade_projectile));
         }
         else if(field == "animation") {
             lua_push_meta_engine_unit_animation_data(state, unit->animation);
@@ -5339,7 +5339,7 @@ namespace Balltze::Plugins {
         else if(field == "weapons") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 4; ++i) {
-                lua_pushinteger(state, unit->weapons[i].handle);
+                lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->weapons[i]));
                 lua_rawseti(state, -2, i + 1);
             }
         }
@@ -5351,7 +5351,7 @@ namespace Balltze::Plugins {
             }
         }
         else if(field == "equipmentHandle") {
-            lua_pushinteger(state, unit->equipment_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->equipment_handle));
         }
         else if(field == "currentGrenadeIndex") {
             lua_pushinteger(state, unit->current_grenade_index);
@@ -5381,12 +5381,12 @@ namespace Balltze::Plugins {
         else if(field == "poweredSeatsRiders") {
             lua_newtable(state);
             for(std::size_t i = 0; i < 2; ++i) {
-                lua_pushinteger(state, unit->powered_seats_riders[i].handle);
+                lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->powered_seats_riders[i]));
                 lua_rawseti(state, -2, i + 1);
             }
         }
         else if(field == "_unknown22") {
-            lua_pushinteger(state, unit->_unknown22.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->_unknown22));
         }
         else if(field == "_someTickTime") {
             lua_pushinteger(state, unit->_some_tick_time);
@@ -5427,7 +5427,7 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, unit->full_spectrum_vision_power);
         }
         else if(field == "dialogueDefinition") {
-            lua_pushinteger(state, unit->dialogue_definition.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->dialogue_definition));
         }
         else if(field == "speech") {
             lua_push_meta_engine_unit_speech_data(state, unit->speech);
@@ -5442,10 +5442,10 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, unit->damage_result.amount);
         }
         else if(field == "damageResultResponsibleUnit") {
-            lua_pushinteger(state, unit->damage_result.responsible_unit.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->damage_result.responsible_unit));
         }
         else if(field == "objectFlameCauser") {
-            lua_pushinteger(state, unit->object_flame_causer.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->object_flame_causer));
         }
         else if(field == "_unknown23") {
             lua_pushnumber(state, unit->_unknown23);
@@ -6069,7 +6069,7 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, biped->walking_counter);
         }
         else if(field == "bumpObject") {
-            lua_pushinteger(state, biped->bump_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&biped->bump_object));
         }
         else if(field == "ticksSinceLastBump") {
             lua_pushinteger(state, biped->ticks_since_last_bump);
@@ -6613,13 +6613,13 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, item->bsp_collision.reference_id);
         }
         else if(field == "droppedByUnit") {
-            lua_pushinteger(state, item->dropped_by_unit.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&item->dropped_by_unit));
         }
         else if(field == "lastUpdateTick") {
             lua_pushinteger(state, item->last_update_tick);
         }
         else if(field == "objectCollisionObject") {
-            lua_pushinteger(state, item->object_collision.object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&item->object_collision.object));
         }
         else if(field == "objectCollisionObjectPosition") {
             lua_push_meta_engine_vector3_d(state, item->object_collision.object_position);
@@ -6765,7 +6765,7 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, trigger->projectile_error_related);
         }
         else if(field == "charingEffect") {
-            lua_pushinteger(state, trigger->charing_effect.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&trigger->charing_effect));
         }
         else if(field == "networkDelayTicks") {
             lua_pushinteger(state, trigger->network_delay_ticks);
@@ -7170,7 +7170,7 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, weapon->integrated_light_power);
         }
         else if(field == "trackedObject") {
-            lua_pushinteger(state, weapon->tracked_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&weapon->tracked_object));
         }
         else if(field == "altShotsLoaded") {
             lua_pushinteger(state, weapon->alt_shots_loaded);
@@ -7651,10 +7651,10 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, projectile->material_id);
         }
         else if(field == "sourceUnit") {
-            lua_pushinteger(state, projectile->source_unit.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&projectile->source_unit));
         }
         else if(field == "targetObject") {
-            lua_pushinteger(state, projectile->target_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&projectile->target_object));
         }
         else if(field == "contrailAttachmentBlockId") {
             lua_pushinteger(state, projectile->contrail_attachment_block_id);
@@ -8271,13 +8271,13 @@ namespace Balltze::Plugins {
             lua_pushstring(state, reinterpret_cast<const char *>(player->name));
         }
         else if(field == "unknownHandle") {
-            lua_pushinteger(state, player->unknown_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->unknown_handle));
         }
         else if(field == "team") {
             lua_pushinteger(state, player->team);
         }
         else if(field == "interactionObjectHandle") {
-            lua_pushinteger(state, player->interaction_object_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->interaction_object_handle));
         }
         else if(field == "interactionObjectType") {
             lua_pushinteger(state, player->interaction_object_type);
@@ -8292,10 +8292,10 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, player->respawn_time_growth);
         }
         else if(field == "objectHandle") {
-            lua_pushinteger(state, player->object_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->object_handle));
         }
         else if(field == "prevObjectHandle") {
-            lua_pushinteger(state, player->prev_object_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->prev_object_handle));
         }
         else if(field == "bspClusterId") {
             lua_pushinteger(state, player->bsp_cluster_id);
@@ -8304,7 +8304,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, player->weapon_swap_result);
         }
         else if(field == "autoAimTargetObject") {
-            lua_pushinteger(state, player->auto_aim_target_object.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->auto_aim_target_object));
         }
         else if(field == "lastFireTime") {
             lua_pushinteger(state, player->last_fire_time);
@@ -8340,16 +8340,16 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, player->speed);
         }
         else if(field == "teleporterFlagHandle") {
-            lua_pushinteger(state, player->teleporter_flag_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->teleporter_flag_handle));
         }
         else if(field == "objectiveMode") {
             lua_pushstring(state, player_objective_mode_to_string(player->objective_mode).c_str());
         }
         else if(field == "objectivePlayerHandle") {
-            lua_pushinteger(state, player->objective_player_handle.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->objective_player_handle));
         }
         else if(field == "targetPlayer") {
-            lua_pushinteger(state, player->target_player.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->target_player));
         }
         else if(field == "targetTime") {
             lua_pushinteger(state, player->target_time);
@@ -8358,7 +8358,7 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, player->last_death_time);
         }
         else if(field == "slayerTarget") {
-            lua_pushinteger(state, player->slayer_target.handle);
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&player->slayer_target));
         }
         else if(field == "oddManOut") {
             lua_pushboolean(state, player->odd_man_out);

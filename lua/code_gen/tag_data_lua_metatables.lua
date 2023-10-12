@@ -79,6 +79,8 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane) noexcept;
     void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept;
 
+    void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept;
+
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex) noexcept {
         // Create table for vector
@@ -235,7 +237,7 @@ for structName, struct in pairs(structs) do
             elseif(sneakCaseFieldType == "matrix") then
                 add("lua_push_engine_matrix(state, data->" .. field.name .. "); \n");
             elseif(sneakCaseFieldType == "tag_handle") then
-                add("lua_pushinteger(state, data->" .. field.name .. ".handle); \n");
+                add("lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&data->" .. field.name .. ")); \n");
             elseif(sneakCaseFieldType == "scenario_script_node_value") then
                 add("lua_pushinteger(state, data->" .. field.name .. ".tag_handle.handle); \n");
             elseif(sneakCaseFieldType == "tag_reflexive") then
@@ -467,10 +469,6 @@ for structName, struct in pairs(structs) do
                 add("} \n");
                 indent(3)
                 add("} \n");
-            elseif(sneakCaseFieldType == "tag_handle") then
-                add("auto tag_handle = luaL_checkinteger(state, 3); \n");
-                indent(3)
-                add("data->" .. field.name .. ".handle = tag_handle; \n");
             elseif(sneakCaseFieldType == "scenario_script_node_value") then
                 add("auto tag_handle = luaL_checkinteger(state, 3); \n");
                 indent(3)
