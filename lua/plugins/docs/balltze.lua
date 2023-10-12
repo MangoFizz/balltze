@@ -61,7 +61,7 @@ Balltze.event.tick = {}
 
 -- Subscribe a listener to the tick event
 ---@param callbackFunction BalltzeTickEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.tick.subscribe(callbackFunction, priority) end
 
@@ -80,7 +80,7 @@ Balltze.event.frame = {}
 
 -- Subscribe a listener to the frame event
 ---@param callbackFunction BalltzeFrameEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.frame.subscribe(callbackFunction, priority) end
 
@@ -100,11 +100,17 @@ Balltze.event.mapFileLoad = {}
 ---@class BalltzeMapFileLoadEvent: BalltzeEvent
 ---@field args BalltzeMapFileLoadEventArgs @The arguments of the event
 
+---@alias BalltzeEventListenerPriority
+---| "highest" 
+---| "above_default"
+---| "default" 
+---| "lowest" 
+
 ---@alias BalltzeMapFileLoadEventCallback fun(event: BalltzeMapFileLoadEvent)
 
 -- Subscribe a listener to the mapFileLoad event
 ---@param callbackFunction BalltzeMapFileLoadEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.mapFileLoad.subscribe(callbackFunction, priority) end
 
@@ -129,7 +135,7 @@ Balltze.event.serverConnect = {}
 
 -- Subscribe a listener to the serverConnect event
 ---@param callbackFunction BalltzeServerConnectEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.serverConnect.subscribe(callbackFunction, priority) end
 
@@ -154,7 +160,7 @@ Balltze.event.camera = {}
 
 -- Subscribe a listener to the camera event
 ---@param callbackFunction BalltzeCameraEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.camera.subscribe(callbackFunction, priority) end
 
@@ -179,7 +185,7 @@ Balltze.event.gameInput = {}
 
 -- Subscribe a listener to the gameInput event
 ---@param callbackFunction BalltzeGameInputEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.gameInput.subscribe(callbackFunction, priority) end
 
@@ -202,7 +208,7 @@ Balltze.event.mapLoad = {}
 
 -- Subscribe a listener to the mapLoad event
 ---@param callbackFunction BalltzeMapLoadEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.mapLoad.subscribe(callbackFunction, priority) end
 
@@ -221,7 +227,7 @@ Balltze.event.uiRender = {}
 
 -- Subscribe a listener to the uiRender event
 ---@param callbackFunction BalltzeUiRenderEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiRender.subscribe(callbackFunction, priority) end
 
@@ -240,7 +246,7 @@ Balltze.event.hudRender = {}
 
 -- Subscribe a listener to the hudRender event
 ---@param callbackFunction BalltzeHudRenderEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.hudRender.subscribe(callbackFunction, priority) end
 
@@ -259,7 +265,7 @@ Balltze.event.postCarnageReportRender = {}
 
 -- Subscribe a listener to the postCarnageReportRender event
 ---@param callbackFunction BalltzePostCarnageReportRenderEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.postCarnageReportRender.subscribe(callbackFunction, priority) end
 
@@ -283,7 +289,7 @@ Balltze.event.hudElementBitmapRender = {}
 
 -- Subscribe a listener to the hudElementBitmapRender event
 ---@param callbackFunction BalltzeHudElementBitmapRenderEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.hudElementBitmapRender.subscribe(callbackFunction, priority) end
 
@@ -307,7 +313,7 @@ Balltze.event.widgetBackgroundRender = {}
 
 -- Subscribe a listener to the widgetBackgroundRender event
 ---@param callbackFunction BalltzeWidgetBackgroundRenderEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.widgetBackgroundRender.subscribe(callbackFunction, priority) end
 
@@ -326,7 +332,7 @@ Balltze.event.navpointsRender = {}
 
 -- Subscribe a listener to the navpointsRender event
 ---@param callbackFunction BalltzeNavpointsRenderEventCallback @The function to call when the event is triggered
----@param priority integer @The priority of the callback function
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.navpointsRender.subscribe(callbackFunction, priority) end
 
