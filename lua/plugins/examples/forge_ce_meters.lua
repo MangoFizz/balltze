@@ -165,7 +165,7 @@ function PluginMetadata()
         name = "Forge CE Meters",
         author = "MangoFizz",
         version = "1.0.0",
-        balltze_version = "1.0.0-rc.1",
+        targetApi = "1.0.0-rc.1",
         reloadable = true
     }
 end

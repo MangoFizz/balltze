@@ -14,40 +14,6 @@ namespace Balltze::Plugins {
         lua_settable(state, -3);
     }
 
-    VersionNumber lua_check_version_number(lua_State* state, int index) {
-        if(lua_istable(state, index)) {
-            VersionNumber version;
-
-            auto get_field = [&state, &index](const char *field, int &value) {
-                lua_getfield(state, index, field);
-                if(lua_isnumber(state, -1)) {
-                    value = lua_tointeger(state, -1);
-                }
-                else {
-                    auto *error = "Expected number for version number field.";
-                    throw std::runtime_error(error);
-                }
-                lua_pop(state, 1);
-            };
-
-            try {
-                get_field("major", version.major);
-                get_field("minor", version.minor);
-                get_field("patch", version.patch);
-                get_field("build", version.build);
-            }
-            catch(std::runtime_error &e) {
-                throw;
-            }
-
-            return version;
-        }
-        else {
-            auto *error = "Expected table for version number.";
-            throw std::runtime_error(error);
-        }
-    }
-
     Engine::ColorARGB lua_to_color_argb(lua_State *state, int index) {
         Engine::ColorARGB color;
         if(lua_istable(state, index)) {

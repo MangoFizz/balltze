@@ -9,18 +9,11 @@
 #include <semver.hpp>
 
 namespace Balltze {
-    struct VersionNumber {
-        int major;
-        int minor;
-        int patch;
-        int build;
-    };
-
     struct PluginMetadata {
         std::string name;
         std::string author;
         semver::version version;
-        semver::version balltze_version;
+        semver::version target_api;
         bool reloadable;
     };
 

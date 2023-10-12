@@ -34,8 +34,8 @@ namespace Balltze::Plugins {
         return m_metadata->version;
     }
 
-    semver::version Plugin::balltze_version() const noexcept {
-        return m_metadata->balltze_version;
+    semver::version Plugin::target_api() const noexcept {
+        return m_metadata->target_api;
     }
 
     bool Plugin::reloadable() const noexcept {
@@ -96,7 +96,7 @@ namespace Balltze::Plugins {
         logger.info("Initializing plugin {}...", m_filename);
 
         // check if plugin is compatible with the current version of Balltze
-        if(m_metadata && m_metadata->balltze_version > Balltze::balltze_version) {
+        if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
             return PluginInitResult::PLUGIN_INIT_INCOMPATIBLE;
         }
 
@@ -198,16 +198,16 @@ namespace Balltze::Plugins {
                 
                 try {
                     lua_getfield(m_state, -1, "version");
-                    if(lua_istable(m_state, -1)) {
+                    if(lua_isstring(m_state, -1)) {
                         auto *version_str = luaL_checkstring(m_state, -1); 
                         m_metadata->version = semver::version{version_str};
                     }
                     lua_pop(m_state, 1);
                     
-                    lua_getfield(m_state, -1, "balltze_version");
-                    if(lua_istable(m_state, -1)) {
-                        auto *version_str = luaL_checkstring(m_state, -1); 
-                        m_metadata->balltze_version = semver::version{version_str};
+                    lua_getfield(m_state, -1, "targetApi");
+                    if(lua_isstring(m_state, -1)) {
+                        auto *version_str = luaL_checkstring(m_state, -1);
+                        m_metadata->target_api = semver::version{version_str};
                     }
                     lua_pop(m_state, 1);
                 }
@@ -300,7 +300,7 @@ namespace Balltze::Plugins {
         Balltze::logger.info("Initializing plugin {}...", m_filename);
 
         // check if plugin is compatible with the current version of Balltze
-        if(m_metadata && m_metadata->balltze_version > Balltze::balltze_version) {
+        if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
             return PluginInitResult::PLUGIN_INIT_INCOMPATIBLE;
         }
 

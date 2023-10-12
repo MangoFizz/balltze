@@ -12,7 +12,6 @@
 
 namespace Balltze::Plugins {
     void lua_create_functions_table(lua_State *state, const char *name, const luaL_Reg *functions) noexcept;
-    VersionNumber lua_check_version_number(lua_State* state, int index);
     
     Engine::ColorARGB lua_to_color_argb(lua_State *state, int index);
     

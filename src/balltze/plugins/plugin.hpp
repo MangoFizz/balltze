@@ -39,7 +39,7 @@ namespace Balltze::Plugins {
         std::string name() const noexcept;
         std::string author() const noexcept;
         semver::version version() const noexcept;
-        semver::version balltze_version() const noexcept;
+        semver::version target_api() const noexcept;
         bool reloadable() const noexcept;
         std::filesystem::path directory() const noexcept;
         bool path_is_valid(std::filesystem::path path) const noexcept;
