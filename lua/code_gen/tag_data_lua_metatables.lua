@@ -99,16 +99,57 @@ namespace Balltze::Plugins {
         lua_setmetatable(state, -2);
     }
 
+    template<typename T>
+    void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex, lua_CFunction len) noexcept {
+        // Create table for vector
+        lua_newtable(state);
+        lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<T *>(&elem)));
+        lua_setfield(state, -2, "_data");
+
+        // Create metatable for vector 3D
+        lua_newtable(state);
+        lua_pushcfunction(state, index);
+        lua_setfield(state, -2, "__index");
+        lua_pushcfunction(state, newindex);
+        lua_setfield(state, -2, "__newindex");
+        lua_pushcfunction(state, len);
+        lua_setfield(state, -2, "__len");
+
+        // Set metatable for vector
+        lua_setmetatable(state, -2);
+    }
+
     #define LUA_ENGINE_TAG_REFLEXIVE__INDEX_LAMBDA(type, push_function) \
         +[](lua_State *state) -> int { \
             lua_getfield(state, 1, "_data"); \
             auto *elem = static_cast<Engine::TagReflexive<type> *>(lua_touserdata(state, -1)); \
             lua_pop(state, 1); \
-            auto key = luaL_checkinteger(state, 2); \
-            if (key < 0 || key >= elem->count) { \
-                return luaL_error(state, "Index out of bounds"); \
+            if(lua_isstring(state, 2)) { \
+                std::string key = luaL_checkstring(state, 2); \
+                if(key == "count") { \
+                    lua_pushinteger(state, elem->count); \
+                } \
+                else { \
+                    luaL_error(state, "Invalid key"); \
+                    return 0; \
+                } \
             } \
-            push_function(state, elem->offset[key]); \
+            else { \
+                auto key = luaL_checkinteger(state, 2); \
+                if (key < 0 || key >= elem->count) { \
+                    return luaL_error(state, "Index out of bounds"); \
+                } \
+                push_function(state, elem->offset[key]); \
+            } \
+            return 1; \
+        }
+
+    #define LUA_ENGINE_TAG_REFLEXIVE__LEN_LAMBDA(type) \
+        +[](lua_State *state) -> int { \
+            lua_getfield(state, 1, "_data"); \
+            auto *elem = static_cast<Engine::TagReflexive<type> *>(lua_touserdata(state, -1)); \
+            lua_pop(state, 1); \
+            lua_pushinteger(state, elem->count); \
             return 1; \
         }
 
@@ -245,7 +286,9 @@ for structName, struct in pairs(structs) do
                 local camelCaseStructName = definitionParser.snakeCaseToCamelCase(sneakCaseStructName)
                 add("lua_CFunction index = LUA_ENGINE_TAG_REFLEXIVE__INDEX_LAMBDA(" .. camelCaseStructName .. ", lua_push_meta_engine_" .. sneakCaseStructName .. "); \n");
                 indent(3)
-                add("lua_push_meta_object(state, data->" .. field.name .. ", index, lua_engine_tag_reflexive__newindex); \n");
+                add("lua_CFunction len = LUA_ENGINE_TAG_REFLEXIVE__LEN_LAMBDA(" .. camelCaseStructName .. "); \n");
+                indent(3)
+                add("lua_push_meta_object(state, data->" .. field.name .. ", index, lua_engine_tag_reflexive__newindex, len); \n");
             else
                 add("lua_push_meta_engine_" .. sneakCaseFieldType .. "(state, data->" .. field.name .. "); \n");
             end
