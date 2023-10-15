@@ -78,12 +78,16 @@ namespace Balltze {
         Command(name, category, help, params_help, function, autosave, args, args, can_call_from_console, is_public) {}
 
     void Command::register_command_impl(HMODULE module_handle) {
+        if(m_name.empty()) {
+            throw std::runtime_error("Cannot register command with empty name");
+        }
         for(const auto &command : commands) {
-            if(std::strcmp(command->name(), this->name()) == 0) {
-                throw std::runtime_error("Command " + std::string(this->name()) + " already registered!");
+            if(m_name == command->name()) {
+                throw std::runtime_error("Command " + m_name + " already registered!");
             }
         }
-        m_plugin = reinterpret_cast<void *>(Plugins::get_dll_plugin(module_handle));
+        auto *plugin = Plugins::get_dll_plugin(module_handle);
+        m_plugin = reinterpret_cast<void *>(plugin);
         m_full_name = get_full_name();
         commands.emplace_back(std::make_shared<Command>(*this));
     }
@@ -158,6 +162,9 @@ namespace Balltze {
         }
         else {
             module_name = reinterpret_cast<Plugins::Plugin *>(*m_plugin)->name();
+
+            // replace spaces with underscores
+            std::replace(module_name.begin(), module_name.end(), ' ', '_');
         }
         return to_lower(module_name + "_" + this->name());
     }

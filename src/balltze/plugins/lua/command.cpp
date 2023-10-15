@@ -103,44 +103,42 @@ namespace Balltze::Plugins {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
-            if(args == 9 || args == 10) {
-                std::size_t index_disp = 0;
-                auto *name = luaL_checkstring(state, index_disp + 1);
-                auto *category = luaL_checkstring(state, index_disp + 2);
-                auto *help = luaL_checkstring(state, index_disp + 3);
+            if(args == 10) {
+                auto *name = luaL_checkstring(state, 1);
+                auto *category = luaL_checkstring(state, 2);
+                auto *help = luaL_checkstring(state, 3);
                 std::optional<std::string> params_help = std::nullopt;
-                if(args == 10) {
-                    params_help = luaL_checkstring(state, index_disp + 4);
-                    index_disp++;
+                if(!lua_isnil(state, 4)) {
+                    params_help = luaL_checkstring(state, 4);
                 }
                 bool autosave;
-                if(lua_isboolean(state, index_disp + 5)) {
-                    autosave = lua_toboolean(state, index_disp + 5);
+                if(lua_isboolean(state, 5)) {
+                    autosave = lua_toboolean(state, 5);
                 }
                 else {
                     return luaL_error(state, "Argument 5 of register_command must be a boolean.");
                 }
-                std::size_t min_args = luaL_checkinteger(state, index_disp + 6);
-                std::size_t max_args = luaL_checkinteger(state, index_disp + 7);
+                std::size_t min_args = luaL_checkinteger(state, 6);
+                std::size_t max_args = luaL_checkinteger(state, 7);
                 bool can_call_from_console;
-                if(lua_isboolean(state, index_disp + 8)) {
-                    can_call_from_console = lua_toboolean(state, index_disp + 8);
+                if(lua_isboolean(state, 8)) {
+                    can_call_from_console = lua_toboolean(state, 8);
                 }
                 else {
                     return luaL_error(state, "Argument 8 of register_command must be a boolean.");
                 }
                 bool is_public;
-                if(lua_isboolean(state, index_disp + 9)) {
-                    is_public = lua_toboolean(state, index_disp + 9);
+                if(lua_isboolean(state, 9)) {
+                    is_public = lua_toboolean(state, 9);
                 }
                 else {
                     return luaL_error(state, "Argument 9 of register_command must be a boolean.");
                 }
-                if(lua_isfunction(state, index_disp + 4)) {
-                    lua_pushvalue(state, index_disp + 4);
+                if(lua_isfunction(state, 10)) {
+                    lua_pushvalue(state, 10);
                 }
                 else {
-                    return luaL_error(state, "Argument 4 of register_command must be a function.");
+                    return luaL_error(state, "Argument 10 of register_command must be a function.");
                 }
 
                 LuaCommand command(name, category, help, params_help, autosave, min_args, max_args, can_call_from_console, is_public);

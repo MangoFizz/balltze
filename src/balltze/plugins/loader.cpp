@@ -13,7 +13,7 @@ namespace Balltze::Plugins {
     using namespace Event;
 
     static std::vector<std::unique_ptr<Plugin>> plugins;
-    static EventListenerHandle<TickEvent> firstTickListener;
+    static std::optional<EventListenerHandle<TickEvent>> nextTickListener;
 
     static bool plugin_loaded(std::filesystem::path path) noexcept {
         for(auto &plugin : plugins) {
@@ -90,14 +90,14 @@ namespace Balltze::Plugins {
         }
     }
 
-    static void load_plugins_first_tick(TickEvent const &context) noexcept {
+    static void load_plugins_next_tick(TickEvent const &context) noexcept {
         for(auto &plugin : plugins) {
             if(plugin->loaded()) {
                 continue;
             }
             plugin->load();
         }
-        firstTickListener.remove();
+        nextTickListener->remove();
     }
 
     void init_plugins() noexcept {
@@ -154,19 +154,21 @@ namespace Balltze::Plugins {
         return nullptr;
     }
 
+    static std::optional<Event::EventListenerHandle<TickEvent>> plugin_load_tick_event_listener;
+
     void set_up_plugins() noexcept {
         init_plugins();
-        firstTickListener = TickEvent::subscribe_const(load_plugins_first_tick, EVENT_PRIORITY_HIGHEST);
+        nextTickListener = TickEvent::subscribe_const(load_plugins_next_tick, EVENT_PRIORITY_HIGHEST);
 
         register_command("reload_plugins", "plugins", "Reloads all loaded plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
             unload_plugins();
             init_plugins();
-            for(auto &plugin : plugins) {
-                if(plugin->loaded()) {
-                    continue;
-                }
-                plugin->load();
+
+            // Load plugins on next tick
+            if(!plugin_load_tick_event_listener) {
+                nextTickListener = TickEvent::subscribe_const(load_plugins_next_tick, EVENT_PRIORITY_HIGHEST);
             }
+
             return true;
         }, false, 0, 0);
     }

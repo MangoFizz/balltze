@@ -18,7 +18,7 @@ Balltze.command = {}
 ---@param name string @The name of the command
 ---@param category string @The category of the command
 ---@param help string @The help text of the command
----@param paramsHelp string @The help text of the command parameters
+---@param paramsHelp string|nil @The help text of the command parameters
 ---@param autosave boolean @Whether the command should be saved in the configuration file
 ---@param minArgs integer @The minimum number of arguments the command accepts
 ---@param maxArgs integer @The maximum number of arguments the command accepts
