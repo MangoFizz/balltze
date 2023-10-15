@@ -305,6 +305,11 @@ namespace Balltze::Memory {
      * @return          Signature
      */
     BALLTZE_API Signature find_signature(const char *name, std::string signature, std::uint16_t offset = 0, std::size_t match_num = 0);
+
+    /**
+     * Check if a pointer is already hooked
+     */
+    BALLTZE_API bool already_hooked(std::byte *address);
 }
 
 #endif

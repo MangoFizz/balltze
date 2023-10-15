@@ -141,7 +141,12 @@ namespace Balltze::Event {
 
         try {
             auto *load_map_path_sig = Memory::get_signature("map_load_path");
-            auto *load_map_path_addr = Memory::follow_32bit_jump(load_map_path_sig->data()) + 14; // let Chimera overwrite the map path
+            std::uint8_t load_map_path_instruction = *reinterpret_cast<std::uint8_t *>(load_map_path_sig->data());
+            std::byte *load_map_path_addr = load_map_path_sig->data();
+
+            if(load_map_path_instruction == 0xE9) {
+                load_map_path_addr = Memory::follow_32bit_jump(load_map_path_addr) + 14; // let Chimera overwrite the map path
+            }
 
             if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
                 auto *load_map_path_hook = Memory::hook_function(load_map_path_addr, map_file_load_client_hook_asm);

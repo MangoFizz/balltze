@@ -5,6 +5,7 @@
 #include <cstring>
 #include <balltze/command.hpp>
 #include <balltze/memory.hpp>
+#include <balltze/hook.hpp>
 #include <balltze/engine/core.hpp>
 #include "../config/config.hpp"
 #include "../event/console_command.hpp"
@@ -105,7 +106,7 @@ namespace Balltze {
                             }
 
                             bool res = command->call(arguments.size(), arguments_alloc.get());
-                            if(res != COMMAND_RESULT_SUCCESS) {
+                            if(res == COMMAND_RESULT_FAILED_ERROR) {
                                 failed = true;
                             }
                         }
@@ -115,8 +116,6 @@ namespace Balltze {
 
                         if(failed) {
                             logger.warning("Command {} failed to load from config", command->m_name);
-                            config.remove(command_key);
-                            config.save();
                         }
                     }
                 }
@@ -143,10 +142,8 @@ namespace Balltze {
                         }
 
                         bool res = command->call(arguments.size(), arguments_alloc.get());
-                        if(res != COMMAND_RESULT_SUCCESS) {
-                            logger.warning("Command {} failed to load from config", command->m_name);
-                            config.remove(command_key);
-                            config.save();
+                        if(res == COMMAND_RESULT_FAILED_ERROR) {
+                            logger.error("Command {} failed to load from config", command->m_name);
                         }
                     }
                 }
@@ -337,7 +334,19 @@ namespace Balltze {
         return res;
     }
 
-    static bool restore_unknown_command_message_print = false;
+    extern "C" {
+        void *unknown_command_sapp_hook_override_return = nullptr;
+        void unknown_command_sapp_hook_override(); // the hook of the hook of the hook
+        bool restore_unknown_command_message_print = false;
+    }
+
+    static void set_up_sapp_hook_override() noexcept {
+        static auto *sapp_loader_hook_sig = Memory::get_signature("execute_console_command_sapp_loader_hook");
+        static Memory::Hook *sapp_loader_hook_override = nullptr;
+        if(!sapp_loader_hook_override && Memory::already_hooked(sapp_loader_hook_sig->data())) {
+            sapp_loader_hook_override = Memory::override_function(sapp_loader_hook_sig->data(), unknown_command_sapp_hook_override, unknown_command_sapp_hook_override_return);
+        }
+    }
 
     static void dispatch_commands(Event::ConsoleCommandEvent &event) {
         static auto *unknown_command_message_print = Memory::get_signature("console_unknown_command_message_print_call");
@@ -351,6 +360,9 @@ namespace Balltze {
             if(execute_command(event.args.command) != COMMAND_RESULT_FAILED_ERROR_NOT_FOUND) {
                 Memory::fill_with_nops(unknown_command_message_print->data(), 5);
                 restore_unknown_command_message_print = true;
+
+                // This is a workaround for sapp's hook
+                set_up_sapp_hook_override();
             }
         }
     }
@@ -358,10 +370,9 @@ namespace Balltze {
     void set_up_commands() {
         register_command("version", "balltze", "Prints the current version of Balltze", std::nullopt, [](int arg_count, const char **args) -> bool {
             bool logger_mute_ingame = logger.mute_ingame();
-            logger.mute_ingame(true);
+            logger.mute_ingame(false);
             auto version = balltze_version.to_string();
             logger.info("Balltze version {}", version);
-            Engine::console_printf("Balltze version %s", version.c_str());
             logger.mute_ingame(logger_mute_ingame);
             return true;
         }, false, 0, 0);

@@ -56,9 +56,15 @@ namespace Balltze {
         }
 
         try {
-            // Workaround for Chimera hook (NEEDS TO BE FIXED)
-            std::byte *ptr = Memory::follow_32bit_jump(console_tab_completion_function_call_sig->data()) + 9;
-            auto *console_tab_completion_chimera_hook = Memory::hook_function(ptr, on_tab_completion_start, on_tab_completion_end);
+            std::uint8_t instruction = *reinterpret_cast<std::uint8_t *>(console_tab_completion_function_call_sig->data());
+            if(Memory::already_hooked(console_tab_completion_function_call_sig->data())) {
+                // Workaround for Chimera hook
+                std::byte *ptr = Memory::follow_32bit_jump(console_tab_completion_function_call_sig->data()) + 9;
+                Memory::hook_function(ptr, on_tab_completion_start, on_tab_completion_end);
+            }
+            else {
+                Memory::hook_function(console_tab_completion_function_call_sig->data(), on_tab_completion_start, on_tab_completion_end);
+            }
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook tab completion function: " + std::string(e.what()));

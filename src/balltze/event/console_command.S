@@ -4,30 +4,16 @@
 
 .text
 
-.globl _console_command_event
-_console_command_event:
-    pushfd
-    pushad
-
+.globl _console_command_event_before
+_console_command_event_before:
     push edi
     call _dispatch_console_command_event_before
-    pop edi
-    
-    test eax, eax
-    jne console_command_event_exit
-    
-    mov eax, [esp + 0x28]
-    push edi
-    push eax
-    call dword ptr [_console_command_function]
-    add esp, 0x4
-    pop edi
-    
+    add esp, 4
+    ret
+
+.globl _console_command_event_after
+_console_command_event_after:
     push edi
     call _dispatch_console_command_event_after
     add esp, 4
-    
-    console_command_event_exit:    
-    popad
-    popfd
     ret

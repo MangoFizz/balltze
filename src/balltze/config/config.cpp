@@ -180,7 +180,15 @@ namespace Balltze::Config {
     }
 
     Ini get_chimera_ini() noexcept {
-        static auto ini = Ini("chimera.ini");
-        return ini;
+        static std::unique_ptr<Ini> ini;
+        if(!ini) {
+            if(std::filesystem::exists("chimera.ini")) {
+                ini = std::make_unique<Ini>("chimera.ini");
+            }
+            else {
+                ini = std::make_unique<Ini>();
+            }
+        }
+        return *ini;
     }
 }

@@ -34,6 +34,7 @@ endif()
 
 add_library(balltze SHARED
     src/balltze/command/command.cpp
+    src/balltze/command/command.S
     src/balltze/command/help.cpp
     src/balltze/command/tab_completion.cpp
     src/balltze/config/chimera_preferences.cpp
