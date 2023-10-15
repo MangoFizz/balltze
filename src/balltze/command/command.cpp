@@ -369,11 +369,8 @@ namespace Balltze {
 
     void set_up_commands() {
         register_command("version", "balltze", "Prints the current version of Balltze", std::nullopt, [](int arg_count, const char **args) -> bool {
-            bool logger_mute_ingame = logger.mute_ingame();
-            logger.mute_ingame(false);
             auto version = balltze_version.to_string();
-            logger.info("Balltze version {}", version);
-            logger.mute_ingame(logger_mute_ingame);
+            Engine::console_printf("Balltze version %s", version.c_str());
             return true;
         }, false, 0, 0);
 

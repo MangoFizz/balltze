@@ -76,14 +76,12 @@ namespace Balltze {
             if(arg_count == 1) {
                 bool new_setting = STR_TO_BOOL(args[0]);
                 logger.mute_ingame(!new_setting);
-                return true;
             }
             else {
-                logger.error("Invalid number of arguments in balltze command console_debug.");
-                return false;
+                logger.info("console_debug: {}", logger.mute_ingame());
             }
             return true;
-        }, true, 0, 1);
+        }, true, 0, 0);
     }
 
     BalltzeSide get_balltze_side() noexcept {
