@@ -1065,20 +1065,6 @@ namespace Balltze::Engine {
         PADDING(3);
         int32_t last_completed_client_update_id;
         PADDING(12);
-
-        /**
-         * Makes the unit enter a vehicle
-         * @param vehicle_handle    Handle of the vehicle to enter
-         * @param seat_label        Label of the seat to enter
-         */
-        void enter_vehicle(ObjectHandle vehicle_handle, std::string seat_label);
-
-        /**
-         * Makes the unit enter a vehicle
-         * @param vehicle_handle    Handle of the vehicle to enter
-         * @param seat_index        Index of the seat to enter
-         */
-        void enter_vehicle(ObjectHandle vehicle_handle, std::size_t seat_index);
     };
     static_assert(sizeof(UnitObject) == 0x4CC);
 

@@ -111,8 +111,8 @@ namespace Balltze::LuaLibrary {
             if(!unit) {
                 return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
             }
-            if(!unit->type == Engine::OBJECT_TYPE_BIPED) {
-                return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped");
+            if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
+                return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped or vehicle");
             }
             if(!vehicle) {
                 return luaL_error(state, "invalid vehicle handle in balltze unit_enter_vehicle");
@@ -125,7 +125,7 @@ namespace Balltze::LuaLibrary {
             if(seat_index >= vehicle_tag_data->seats.count) {
                 return luaL_error(state, "invalid seat index in ballte unit_enter_vehicle");
             }
-            unit->enter_vehicle(vehicle_handle, vehicle_tag_data->seats.offset[seat_index].label.string);
+            Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, vehicle_tag_data->seats.offset[seat_index].label.string);
         }
         else {
             return luaL_error(state, "invalid number of arguments in balltze unit_enter_vehicle");

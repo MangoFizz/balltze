@@ -185,18 +185,18 @@ namespace Balltze::Plugins {
                 if(!unit) {
                     return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
                 }
-                if(!unit->type == Engine::OBJECT_TYPE_BIPED) {
-                    return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped");
+                if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
+                    return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped or vehicle");
                 }
                 
                 try {
                     if(lua_isinteger(state, 3)) {
                         auto seat_index = luaL_checkinteger(state, 3);
-                        unit->enter_vehicle(vehicle_handle, seat_index);
+                        Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, seat_index);
                     }
                     else if(lua_isstring(state, 3)) {
                         auto seat_label = luaL_checkstring(state, 3);
-                        unit->enter_vehicle(vehicle_handle, seat_label);
+                        Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, seat_label);
                     }
                     else {
                         return luaL_error(state, "invalid seat index or label in balltze unit_enter_vehicle, expected integer or string");

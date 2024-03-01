@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include "../memory.hpp"
+#include "data_types.hpp"
 
 namespace Balltze::Engine {
     enum HscDataType : std::uint16_t {
@@ -77,6 +78,23 @@ namespace Balltze::Engine {
         }
     };
     static_assert(sizeof(HscFunctionEntry) == 0x1C);
+
+
+    /**
+     * Makes the unit enter a vehicle
+     * @param unit_handle       Handle of the unit to enter the vehicle
+     * @param vehicle_handle    Handle of the vehicle to enter
+     * @param seat_label        Label of the seat to enter
+     */
+    void unit_scripting_enter_vehicle(ObjectHandle unit_handle, ObjectHandle vehicle_handle, std::string seat_label);
+
+    /**
+     * Makes the unit enter a vehicle
+     * @param unit_handle       Handle of the unit to enter the vehicle
+     * @param vehicle_handle    Handle of the vehicle to enter
+     * @param seat_index        Index of the seat to enter
+     */
+    void unit_scripting_enter_vehicle(ObjectHandle unit_handle, ObjectHandle vehicle_handle, std::size_t seat_index);
 }
 
 #endif
