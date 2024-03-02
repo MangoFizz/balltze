@@ -69,6 +69,8 @@ add_library(balltze SHARED
     src/balltze/event/hud_hold_to_action_message.S
     src/balltze/event/map_load.cpp
     src/balltze/event/map_load.S
+    src/balltze/event/network.cpp
+    src/balltze/event/network.S
     src/balltze/event/object_damage.cpp
     src/balltze/event/object_damage.S
     src/balltze/event/rcon_message.cpp
