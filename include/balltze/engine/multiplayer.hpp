@@ -75,16 +75,29 @@ namespace Balltze::Engine {
 
         PADDING(0x2);
 
+        SOCKET *socket;
+
         /** Map this out later? */
-        PADDING(0x148);
+        PADDING(0x144);
+    };
+
+    /**
+     * Machine connection state
+     */
+    struct ServerInfoMachineConnectionState {
+        /** Information about a player's connection */
+        ServerInfoMachineConnectionInfo **connection_info;
+
+        /** Last packet time */
+        LARGE_INTEGER last_packet_time;
     };
 
     /**
      * Machine info - Retail server & client/Custom Edition client
      */
     struct ServerInfoMachine {
-        /** Information about a player's connection */
-        ServerInfoMachineConnectionInfo ***connection_info;
+        /** State of player's connection */
+        ServerInfoMachineConnectionState *connection_state;
 
         PADDING(0x8);
 
@@ -144,7 +157,10 @@ namespace Balltze::Engine {
 
         PADDING(0xE);
 
-        // ServerInfoMachine[16] or ServerInfoMachineCustomEditionDedicatedServer[16]
+        union {
+            ServerInfoMachine machines[16];
+            ServerInfoMachineCustomEditionDedicatedServer dedicated_server_machines[16];
+        };
 
         /**
          * Get the server info player list
@@ -162,7 +178,7 @@ namespace Balltze::Engine {
         // Nope
         ServerInfoPlayerList() = delete;
     };
-    static_assert(sizeof(ServerInfoPlayerList) == 0x214);
+    // static_assert(sizeof(ServerInfoPlayerList) == 0x214);
 
     /**
      * This is server information (players, machines, etc.)

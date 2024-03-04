@@ -1552,6 +1552,21 @@ namespace Balltze::Engine {
         } race;
     }; static_assert(sizeof(PlayerMultiplayerStatistics) == 8);
 
+    enum PlayerInteractionType : std::uint16_t {
+        PLAYER_INTERACTION_TYPE_NONE,
+        PLAYER_INTERACTION_TYPE_PICKUP_POWERUP,
+        PLAYER_INTERACTION_TYPE_SWAP_POWERUP,
+        PLAYER_INTERACTION_TYPE_EXIT_SEAT,
+        PLAYER_INTERACTION_TYPE_FOUR, // Unknown
+        PLAYER_INTERACTION_TYPE_SWAP_EQUIPMENT,
+        PLAYER_INTERACTION_TYPE_SWAP_WEAPON,
+        PLAYER_INTERACTION_TYPE_PICKUP_WEAPON,
+        PLAYER_INTERACTION_TYPE_ENTER_SEAT,
+        PLAYER_INTERACTION_TYPE_FORCE_AI_TO_EXIT_SEAT,
+        PLAYER_INTERACTION_TYPE_TOUCH_DEVICE,
+        PLAYER_INTERACTION_TYPE_FLIP_VEHICLE
+    };
+
     /**
      * These are players.
      */

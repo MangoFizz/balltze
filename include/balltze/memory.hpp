@@ -25,6 +25,8 @@
 #define GET_BIT_GAP(type, bytes, line) BIT_GAP(type, bytes, line)
 #define PADDING_BIT(type, bytes) GET_BIT_GAP(type, bytes, __LINE__)
 
+#define PACKED_ATTR __attribute__((__packed__))
+
 #define MIB_SIZE 1048576
 
 namespace Balltze::Memory {
