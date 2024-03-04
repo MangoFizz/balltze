@@ -86,11 +86,11 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR ObjectDeletion {
-        ObjectHandle network_handle;
+        std::uint32_t network_handle;
     };
 
     struct PACKED_ATTR ObjectUpdateHeader {
-        ObjectHandle network_handle;
+        std::uint32_t network_handle;
         std::int8_t baseline_id;
         std::int8_t message_index;
         bool update_baseline;
@@ -152,7 +152,7 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR HudAdditem {
-        ResourceHandle item_definition_handle;
+        std::uint32_t item_definition_handle;
         std::int8_t message_offset;
         std::int16_t quantity;
     };
@@ -184,17 +184,17 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR PlayerSetActionResult {
-        PlayerHandle player_handle;
+        std::uint32_t player_handle;
         std::int32_t action_result_type;
-        ObjectHandle action_object_network_handle;
+        std::uint32_t action_object_network_handle;
         std::int16_t action_seat_index;
         std::int32_t weapon_to_drop_as_result_of_swap;
     };
 
     // See what happens if we use the creation of this packet as the trigger to send our velocity override packet.
     struct PACKED_ATTR PlayerEffectStart {
-        ResourceHandle damage_definition;
-        ObjectHandle damage_owner_object_network_handle;
+        std::uint32_t damage_definition;
+        std::uint32_t damage_owner_object_network_handle;
         std::int32_t damage_flags;
         Vector3D direction;
         float scale;
@@ -202,7 +202,7 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR UnitKill {
-        ObjectHandle network_handle;
+        std::uint32_t unit_network_handle;
         bool should_cause_ping;
         bool died;
         bool feign_death;
@@ -351,7 +351,7 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR VehicleNew {
-        TagHandle tag_handle;
+        std::uint32_t tag_handle;
         std::int32_t server_object_id;
         std::int16_t owner_team_id;
         PADDING(2);
@@ -367,7 +367,7 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR BipedNew {
-        TagHandle tag_handle;
+        std::uint32_t tag_handle;
         std::int32_t server_object_id;
         std::int16_t owner_team_id;
         PADDING(2);
@@ -391,7 +391,7 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR ProjectileNew {
-        TagHandle tag_handle;
+        std::uint32_t tag_handle;
         std::int32_t server_object_id;
         std::int16_t owner_team_id;
         PADDING(2);
@@ -410,7 +410,7 @@ namespace Balltze::Engine {
     };
 
     struct PACKED_ATTR WeaponNew {
-        TagHandle tag_handle;
+        std::uint32_t tag_handle;
         std::int32_t server_object_id;
         std::int16_t owner_team_id;
         PADDING(2);
@@ -537,8 +537,8 @@ namespace Balltze::Engine {
 
     struct PACKED_ATTR NetgameEquipmentNew {
         std::int32_t object_id;
-        TagHandle tag_handle;
-        TagHandle netgame_equipment_tag_handle;
+        std::uint32_t tag_handle;
+        std::uint32_t netgame_equipment_tag_handle;
     };
 
     struct PACKED_ATTR ProjectileDetonate {
