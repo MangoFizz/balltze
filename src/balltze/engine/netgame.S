@@ -197,7 +197,7 @@ _network_game_server_send_message_to_machine_asm:
     mov eax, [ebp + 0xC] ;# ingame_only
     push eax
 
-    mov eax, [ebp + 0x20] ;# player_id
+    mov eax, [ebp + 0x20] ;# machine_id
 
     mov esi, dword ptr [network_game_server_instance_pointer_addr] ;# network_game_server_instance_pointer
     mov esi, [esi]

@@ -268,7 +268,7 @@ namespace Balltze::Engine {
      * @param unbuffered 
      * @param buffer_priority 
      */
-    BALLTZE_API void network_game_server_send_message_to_all_machines(void* message, uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, int32_t buffer_priority);
+    BALLTZE_API void network_game_server_send_message_to_all_machines(void *message, std::uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, std::int32_t buffer_priority);
 
     /**
      * As server, sends a network game message to a given client machine.
@@ -282,7 +282,28 @@ namespace Balltze::Engine {
      * @param unbuffered
      * @param buffer_priority
      */
-    BALLTZE_API void network_game_server_send_message_to_machine(int32_t machine_id, void *message, uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, int32_t buffer_priority);
+    BALLTZE_API void network_game_server_send_message_to_machine(std::int8_t machine_id, void *message, std::uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, std::int32_t buffer_priority);
+
+    /**
+     * As server, sends a RCON response message to a given client machine.
+     * 
+     * @param machine_id    The id of the client machine to send the message to.
+     * @param message       The message to send.
+     */
+    BALLTZE_API void network_game_server_send_rcon_message(std::int8_t machine_id, const char *message);
+
+    /**
+     * As server, sends a RCON response message to a given client machine.
+     * 
+     * @param machine_id    The id of the client machine to send the message to.
+     * @param format        String format (passed to snprintf).
+     * @param args          Additional arguments to pass.
+     */
+    template<typename... Args> void network_game_server_send_rcon_message(std::int8_t machine_id, const char *format, Args... args) {
+        char message[128];
+        std::snprintf(message, sizeof(message), format, args...);
+        network_game_server_send_rcon_message(machine_id, message);
+    }
 
     /**
      * Send a chat message

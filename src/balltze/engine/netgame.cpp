@@ -10,7 +10,7 @@ namespace Balltze::Engine {
         std::uint32_t network_game_encode_message_asm(void *output_buffer, std::uint32_t arg1, std::uint32_t type, std::uint32_t arg3, void **message, std::uint32_t arg5, std::uint32_t arg6, std::uint32_t arg7);
         bool network_game_decode_message_asm(void *destination, NetworkGameMessages::MessageHeader *message_header);
         void network_game_server_send_message_to_all_machines_asm(void *message, std::uint32_t message_size, std::uint32_t ingame_only, std::uint32_t write_to_local_connection, std::uint32_t flush_queue, std::uint32_t unbuffered, std::uint32_t buffer_priority);
-        void network_game_server_send_message_to_machine_asm(void *message, std::uint32_t message_size, std::uint32_t ingame_only, std::uint32_t write_to_local_connection, std::uint32_t flush_queue, std::uint32_t unbuffered, std::uint32_t buffer_priority, std::uint32_t player_id);
+        void network_game_server_send_message_to_machine_asm(void *message, std::uint32_t message_size, std::uint32_t ingame_only, std::uint32_t write_to_local_connection, std::uint32_t flush_queue, std::uint32_t unbuffered, std::uint32_t buffer_priority, std::uint32_t machine_id);
         void network_game_client_send_chat_message_asm(int channel, const wchar_t *message);
     }
 
@@ -90,11 +90,24 @@ namespace Balltze::Engine {
         return network_game_decode_message_asm(destination, message_header);
     }
 
-    void network_game_server_send_message_to_all_machines(void* message, uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, int32_t buffer_priority) {
+    void network_game_server_send_message_to_all_machines(void *message, uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, int32_t buffer_priority) {
         network_game_server_send_message_to_all_machines_asm(message, message_size, ingame_only, write_to_local_connection, flush_queue, unbuffered, buffer_priority);
     }
 
-    void network_game_server_send_message_to_machine(int32_t player_id, void *message, uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, int32_t buffer_priority) {
-        network_game_server_send_message_to_machine_asm(message, message_size, ingame_only, write_to_local_connection, flush_queue, unbuffered, buffer_priority, player_id);
+    void network_game_server_send_message_to_machine(std::int8_t machine_id, void *message, uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, int32_t buffer_priority) {
+        network_game_server_send_message_to_machine_asm(message, message_size, ingame_only, write_to_local_connection, flush_queue, unbuffered, buffer_priority, machine_id);
+    }
+
+    void network_game_server_send_rcon_message(std::int8_t machine_id, const char *message) {
+        Engine::NetworkGameMessages::RconResponse rcon_response;
+        memcpy(rcon_response.text, message, 80);
+        char buffer[sizeof(rcon_response) + 16];
+        uint32_t size = Engine::network_game_encode_message(buffer, Engine::NETWORK_GAME_MESSAGE_TYPE_RCON_RESPONSE, &rcon_response);
+        if(machine_id < 0) {
+            Engine::network_game_server_send_message_to_all_machines(&buffer, size, true, true, false, true, 2);
+        }
+        else if(machine_id < 16) {
+            Engine::network_game_server_send_message_to_machine(machine_id, &buffer, size, true, true, false, true, 2);
+        }
     }
 }
