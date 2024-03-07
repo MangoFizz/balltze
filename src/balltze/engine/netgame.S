@@ -291,6 +291,10 @@ _network_game_client_send_message_asm:
     add edx, 4
     mov edx, [edx]
 
+    ;# Prevent this from being called when we are not connected to a server
+    cmp edx, 0
+    jz skip_send_client_packet
+
     ;# not sure what is this
     mov edi, dword ptr [edx + 0xADC]
 
