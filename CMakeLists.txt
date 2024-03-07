@@ -46,10 +46,8 @@ add_library(balltze SHARED
     src/balltze/engine/game_state.cpp
     src/balltze/engine/game_state.S
     src/balltze/engine/map.cpp
-    src/balltze/engine/multiplayer.cpp
-    src/balltze/engine/multiplayer.S
-    src/balltze/engine/network.cpp
-    src/balltze/engine/network.S
+    src/balltze/engine/netgame.cpp
+    src/balltze/engine/netgame.S
     src/balltze/engine/renderer.cpp
     src/balltze/engine/renderer.S
     src/balltze/engine/script.cpp
@@ -118,7 +116,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/engine/core.cpp
     src/balltze/plugins/lua/engine/game_state.cpp
     src/balltze/plugins/lua/engine/map.cpp
-    src/balltze/plugins/lua/engine/multiplayer.cpp
+    src/balltze/plugins/lua/engine/netgame.cpp
     src/balltze/plugins/lua/engine/renderer.cpp
     src/balltze/plugins/lua/engine/tag.cpp
     src/balltze/plugins/lua/engine/user_interface.cpp

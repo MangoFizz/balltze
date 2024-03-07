@@ -180,66 +180,66 @@ namespace Balltze::Plugins {
         }
     }
 
-    std::string server_type_to_string(Engine::ServerType type) {
+    std::string network_game_server_type_to_string(Engine::NetworkGameServerType type) {
         switch(type) {
-            case Engine::SERVER_NONE:
+            case Engine::NETWORK_GAME_SERVER_NONE:
                 return "none";
-            case Engine::SERVER_DEDICATED:
+            case Engine::NETWORK_GAME_SERVER_DEDICATED:
                 return "dedicated";
-            case Engine::SERVER_LOCAL:
+            case Engine::NETWORK_GAME_SERVER_LOCAL:
                 return "local";
             default:
                 return "unknown";
         }
     }
 
-    Engine::ServerType server_type_from_string(const std::string &type) {
+    Engine::NetworkGameServerType network_game_server_type_from_string(const std::string &type) {
         if(type == "none") {
-            return Engine::SERVER_NONE;
+            return Engine::NETWORK_GAME_SERVER_NONE;
         }
         else if(type == "dedicated") {
-            return Engine::SERVER_DEDICATED;
+            return Engine::NETWORK_GAME_SERVER_DEDICATED;
         }
         else if(type == "local") {
-            return Engine::SERVER_LOCAL;
+            return Engine::NETWORK_GAME_SERVER_LOCAL;
         }
         else {
             throw std::runtime_error("Invalid server type.");
         }
     }
 
-    std::string server_game_type_to_string(Engine::Gametype gametype) {
+    std::string network_game_server_game_type_to_string(Engine::NetworkGameType gametype) {
         switch(gametype) {
-            case Engine::GAMETYPE_CTF:
+            case Engine::NETWORK_GAMETYPE_CTF:
                 return "ctf";
-            case Engine::GAMETYPE_SLAYER:
+            case Engine::NETWORK_GAMETYPE_SLAYER:
                 return "slayer";
-            case Engine::GAMETYPE_ODDBALL:
+            case Engine::NETWORK_GAMETYPE_ODDBALL:
                 return "oddball";
-            case Engine::GAMETYPE_KING:
+            case Engine::NETWORK_GAMETYPE_KING:
                 return "king";
-            case Engine::GAMETYPE_RACE:
+            case Engine::NETWORK_GAMETYPE_RACE:
                 return "race";
             default:
                 return "none";
         }
     }
 
-    Engine::Gametype server_game_type_from_string(const std::string &gametype) {
+    Engine::NetworkGameType network_game_server_game_type_from_string(const std::string &gametype) {
         if(gametype == "ctf") {
-            return Engine::GAMETYPE_CTF;
+            return Engine::NETWORK_GAMETYPE_CTF;
         }
         else if(gametype == "slayer") {
-            return Engine::GAMETYPE_SLAYER;
+            return Engine::NETWORK_GAMETYPE_SLAYER;
         }
         else if(gametype == "oddball") {
-            return Engine::GAMETYPE_ODDBALL;
+            return Engine::NETWORK_GAMETYPE_ODDBALL;
         }
         else if(gametype == "king") {
-            return Engine::GAMETYPE_KING;
+            return Engine::NETWORK_GAMETYPE_KING;
         }
         else if(gametype == "race") {
-            return Engine::GAMETYPE_RACE;
+            return Engine::NETWORK_GAMETYPE_RACE;
         }
         else {
             throw std::runtime_error("Invalid server game type.");
@@ -430,23 +430,23 @@ namespace Balltze::Plugins {
         }
     }
 
-    std::string multiplayer_team_to_string(Engine::MultiplayerTeam team) {
+    std::string network_game_multiplayer_team_to_string(Engine::NetworkGameMultiplayerTeam team) {
         switch(team) {
-            case Engine::MULTIPLAYER_TEAM_RED:
+            case Engine::NETWORK_GAME_TEAM_RED:
                 return "red";
-            case Engine::MULTIPLAYER_TEAM_BLUE:
+            case Engine::NETWORK_GAME_TEAM_BLUE:
                 return "blue";
             default:
                 return "none";
         }
     }
     
-    Engine::MultiplayerTeam multiplayer_team_from_string(const std::string &team) {
+    Engine::NetworkGameMultiplayerTeam network_game_multiplayer_team_from_string(const std::string &team) {
         if(team == "red") {
-            return Engine::MULTIPLAYER_TEAM_RED;
+            return Engine::NETWORK_GAME_TEAM_RED;
         }
         else if(team == "blue") {
-            return Engine::MULTIPLAYER_TEAM_BLUE;
+            return Engine::NETWORK_GAME_TEAM_BLUE;
         }
         else {
             throw std::runtime_error("Invalid multiplayer team.");
@@ -3933,7 +3933,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, lua_engine_scenario_team_index_to_string(object->team_owner).c_str());
         }
         else if(field == "multiplayerTeamOwner") {
-            lua_pushstring(state, multiplayer_team_to_string(object->multiplayer_team_owner).c_str());
+            lua_pushstring(state, network_game_multiplayer_team_to_string(object->multiplayer_team_owner).c_str());
         }
         else if(field == "nameListIndex") {
             lua_pushinteger(state, object->name_list_index);
@@ -4117,7 +4117,7 @@ namespace Balltze::Plugins {
         }
         else if(field == "multiplayerTeamOwner") {
             try {
-                object->multiplayer_team_owner = multiplayer_team_from_string(luaL_checkstring(state, 3));
+                object->multiplayer_team_owner = network_game_multiplayer_team_from_string(luaL_checkstring(state, 3));
             }
             catch(std::runtime_error &e) {
                 return luaL_error(state, e.what());

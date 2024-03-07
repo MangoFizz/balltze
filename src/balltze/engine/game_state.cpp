@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <optional>
-#include <balltze/engine/multiplayer.hpp>
+#include <balltze/engine/netgame.hpp>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/tag_definitions/vehicle.hpp>
 #include <balltze/engine/game_state.hpp>
@@ -63,7 +63,7 @@ namespace Balltze::Engine {
             2 = ???
             3 = client sided object (from giraffe)
         */
-        std::uint32_t object_type = (get_server_type() == SERVER_LOCAL) ? 0 : 3;
+        std::uint32_t object_type = (network_game_get_server_type() == NETWORK_GAME_SERVER_LOCAL) ? 0 : 3;
 
         auto object_handle = create_object_asm(object_create_query, object_type);
         return object_handle;
@@ -120,14 +120,14 @@ namespace Balltze::Engine {
     }
 
     Player *PlayerTable::get_player_by_rcon_handle(std::size_t rcon_id) noexcept {
-        auto *server_info = ServerInfoPlayerList::get_server_info_player_list();
+        auto *server_info = network_game_get_server();
         if(!server_info) {
             return nullptr;
         }
 
         // Make sure we have enough thingies
         if(rcon_id < sizeof(server_info->players) / sizeof(server_info->players[rcon_id])) {
-            auto *player = server_info->players[rcon_id].get_player_table_player();
+            auto *player = server_info->players[rcon_id].get_player();
             if(player && player->player_id == 0xFFFF) {
                 return nullptr;
             }

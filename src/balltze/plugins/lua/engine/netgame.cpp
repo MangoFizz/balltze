@@ -13,8 +13,8 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                auto server_type = Engine::get_server_type();
-                auto server_type_string = server_type_to_string(server_type);
+                auto server_type = Engine::network_game_get_server_type();
+                auto server_type_string = network_game_server_type_to_string(server_type);
                 lua_pushstring(state, server_type_string.c_str());
                 return 1;
             }
@@ -33,8 +33,8 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                auto server_gametype = Engine::get_current_game_type();
-                auto server_gametype_string = server_game_type_to_string(server_gametype);
+                auto server_gametype = Engine::network_game_get_current_game_type();
+                auto server_gametype_string = network_game_server_game_type_to_string(server_gametype);
                 if(server_gametype_string == "none") {
                     lua_pushnil(state);
                 }
@@ -58,7 +58,7 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                bool is_team_game = Engine::current_game_is_team();
+                bool is_team_game = Engine::network_game_current_game_is_team();
                 lua_pushboolean(state, is_team_game);
                 return 1;
             }
@@ -72,16 +72,16 @@ namespace Balltze::Plugins {
         }
     }
 
-    static const luaL_Reg engine_multiplayer_functions[] = {
+    static const luaL_Reg engine_netgame_functions[] = {
         {"getServerType", lua_engine_get_server_type},
         {"getServerGametype", lua_engine_get_server_gametype},
         {"currentGameIsTeam", lua_engine_current_game_is_team},
         {nullptr, nullptr}
     };
 
-    void set_engine_multiplayer_functions(lua_State *state) noexcept {
-        luaL_newlibtable(state, engine_multiplayer_functions);
-        luaL_setfuncs(state, engine_multiplayer_functions, 0);
-        lua_setfield(state, -2, "multiplayer");
+    void set_engine_netgame_functions(lua_State *state) noexcept {
+        luaL_newlibtable(state, engine_netgame_functions);
+        luaL_setfuncs(state, engine_netgame_functions, 0);
+        lua_setfield(state, -2, "netgame");
     }
 }

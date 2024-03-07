@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <balltze/engine/tag_definitions/scenario.hpp>
 #include <balltze/engine/tag_definitions/damage_effect.hpp>
-#include <balltze/engine/multiplayer.hpp>
+#include <balltze/engine/netgame.hpp>
 #include "../memory.hpp"
 #include "data_types.hpp"
 
@@ -478,7 +478,7 @@ namespace Balltze::Engine {
             TagDefinitions::ScenarioTeamIndex team_owner;
 
             /** Multiplayer team index */
-            MultiplayerTeam multiplayer_team_owner;
+            NetworkGameMultiplayerTeam multiplayer_team_owner;
         };
 
         /** Name list index */

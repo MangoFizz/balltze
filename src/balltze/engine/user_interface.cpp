@@ -5,7 +5,7 @@
 #include <cmath>
 #include <invader/sound/sound_reader.hpp>
 #include <balltze/memory.hpp>
-#include <balltze/engine/multiplayer.hpp>
+#include <balltze/engine/netgame.hpp>
 #include <balltze/engine/tag_definitions/ui_widget_definition.hpp>
 #include <balltze/engine/user_interface.hpp>
 #include "../logger.hpp"
@@ -266,9 +266,9 @@ namespace Balltze::Engine {
         if(get_widget_globals()->root_widget) {
             return;
         }
-        auto server_type = get_server_type();
+        auto server_type = network_game_get_server_type();
         const char *tag_path = nullptr;
-        if(server_type == SERVER_NONE) {
+        if(server_type == NETWORK_GAME_SERVER_NONE) {
             auto *singleplayer_pause_menu_tag_path_sig = Memory::get_signature("singleplayer_pause_menu_tag_path");
             tag_path = *reinterpret_cast<const char **>(singleplayer_pause_menu_tag_path_sig->data());
         }

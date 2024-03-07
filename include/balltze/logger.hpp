@@ -85,7 +85,7 @@ namespace Balltze {
         bool mute_debug() const noexcept;
 
         void lock();
-        void try_lock();
+        bool try_lock();
         void unlock();
 
         Logger(std::string name) noexcept;

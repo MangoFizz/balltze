@@ -90,8 +90,8 @@ namespace Balltze {
         m_mutex.lock();
     }
 
-    void Logger::try_lock() {
-        m_mutex.try_lock();
+    bool Logger::try_lock() {
+        return m_mutex.try_lock();
     }
 
     void Logger::unlock() {

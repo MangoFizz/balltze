@@ -24,11 +24,11 @@ namespace Balltze::Plugins {
     std::string map_game_type_to_string(Engine::MapGameType type);
     Engine::MapGameType map_game_type_from_string(const std::string &type);
     
-    std::string server_type_to_string(Engine::ServerType type);
-    Engine::ServerType server_type_from_string(const std::string &type);
+    std::string network_game_server_type_to_string(Engine::NetworkGameServerType type);
+    Engine::NetworkGameServerType network_game_server_type_from_string(const std::string &type);
 
-    std::string server_game_type_to_string(Engine::Gametype gametype);
-    Engine::Gametype server_game_type_from_string(const std::string &gametype);
+    std::string network_game_server_game_type_to_string(Engine::NetworkGameType gametype);
+    Engine::NetworkGameType network_game_server_game_type_from_string(const std::string &gametype);
 
     void lua_push_engine_matrix(lua_State *state, Engine::Matrix &matrix) noexcept;
     std::shared_ptr<Engine::Matrix> lua_to_engine_matrix(lua_State *state, int index) noexcept;
@@ -44,8 +44,8 @@ namespace Balltze::Plugins {
     std::string object_attachment_type_to_string(Engine::BaseObjectAttachmentType type);
     Engine::BaseObjectAttachmentType object_attachment_type_from_string(const std::string &type);
 
-    std::string multiplayer_team_to_string(Engine::MultiplayerTeam team);
-    Engine::MultiplayerTeam multiplayer_team_from_string(const std::string &team);
+    std::string network_game_multiplayer_team_to_string(Engine::NetworkGameMultiplayerTeam team);
+    Engine::NetworkGameMultiplayerTeam network_game_multiplayer_team_from_string(const std::string &team);
 
     std::string camera_type_to_string(Engine::CameraType camera_type);
     Engine::CameraType camera_type_from_string(const std::string &camera_type);
