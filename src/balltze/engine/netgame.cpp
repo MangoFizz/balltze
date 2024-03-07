@@ -12,6 +12,22 @@ namespace Balltze::Engine {
         void network_game_server_send_message_to_all_machines_asm(void *message, std::uint32_t message_size, std::uint32_t ingame_only, std::uint32_t write_to_local_connection, std::uint32_t flush_queue, std::uint32_t unbuffered, std::uint32_t buffer_priority);
         void network_game_server_send_message_to_machine_asm(void *message, std::uint32_t message_size, std::uint32_t ingame_only, std::uint32_t write_to_local_connection, std::uint32_t flush_queue, std::uint32_t unbuffered, std::uint32_t buffer_priority, std::uint32_t machine_id);
         void network_game_client_send_chat_message_asm(int channel, const wchar_t *message);
+        void network_game_client_send_message_asm(void *message, size_t message_size);
+
+        std::uint32_t chat_get_local_rcon_id() noexcept {
+            auto *list = network_game_get_server();
+            auto *player = get_player_table().get_client_player();
+            if(!list || !player) {
+                return 0xFFFFFFFF;
+            }
+            auto *local_player = list->get_player(player->get_handle());
+            if(local_player) {
+                return local_player - list->players;
+            }
+            else {
+                return 0xFFFFFFFF;
+            }
+        }
     }
 
     NetworkGameServerType network_game_get_server_type() {
@@ -54,11 +70,20 @@ namespace Balltze::Engine {
         return player_table.first_element + this->player_id;
     }
 
-    NetworkGameServer *network_game_get_server() noexcept {
+    NetworkGameServerPlayer *NetworkGameServerInfo::get_player(PlayerHandle player) noexcept {
+        for(auto &p : this->players) {
+            if(p.player_id == player.index) {
+                return &p;
+            }
+        }
+        return nullptr;
+    }
+
+    NetworkGameServerInfo *network_game_get_server() noexcept {
         #define RETURN_TABLE_FOR_SIGNATURE(SIGNATURE) { \
-            static NetworkGameServer *table = nullptr; \
+            static NetworkGameServerInfo *table = nullptr; \
             if(!table) { \
-                table = reinterpret_cast<NetworkGameServer *>(*reinterpret_cast<std::byte **>(Memory::get_signature(SIGNATURE)->data()) - 8); \
+                table = reinterpret_cast<NetworkGameServerInfo *>(*reinterpret_cast<std::byte **>(Memory::get_signature(SIGNATURE)->data()) - 8); \
             } \
             return table; \
         }
@@ -109,5 +134,13 @@ namespace Balltze::Engine {
         else if(machine_id < 16) {
             Engine::network_game_server_send_message_to_machine(machine_id, &buffer, size, true, true, false, true, 2);
         }
+    }
+
+    void network_game_client_send_message(void *message, size_t message_size) {
+        network_game_client_send_message_asm(message, message_size);
+    }
+
+    std::uint32_t network_game_get_local_rcon_id() noexcept {
+        return chat_get_local_rcon_id();
     }
 }

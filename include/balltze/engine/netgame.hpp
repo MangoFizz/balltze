@@ -140,7 +140,7 @@ namespace Balltze::Engine {
     /**
      * This is server information (players, machines, etc.)
      */
-    struct NetworkGameServer {
+    struct NetworkGameServerInfo {
         PADDING(4); // unknown pointer
 
         /** State of the server */
@@ -190,6 +190,13 @@ namespace Balltze::Engine {
         wchar_t password[16];
 
         PADDING(4);
+
+        /**
+         * Get the player struct by its handle
+         * @param  player handle of the player
+         * @return        pointer to the player or nullptr if not valid
+         */
+        NetworkGameServerPlayer *get_player(PlayerHandle player) noexcept;
     };
 
     /**
@@ -197,7 +204,7 @@ namespace Balltze::Engine {
      * 
      * @return pointer to the server info struct or nullptr if not possible
      */
-    BALLTZE_API NetworkGameServer *network_game_get_server() noexcept;
+    BALLTZE_API NetworkGameServerInfo *network_game_get_server() noexcept;
 
     /**
      * Return the server type.
@@ -320,6 +327,21 @@ namespace Balltze::Engine {
      * @param message message to send
      */
     BALLTZE_API void network_game_client_send_chat_message(int channel, const char *message);
+
+    /**
+     * As client, send a message to the server 
+     * 
+     * @param message message to send
+     * @param message_size size of the message
+     */
+    BALLTZE_API void network_game_client_send_message(void *message, size_t message_size);
+
+    /**
+     * Get the local rcon id
+     * 
+     * @return the local rcon id
+     */
+    BALLTZE_API std::uint32_t network_game_get_local_rcon_id() noexcept;
 }
 
 #endif

@@ -5,18 +5,33 @@
 .data
 network_game_encode_message_function_addr: .long 0
 network_game_decode_message_function_addr: .long 0
-network_game_server_instance_pointer_addr: .long 0
+network_game_data_pointer_addr: .long 0
 network_game_server_send_message_to_all_machines_function_addr: .long 0
 network_game_server_send_message_to_machine_function_addr: .long 0
 network_game_client_send_chat_message_function_addr: .long 0
+network_game_client_send_message_function_addr: .long 0
+network_game_client_unknown_function_1_addr: .long 0
 
 .text
 network_game_encode_message_function_sig: .string "network_game_encode_message_function"
 network_game_decode_message_function_sig: .string "network_game_decode_message_function"
-network_game_server_instance_pointer_sig: .string "network_game_server_instance_pointer"
+network_game_data_pointer_sig: .string "network_game_data_pointer"
 network_game_server_send_message_to_all_machines_function_sig: .string "network_game_server_send_message_to_all_machines_function"
 network_game_server_send_message_to_machine_function_sig: .string "network_game_server_send_message_to_machine_function"
 network_game_client_send_chat_message_function_sig: .string "network_game_client_send_chat_message_function"
+network_game_client_send_message_function_sig: .string "network_game_client_send_message_function"
+network_game_client_unknown_function_1_sig: .string "network_game_client_unknown_function_1"
+
+find_server_info_sig:
+    cmp dword ptr network_game_data_pointer_addr, 0
+    jnz server_info_sig_found
+    lea eax, byte ptr network_game_data_pointer_sig
+    push eax
+    call _get_address_for_signature
+    add esp, 4
+    mov network_game_data_pointer_addr, eax
+    server_info_sig_found:
+    ret
 
 .globl _network_game_encode_message_asm
 _network_game_encode_message_asm:
@@ -87,22 +102,15 @@ _network_game_decode_message_asm:
 
 .globl _network_game_server_send_message_to_all_machines_asm
 _network_game_server_send_message_to_all_machines_asm:
+    call find_server_info_sig
+
     cmp dword ptr network_game_server_send_message_to_all_machines_function_addr, 0
-    jnz network_game_server_send_message_to_all_machines_find_server_info_sig
+    jnz do_send_packet_to_all
     lea eax, byte ptr network_game_server_send_message_to_all_machines_function_sig
     push eax
     call _get_address_for_signature
     add esp, 4
     mov network_game_server_send_message_to_all_machines_function_addr, eax
-
-    network_game_server_send_message_to_all_machines_find_server_info_sig:
-    cmp dword ptr network_game_server_instance_pointer_addr, 0
-    jnz do_send_packet_to_all
-    lea eax, byte ptr network_game_server_instance_pointer_sig
-    push eax
-    call _get_address_for_signature
-    add esp, 4
-    mov network_game_server_instance_pointer_addr, eax
 
     do_send_packet_to_all:
     push ebp
@@ -132,7 +140,7 @@ _network_game_server_send_message_to_all_machines_asm:
 
     mov eax, [ebp + 0x8] ;# message_size
 
-    mov ecx, dword ptr [network_game_server_instance_pointer_addr] ;# network_game_server_instance_pointer
+    mov ecx, dword ptr [network_game_data_pointer_addr] ;# network_game_data_pointer
     mov ecx, [ecx]
     mov ecx, [ecx]
 
@@ -151,22 +159,15 @@ _network_game_server_send_message_to_all_machines_asm:
 
 .globl _network_game_server_send_message_to_machine_asm
 _network_game_server_send_message_to_machine_asm:
+    call find_server_info_sig
+
     cmp dword ptr network_game_server_send_message_to_machine_function_addr, 0
-    jnz network_game_server_send_message_to_machine_find_server_info_sig
+    jnz do_send_packet_to_player
     lea eax, byte ptr network_game_server_send_message_to_machine_function_sig
     push eax
     call _get_address_for_signature
     add esp, 4
     mov network_game_server_send_message_to_machine_function_addr, eax
-
-    network_game_server_send_message_to_machine_find_server_info_sig:
-    cmp dword ptr network_game_server_instance_pointer_addr, 0
-    jnz do_send_packet_to_player
-    lea eax, byte ptr network_game_server_instance_pointer_sig
-    push eax
-    call _get_address_for_signature
-    add esp, 4
-    mov network_game_server_instance_pointer_addr, eax
 
     do_send_packet_to_player:
     push ebp
@@ -199,7 +200,7 @@ _network_game_server_send_message_to_machine_asm:
 
     mov eax, [ebp + 0x20] ;# machine_id
 
-    mov esi, dword ptr [network_game_server_instance_pointer_addr] ;# network_game_server_instance_pointer
+    mov esi, dword ptr [network_game_data_pointer_addr] ;# network_game_data_pointer
     mov esi, [esi]
     mov esi, [esi]
 
@@ -239,10 +240,109 @@ _network_game_client_send_chat_message_asm:
     push [esp + 0x2C]
     sub esp, 4
 
+    pushfd
+    pushad
+    call _chat_get_local_rcon_id
+    mov [esp + 0x24], eax
+    popad
+    popfd
+
     ;# Send the message
     call dword ptr network_game_client_send_chat_message_function_addr
     add esp, 8
 
     popad
     popfd
+    ret
+
+.globl _network_game_client_send_message_asm
+_network_game_client_send_message_asm:
+    call find_server_info_sig
+
+    cmp dword ptr network_game_client_send_message_function_addr, 0
+    jnz find_network_game_client_unknown_function_1_sig
+    lea eax, byte ptr network_game_client_send_message_function_sig
+    push eax
+    call _get_address_for_signature
+    add esp, 4
+    mov network_game_client_send_message_function_addr, eax
+
+    find_network_game_client_unknown_function_1_sig:
+    cmp dword ptr network_game_client_unknown_function_1_addr, 0
+    jnz do_send_client_packet
+    lea eax, byte ptr network_game_client_unknown_function_1_sig
+    push eax
+    call _get_address_for_signature
+    add esp, 4
+    mov network_game_client_unknown_function_1_addr, eax
+
+    do_send_client_packet:
+    push ebp
+    mov ebp, esp
+    add ebp, 4
+    
+    push esi
+    push edx
+    push edi
+
+    ;# Get client network data address
+    mov edx, dword ptr [network_game_data_pointer_addr] 
+    mov edx, [edx]
+    add edx, 4
+    mov edx, [edx]
+
+    ;# not sure what is this
+    mov edi, dword ptr [edx + 0xADC]
+
+    ;# despite the wrong name of the function, it seems to be a validation
+    ;# this function is called too when sending messages from the server
+    lea esi, [edi + 0x10]
+    push 1
+    push edi
+    call dword ptr network_game_client_send_message_function_addr
+    add esp, 8
+
+    ;# if the thing returned 0, we should not send the message
+    cmp eax, 0
+    jz skip_send_client_packet
+
+    ;# bump up this thing
+    mov edx, [esp + 0x4]
+    lea edx, [edx + 1]
+    add dword ptr [edi + 0xA80], edx
+
+    ;# Get local rcon id
+    sub esp, 4
+    pushfd
+    pushad
+    call _chat_get_local_rcon_id
+    mov [esp + 0x24], eax
+    popad
+    popfd
+
+    ;# flush the message queue (?) 
+    push 1
+    lea ecx, [esp] ;# load rcon id
+    mov eax, esi
+    call dword ptr network_game_client_unknown_function_1_addr
+    
+    ;# this seems to push the message to the queue
+    mov edx, [ebp + 0x8] ;# buffer size
+    push edx
+    mov ecx, [ebp + 0x4] ;# buffer pointer
+    mov eax, esi
+    mov byte ptr [esi + 0x1C], 0
+    call dword ptr network_game_client_unknown_function_1_addr
+
+    add esp, 8
+    mov byte ptr [esi + 0x1C], 0
+
+    add esp, 4 ;# pop rcon id
+
+    skip_send_client_packet:
+    pop edi
+    pop edx
+    pop esi
+    pop ebp
+
     ret
