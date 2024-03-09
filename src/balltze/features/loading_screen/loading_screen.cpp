@@ -184,8 +184,21 @@ namespace Balltze::Features {
 
                 map_load_thread.detach();
 
+                std::chrono::steady_clock::time_point timestamp = std::chrono::steady_clock::now();
+
                 // Continue rendering loading screen until map_load_thread is done
                 while(!map_load_thread_done) {
+
+                    if(std::chrono::steady_clock::now() - timestamp > 3s) {
+                        logger.debug("Sending chat message to prevent the server from timing out...");
+                        const wchar_t *wort = L"wort wort wort";
+                        auto message = Engine::NetworkGameMessages::HudChat(Engine::NetworkGameMessages::HudChatType::CUSTOM, Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(wort));
+                        char buffer[sizeof(message) + std::wcslen(wort) * 2];
+                        uint32_t size = Engine::network_game_encode_message(buffer, Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
+                        Engine::network_game_client_send_message(buffer, size);
+                        timestamp = std::chrono::steady_clock::now();
+                    }
+
                     MSG message;
                     if(PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
                         // Forward window messages so Windows doesn't think the game is frozen 
