@@ -8,7 +8,7 @@
 namespace Balltze::Engine {
     extern "C" {
         std::uint32_t network_game_encode_message_asm(void *output_buffer, std::uint32_t arg1, std::uint32_t type, std::uint32_t arg3, void **message, std::uint32_t arg5, std::uint32_t arg6, std::uint32_t arg7);
-        bool network_game_decode_message_asm(void *destination, NetworkGameMessages::MessageHeader *message_header);
+        bool network_game_decode_message_asm(void *destination, NetworkGameMessages::MessageHeader **message_header);
         void network_game_server_send_message_to_all_machines_asm(void *message, std::uint32_t message_size, std::uint32_t ingame_only, std::uint32_t write_to_local_connection, std::uint32_t flush_queue, std::uint32_t unbuffered, std::uint32_t buffer_priority);
         void network_game_server_send_message_to_machine_asm(void *message, std::uint32_t message_size, std::uint32_t ingame_only, std::uint32_t write_to_local_connection, std::uint32_t flush_queue, std::uint32_t unbuffered, std::uint32_t buffer_priority, std::uint32_t machine_id);
         void network_game_client_send_chat_message_asm(int channel, const wchar_t *message);
@@ -112,7 +112,7 @@ namespace Balltze::Engine {
     }
 
     bool network_game_decode_message(void *destination, NetworkGameMessages::MessageHeader *message_header) {
-        return network_game_decode_message_asm(destination, message_header);
+        return network_game_decode_message_asm(destination, &message_header);
     }
 
     void network_game_server_send_message_to_all_machines(void *message, uint32_t message_size, bool ingame_only, bool write_to_local_connection, bool flush_queue, bool unbuffered, int32_t buffer_priority) {

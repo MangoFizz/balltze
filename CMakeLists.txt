@@ -69,8 +69,8 @@ add_library(balltze SHARED
     src/balltze/event/hud_hold_to_action_message.S
     src/balltze/event/map_load.cpp
     src/balltze/event/map_load.S
-    src/balltze/event/network.cpp
-    src/balltze/event/network.S
+    src/balltze/event/netgame_message.cpp
+    src/balltze/event/netgame_message.S
     src/balltze/event/object_damage.cpp
     src/balltze/event/object_damage.S
     src/balltze/event/rcon_message.cpp
@@ -92,6 +92,7 @@ add_library(balltze SHARED
     src/balltze/features/tag_data_importing/tag_data_importing.S
     src/balltze/features/map_data_read_warden.cpp
     src/balltze/features/map_textures_preloading.cpp
+    src/balltze/features/echo_packet_command.cpp
     src/balltze/features/extended_limits.cpp
     src/balltze/features/extended_limits.S
     src/balltze/helpers/d3d9.cpp

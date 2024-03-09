@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <balltze/event.hpp>
 #include "console_command.hpp"
-#include "network.hpp"
 
 namespace Balltze::Event {
     template<typename T>
@@ -112,7 +111,7 @@ namespace Balltze::Event {
     template class EventHandler<HUDElementBitmapRenderEvent>;
     template class EventHandler<WidgetBackgroundRenderEvent>;
     template class EventHandler<NavPointsRenderEvent>;
-    template class EventHandler<PacketReceivedEvent>;
+    template class EventHandler<NetworkGameChatMessageEvent>;
 
     static EventListenerHandle<TickEvent> first_tick_listener;
 
@@ -137,12 +136,12 @@ namespace Balltze::Event {
             EventHandler<HUDElementBitmapRenderEvent>::init();
             EventHandler<WidgetBackgroundRenderEvent>::init();
             EventHandler<NavPointsRenderEvent>::init();
-            EventHandler<PacketReceivedEvent>::init();
             
             first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
                 EventHandler<D3D9BeginSceneEvent>::init();
                 EventHandler<D3D9EndSceneEvent>::init();
                 EventHandler<D3D9DeviceResetEvent>::init();
+                EventHandler<NetworkGameChatMessageEvent>::init();
                 first_tick_listener.remove();
             });
         }

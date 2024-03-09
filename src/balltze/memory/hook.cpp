@@ -263,6 +263,10 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 5);
                         instruction_size = 5;
                     }
+                    else if(instruction[1] == 0x8B && instruction[2] == 0x0D) {
+                        m_cave.insert(&instruction[0], 7);
+                        instruction_size = 7;
+                    }
                     else {
                         throw std::runtime_error("Unsupported cmp instruction.");
                     }
@@ -344,6 +348,10 @@ namespace Balltze::Memory {
                     else if(instruction[1] == 0x04 && instruction[2] == 0x40) {
                         m_cave.insert(&instruction[0], 3);
                         instruction_size = 3;
+                    }
+                    else if(instruction[1] == 0xF1) {
+                        m_cave.insert(&instruction[0], 2);
+                        instruction_size = 2;
                     }
                     else {
                         throw std::runtime_error("Unsupported lea / mov instruction.");
@@ -506,6 +514,7 @@ namespace Balltze::Memory {
                 throw std::invalid_argument("function_after must be a valid function");
             }
             hook->write_function_call(*reinterpret_cast<void **>(function_after.value().target<void(*)()>()), save_registers);
+            jmp_offset += save_registers ? 9 : 5;
         }
 
         hook->write_cave_return_jmp();

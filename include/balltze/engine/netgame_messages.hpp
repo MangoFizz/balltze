@@ -79,7 +79,8 @@ namespace Balltze::Engine {
             NONE = -1,
             ALL,
             TEAM,
-            VEHICLE
+            VEHICLE,
+            CUSTOM = 0x0A
         };
         
         struct PACKED_ATTR ObjectDeletion {
@@ -586,7 +587,7 @@ namespace Balltze::Engine {
 
         struct PACKED_ATTR MessageHeader {
             void *decoding_information;
-            std::int32_t number;
+            NetworkGameMessageType type;
         };
     }
 }
