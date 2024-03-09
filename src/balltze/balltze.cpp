@@ -56,6 +56,7 @@ namespace Balltze {
             else if(balltze_side == BALLTZE_SIDE_DEDICATED_SERVER) {
                 logger.info("loading dedicated server...");
                 Event::set_up_events();
+                Features::set_up_features();
                 Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
