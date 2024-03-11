@@ -12,6 +12,7 @@
 #include <balltze/utils.hpp>
 #include "../version.hpp"
 #include "../logger.hpp"
+#include <clipboardxx/clipboardxx.hpp>
 
 namespace Balltze::Plugins {
     extern int lua_populate_chimera_table(lua_State *state) noexcept;
@@ -133,6 +134,43 @@ namespace Balltze::LuaLibrary {
         return 0;
     }
 
+    static int lua_unit_exit_vehicle(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
+            Engine::unit_scripting_exit_vehicle(unit_handle);
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in balltze unit_exit_vehicle");
+        }
+        return 0;
+    }
+
+    static int lua_get_clipboard(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 0) {
+            clipboardxx::clipboard clipboard;
+            lua_pushstring(state, clipboard.paste().c_str());
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in balltze get_clipboard");
+        }
+        return 1;
+    }
+
+    static int lua_set_clipboard(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            std::string text = luaL_checkstring(state, 1);
+            clipboardxx::clipboard clipboard;
+            clipboard.copy(text);
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in balltze set_clipboard");
+        }
+        return 0;
+    }
+
     static int lua_script_unload(lua_State *state) noexcept {
         for(auto it = scripts.begin(); it != scripts.end(); it++) {
             if((*it)->state == state) {
@@ -203,6 +241,9 @@ namespace Balltze::LuaLibrary {
         register_function(state, "set_callback", lua_set_callback);
         register_function(state, "import_tag_data", lua_import_tag_data);
         register_function(state, "unit_enter_vehicle", lua_unit_enter_vehicle);
+        register_function(state, "unit_exit_vehicle", lua_unit_exit_vehicle);
+        register_function(state, "get_clipboard", lua_get_clipboard);
+        register_function(state, "set_clipboard", lua_set_clipboard);
 
         /**
          * Set __gc metamethod

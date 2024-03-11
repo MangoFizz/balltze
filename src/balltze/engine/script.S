@@ -4,9 +4,11 @@
 
 .data
 unit_scripting_enter_vehicle_function_addr: .long 0
+unit_scripting_exit_vehicle_function_addr: .long 0
 
 .text
 unit_scripting_enter_vehicle_function_sig: .string "unit_enter_vehicle_function"
+unit_scripting_exit_vehicle_function_sig: .string "unit_exit_vehicle_function"
 
 .globl _unit_scripting_enter_vehicle_asm
 _unit_scripting_enter_vehicle_asm:
@@ -30,5 +32,24 @@ _unit_scripting_enter_vehicle_asm:
     call dword ptr unit_scripting_enter_vehicle_function_addr
 
     add esp, 0xC
+
+    ret
+
+.globl _unit_scripting_exit_vehicle_asm
+_unit_scripting_exit_vehicle_asm:
+    cmp dword ptr unit_scripting_exit_vehicle_function_addr, 0
+    jnz do_unit_scripting_exit_vehicle
+    lea eax, byte ptr unit_scripting_exit_vehicle_function_sig
+    push eax
+    call _get_address_for_signature
+    add esp, 4
+    mov unit_scripting_exit_vehicle_function_addr, eax
+
+    do_unit_scripting_exit_vehicle:
+
+    ;# Mov unit handle
+    mov eax, [esp+0x4]
+
+    call dword ptr unit_scripting_exit_vehicle_function_addr
 
     ret

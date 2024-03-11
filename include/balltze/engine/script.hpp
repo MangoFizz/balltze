@@ -95,6 +95,12 @@ namespace Balltze::Engine {
      * @param seat_index        Index of the seat to enter
      */
     void unit_scripting_enter_vehicle(ObjectHandle unit_handle, ObjectHandle vehicle_handle, std::size_t seat_index);
+
+    /**
+     * Makes the unit exit a vehicle
+     * @param unit_handle       Handle of the unit to exit the vehicle
+     */
+    void unit_scripting_exit_vehicle(ObjectHandle unit_handle);
 }
 
 #endif

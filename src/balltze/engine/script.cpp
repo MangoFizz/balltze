@@ -13,6 +13,7 @@
 namespace Balltze::Engine {
     extern "C" {
         void unit_scripting_enter_vehicle_asm(ObjectHandle unit_handle, ObjectHandle vehicle_handle, const char *seat_name);
+        void unit_scripting_exit_vehicle_asm(ObjectHandle unit_handle);
     }
 
     void unit_scripting_enter_vehicle(ObjectHandle unit_handle, ObjectHandle vehicle_handle, std::string seat_label) {
@@ -64,6 +65,11 @@ namespace Balltze::Engine {
 
         auto &seat_name = tag_data->seats.offset[seat_index].label.string;
         unit_scripting_enter_vehicle_asm(unit_handle, vehicle_handle, seat_name);
+    }
+
+    void unit_scripting_exit_vehicle(ObjectHandle unit_handle) {
+        // TODO Validate that unit is in a vehicle
+        unit_scripting_exit_vehicle_asm(unit_handle);
     }
 }
 
