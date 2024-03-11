@@ -1,6 +1,7 @@
 include/fmt/** linguist-vendored
 include/lua/** linguist-vendored
 include/nlohmann/** linguist-vendored
+lib/clipboardxx/** linguist-vendored
 lib/lua/** linguist-vendored
 lib/fmt/** linguist-vendored
 lua/modules/** linguist-vendored
