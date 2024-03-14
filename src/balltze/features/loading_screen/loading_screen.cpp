@@ -188,8 +188,7 @@ namespace Balltze::Features {
 
                 // Continue rendering loading screen until map_load_thread is done
                 while(!map_load_thread_done) {
-
-                    if(std::chrono::steady_clock::now() - timestamp > 3s) {
+                    if(!Engine::network_game_is_server() && Engine::network_game_is_client() && std::chrono::steady_clock::now() - timestamp > 3s) {
                         logger.debug("Sending chat message to prevent the server from timing out...");
                         const wchar_t *wort = L"wort wort wort";
                         auto message = Engine::NetworkGameMessages::HudChat(Engine::NetworkGameMessages::HudChatType::CUSTOM, Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(wort));

@@ -288,6 +288,13 @@ _network_game_client_send_message_asm:
     ;# Get client network data address
     mov edx, dword ptr [network_game_data_pointer_addr] 
     mov edx, [edx]
+
+    ;# We're not connected to a server, we ARE the server
+    mov edi, [edx]
+    cmp edi, 0
+    jnz skip_send_client_packet
+
+    ;# Get the client network data
     add edx, 4
     mov edx, [edx]
 

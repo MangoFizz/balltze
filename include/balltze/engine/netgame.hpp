@@ -214,6 +214,20 @@ namespace Balltze::Engine {
     BALLTZE_API NetworkGameServerType network_game_get_server_type();
 
     /**
+     * Return if we are in a network game as a client.
+     * 
+     * @return Return if the game is a client.
+     */
+    BALLTZE_API bool network_game_is_client();
+
+    /**
+     * Return if we are in a network game as a server.
+     * 
+     * @return Return if the game is a server.
+     */
+    BALLTZE_API bool network_game_is_server();
+
+    /**
      * Return the gametype.
      * 
      * @return Return the gametype.

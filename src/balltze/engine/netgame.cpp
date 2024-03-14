@@ -103,6 +103,32 @@ namespace Balltze::Engine {
         }
     }
 
+    bool network_game_is_client() {
+        static auto *network_data_sig = Memory::get_signature("network_game_data_pointer");
+        if(!network_data_sig) {
+            return false;
+        }
+        auto *network_data = *reinterpret_cast<std::uint32_t **>(network_data_sig->data());
+        auto *client_network_data = network_data + 1;
+        if(*client_network_data) {
+            return true;
+        }
+        return false;
+    }
+
+    bool network_game_is_server() {
+        static auto *network_data_sig = Memory::get_signature("network_game_data_pointer");
+        if(!network_data_sig) {
+            return false;
+        }
+        auto *network_data = *reinterpret_cast<std::uint32_t **>(network_data_sig->data());
+        auto *server_network_data = network_data;
+        if(*server_network_data) {
+            return true;
+        }
+        return false;
+    }
+
     uint32_t network_game_encode_message(void *output_buffer, int32_t arg1, NetworkGameMessageType type, uint32_t arg3, void* message, uint32_t arg5, uint32_t arg6, uint32_t arg7) {
         return network_game_encode_message_asm(output_buffer, arg1, type, arg3, &message, arg5, arg6, arg7);
     }
