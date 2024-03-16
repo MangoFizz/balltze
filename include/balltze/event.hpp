@@ -119,6 +119,7 @@ namespace Balltze::Event {
 #include "events/object_damage.hpp"
 #include "events/rcon_message.hpp"
 #include "events/render.hpp"
+#include "events/widget.hpp"
 
 #endif
 
