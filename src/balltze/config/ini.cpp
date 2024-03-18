@@ -255,7 +255,7 @@ namespace Balltze::Config {
 
     void Ini::load_from_stream(std::istream &stream) {
         if(!try_to_set_locale("")) {
-            logger.error("Config::Ini: Failed to set default locale. Setting C locale instead.");\
+            logger.error("Config::Ini: Failed to set default locale. Setting C locale instead.");
             if(!try_to_set_locale("C")) {
                 logger.error("Config::Ini: Failed to set C locale.");
             }

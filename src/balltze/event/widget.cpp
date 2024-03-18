@@ -86,8 +86,8 @@ namespace Balltze::Event {
             return;
         }
 
-        static auto *widget_create_function_sig = Memory::get_signature("widget_create_function");
-        static auto *widget_create_function_return_sig = Memory::get_signature("widget_create_function_return");
+        auto *widget_create_function_sig = Memory::get_signature("widget_create_function");
+        auto *widget_create_function_return_sig = Memory::get_signature("widget_create_function_return");
         if(!widget_create_function_sig || !widget_create_function_return_sig) {
             throw std::runtime_error("Could not find signatures for widget open event.");
         }
@@ -161,7 +161,7 @@ namespace Balltze::Event {
             return;
         }
 
-        static auto *widget_back_function_sig = Memory::get_signature("widget_back_function");
+        auto *widget_back_function_sig = Memory::get_signature("widget_back_function");
         if(!widget_back_function_sig) {
             throw std::runtime_error("Could not find signatures for widget close event.");
         }
@@ -236,8 +236,8 @@ namespace Balltze::Event {
             return;
         }
 
-        static auto *widget_focus_function_sig = Memory::get_signature("widget_focus_function");
-        static auto *widget_mouse_focus_update_sig = Memory::get_signature("widget_mouse_focus_update");
+        auto *widget_focus_function_sig = Memory::get_signature("widget_focus_function");
+        auto *widget_mouse_focus_update_sig = Memory::get_signature("widget_mouse_focus_update");
         if(!widget_focus_function_sig || !widget_mouse_focus_update_sig) {
             throw std::runtime_error("Could not find signatures for widget focus event.");
         }
@@ -311,7 +311,7 @@ namespace Balltze::Event {
             return;
         }
 
-        static auto *widget_accept_function_sig = Memory::get_signature("widget_accept_event_check");
+        auto *widget_accept_function_sig = Memory::get_signature("widget_accept_event_check");
         if(!widget_accept_function_sig) {
             throw std::runtime_error("Could not find signatures for widget accept event.");
         }
@@ -383,7 +383,7 @@ namespace Balltze::Event {
             return;
         }
 
-        static auto *widget_sound_function_sig = Memory::get_signature("widget_sound_play_function");
+        auto *widget_sound_function_sig = Memory::get_signature("widget_sound_play_function");
         if(!widget_sound_function_sig) {
             throw std::runtime_error("Could not find signatures for widget sound event.");
         }
