@@ -10,6 +10,7 @@
 #include <cstring>
 #include <balltze/utils.hpp>
 #include <balltze/config.hpp>
+#include "../logger.hpp"
 
 namespace Balltze::Config {
     #define BOOL_TO_STR(boolean) (boolean ? "true" : "false")
@@ -241,13 +242,23 @@ namespace Balltze::Config {
         this->load_from_stream(stream);
     }
 
-    void Ini::load_from_stream(std::istream &stream) {
+    static bool try_to_set_locale(std::string locstr) {
         try {
-            locale = std::locale("");
+            locale = std::locale(locstr);
+            return true;
         }
         catch(std::exception &e) {
-            std::fprintf(stderr, "Failed to use default locale - %s\n", e.what());
-            throw;
+            logger.debug("Failed to set locale to \"{}\": {}.", locstr, e.what());
+            return false;
+        }
+    }
+
+    void Ini::load_from_stream(std::istream &stream) {
+        if(!try_to_set_locale("")) {
+            logger.error("Config::Ini: Failed to set default locale. Setting C locale instead.");\
+            if(!try_to_set_locale("C")) {
+                logger.error("Config::Ini: Failed to set C locale.");
+            }
         }
         
         std::string group;
