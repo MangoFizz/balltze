@@ -112,6 +112,12 @@ namespace Balltze::Event {
     template class EventHandler<WidgetBackgroundRenderEvent>;
     template class EventHandler<NavPointsRenderEvent>;
     template class EventHandler<NetworkGameChatMessageEvent>;
+    template class EventHandler<UIWidgetOpenEvent>;
+    template class EventHandler<UIWidgetBackEvent>;
+    template class EventHandler<UIWidgetFocusEvent>;
+    template class EventHandler<UIWidgetAcceptEvent>;
+    template class EventHandler<UIWidgetSoundEvent>;
+    template class EventHandler<UIWidgetListTabEvent>;
 
     static EventListenerHandle<TickEvent> first_tick_listener;
 
@@ -136,6 +142,12 @@ namespace Balltze::Event {
             EventHandler<HUDElementBitmapRenderEvent>::init();
             EventHandler<WidgetBackgroundRenderEvent>::init();
             EventHandler<NavPointsRenderEvent>::init();
+            EventHandler<UIWidgetOpenEvent>::init();
+            EventHandler<UIWidgetBackEvent>::init();
+            EventHandler<UIWidgetFocusEvent>::init();
+            EventHandler<UIWidgetAcceptEvent>::init();
+            EventHandler<UIWidgetSoundEvent>::init();
+            EventHandler<UIWidgetListTabEvent>::init();
             
             first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
                 EventHandler<D3D9BeginSceneEvent>::init();

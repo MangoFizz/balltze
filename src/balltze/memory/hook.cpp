@@ -353,6 +353,16 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 2);
                         instruction_size = 2;
                     }
+                    // mov ebx, dword ptr [esp + imm8]
+                    else if(instruction[1] == 0x5C && instruction[2] == 0x24) {
+                        m_cave.insert(&instruction[0], 4);
+                        instruction_size = 4;
+                    }
+                    // mov ecx, dword ptr [eax + imm8]
+                    else if(instruction[1] == 0x48) {
+                        m_cave.insert(&instruction[0], 3);
+                        instruction_size = 3;
+                    }
                     else {
                         throw std::runtime_error("Unsupported lea / mov instruction.");
                     }
@@ -485,36 +495,52 @@ namespace Balltze::Memory {
                 }
                 hook->write_function_call(*reinterpret_cast<void **>(function.target<void(*)()>()), save_registers, false);
             }
-        }
+        
+            // cmp byte ptr [flag], 1
+            hook->m_cave.insert(0x80);
+            hook->m_cave.insert(0x3D);
+            auto flag_address = reinterpret_cast<std::uint32_t>(hook->m_skip_original_code.get());
+            hook->m_cave.insert_address(flag_address);
+            hook->m_cave.insert(1);
 
-        // cmp byte ptr [flag], 1
-        hook->m_cave.insert(0x80);
-        hook->m_cave.insert(0x3D);
-        auto flag_address = reinterpret_cast<std::uint32_t>(hook->m_skip_original_code.get());
-        hook->m_cave.insert_address(flag_address);
-        hook->m_cave.insert(1);
+            // je instruction_size
+            hook->m_cave.insert(0x74);
+            hook->m_cave.insert(0x0);
+            std::uint8_t &jmp_offset = *reinterpret_cast<std::uint8_t *>(&hook->m_cave.top());
 
-        // je instruction_size
-        hook->m_cave.insert(0x74);
-        hook->m_cave.insert(0x0);
-        std::uint8_t &jmp_offset = *reinterpret_cast<std::uint8_t *>(&hook->m_cave.top());
-
-        std::uint8_t instruction_size;
-        try {
-            hook->copy_instructions(instruction, instruction_size);
-        }
-        catch(std::runtime_error) {
-            throw;
-        }
-
-        jmp_offset = instruction_size;
-
-        if(function_after) {
-            if(!*function_after) {
-                throw std::invalid_argument("function_after must be a valid function");
+            std::uint8_t instruction_size;
+            try {
+                hook->copy_instructions(instruction, instruction_size);
             }
-            hook->write_function_call(*reinterpret_cast<void **>(function_after.value().target<void(*)()>()), save_registers);
-            jmp_offset += save_registers ? 9 : 5;
+            catch(std::runtime_error) {
+                throw;
+            }
+
+            jmp_offset = instruction_size;
+
+            if(function_after) {
+                if(!*function_after) {
+                    throw std::invalid_argument("function_after must be a valid function");
+                }
+                hook->write_function_call(*reinterpret_cast<void **>(function_after.value().target<void(*)()>()), save_registers);
+                jmp_offset += save_registers ? 9 : 5;
+            }
+        }
+        else {
+            std::uint8_t instruction_size;
+            try {
+                hook->copy_instructions(instruction, instruction_size);
+            }
+            catch(std::runtime_error) {
+                throw;
+            }
+        
+            if(function_after) {
+                if(!*function_after) {
+                    throw std::invalid_argument("function_after must be a valid function");
+                }
+                hook->write_function_call(*reinterpret_cast<void **>(function_after.value().target<void(*)()>()), save_registers);
+            }
         }
 
         hook->write_cave_return_jmp();
