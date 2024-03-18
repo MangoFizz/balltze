@@ -145,10 +145,15 @@ namespace Balltze::Config {
         return true;
     }
 
-    std::filesystem::path get_balltze_directory() noexcept {
-        auto path = Engine::get_path() / "balltze";
-        std::filesystem::create_directories(path);
-        return path;
+    std::filesystem::path get_balltze_directory() {
+        try {
+            auto path = Engine::get_path() / "balltze";
+            std::filesystem::create_directories(path);
+            return path;
+        }
+        catch(...) {
+            throw;
+        }
     }
 
     Config &get_config() {

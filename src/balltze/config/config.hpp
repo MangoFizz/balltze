@@ -13,7 +13,7 @@ namespace Balltze::Config {
      * Get the Balltze directory.
      * @return  Path to the Balltze directory.
      */
-    std::filesystem::path get_balltze_directory() noexcept;
+    std::filesystem::path get_balltze_directory();
 
     /**
      * Get Chimera INI config.

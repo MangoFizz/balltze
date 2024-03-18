@@ -228,8 +228,13 @@ namespace Balltze::Config {
     }
 
     Ini::Ini(const char *path) {
-        std::ifstream stream(path);
-        this->load_from_stream(stream);
+        try {
+            std::ifstream stream(path);
+            this->load_from_stream(stream);
+        }
+        catch(std::exception &e) {
+            throw std::runtime_error(std::string("Failed to open INI file: ") + e.what());
+        }
     }
 
     Ini::Ini(std::istream &stream) {
@@ -242,6 +247,7 @@ namespace Balltze::Config {
         }
         catch(std::exception &e) {
             std::fprintf(stderr, "Failed to use default locale - %s\n", e.what());
+            throw;
         }
         
         std::string group;
