@@ -8747,7 +8747,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_event_widget_render_vertex__index(lua_State *state) noexcept {
-        auto *vertex = lua_from_meta_object<Event::WidgetRenderVertices::Vertex>(state, 1); 
+        auto *vertex = lua_from_meta_object<Event::UIWidgetRenderVertices::Vertex>(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {
@@ -8780,7 +8780,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_event_widget_render_vertex__newindex(lua_State *state) noexcept {
-        auto *vertex = lua_from_meta_object<Event::WidgetRenderVertices::Vertex>(state, 1); 
+        auto *vertex = lua_from_meta_object<Event::UIWidgetRenderVertices::Vertex>(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {
@@ -8812,12 +8812,12 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::WidgetRenderVertices::Vertex &vertex) noexcept {
+    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::UIWidgetRenderVertices::Vertex &vertex) noexcept {
         lua_push_meta_object(state, vertex, lua_event_widget_render_vertex__index, lua_event_widget_render_vertex__newindex);
     }
     
     static int lua_event_widget_render_vertices__index(lua_State *state) noexcept {
-        auto *vertices = lua_from_meta_object<Event::WidgetRenderVertices>(state, 1); 
+        auto *vertices = lua_from_meta_object<Event::UIWidgetRenderVertices>(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {
@@ -8844,7 +8844,7 @@ namespace Balltze::Plugins {
     }
 
     static int lua_event_widget_render_vertices__newindex(lua_State *state) noexcept {
-        auto *vertices = lua_from_meta_object<Event::WidgetRenderVertices>(state, 1); 
+        auto *vertices = lua_from_meta_object<Event::UIWidgetRenderVertices>(state, 1); 
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {
@@ -8870,7 +8870,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::WidgetRenderVertices &vertices) noexcept {
+    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::UIWidgetRenderVertices &vertices) noexcept {
         lua_push_meta_object(state, vertices, lua_event_widget_render_vertices__index, lua_event_widget_render_vertices__newindex);
     }
 }

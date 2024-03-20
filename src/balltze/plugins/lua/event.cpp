@@ -1233,7 +1233,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    static void populate_widget_background_render_events(Event::WidgetBackgroundRenderEvent &context, Event::EventPriority priority) noexcept {
+    static void populate_widget_background_render_events(Event::UIWidgetBackgroundRenderEvent &context, Event::EventPriority priority) noexcept {
         auto plugins = get_lua_plugins();
         
         for(auto *&plugin : plugins) {
@@ -1545,19 +1545,19 @@ namespace Balltze::Plugins {
         }, Event::EVENT_PRIORITY_LOWEST);
 
         // Set up widget background render event
-        static auto widget_background_render_event_highest = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+        static auto widget_background_render_event_highest = Event::UIWidgetBackgroundRenderEvent::subscribe([](Event::UIWidgetBackgroundRenderEvent &context) {
             populate_widget_background_render_events(context, Event::EVENT_PRIORITY_HIGHEST);
         }, Event::EVENT_PRIORITY_HIGHEST);
 
-        static auto widget_background_render_event_above_default = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+        static auto widget_background_render_event_above_default = Event::UIWidgetBackgroundRenderEvent::subscribe([](Event::UIWidgetBackgroundRenderEvent &context) {
             populate_widget_background_render_events(context, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
         }, Event::EVENT_PRIORITY_ABOVE_DEFAULT);
 
-        static auto widget_background_render_event_default = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+        static auto widget_background_render_event_default = Event::UIWidgetBackgroundRenderEvent::subscribe([](Event::UIWidgetBackgroundRenderEvent &context) {
             populate_widget_background_render_events(context, Event::EVENT_PRIORITY_DEFAULT);
         }, Event::EVENT_PRIORITY_DEFAULT);
 
-        static auto widget_background_render_event_lowest = Event::WidgetBackgroundRenderEvent::subscribe([](Event::WidgetBackgroundRenderEvent &context) {
+        static auto widget_background_render_event_lowest = Event::UIWidgetBackgroundRenderEvent::subscribe([](Event::UIWidgetBackgroundRenderEvent &context) {
             populate_widget_background_render_events(context, Event::EVENT_PRIORITY_LOWEST);
         }, Event::EVENT_PRIORITY_LOWEST);
 

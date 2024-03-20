@@ -467,7 +467,7 @@ namespace Balltze::Memory {
         m_cave.insert_address(offset);
     }
 
-    Hook *hook_function(void *instruction, std::optional<std::variant<std::function<void()>, std::function<bool()>>> function_before, std::optional<std::function<void()>> function_after, bool save_registers) {
+    Hook *hook_function(void *instruction, std::optional<std::variant<std::function<void()>, std::function<bool()>>> function_before, std::optional<std::function<void()>> function_after, bool save_registers, bool do_not_hook) {
         for(auto &hook : hooks) {
             if(hook->m_instruction == instruction) {
                 throw std::runtime_error("address already hooked");
@@ -544,11 +544,13 @@ namespace Balltze::Memory {
         }
 
         hook->write_cave_return_jmp();
-        hook->hook();
+        if(!do_not_hook) {
+            hook->hook();
+        }
         return hook;
     }
 
-    Hook *override_function(void *instruction, std::function<void()> function, void *&original_instruction) {
+    Hook *override_function(void *instruction, std::function<void()> function, void *&original_instruction, bool do_not_hook) {
         for(auto &hook : hooks) {
             if(hook->m_instruction == instruction) {
                 throw std::runtime_error("address already hooked");
@@ -575,11 +577,13 @@ namespace Balltze::Memory {
         }
 
         hook->write_cave_return_jmp();
-        hook->hook();
+        if(!do_not_hook) {
+            hook->hook();
+        }
         return hook;
     }
 
-    Hook *replace_function_call(void *instruction, std::function<void()> function) {
+    Hook *replace_function_call(void *instruction, std::function<void()> function, bool do_not_hook) {
         for(auto &hook : hooks) {
             if(hook->m_instruction == instruction) {
                 throw std::runtime_error("address already hooked");
@@ -603,7 +607,9 @@ namespace Balltze::Memory {
         hook->m_cave.unlock();
 
         hook->write_cave_return_jmp();
-        hook->hook();
+        if(!do_not_hook) {
+            hook->hook();
+        }
         return hook;
     }
 }

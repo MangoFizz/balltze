@@ -166,8 +166,8 @@ namespace Balltze::Plugins {
     void lua_push_meta_engine_player_multiplayer_statistics(lua_State *state, Engine::PlayerMultiplayerStatistics &statistics) noexcept;
     void lua_push_meta_engine_player(lua_State *state, Engine::Player &player) noexcept;
 
-    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::WidgetRenderVertices::Vertex &vertex) noexcept;
-    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::WidgetRenderVertices &vertices) noexcept;
+    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::UIWidgetRenderVertices::Vertex &vertex) noexcept;
+    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::UIWidgetRenderVertices &vertices) noexcept;
 
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex) noexcept {

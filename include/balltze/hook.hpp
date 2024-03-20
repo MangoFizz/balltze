@@ -197,42 +197,48 @@ namespace Balltze::Memory {
         Hook() = default;
 
         // just friends :')
-        friend Hook *hook_function(void *, std::optional<std::variant<std::function<void()>, std::function<bool()>>>, std::optional<std::function<void()>>, bool);
-        friend Hook *override_function(void *, std::function<void()>, void *&);
-        friend Hook *replace_function_call(void *, std::function<void()>);
+        friend Hook *hook_function(void *, std::optional<std::variant<std::function<void()>, std::function<bool()>>>, std::optional<std::function<void()>>, bool, bool);
+        friend Hook *override_function(void *, std::function<void()>, void *&, bool);
+        friend Hook *replace_function_call(void *, std::function<void()>, bool);
     };
 
     /**
      * Hook a given instruction.
      * Original code can be skipped by returning false in the function_before function.
+     * 
      * @param address               Address of the instruction to hook
      * @param function_before       Function to be called before original code.
      * @param function_after        Function to be called after original code
      * @param save_registers        Save registers before calling functions
+     * @param do_not_hook           Build the hook but don't hook it yet
      * @return                      Hook object
      * @throws std::runtime_error   If instruction is not supported or is already hooked
      * @note                        If the instruction to hook can't be skipped, use the proper function type.
      */
-    BALLTZE_API Hook *hook_function(void *instruction, std::optional<std::variant<std::function<void()>, std::function<bool()>>> function_before, std::optional<std::function<void()>> function_after = {}, bool save_registers = true);
+    BALLTZE_API Hook *hook_function(void *instruction, std::optional<std::variant<std::function<void()>, std::function<bool()>>> function_before, std::optional<std::function<void()>> function_after = {}, bool save_registers = true, bool do_not_hook = false);
 
     /**
      * Override a given function.
+     * 
      * @param address               Address of the instruction to hook
      * @param function              Function to be called instead of original code
      * @param original_instruction  Pointer to where the original instruction was copied
+     * @param do_not_hook           Build the hook but don't hook it yet
      * @return                      Hook object
      * @throws std::runtime_error   If instruction is not supported or is already hooked
      */
-    BALLTZE_API Hook *override_function(void *instruction, std::function<void()> function, void *&original_instruction);
+    BALLTZE_API Hook *override_function(void *instruction, std::function<void()> function, void *&original_instruction, bool do_not_hook = false);
 
     /**
      * Replace a function call with another function.
+     * 
      * @param instruction   Address of the instruction to hook
      * @param function      Function to be called instead of original code
+     * @param do_not_hook   Build the hook but don't hook it yet
      * @return              Hook object
      * @throws std::runtime_error   If instruction is not supported or is already hooked
      */
-    BALLTZE_API Hook *replace_function_call(void *instruction, std::function<void()> function);
+    BALLTZE_API Hook *replace_function_call(void *instruction, std::function<void()> function, bool do_not_hook = false);
 }
 
 #endif

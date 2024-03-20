@@ -16,6 +16,7 @@ namespace Balltze::Features {
     void set_up_map_textures_preloading() noexcept;
     void set_up_extended_limits();
     void set_up_echo_message_command();
+    void set_up_menu_widescreen_override() noexcept;
 
     inline void set_up_features() {
         try {
@@ -27,6 +28,7 @@ namespace Balltze::Features {
                     set_up_hud_button_prompts();
                     set_up_map_data_read_warden();
                     set_up_extended_limits();
+                    set_up_menu_widescreen_override();
 #ifdef BALLTZE_ENABLE_EXPERIMENTAL
                     set_up_sound_subtitles();
                     set_up_tag_data_importing();

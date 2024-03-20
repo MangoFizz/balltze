@@ -109,7 +109,7 @@ namespace Balltze::Event {
     template class EventHandler<HUDRenderEvent>;
     template class EventHandler<PostCarnageReportRenderEvent>;
     template class EventHandler<HUDElementBitmapRenderEvent>;
-    template class EventHandler<WidgetBackgroundRenderEvent>;
+    template class EventHandler<UIWidgetBackgroundRenderEvent>;
     template class EventHandler<NavPointsRenderEvent>;
     template class EventHandler<NetworkGameChatMessageEvent>;
     template class EventHandler<UIWidgetOpenEvent>;
@@ -140,7 +140,7 @@ namespace Balltze::Event {
             EventHandler<HUDRenderEvent>::init();
             EventHandler<PostCarnageReportRenderEvent>::init();
             EventHandler<HUDElementBitmapRenderEvent>::init();
-            EventHandler<WidgetBackgroundRenderEvent>::init();
+            EventHandler<UIWidgetBackgroundRenderEvent>::init();
             EventHandler<NavPointsRenderEvent>::init();
             EventHandler<UIWidgetOpenEvent>::init();
             EventHandler<UIWidgetBackEvent>::init();

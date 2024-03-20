@@ -41,7 +41,7 @@ namespace Balltze::Event {
         PostCarnageReportRenderEvent(EventTime time) : EventData(time) {}
     };
 
-    struct WidgetRenderVertices {
+    struct UIWidgetRenderVertices {
         struct Vertex {
             float x, y, z, rhw;
             float u, v;
@@ -55,7 +55,7 @@ namespace Balltze::Event {
 
     struct HUDElementBitmapRenderEventArgs {
         Engine::TagDefinitions::BitmapData *bitmap_data;
-        WidgetRenderVertices *vertices;
+        UIWidgetRenderVertices *vertices;
     };
 
     class HUDElementBitmapRenderEvent : public EventData<HUDElementBitmapRenderEvent> {
@@ -69,20 +69,20 @@ namespace Balltze::Event {
         HUDElementBitmapRenderEvent(EventTime time, HUDElementBitmapRenderEventArgs args) : EventData(time), args(args) {}
     };
 
-    struct WidgetBackgroundRenderEventArgs {
+    struct UIWidgetBackgroundRenderEventArgs {
         Engine::Widget *widget;
-        WidgetRenderVertices *vertices;
+        UIWidgetRenderVertices *vertices;
     };
 
-    class WidgetBackgroundRenderEvent : public EventData<WidgetBackgroundRenderEvent> {
+    class UIWidgetBackgroundRenderEvent : public EventData<UIWidgetBackgroundRenderEvent> {
     public:
-        WidgetBackgroundRenderEventArgs args;
+        UIWidgetBackgroundRenderEventArgs args;
 
         bool cancellable() const {
             return true;
         }
 
-        WidgetBackgroundRenderEvent(EventTime time, WidgetBackgroundRenderEventArgs args) : EventData(time), args(args) {}
+        UIWidgetBackgroundRenderEvent(EventTime time, UIWidgetBackgroundRenderEventArgs args) : EventData(time), args(args) {}
     };
 
     class NavPointsRenderEvent : public EventData<NavPointsRenderEvent> {

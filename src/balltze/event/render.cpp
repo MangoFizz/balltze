@@ -116,7 +116,7 @@ namespace Balltze::Event {
         bool hud_element_bitmap_render_event_before_dispatcher_asm();
         void hud_element_bitmap_render_event_after_dispatcher_asm();
     
-        bool hud_element_bitmap_render_event_before_dispatcher(WidgetRenderVertices &vertices, Engine::TagDefinitions::BitmapData *bitmap_data) {
+        bool hud_element_bitmap_render_event_before_dispatcher(UIWidgetRenderVertices &vertices, Engine::TagDefinitions::BitmapData *bitmap_data) {
             HUDElementBitmapRenderEventArgs args;
             args.vertices = &vertices;
             args.bitmap_data = bitmap_data;
@@ -126,7 +126,7 @@ namespace Balltze::Event {
             return widget_background_render_event.cancelled();
         }
     
-        void hud_element_bitmap_render_event_after_dispatcher(WidgetRenderVertices &vertices) {
+        void hud_element_bitmap_render_event_after_dispatcher(UIWidgetRenderVertices &vertices) {
             HUDElementBitmapRenderEventArgs args;
             args.vertices = &vertices;
             args.bitmap_data = hud_element_bitmap_render_event_bitmap_data;
@@ -195,26 +195,26 @@ namespace Balltze::Event {
         bool widget_background_render_event_before_dispatcher_asm();
         void widget_background_render_event_after_dispatcher_asm();
     
-        bool widget_background_render_event_before_dispatcher(WidgetRenderVertices &vertices, Engine::Widget *widget) {
-            WidgetBackgroundRenderEventArgs args;
+        bool widget_background_render_event_before_dispatcher(UIWidgetRenderVertices &vertices, Engine::Widget *widget) {
+            UIWidgetBackgroundRenderEventArgs args;
             args.vertices = &vertices;
             args.widget = widget;
-            WidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_BEFORE, args);
+            UIWidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_BEFORE, args);
             widget_background_render_event.dispatch();
             return widget_background_render_event.cancelled();
         }
     
-        void widget_background_render_event_after_dispatcher(WidgetRenderVertices &vertices, Engine::Widget *widget) {
-            WidgetBackgroundRenderEventArgs args;
+        void widget_background_render_event_after_dispatcher(UIWidgetRenderVertices &vertices, Engine::Widget *widget) {
+            UIWidgetBackgroundRenderEventArgs args;
             args.vertices = &vertices;
             args.widget = widget;
-            WidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_AFTER, args);
+            UIWidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_AFTER, args);
             widget_background_render_event.dispatch();
         }
     }
 
     static bool debug_widget_background_render_event(int arg_count, const char **args) {
-        static std::optional<Event::EventListenerHandle<WidgetBackgroundRenderEvent>> handle;
+        static std::optional<Event::EventListenerHandle<UIWidgetBackgroundRenderEvent>> handle;
         if(arg_count == 1) {
             bool new_setting = STR_TO_BOOL(args[0]);
             if(new_setting) {
@@ -222,7 +222,7 @@ namespace Balltze::Event {
                     handle->remove();
                     handle = std::nullopt;
                 }
-                handle = Event::WidgetBackgroundRenderEvent::subscribe_const([](WidgetBackgroundRenderEvent const &event) {
+                handle = Event::UIWidgetBackgroundRenderEvent::subscribe_const([](UIWidgetBackgroundRenderEvent const &event) {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
                     logger.debug("Widget background render event ({}): widget: {}", time, reinterpret_cast<std::uint32_t>(arguments.widget));
@@ -242,7 +242,7 @@ namespace Balltze::Event {
     static EventListenerHandle<TickEvent> widget_background_render_event_init_tick_event_handle;
 
     template<>
-    void EventHandler<WidgetBackgroundRenderEvent>::init() {
+    void EventHandler<UIWidgetBackgroundRenderEvent>::init() {
         static bool enabled = false;
         if(enabled) {
             return;

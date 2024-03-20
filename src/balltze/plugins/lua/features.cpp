@@ -51,7 +51,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.import_tag_from_map.");
+                return luaL_error(state, "Invalid number of arguments in balltze function features.importTagFromMap.");
             }
         }
         else {
@@ -92,7 +92,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.import_tags_from_map.");
+                return luaL_error(state, "Invalid number of arguments in balltze function features.importTagsFromMap.");
             }
         }
         else {
@@ -124,7 +124,7 @@ namespace Balltze::Plugins {
                     tag_handle.handle = lua_tointeger(state, 1);
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag in balltze function features.reload_tag_data.");
+                        return luaL_error(state, "Could not find tag in balltze function features.reloadTagData.");
                     }
                 } 
                 else {
@@ -136,7 +136,7 @@ namespace Balltze::Plugins {
                         tag_handle = tag->handle;
                     }
                     else {
-                        return luaL_error(state, "Could not find tag in balltze function features.reload_tag_data.");
+                        return luaL_error(state, "Could not find tag in balltze function features.reloadTagData.");
                     }
                 }
                 try {
@@ -147,7 +147,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.reload_tag_data.");
+                return luaL_error(state, "Invalid number of arguments in balltze function features.reloadTagData.");
             }
         }
         else {
@@ -172,7 +172,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.replace_tag_dependencies.");
+                return luaL_error(state, "Invalid number of arguments in balltze function features.replaceTagReferences.");
             }
         }
         else {
@@ -199,7 +199,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.clone_tag.");
+                return luaL_error(state, "Invalid number of arguments in balltze function features.cloneTag.");
             }
         }
         else {
@@ -225,7 +225,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.get_tag_copy.");
+                return luaL_error(state, "Invalid number of arguments in balltze function features.getTagCopy.");
             }
         }
         else {
@@ -253,7 +253,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.get_imported_tag.");
+                return luaL_error(state, "Invalid number of arguments in balltze function features.getImportedTag.");
             }
         }
         else {
@@ -293,6 +293,19 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_set_menu_aspect_ratio(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 2) {
+            std::uint16_t x = luaL_checknumber(state, 1);
+            std::uint16_t y = luaL_checknumber(state, 2);
+            Features::set_menu_aspect_ratio(x, y);
+        }
+        else {
+            luaL_error(state, "invalid number of arguments in balltze function features.setMenuAspectRatio.");
+        }
+        return 0;
+    }
+
     static const luaL_Reg features_functions[] = {
         {"importTagFromMap", lua_import_tag_from_map},
         {"importTagsFromMap", lua_import_tags_from_map},
@@ -302,6 +315,7 @@ namespace Balltze::Plugins {
         {"cloneTag", lua_clone_tag},
         {"getTagCopy", lua_get_tag_copy},
         {"getImportedTag", lua_get_imported_tag},
+        {"setMenuAspectRatio", lua_set_menu_aspect_ratio},
         {nullptr, nullptr}
     };
 
