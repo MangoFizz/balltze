@@ -99,6 +99,7 @@ add_library(balltze SHARED
     src/balltze/features/extended_limits.cpp
     src/balltze/features/extended_limits.S
     src/balltze/features/echo_message.cpp
+    src/balltze/features/settings_integration.cpp
     src/balltze/helpers/d3d9.cpp
     src/balltze/helpers/resources.cpp
     src/balltze/helpers/sprite_shader.rc

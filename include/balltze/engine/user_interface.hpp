@@ -650,6 +650,13 @@ namespace Balltze::Engine {
     BALLTZE_API std::vector<Widget *> find_widgets(TagHandle widget_definition, bool first_match = true, Widget *widget_base = nullptr) noexcept;
 
     /**
+     * Create a widget
+     * @param widget_definition     Widget definition tag handle
+     * @return                      Pointer to widget
+     */
+    BALLTZE_API Widget *create_widget(TagHandle widget_definition) noexcept;
+
+    /**
      * Open a widget
      * @param widget_definition     Tag handle of widget definition
      * @param push_history          Push or not the current root widget to menu history
