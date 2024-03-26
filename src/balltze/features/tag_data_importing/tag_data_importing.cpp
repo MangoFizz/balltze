@@ -849,7 +849,7 @@ namespace Balltze::Features {
         });
 
         // Set virtual path for the new entry
-        char *new_path = reinterpret_cast<char *>(virtual_tag_data->reserve_tag_data_space(std::strlen(new_entry.path) + copy_name.size() + 1));
+        char *new_path = reinterpret_cast<char *>(virtual_tag_data->reserve_tag_data_space(std::strlen(new_entry.path) + copy_name.size() + 2)); // +2 for the null terminator and the backslash
         std::strcpy(new_path, new_entry.path);
         std::strcat(new_path, ("\\" + copy_name).c_str());
         new_entry.path = new_path;
