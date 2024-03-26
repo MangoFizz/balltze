@@ -2787,21 +2787,12 @@ namespace Balltze::Plugins {
             lua_pushstring(state, widget->name);
             return 1;
         }
-        else if(field == "hidden") {
-            if(widget->hidden == 1) {
-                lua_pushboolean(state, true);
-            }
-            else {
-                lua_pushboolean(state, false);
-            }
+        else if(field == "controller_index") {
+            lua_pushinteger(state, widget->controller_index);
             return 1;
         }
-        else if(field == "leftBound") {
-            lua_pushinteger(state, widget->left_bound);
-            return 1;
-        }
-        else if(field == "topBound") {
-            lua_pushinteger(state, widget->top_bound);
+        else if(field == "position") {
+            lua_push_meta_engine_point2_d_int(state, widget->position);
             return 1;
         }
         else if(field == "type") {
@@ -2866,12 +2857,16 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "textAddress") {
-            lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<wchar_t *>(widget->text)));
+        else if(field == "text") {
+            lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<wchar_t *>(widget->text_box.text)));
             return 1;
         }
         else if(field == "cursorIndex") {
-            lua_pushinteger(state, widget->cursor_index);
+            lua_pushinteger(state, widget->text_box.cursor_index);
+            return 1;
+        }
+        else if(field == "extendedDescription") {
+            lua_push_meta_engine_widget(state, *widget->extended_description);
             return 1;
         }
         else if(field == "bitmapIndex") {
@@ -2897,14 +2892,11 @@ namespace Balltze::Plugins {
         else if(field == "name") {
             return luaL_error(state, "Unsupported operation");
         }
-        else if(field == "hidden") {
-            widget->hidden = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
+        else if(field == "controller_index") {
+            widget->controller_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
-        else if(field == "leftBound") {
-            widget->left_bound = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
-        }
-        else if(field == "topBound") {
-            widget->top_bound = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
+        else if(field == "position") {
+            return luaL_error(state, "Unsupported operation");
         }
         else if(field == "type") {
             try {
@@ -2977,7 +2969,16 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Unsupported operation");
         }
         else if(field == "cursorIndex") {
-            widget->cursor_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
+            widget->text_box.cursor_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
+        }
+        else if(field == "extendedDescription") {
+            auto *extended_description = lua_from_meta_object<Engine::Widget>(state, 3);
+            if(extended_description) {
+                widget->extended_description = extended_description;
+            }
+            else {
+                return luaL_error(state, "Invalid value");
+            }
         }
         else if(field == "bitmapIndex") {
             widget->bitmap_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));

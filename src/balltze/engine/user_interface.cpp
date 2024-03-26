@@ -178,8 +178,8 @@ namespace Balltze::Engine {
         auto *old_widget_next = widget->next_widget;
         auto *old_widget_focused = widget->focused_child;
 
-        new_widget->left_bound = old_widget->left_bound;
-        new_widget->top_bound = old_widget->top_bound;
+        new_widget->position.x = old_widget->position.x;
+        new_widget->position.y = old_widget->position.y;
 
         new_widget->parent_widget = nullptr;
         new_widget->previous_widget = nullptr;

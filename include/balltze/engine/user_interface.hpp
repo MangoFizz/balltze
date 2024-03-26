@@ -292,25 +292,26 @@ namespace Balltze::Engine {
         /** Name of the widget */
         const char *name;
 
-        /** Sets if the widget is hidden */
-        std::uint16_t hidden;
+        /** Player controller index */
+        std::uint16_t controller_index;
 
-        /** Widget frame left bound */
-        std::int16_t left_bound;
-
-        /** Widget frame top bound */
-        std::int16_t top_bound;
+        /** Widget position */
+        Engine::Point2DInt position;
 
         /** Widget type */
         TagDefinitions::UIWidgetType type;
 
-        /** Unknown flags related to the widget history */
-        std::uint16_t visible;
-        PADDING(0x2);
-        PADDING(0x4);
+        /** Some flags */
+        bool visible;
+        bool render_regardless_of_controller_index;
+        PADDING(1);
+        bool pauses_game_time; 
 
-        /** A widget instance related to the history */
-        PADDING(0x4);
+        bool deleted;
+        PADDING(0x3);
+
+        /** Ok I trust open sauce */
+        std::uint32_t creator_process_start_time;
 
         /** Milliseconds to close widgets */
         std::uint32_t ms_to_close;
@@ -336,18 +337,30 @@ namespace Balltze::Engine {
         /** focused child widget. Null in non-list widgets. */
         Widget *focused_child;
 
-        /** Text box content. Null in non-text box widgets. */
-        const wchar_t *text;
+        union {
+            struct {
+                /** Text box content */
+                const wchar_t *text;
 
-        /** Last widget list element focused by cursor */
-        std::uint16_t cursor_index;
-        PADDING(0x2);
+                /** Last widget list element focused by cursor */
+                std::uint16_t cursor_index;
+                PADDING(0x2);
+            } text_box;
 
-        PADDING(0x4);
-        PADDING(0x4);
-        PADDING(0x4);
+            struct {
+                PADDING(0x4);
+                uint16_t element_index;
+                PADDING(0x2);
+                void *elements;
+                uint16_t element_count;
+                PADDING(0x2);
+            } list;
+        };
 
-        PADDING(0x4);
+        /** Extended description widget */
+        Widget *extended_description;
+
+        void *userdata; // no idea about this
         PADDING(0x4);
 
         /** Background bitmap index */
@@ -355,13 +368,6 @@ namespace Balltze::Engine {
         PADDING(0x2);
 
         PADDING(0x4);
-
-        /** 
-         * Get header for this instance
-         */
-        inline WidgetMemoryPool::ResourceHandle &get_handle() noexcept {
-            return *reinterpret_cast<WidgetMemoryPool::ResourceHandle *>(reinterpret_cast<std::uint32_t>(this) - sizeof(WidgetMemoryPool::ResourceHandle));
-        }
     }; 
     static_assert(sizeof(Widget) == 0x60);
 
