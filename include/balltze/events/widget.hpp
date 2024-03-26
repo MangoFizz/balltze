@@ -14,6 +14,7 @@ namespace Balltze::Event {
     struct UIWidgetOpenEventArguments : UIWidgetEventArguments {
         Engine::TagHandle definition_tag_handle;
         bool is_root_widget;
+        Engine::Widget *parent_widget;
     };
 
     class UIWidgetOpenEvent : public EventData<UIWidgetOpenEvent> {

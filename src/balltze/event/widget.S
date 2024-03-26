@@ -14,12 +14,18 @@ _widget_open_event_before_asm:
     push eax
     mov eax, [ebp + 0xC]
 
+    ;# Save everything
+    pushad
+    pushfd
+
     ;# Check if we are on the root widget
     test eax, eax
     jz widget_open_event_before_is_root_widget
+    push 0
     mov eax, 0
     jmp widget_open_event_before_call_events
     widget_open_event_before_is_root_widget:
+    push eax
     mov eax, 1
 
     widget_open_event_before_call_events:
@@ -27,14 +33,15 @@ _widget_open_event_before_asm:
     push dword ptr [ebp + 0x4] ;# definition tag path
     push dword ptr [ebp + 0x8] ;# definition tag handle
     call _dispatch_widget_open_before_event
-    add esp, 0xC
+    add esp, 0x10
 
-    ;# Check if event was cancelled
-    test eax, eax
+    popfd
+    test eax, eax ;# Check if event was cancelled
+    popad
     pop eax
     pop ebp
     jnz widget_open_event_before_exit
-    
+
     jmp dword ptr _widget_create_function_override_return
 
     widget_open_event_before_exit:
@@ -43,6 +50,9 @@ _widget_open_event_before_asm:
 
 .globl _widget_open_event_after_asm
 _widget_open_event_after_asm:
+    pushad
+    pushfd
+
     ;# Check if the widget was created
     test eax, eax
     jz widget_open_event_after_exit
@@ -54,27 +64,31 @@ _widget_open_event_after_asm:
 
     ;# Widgets tree upstream node
     push edx
-    mov edx, [ebp + 0x28 + 0xC]
+    mov edx, [ebp + 0x24 + 0x28 + 0xC]
     
     ;# Check if we are on the root widget
     test edx, edx
     jz widget_open_event_after_is_root_widget
+    push 0
     mov edx, 0
     jmp widget_open_event_after_call_events
     widget_open_event_after_is_root_widget:
+    push edx
     mov edx, 1
 
     widget_open_event_after_call_events:
     push edx
     push eax ;# created widget
     call _dispatch_widget_open_after_event
-    add esp, 0x8
+    add esp, 0xC
 
     pop edx
     pop ebp 
     pop eax
 
     widget_open_event_after_exit:
+    popfd
+    popad
     ret
 
 .globl _widget_back_event_asm

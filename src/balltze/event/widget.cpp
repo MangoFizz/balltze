@@ -14,12 +14,12 @@ namespace Balltze::Event {
         void widget_open_event_after_asm();
         void *widget_create_function_override_return;
 
-        bool dispatch_widget_open_before_event(Engine::TagHandle definition, const char *definition_path, bool is_root_widget) {
+        bool dispatch_widget_open_before_event(Engine::TagHandle definition, const char *definition_path, bool is_root_widget, Engine::Widget *parent) {
             if(definition_path) {
                 auto widget_definition = Engine::get_tag(definition_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                 definition = widget_definition->handle;
             }
-            UIWidgetOpenEventArguments args{nullptr, definition, is_root_widget};
+            UIWidgetOpenEventArguments args{nullptr, definition, is_root_widget, parent};
             UIWidgetOpenEvent widget_open_event_before(EVENT_TIME_BEFORE, args);
             widget_open_event_before.dispatch();
             if(is_root_widget) {
@@ -28,12 +28,12 @@ namespace Balltze::Event {
             return false;
         }
 
-        void dispatch_widget_open_after_event(Engine::Widget *widget, bool is_root_widget) {
+        void dispatch_widget_open_after_event(Engine::Widget *widget, bool is_root_widget, Engine::Widget *parent) {
             if(!widget) {
                 logger.debug("dispatch_widget_open_after_event: widget is null");
                 return;
             }
-            UIWidgetOpenEventArguments args{widget, widget->definition_tag_handle, is_root_widget};
+            UIWidgetOpenEventArguments args{widget, widget->definition_tag_handle, is_root_widget, parent};
             UIWidgetOpenEvent widget_open_event_after(EVENT_TIME_AFTER, args);
             widget_open_event_after.dispatch();
         }
