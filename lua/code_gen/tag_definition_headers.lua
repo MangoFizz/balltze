@@ -47,6 +47,10 @@ local function generateHeader(definitionName, tagDefinition, dependencies)
 #include "../data_types.hpp"
 #include "enum.hpp"
 #include "bitfield.hpp"
+
+#pragma pack(push)
+#pragma pack(1)
+
 ]])
 
     if(dependencies) then
@@ -142,6 +146,8 @@ namespace Balltze::Engine::TagDefinitions {
     add([[
 }
 
+#pragma pack(pop)
+
 #endif
 
 ]])
@@ -196,6 +202,10 @@ local function generateBigEndianHeader(definitionName, tagDefinition, dependenci
 #include "../tag_file.hpp"
 #include "enum.hpp"
 #include "bitfield.hpp"
+
+#pragma pack(push)
+#pragma pack(1)
+
 ]])
 
     if(dependencies) then
@@ -294,6 +304,8 @@ namespace Balltze::HEK::TagDefinitions {
     end        
     add([[
 }
+
+#pragma pack(pop)
 
 #endif
 
