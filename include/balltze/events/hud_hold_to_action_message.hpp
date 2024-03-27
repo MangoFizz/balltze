@@ -41,23 +41,25 @@ namespace Balltze::Event {
         PADDING(2);
     };
 
-    struct HudHoldForActionMessageArguments {
-        HudHoldForActionMessageSlice slice;
+    struct HudHoldForActionMessageArgs {
+        const HudHoldForActionMessageSlice slice;
         Engine::Point2DInt offset;
-        Engine::ColorARGBInt color;
+        const Engine::ColorARGBInt color;
         std::wstring text;
-        std::optional<HudHoldToActionMessageButton> button;
+        const std::optional<HudHoldToActionMessageButton> button;
+
+        HudHoldForActionMessageArgs(HudHoldForActionMessageSlice slice, Engine::Point2DInt offset, Engine::ColorARGBInt color, std::wstring text, std::optional<HudHoldToActionMessageButton> button) : slice(slice), offset(offset), color(color), text(text), button(button) {}
     };
 
     class HudHoldForActionMessageEvent : public EventData<HudHoldForActionMessageEvent> {
     public:
-        HudHoldForActionMessageArguments args;
+        HudHoldForActionMessageArgs args;
 
         bool cancellable() const {
             return true;
         }
 
-        HudHoldForActionMessageEvent(EventTime time, HudHoldForActionMessageArguments args) : EventData(time), args(args) {}
+        HudHoldForActionMessageEvent(EventTime time, HudHoldForActionMessageArgs args) : EventData(time), args(args) {}
     };
 }
 

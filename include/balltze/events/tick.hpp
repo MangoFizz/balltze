@@ -6,20 +6,22 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct TickEventArguments {
-        std::size_t delta_time_ms;
-        std::size_t tick_count;
+    struct TickEventArgs {
+        const std::size_t delta_time_ms;
+        const std::size_t tick_count;
+
+        TickEventArgs(std::size_t delta_time_ms, std::size_t tick_count) : delta_time_ms(delta_time_ms), tick_count(tick_count) {}
     };
 
     class TickEvent : public EventData<TickEvent> {
     public:
-        TickEventArguments args;
+        TickEventArgs args;
 
         bool cancellable() const {
             return false;
         }
 
-        TickEvent(EventTime time, TickEventArguments args) : EventData(time), args(args) {}
+        TickEvent(EventTime time, TickEventArgs args) : EventData(time), args(args) {}
     };
 }
 

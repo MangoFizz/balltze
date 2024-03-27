@@ -15,20 +15,14 @@ namespace Balltze::Event {
         bool gamepad_input_event();
     
         bool dispatch_input_event_before(Engine::InputDevice device, std::size_t key_code, bool mapped) {
-            GameInputArguments args;
-            args.device = device;
-            args.button.key_code = key_code;
-            args.mapped = mapped;
+            GameInputEventArgs args(device, key_code, mapped);
             GameInputEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_input_event_after(Engine::InputDevice device, std::size_t key_code, bool mapped) {
-            GameInputArguments args;
-            args.device = device;
-            args.button.key_code = key_code;
-            args.mapped = mapped;
+            GameInputEventArgs args(device, key_code, mapped);
             GameInputEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }

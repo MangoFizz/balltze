@@ -15,16 +15,14 @@ namespace Balltze::Event {
         void map_load_after_event();
 
         void dispatch_map_load_event_before(const char *map_name) {
-            MapLoadEventArgs args;
-            args.name = map_name;
+            MapLoadEventArgs args(map_name);
             last_map_name = map_name;
             MapLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
 
         void dispatch_map_load_event_after() {
-            MapLoadEventArgs args;
-            args.name = last_map_name;
+            MapLoadEventArgs args(last_map_name);
             MapLoadEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -90,18 +88,14 @@ namespace Balltze::Event {
         void map_file_load_client_hook_asm();
         void map_file_load_server_hook_asm();
 
-        bool dispatch_map_file_load_event_before(char *map_path, const char *map_name) {
+        void dispatch_map_file_load_event_before(char *map_path, const char *map_name) {
             if(!map_path || !map_name) {
                 logger.debug("dispatch_map_file_load_event_before: map_path or map_name is null");
-                return false;
             }
 
-            MapFileLoadEventArgs args;
-            args.map_name = map_name;
-            args.map_path = map_path;
+            MapFileLoadEventArgs args(map_name, map_path);
             MapFileLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
-            return false;
         }
     }
 

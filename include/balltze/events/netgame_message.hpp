@@ -12,7 +12,7 @@ namespace Balltze::Event {
     using NetworkGameChatMessage = Engine::NetworkGameMessages::HudChat;
 
     struct NetworkGameChatMessageEventArgs {
-        NetworkGameChatMessage *chat_message;
+        NetworkGameChatMessage const *chat_message;
 
         NetworkGameChatMessageEventArgs(NetworkGameChatMessage *msg) : chat_message(msg) {}
     };

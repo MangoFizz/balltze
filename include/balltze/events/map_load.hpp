@@ -7,7 +7,9 @@
 
 namespace Balltze::Event {
     struct MapLoadEventArgs {
-        std::string name;
+        const std::string name;
+
+        MapLoadEventArgs(const std::string name) : name(name) {}
     };
 
     class MapLoadEvent : public EventData<MapLoadEvent> {
@@ -22,8 +24,10 @@ namespace Balltze::Event {
     };
 
     struct MapFileLoadEventArgs {
-        std::string map_name;
-        std::string map_path;
+        const std::string map_name;
+        const std::string map_path;
+
+        MapFileLoadEventArgs(const std::string map_name, const std::string map_path) : map_name(map_name), map_path(map_path) {}
     };
 
     class MapFileLoadEvent : public EventData<MapFileLoadEvent> {

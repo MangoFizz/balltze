@@ -7,6 +7,10 @@
 #include "helpers.hpp"
 
 namespace Balltze::Plugins {
+    int lua_read_only__newindex(lua_State *state) noexcept {
+        return luaL_error(state, "Attempt to modify a read-only table");
+    }
+
     void lua_create_functions_table(lua_State *state, const char *name, const luaL_Reg *functions) noexcept {
         lua_pushstring(state, name);
         luaL_newlibtable(state, functions);
@@ -647,6 +651,34 @@ namespace Balltze::Plugins {
         return color;
     }
 
+    std::string input_device_to_string(Engine::InputDevice device) {
+        switch(device) {
+            case Engine::INPUT_DEVICE_KEYBOARD:
+                return "keyboard";
+            case Engine::INPUT_DEVICE_MOUSE:
+                return "mouse";
+            case Engine::INPUT_DEVICE_GAMEPAD:
+                return "gamepad";
+            default:
+                return "unknown";
+        }
+    }
+
+    Engine::InputDevice input_device_from_string(const std::string &device) {
+        if(device == "keyboard") {
+            return Engine::INPUT_DEVICE_KEYBOARD;
+        }
+        else if(device == "mouse") {
+            return Engine::INPUT_DEVICE_MOUSE;
+        }
+        else if(device == "gamepad") {
+            return Engine::INPUT_DEVICE_GAMEPAD;
+        }
+        else {
+            throw std::runtime_error("Invalid input device.");
+        }
+    }
+
     void lua_engine_attach_tag_data_metatable(lua_State *state) noexcept;
 
     void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
@@ -687,17 +719,29 @@ namespace Balltze::Plugins {
         lua_setfield(state, -2, "data");
     }
 
-    void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept {
+    void lua_push_engine_resource_handle(lua_State *state, const Engine::ResourceHandle &handle) noexcept {
         lua_newtable(state);
 
-        lua_pushinteger(state, handle->handle);
+        lua_pushinteger(state, handle.handle);
         lua_setfield(state, -2, "handle");
 
-        lua_pushinteger(state, handle->id);
+        lua_pushinteger(state, handle.id);
         lua_setfield(state, -2, "id");
 
-        lua_pushinteger(state, handle->index);
+        lua_pushinteger(state, handle.index);
         lua_setfield(state, -2, "index");
+    }
+
+    void lua_push_engine_object_handle(lua_State *state, const Engine::ObjectHandle &handle) noexcept {
+        lua_push_engine_resource_handle(state, static_cast<const Engine::ResourceHandle &>(handle));
+    }
+
+    void lua_push_engine_tag_handle(lua_State *state, const Engine::TagHandle &handle) noexcept {
+        lua_push_engine_resource_handle(state, static_cast<const Engine::ResourceHandle &>(handle));
+    }
+
+    void lua_push_engine_player_handle(lua_State *state, const Engine::PlayerHandle &handle) noexcept {
+        lua_push_engine_resource_handle(state, static_cast<const Engine::ResourceHandle &>(handle));
     }
 
     std::string unit_throwing_grenade_state_to_string(Engine::UnitThrowingGrenadeState state) {
@@ -1874,8 +1918,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept {
-        lua_push_meta_object(state, color, lua_engine_color_a_r_g_b_int__index, lua_engine_color_a_r_g_b_int__newindex); 
+    void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color, bool read_only) noexcept {
+        lua_push_meta_object(state, color, lua_engine_color_a_r_g_b_int__index, lua_engine_color_a_r_g_b_int__newindex, read_only); 
     }
 
     static int lua_engine_tag_dependency__index(lua_State *state) {
@@ -1941,8 +1985,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept {
-        lua_push_meta_object(state, dependency, lua_engine_tag_dependency__index, lua_engine_tag_dependency__newindex); 
+    void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency, bool read_only) noexcept {
+        lua_push_meta_object(state, dependency, lua_engine_tag_dependency__index, lua_engine_tag_dependency__newindex, read_only); 
     }
 
     static int lua_engine_point2_d__index(lua_State *state) noexcept {
@@ -1986,8 +2030,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point) noexcept {
-        lua_push_meta_object(state, point, lua_engine_point2_d__index, lua_engine_point2_d__newindex); 
+    void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point, bool read_only) noexcept {
+        lua_push_meta_object(state, point, lua_engine_point2_d__index, lua_engine_point2_d__newindex, read_only); 
     }
 
     static int lua_engine_point3_d__index(lua_State *state) noexcept {
@@ -2038,8 +2082,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_point3_d(lua_State *state, Engine::Point3D &point) noexcept {
-        lua_push_meta_object(state, point, lua_engine_point3_d__index, lua_engine_point3_d__newindex); 
+    void lua_push_meta_engine_point3_d(lua_State *state, Engine::Point3D &point, bool read_only) noexcept {
+        lua_push_meta_object(state, point, lua_engine_point3_d__index, lua_engine_point3_d__newindex, read_only); 
     }
 
     static int lua_engine_tag_data_offset__index(lua_State *state) noexcept {
@@ -2109,8 +2153,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset) noexcept {
-        lua_push_meta_object(state, offset, lua_engine_tag_data_offset__index, lua_engine_tag_data_offset__newindex); 
+    void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset, bool read_only) noexcept {
+        lua_push_meta_object(state, offset, lua_engine_tag_data_offset__index, lua_engine_tag_data_offset__newindex, read_only); 
     }
 
     static int lua_engine_color_a_r_g_b__index(lua_State *state) {
@@ -2168,8 +2212,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color) noexcept {
-        lua_push_meta_object(state, color, lua_engine_color_a_r_g_b__index, lua_engine_color_a_r_g_b__newindex); 
+    void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color, bool read_only) noexcept {
+        lua_push_meta_object(state, color, lua_engine_color_a_r_g_b__index, lua_engine_color_a_r_g_b__newindex, read_only); 
     }
 
     static int lua_engine_rectangle2_d__index(lua_State *state) {
@@ -2227,8 +2271,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle) noexcept {
-        lua_push_meta_object(state, rectangle, lua_engine_rectangle2_d__index, lua_engine_rectangle2_d__newindex); 
+    void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle, bool read_only) noexcept {
+        lua_push_meta_object(state, rectangle, lua_engine_rectangle2_d__index, lua_engine_rectangle2_d__newindex, read_only); 
     }
 
     static int lua_engine_rectangle2_d_f__index(lua_State *state) {
@@ -2286,8 +2330,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF &rectangle) noexcept {
-        lua_push_meta_object(state, rectangle, lua_engine_rectangle2_d_f__index, lua_engine_rectangle2_d_f__newindex); 
+    void lua_push_meta_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF &rectangle, bool read_only) noexcept {
+        lua_push_meta_object(state, rectangle, lua_engine_rectangle2_d_f__index, lua_engine_rectangle2_d_f__newindex, read_only); 
     }
 
     static int lua_engine_point2_d_int__index(lua_State *state) {
@@ -2331,8 +2375,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point) noexcept {
-        lua_push_meta_object(state, point, lua_engine_point2_d_int__index, lua_engine_point2_d_int__newindex); 
+    void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point, bool read_only) noexcept {
+        lua_push_meta_object(state, point, lua_engine_point2_d_int__index, lua_engine_point2_d_int__newindex, read_only); 
     }
 
     static int lua_engine_euler2_d__index(lua_State *state) {
@@ -2376,8 +2420,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler) noexcept {
-        lua_push_meta_object(state, euler, lua_engine_euler2_d__index, lua_engine_euler2_d__newindex); 
+    void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler, bool read_only) noexcept {
+        lua_push_meta_object(state, euler, lua_engine_euler2_d__index, lua_engine_euler2_d__newindex, read_only); 
     }
 
     static int lua_engine_euler3_d__index(lua_State *state) {
@@ -2428,8 +2472,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler) noexcept {
-        lua_push_meta_object(state, euler, lua_engine_euler3_d__index, lua_engine_euler3_d__newindex); 
+    void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler, bool read_only) noexcept {
+        lua_push_meta_object(state, euler, lua_engine_euler3_d__index, lua_engine_euler3_d__newindex, read_only); 
     }
 
     static int lua_engine_euler3_d_p_y_r__index(lua_State *state) {
@@ -2480,8 +2524,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3DPYR &euler) noexcept {
-        lua_push_meta_object(state, euler, lua_engine_euler3_d_p_y_r__index, lua_engine_euler3_d_p_y_r__newindex); 
+    void lua_push_meta_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3DPYR &euler, bool read_only) noexcept {
+        lua_push_meta_object(state, euler, lua_engine_euler3_d_p_y_r__index, lua_engine_euler3_d_p_y_r__newindex, read_only); 
     }
 
     static int lua_engine_vector2_d__index(lua_State *state) {
@@ -2525,8 +2569,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector) noexcept {
-        lua_push_meta_object(state, vector, lua_engine_vector2_d__index, lua_engine_vector2_d__newindex); 
+    void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector, bool read_only) noexcept {
+        lua_push_meta_object(state, vector, lua_engine_vector2_d__index, lua_engine_vector2_d__newindex, read_only); 
     }
 
     static int lua_engine_vector3_d__index(lua_State *state) {
@@ -2577,8 +2621,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector) noexcept {
-        lua_push_meta_object(state, vector, lua_engine_vector3_d__index, lua_engine_vector3_d__newindex); 
+    void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector, bool read_only) noexcept {
+        lua_push_meta_object(state, vector, lua_engine_vector3_d__index, lua_engine_vector3_d__newindex, read_only); 
     }
 
     static int lua_engine_color_r_g_b__index(lua_State *state) noexcept {
@@ -2629,8 +2673,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color) noexcept {
-        lua_push_meta_object(state, color, lua_engine_color_r_g_b__index, lua_engine_color_r_g_b__newindex); 
+    void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color, bool read_only) noexcept {
+        lua_push_meta_object(state, color, lua_engine_color_r_g_b__index, lua_engine_color_r_g_b__newindex, read_only); 
     }
 
     static int lua_engine_quaternion__index(lua_State *state) noexcept {
@@ -2688,8 +2732,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion) noexcept {
-        lua_push_meta_object(state, quaternion, lua_engine_quaternion__index, lua_engine_quaternion__newindex); 
+    void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion, bool read_only) noexcept {
+        lua_push_meta_object(state, quaternion, lua_engine_quaternion__index, lua_engine_quaternion__newindex, read_only); 
     }
 
     static int lua_engine_plane3_d__index(lua_State *state) noexcept {
@@ -2726,8 +2770,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane) noexcept {
-        lua_push_meta_object(state, plane, lua_engine_plane3_d__index, lua_engine_plane3_d__newindex); 
+    void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane, bool read_only) noexcept {
+        lua_push_meta_object(state, plane, lua_engine_plane3_d__index, lua_engine_plane3_d__newindex, read_only); 
     }
 
     static int lua_engine_plane2_d__index(lua_State *state) noexcept {
@@ -2764,8 +2808,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept {
-        lua_push_meta_object(state, plane, lua_engine_plane2_d__index, lua_engine_plane2_d__newindex); 
+    void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane, bool read_only) noexcept {
+        lua_push_meta_object(state, plane, lua_engine_plane2_d__index, lua_engine_plane2_d__newindex, read_only); 
     }
 
     extern std::string lua_engine_u_i_widget_type_to_string(Engine::TagDefinitions::UIWidgetType value) noexcept; 
@@ -2989,8 +3033,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_widget(lua_State *state, Engine::Widget &widget) noexcept {
-        lua_push_meta_object(state, widget, lua_engine_widget__index, lua_engine_widget__newindex); 
+    void lua_push_meta_engine_widget(lua_State *state, Engine::Widget &widget, bool read_only) noexcept {
+        lua_push_meta_object(state, widget, lua_engine_widget__index, lua_engine_widget__newindex, read_only); 
     }
 
     static int lua_engine_camera_data__index(lua_State *state) noexcept {
@@ -3046,8 +3090,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_camera_data(lua_State *state, Engine::CameraData &camera) noexcept {
-        lua_push_meta_object(state, camera, lua_engine_camera_data__index, lua_engine_camera_data__newindex); 
+    void lua_push_meta_engine_camera_data(lua_State *state, Engine::CameraData &camera, bool read_only) noexcept {
+        lua_push_meta_object(state, camera, lua_engine_camera_data__index, lua_engine_camera_data__newindex, read_only); 
     }
 
     static int lua_engine_rotation_matrix__index(lua_State *state) noexcept {
@@ -3090,8 +3134,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_rotation_matrix(lua_State *state, Engine::RotationMatrix &matrix) noexcept {
-        lua_push_meta_object(state, matrix, lua_engine_rotation_matrix__index, lua_engine_rotation_matrix__newindex); 
+    void lua_push_meta_engine_rotation_matrix(lua_State *state, Engine::RotationMatrix &matrix, bool read_only) noexcept {
+        lua_push_meta_object(state, matrix, lua_engine_rotation_matrix__index, lua_engine_rotation_matrix__newindex, read_only); 
     }
 
     static int lua_engine_model_node__index(lua_State *state) noexcept {
@@ -3145,8 +3189,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_model_node(lua_State *state, Engine::ModelNode &node) noexcept {
-        lua_push_meta_object(state, node, lua_engine_model_node__index, lua_engine_model_node__newindex); 
+    void lua_push_meta_engine_model_node(lua_State *state, Engine::ModelNode &node, bool read_only) noexcept {
+        lua_push_meta_object(state, node, lua_engine_model_node__index, lua_engine_model_node__newindex, read_only); 
     }
 
     static int lua_engine_object_flags__index(lua_State *state) noexcept {
@@ -3294,8 +3338,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object_flags(lua_State *state, Engine::BaseObjectFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_object_flags__index, lua_engine_object_flags__newindex); 
+    void lua_push_meta_engine_object_flags(lua_State *state, Engine::BaseObjectFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_object_flags__index, lua_engine_object_flags__newindex, read_only); 
     }
 
     static int lua_engine_object_network__index(lua_State *state) noexcept {
@@ -3404,8 +3448,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object_network(lua_State *state, Engine::BaseObjectNetwork &network) noexcept {
-        lua_push_meta_object(state, network, lua_engine_object_network__index, lua_engine_object_network__newindex); 
+    void lua_push_meta_engine_object_network(lua_State *state, Engine::BaseObjectNetwork &network, bool read_only) noexcept {
+        lua_push_meta_object(state, network, lua_engine_object_network__index, lua_engine_object_network__newindex, read_only); 
     }
 
     static int lua_engine_scenario_location__index(lua_State *state) noexcept {
@@ -3449,8 +3493,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_scenario_location(lua_State *state, Engine::ScenarioLocation &location) noexcept {
-        lua_push_meta_object(state, location, lua_engine_scenario_location__index, lua_engine_scenario_location__newindex); 
+    void lua_push_meta_engine_scenario_location(lua_State *state, Engine::ScenarioLocation &location, bool read_only) noexcept {
+        lua_push_meta_object(state, location, lua_engine_scenario_location__index, lua_engine_scenario_location__newindex, read_only); 
     }
 
     static int lua_engine_object_vitals_flags__index(lua_State *state) noexcept {
@@ -3544,8 +3588,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_object_vitals_flags__index, lua_engine_object_vitals_flags__newindex); 
+    void lua_push_meta_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_object_vitals_flags__index, lua_engine_object_vitals_flags__newindex, read_only); 
     }
 
     static int lua_engine_object_vitals__index(lua_State *state) noexcept {
@@ -3655,8 +3699,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_object_vitals__index, lua_engine_object_vitals__newindex); 
+    void lua_push_meta_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_object_vitals__index, lua_engine_object_vitals__newindex, read_only); 
     }
 
     static int lua_engine_object_attachments_data__index(lua_State *state) noexcept {
@@ -3736,8 +3780,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &attachments_data) noexcept {
-        lua_push_meta_object(state, attachments_data, lua_engine_object_attachments_data__index, lua_engine_object_attachments_data__newindex); 
+    void lua_push_meta_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &attachments_data, bool read_only) noexcept {
+        lua_push_meta_object(state, attachments_data, lua_engine_object_attachments_data__index, lua_engine_object_attachments_data__newindex, read_only); 
     }
 
     static int lua_engine_object_region_destroyeds__index(lua_State *state) noexcept {
@@ -3818,8 +3862,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &regions) noexcept {
-        lua_push_meta_object(state, regions, lua_engine_object_region_destroyeds__index, lua_engine_object_region_destroyeds__newindex); 
+    void lua_push_meta_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &regions, bool read_only) noexcept {
+        lua_push_meta_object(state, regions, lua_engine_object_region_destroyeds__index, lua_engine_object_region_destroyeds__newindex, read_only); 
     }
 
     static int lua_engine_object_block_reference__index(lua_State *state) noexcept {
@@ -3863,8 +3907,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &block_reference) noexcept {
-        lua_push_meta_object(state, block_reference, lua_engine_object_block_reference__index, lua_engine_object_block_reference__newindex); 
+    void lua_push_meta_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &block_reference, bool read_only) noexcept {
+        lua_push_meta_object(state, block_reference, lua_engine_object_block_reference__index, lua_engine_object_block_reference__newindex, read_only); 
     }
 
     extern std::string lua_engine_scenario_team_index_to_string(Engine::TagDefinitions::ScenarioTeamIndex value) noexcept; 
@@ -3913,7 +3957,7 @@ namespace Balltze::Plugins {
             lua_rawseti(state, -2, 2);
         }
         else if(field == "rotationVelocity") {
-            lua_push_meta_engine_euler3_d_p_y_r(state, object->rotation_velocity);
+            lua_push_meta_engine_euler3_d_p_y_r(state, object->rotation_velocity, false);
         }
         else if(field == "scenarioLocation") {
             lua_push_meta_engine_scenario_location(state, object->scenario_location);
@@ -4231,8 +4275,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_object(lua_State *state, Engine::BaseObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_object__index, lua_engine_object__newindex); 
+    void lua_push_meta_engine_object(lua_State *state, Engine::BaseObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_object__index, lua_engine_object__newindex, read_only); 
     }
 
     static int lua_engine_unit_recent_damager__index(lua_State *state) noexcept {
@@ -4288,8 +4332,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_recent_damager(lua_State *state, Engine::UnitRecentDamager &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_unit_recent_damager__index, lua_engine_unit_recent_damager__newindex); 
+    void lua_push_meta_engine_unit_recent_damager(lua_State *state, Engine::UnitRecentDamager &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_unit_recent_damager__index, lua_engine_unit_recent_damager__newindex, read_only); 
     }
 
     static int lua_engine_unit_flags__index(lua_State *state) {
@@ -4418,8 +4462,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_flags(lua_State *state, Engine::UnitFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_unit_flags__index, lua_engine_unit_flags__newindex); 
+    void lua_push_meta_engine_unit_flags(lua_State *state, Engine::UnitFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_unit_flags__index, lua_engine_unit_flags__newindex, read_only); 
     }
 
     static int lua_engine_unit_control_flags__index(lua_State *state) noexcept {
@@ -4542,8 +4586,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_control_flags(lua_State *state, Engine::UnitControlFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_unit_control_flags__index, lua_engine_unit_control_flags__newindex); 
+    void lua_push_meta_engine_unit_control_flags(lua_State *state, Engine::UnitControlFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_unit_control_flags__index, lua_engine_unit_control_flags__newindex, read_only); 
     }
 
     static int lua_engine_unit_animation_state_data__index(lua_State *state) noexcept {
@@ -4588,8 +4632,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_animation_state_data(lua_State *state, Engine::UnitAnimationStateData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_unit_animation_state_data__index, lua_engine_unit_animation_state_data__newindex); 
+    void lua_push_meta_engine_unit_animation_state_data(lua_State *state, Engine::UnitAnimationStateData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_unit_animation_state_data__index, lua_engine_unit_animation_state_data__newindex, read_only); 
     }
 
     static int lua_engine_unit_animation_flags__index(lua_State *state) noexcept {
@@ -4646,8 +4690,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_animation_flags(lua_State *state, Engine::UnitAnimationFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_unit_animation_flags__index, lua_engine_unit_animation_flags__newindex); 
+    void lua_push_meta_engine_unit_animation_flags(lua_State *state, Engine::UnitAnimationFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_unit_animation_flags__index, lua_engine_unit_animation_flags__newindex, read_only); 
     }
 
     static int lua_engine_unit_animation_data__index(lua_State *state) noexcept {
@@ -4828,8 +4872,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_animation_data(lua_State *state, Engine::UnitAnimationData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_unit_animation_data__index, lua_engine_unit_animation_data__newindex); 
+    void lua_push_meta_engine_unit_animation_data(lua_State *state, Engine::UnitAnimationData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_unit_animation_data__index, lua_engine_unit_animation_data__newindex, read_only); 
     }
 
     static int lua_engine_ai_communication_packet__index(lua_State *state) noexcept {
@@ -4883,8 +4927,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_ai_communication_packet(lua_State *state, Engine::AiCommunicationPacket &packet) noexcept {
-        lua_push_meta_object(state, packet, lua_engine_ai_communication_packet__index, lua_engine_ai_communication_packet__newindex); 
+    void lua_push_meta_engine_ai_communication_packet(lua_State *state, Engine::AiCommunicationPacket &packet, bool read_only) noexcept {
+        lua_push_meta_object(state, packet, lua_engine_ai_communication_packet__index, lua_engine_ai_communication_packet__newindex, read_only); 
     }
 
     static int lua_engine_unit_speech__index(lua_State *state) noexcept {
@@ -4968,8 +5012,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_speech(lua_State *state, Engine::UnitSpeech &speech) noexcept {
-        lua_push_meta_object(state, speech, lua_engine_unit_speech__index, lua_engine_unit_speech__newindex); 
+    void lua_push_meta_engine_unit_speech(lua_State *state, Engine::UnitSpeech &speech, bool read_only) noexcept {
+        lua_push_meta_object(state, speech, lua_engine_unit_speech__index, lua_engine_unit_speech__newindex, read_only); 
     }
 
     static int lua_engine_unit_speech_data__index(lua_State *state) noexcept {
@@ -5106,8 +5150,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_speech_data(lua_State *state, Engine::UnitSpeechData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_unit_speech_data__index, lua_engine_unit_speech_data__newindex); 
+    void lua_push_meta_engine_unit_speech_data(lua_State *state, Engine::UnitSpeechData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_unit_speech_data__index, lua_engine_unit_speech_data__newindex, read_only); 
     }
 
     static int lua_engine_unit_control_data__index(lua_State *state) noexcept {
@@ -5205,8 +5249,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_control_data(lua_State *state, Engine::UnitControlData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_unit_control_data__index, lua_engine_unit_control_data__newindex); 
+    void lua_push_meta_engine_unit_control_data(lua_State *state, Engine::UnitControlData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_unit_control_data__index, lua_engine_unit_control_data__newindex, read_only); 
     }
 
     extern std::string lua_engine_damage_effect_category_to_string(Engine::TagDefinitions::DamageEffectCategory value) noexcept; 
@@ -5431,7 +5475,7 @@ namespace Balltze::Plugins {
             lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->dialogue_definition));
         }
         else if(field == "speech") {
-            lua_push_meta_engine_unit_speech_data(state, unit->speech);
+            lua_push_meta_engine_unit_speech_data(state, unit->speech, false);
         }
         else if(field == "damageResultCategory") {
             lua_pushstring(state, lua_engine_damage_effect_category_to_string(unit->damage_result.category).c_str());
@@ -5806,8 +5850,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_unit_object(lua_State *state, Engine::UnitObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_unit_object__index, lua_engine_unit_object__newindex);
+    void lua_push_meta_engine_unit_object(lua_State *state, Engine::UnitObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_unit_object__index, lua_engine_unit_object__newindex, read_only);
     }
 
     static int lua_engine_biped_flags__index(lua_State *state) noexcept {
@@ -5876,8 +5920,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_biped_flags(lua_State *state, Engine::BipedFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_biped_flags__index, lua_engine_biped_flags__newindex);
+    void lua_push_meta_engine_biped_flags(lua_State *state, Engine::BipedFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_biped_flags__index, lua_engine_biped_flags__newindex, read_only);
     }
 
     static int lua_engine_biped_network_delta__index(lua_State *state) noexcept {
@@ -5949,8 +5993,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_biped_network_delta(lua_State *state, Engine::BipedNetworkDelta &delta) noexcept {
-        lua_push_meta_object(state, delta, lua_engine_biped_network_delta__index, lua_engine_biped_network_delta__newindex);
+    void lua_push_meta_engine_biped_network_delta(lua_State *state, Engine::BipedNetworkDelta &delta, bool read_only) noexcept {
+        lua_push_meta_object(state, delta, lua_engine_biped_network_delta__index, lua_engine_biped_network_delta__newindex, read_only);
     }
 
     static int lua_engine_biped_network__index(lua_State *state) noexcept {
@@ -6029,8 +6073,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_biped_network(lua_State *state, Engine::BipedNetwork &network) noexcept {
-        lua_push_meta_object(state, network, lua_engine_biped_network__index, lua_engine_biped_network__newindex);
+    void lua_push_meta_engine_biped_network(lua_State *state, Engine::BipedNetwork &network, bool read_only) noexcept {
+        lua_push_meta_object(state, network, lua_engine_biped_network__index, lua_engine_biped_network__newindex, read_only);
     }
 
     static int lua_engine_biped_object__index(lua_State *state) noexcept {
@@ -6200,8 +6244,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_biped_object(lua_State *state, Engine::BipedObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_biped_object__index, lua_engine_biped_object__newindex);
+    void lua_push_meta_engine_biped_object(lua_State *state, Engine::BipedObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_biped_object__index, lua_engine_biped_object__newindex, read_only);
     }
 
     static int lua_engine_vehicle_flags__index(lua_State *state) noexcept {
@@ -6270,8 +6314,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_vehicle_flags(lua_State *state, Engine::VehicleFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_vehicle_flags__index, lua_engine_vehicle_flags__newindex);
+    void lua_push_meta_engine_vehicle_flags(lua_State *state, Engine::VehicleFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_vehicle_flags__index, lua_engine_vehicle_flags__newindex, read_only);
     }
 
     static int lua_engine_vehicle_network_data__index(lua_State *state) noexcept {
@@ -6345,8 +6389,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_vehicle_network_data(lua_State *state, Engine::VehicleNetworkData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_vehicle_network_data__index, lua_engine_vehicle_network_data__newindex);
+    void lua_push_meta_engine_vehicle_network_data(lua_State *state, Engine::VehicleNetworkData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_vehicle_network_data__index, lua_engine_vehicle_network_data__newindex, read_only);
     }
 
     static int lua_engine_vehicle_network__index(lua_State *state) noexcept {
@@ -6454,8 +6498,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_vehicle_network(lua_State *state, Engine::VehicleNetwork &network) noexcept {
-        lua_push_meta_object(state, network, lua_engine_vehicle_network__index, lua_engine_vehicle_network__newindex);
+    void lua_push_meta_engine_vehicle_network(lua_State *state, Engine::VehicleNetwork &network, bool read_only) noexcept {
+        lua_push_meta_object(state, network, lua_engine_vehicle_network__index, lua_engine_vehicle_network__newindex, read_only);
     }
 
     static int lua_engine_vehicle_object__index(lua_State *state) noexcept {
@@ -6588,8 +6632,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_vehicle_object(lua_State *state, Engine::VehicleObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_vehicle_object__index, lua_engine_vehicle_object__newindex);
+    void lua_push_meta_engine_vehicle_object(lua_State *state, Engine::VehicleObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_vehicle_object__index, lua_engine_vehicle_object__newindex, read_only);
     }
 
     static int lua_engine_item_object__index(lua_State *state) noexcept {
@@ -6682,8 +6726,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_item_object(lua_State *state, Engine::ItemObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_item_object__index, lua_engine_item_object__newindex);
+    void lua_push_meta_engine_item_object(lua_State *state, Engine::ItemObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_item_object__index, lua_engine_item_object__newindex, read_only);
     }
 
     static int lua_engine_garbage_object__index(lua_State *state) noexcept {
@@ -6722,8 +6766,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_garbage_object(lua_State *state, Engine::GarbageObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_garbage_object__index, lua_engine_garbage_object__newindex);
+    void lua_push_meta_engine_garbage_object(lua_State *state, Engine::GarbageObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_garbage_object__index, lua_engine_garbage_object__newindex, read_only);
     }
 
     static int lua_engine_weapon_trigger__index(lua_State *state) noexcept {
@@ -6828,8 +6872,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_weapon_trigger(lua_State *state, Engine::WeaponTrigger &trigger) noexcept {
-        lua_push_meta_object(state, trigger, lua_engine_weapon_trigger__index, lua_engine_weapon_trigger__newindex);
+    void lua_push_meta_engine_weapon_trigger(lua_State *state, Engine::WeaponTrigger &trigger, bool read_only) noexcept {
+        lua_push_meta_object(state, trigger, lua_engine_weapon_trigger__index, lua_engine_weapon_trigger__newindex, read_only);
     }
 
     static int lua_engine_weapon_magazine__index(lua_State *state) noexcept {
@@ -6910,8 +6954,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_weapon_magazine(lua_State *state, Engine::WeaponMagazine &magazine) noexcept {
-        lua_push_meta_object(state, magazine, lua_engine_weapon_magazine__index, lua_engine_weapon_magazine__newindex);
+    void lua_push_meta_engine_weapon_magazine(lua_State *state, Engine::WeaponMagazine &magazine, bool read_only) noexcept {
+        lua_push_meta_object(state, magazine, lua_engine_weapon_magazine__index, lua_engine_weapon_magazine__newindex, read_only);
     }
 
     static int lua_engine_weapon_reload_start_data__index(lua_State *state) noexcept {
@@ -6976,8 +7020,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_weapon_reload_start_data(lua_State *state, Engine::WeaponReloadStartData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_weapon_reload_start_data__index, lua_engine_weapon_reload_start_data__newindex);
+    void lua_push_meta_engine_weapon_reload_start_data(lua_State *state, Engine::WeaponReloadStartData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_weapon_reload_start_data__index, lua_engine_weapon_reload_start_data__newindex, read_only);
     }
 
     static int lua_engine_weapon_network_data__index(lua_State *state) noexcept {
@@ -7050,8 +7094,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_weapon_network_data(lua_State *state, Engine::WeaponNetworkData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_weapon_network_data__index, lua_engine_weapon_network_data__newindex);
+    void lua_push_meta_engine_weapon_network_data(lua_State *state, Engine::WeaponNetworkData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_weapon_network_data__index, lua_engine_weapon_network_data__newindex, read_only);
     }
 
     static int lua_engine_weapon_network__index(lua_State *state) noexcept {
@@ -7130,8 +7174,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_weapon_network(lua_State *state, Engine::WeaponNetwork &network) noexcept {
-        lua_push_meta_object(state, network, lua_engine_weapon_network__index, lua_engine_weapon_network__newindex);
+    void lua_push_meta_engine_weapon_network(lua_State *state, Engine::WeaponNetwork &network, bool read_only) noexcept {
+        lua_push_meta_object(state, network, lua_engine_weapon_network__index, lua_engine_weapon_network__newindex, read_only);
     }
 
     static int lua_engine_weapon_object__index(lua_State *state) noexcept {
@@ -7268,8 +7312,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_weapon_object(lua_State *state, Engine::WeaponObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_weapon_object__index, lua_engine_weapon_object__newindex);
+    void lua_push_meta_engine_weapon_object(lua_State *state, Engine::WeaponObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_weapon_object__index, lua_engine_weapon_object__newindex, read_only);
     }
 
     static int lua_engine_equipment_network_data__index(lua_State *state) noexcept {
@@ -7320,8 +7364,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_equipment_network_data(lua_State *state, Engine::EquipmentNetworkData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_equipment_network_data__index, lua_engine_equipment_network_data__newindex);
+    void lua_push_meta_engine_equipment_network_data(lua_State *state, Engine::EquipmentNetworkData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_equipment_network_data__index, lua_engine_equipment_network_data__newindex, read_only);
     }
 
     static int lua_engine_equipment_network__index(lua_State *state) noexcept {
@@ -7400,8 +7444,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_equipment_network(lua_State *state, Engine::EquipmentNetwork &network) noexcept {
-        lua_push_meta_object(state, network, lua_engine_equipment_network__index, lua_engine_equipment_network__newindex);
+    void lua_push_meta_engine_equipment_network(lua_State *state, Engine::EquipmentNetwork &network, bool read_only) noexcept {
+        lua_push_meta_object(state, network, lua_engine_equipment_network__index, lua_engine_equipment_network__newindex, read_only);
     }
 
     static int lua_engine_equipment_object__index(lua_State *state) noexcept {
@@ -7440,8 +7484,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_equipment_object(lua_State *state, Engine::EquipmentObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_equipment_object__index, lua_engine_equipment_object__newindex);
+    void lua_push_meta_engine_equipment_object(lua_State *state, Engine::EquipmentObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_equipment_object__index, lua_engine_equipment_object__newindex, read_only);
     }
 
     static int lua_engine_projectile_object_flags__index(lua_State *state) noexcept {
@@ -7492,8 +7536,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_projectile_object_flags(lua_State *state, Engine::ProjectileObjectFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_projectile_object_flags__index, lua_engine_projectile_object_flags__newindex);
+    void lua_push_meta_engine_projectile_object_flags(lua_State *state, Engine::ProjectileObjectFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_projectile_object_flags__index, lua_engine_projectile_object_flags__newindex, read_only);
     }
 
     static int lua_engine_projectile_network_data__index(lua_State *state) noexcept {
@@ -7538,8 +7582,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_projectile_network_data(lua_State *state, Engine::ProjectileNetworkData &data) noexcept {
-        lua_push_meta_object(state, data, lua_engine_projectile_network_data__index, lua_engine_projectile_network_data__newindex);
+    void lua_push_meta_engine_projectile_network_data(lua_State *state, Engine::ProjectileNetworkData &data, bool read_only) noexcept {
+        lua_push_meta_object(state, data, lua_engine_projectile_network_data__index, lua_engine_projectile_network_data__newindex, read_only);
     }
 
     static int lua_engine_projectile_network__index(lua_State *state) noexcept {
@@ -7629,8 +7673,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_projectile_network(lua_State *state, Engine::ProjectileNetwork &network) noexcept {
-        lua_push_meta_object(state, network, lua_engine_projectile_network__index, lua_engine_projectile_network__newindex);
+    void lua_push_meta_engine_projectile_network(lua_State *state, Engine::ProjectileNetwork &network, bool read_only) noexcept {
+        lua_push_meta_object(state, network, lua_engine_projectile_network__index, lua_engine_projectile_network__newindex, read_only);
     }
 
     static int lua_engine_projectile_object__index(lua_State *state) noexcept {
@@ -7759,8 +7803,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_projectile_object(lua_State *state, Engine::ProjectileObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_projectile_object__index, lua_engine_projectile_object__newindex);
+    void lua_push_meta_engine_projectile_object(lua_State *state, Engine::ProjectileObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_projectile_object__index, lua_engine_projectile_object__newindex, read_only);
     }
 
     static int lua_engine_device_object_state__index(lua_State *state) noexcept {
@@ -7811,8 +7855,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_device_object_state(lua_State *state, Engine::DeviceObjectState &state_data) noexcept {
-        lua_push_meta_object(state, state_data, lua_engine_device_object_state__index, lua_engine_device_object_state__newindex);
+    void lua_push_meta_engine_device_object_state(lua_State *state, Engine::DeviceObjectState &state_data, bool read_only) noexcept {
+        lua_push_meta_object(state, state_data, lua_engine_device_object_state__index, lua_engine_device_object_state__newindex, read_only);
     }
 
     static int lua_engine_device_object__index(lua_State *state) noexcept {
@@ -7901,8 +7945,8 @@ namespace Balltze::Plugins {
         return 0;        
     }
 
-    void lua_push_meta_engine_device_object(lua_State *state, Engine::DeviceObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_device_object__index, lua_engine_device_object__newindex);
+    void lua_push_meta_engine_device_object(lua_State *state, Engine::DeviceObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_device_object__index, lua_engine_device_object__newindex, read_only);
     }
 
     static int lua_engine_device_machine_object_flags__index(lua_State *state) noexcept {
@@ -7959,8 +8003,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_device_machine_object_flags(lua_State *state, Engine::DeviceMachineObjectFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_device_machine_object_flags__index, lua_engine_device_machine_object_flags__newindex);
+    void lua_push_meta_engine_device_machine_object_flags(lua_State *state, Engine::DeviceMachineObjectFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_device_machine_object_flags__index, lua_engine_device_machine_object_flags__newindex, read_only);
     }
 
     static int lua_engine_device_machine_object__index(lua_State *state) noexcept {
@@ -8011,8 +8055,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_device_machine_object(lua_State *state, Engine::DeviceMachineObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_device_machine_object__index, lua_engine_device_machine_object__newindex);
+    void lua_push_meta_engine_device_machine_object(lua_State *state, Engine::DeviceMachineObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_device_machine_object__index, lua_engine_device_machine_object__newindex, read_only);
     }
 
     static int lua_engine_device_control_object_flags__index(lua_State *state) noexcept {
@@ -8051,8 +8095,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_device_control_object_flags(lua_State *state, Engine::DeviceControlObjectFlags &flags) noexcept {
-        lua_push_meta_object(state, flags, lua_engine_device_control_object_flags__index, lua_engine_device_control_object_flags__newindex);
+    void lua_push_meta_engine_device_control_object_flags(lua_State *state, Engine::DeviceControlObjectFlags &flags, bool read_only) noexcept {
+        lua_push_meta_object(state, flags, lua_engine_device_control_object_flags__index, lua_engine_device_control_object_flags__newindex, read_only);
     }
 
     static int lua_engine_device_control_object__index(lua_State *state) noexcept {
@@ -8097,8 +8141,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_device_control_object(lua_State *state, Engine::DeviceControlObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_device_control_object__index, lua_engine_device_control_object__newindex);
+    void lua_push_meta_engine_device_control_object(lua_State *state, Engine::DeviceControlObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_device_control_object__index, lua_engine_device_control_object__newindex, read_only);
     }
 
     static int lua_engine_device_light_fixture_object__index(lua_State *state) noexcept {
@@ -8155,8 +8199,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_device_light_fixture_object(lua_State *state, Engine::DeviceLightFixtureObject &object) noexcept {
-        lua_push_meta_object(state, object, lua_engine_device_light_fixture_object__index, lua_engine_device_light_fixture_object__newindex);
+    void lua_push_meta_engine_device_light_fixture_object(lua_State *state, Engine::DeviceLightFixtureObject &object, bool read_only) noexcept {
+        lua_push_meta_object(state, object, lua_engine_device_light_fixture_object__index, lua_engine_device_light_fixture_object__newindex, read_only);
     }
 
     static int lua_engine_player_multiplayer_statistics__index(lua_State *state) {
@@ -8249,8 +8293,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_player_multiplayer_statistics(lua_State *state, Engine::PlayerMultiplayerStatistics &stats) noexcept {
-        lua_push_meta_object(state, stats, lua_engine_player_multiplayer_statistics__index, lua_engine_player_multiplayer_statistics__newindex);
+    void lua_push_meta_engine_player_multiplayer_statistics(lua_State *state, Engine::PlayerMultiplayerStatistics &stats, bool read_only) noexcept {
+        lua_push_meta_object(state, stats, lua_engine_player_multiplayer_statistics__index, lua_engine_player_multiplayer_statistics__newindex, read_only);
     }
 
     static int lua_engine_player__index(lua_State *state) noexcept {
@@ -8743,8 +8787,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_engine_player(lua_State *state, Engine::Player &player) noexcept {
-        lua_push_meta_object(state, player, lua_engine_player__index, lua_engine_player__newindex);
+    void lua_push_meta_engine_player(lua_State *state, Engine::Player &player, bool read_only) noexcept {
+        lua_push_meta_object(state, player, lua_engine_player__index, lua_engine_player__newindex, read_only);
     }
 
     static int lua_event_widget_render_vertex__index(lua_State *state) noexcept {
@@ -8813,8 +8857,8 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::UIWidgetRenderVertices::Vertex &vertex) noexcept {
-        lua_push_meta_object(state, vertex, lua_event_widget_render_vertex__index, lua_event_widget_render_vertex__newindex);
+    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::UIWidgetRenderVertices::Vertex &vertex, bool read_only) noexcept {
+        lua_push_meta_object(state, vertex, lua_event_widget_render_vertex__index, lua_event_widget_render_vertex__newindex, read_only);
     }
     
     static int lua_event_widget_render_vertices__index(lua_State *state) noexcept {
@@ -8871,7 +8915,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::UIWidgetRenderVertices &vertices) noexcept {
-        lua_push_meta_object(state, vertices, lua_event_widget_render_vertices__index, lua_event_widget_render_vertices__newindex);
+    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::UIWidgetRenderVertices &vertices, bool read_only) noexcept {
+        lua_push_meta_object(state, vertices, lua_event_widget_render_vertices__index, lua_event_widget_render_vertices__newindex, read_only);
     }
 }

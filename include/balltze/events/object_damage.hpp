@@ -9,11 +9,11 @@
 
 namespace Balltze::Event {
     struct ObjectDamageEventArgs {
-        Engine::ObjectHandle object;
-        Engine::TagHandle damage_effect;
-        float multiplier;
-        Engine::PlayerHandle causer_player;
-        Engine::ObjectHandle causer_object;
+        const Engine::ObjectHandle object;
+        const Engine::TagHandle damage_effect;
+        const float multiplier;
+        const Engine::PlayerHandle causer_player;
+        const Engine::ObjectHandle causer_object;
 
         ObjectDamageEventArgs(Engine::ObjectHandle object, Engine::TagHandle damage_effect, float multiplier, Engine::PlayerHandle causer_player, Engine::ObjectHandle causer_object) : object(object), damage_effect(damage_effect), multiplier(multiplier), causer_player(causer_player), causer_object(causer_object) {}
     };

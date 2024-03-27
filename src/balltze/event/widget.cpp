@@ -10,37 +10,37 @@
 
 namespace Balltze::Event {
     extern "C" {
-        void widget_open_event_before_asm();
-        void widget_open_event_after_asm();
+        void widget_create_event_before_asm();
+        void widget_create_event_after_asm();
         void *widget_create_function_override_return;
 
-        bool dispatch_widget_open_before_event(Engine::TagHandle definition, const char *definition_path, bool is_root_widget, Engine::Widget *parent) {
+        bool dispatch_widget_create_before_event(Engine::TagHandle definition, const char *definition_path, bool is_root_widget, Engine::Widget *parent) {
             if(definition_path) {
                 auto widget_definition = Engine::get_tag(definition_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                 definition = widget_definition->handle;
             }
-            UIWidgetOpenEventArguments args{nullptr, definition, is_root_widget, parent};
-            UIWidgetOpenEvent widget_open_event_before(EVENT_TIME_BEFORE, args);
-            widget_open_event_before.dispatch();
+            UIWidgetCreateEventArgs args{nullptr, definition, is_root_widget, parent};
+            UIWidgetCreateEvent widget_create_event_before(EVENT_TIME_BEFORE, args);
+            widget_create_event_before.dispatch();
             if(is_root_widget) {
-                return widget_open_event_before.cancelled();
+                return widget_create_event_before.cancelled();
             }
             return false;
         }
 
-        void dispatch_widget_open_after_event(Engine::Widget *widget, bool is_root_widget, Engine::Widget *parent) {
+        void dispatch_widget_create_after_event(Engine::Widget *widget, bool is_root_widget, Engine::Widget *parent) {
             if(!widget) {
-                logger.debug("dispatch_widget_open_after_event: widget is null");
+                logger.debug("dispatch_widget_create_after_event: widget is null");
                 return;
             }
-            UIWidgetOpenEventArguments args{widget, widget->definition_tag_handle, is_root_widget, parent};
-            UIWidgetOpenEvent widget_open_event_after(EVENT_TIME_AFTER, args);
-            widget_open_event_after.dispatch();
+            UIWidgetCreateEventArgs args{widget, widget->definition_tag_handle, is_root_widget, parent};
+            UIWidgetCreateEvent widget_create_event_after(EVENT_TIME_AFTER, args);
+            widget_create_event_after.dispatch();
         }
     }
 
-    static bool debug_widget_open_event(int arg_count, const char **args) {
-        static std::optional<Event::EventListenerHandle<UIWidgetOpenEvent>> handle;
+    static bool debug_widget_create_event(int arg_count, const char **args) {
+        static std::optional<Event::EventListenerHandle<UIWidgetCreateEvent>> handle;
         if(arg_count == 1) {
             bool new_setting = STR_TO_BOOL(args[0]);
             if(new_setting) {
@@ -48,11 +48,11 @@ namespace Balltze::Event {
                     handle->remove();
                     handle = std::nullopt;
                 }
-                handle = Event::UIWidgetOpenEvent::subscribe_const([](UIWidgetOpenEvent const &event) {
+                handle = Event::UIWidgetCreateEvent::subscribe_const([](UIWidgetCreateEvent const &event) {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
                     auto *tag = Engine::get_tag(arguments.definition_tag_handle);
-                    logger.debug("Widget open event ({}): widget: {}. is root: {}", time, tag->path, arguments.is_root_widget);
+                    logger.debug("Widget create event ({}): widget: {}. is root: {}", time, tag->path, arguments.is_root_widget);
                 });
             }
             else {
@@ -62,20 +62,20 @@ namespace Balltze::Event {
                 }
             }
         }
-        logger.info("debug_widget_open_event: {}", handle.has_value());
+        logger.info("debug_widget_create_event: {}", handle.has_value());
         return true;
     }
 
-    void UIWidgetOpenEvent::cancel() {
+    void UIWidgetCreateEvent::cancel() {
         if(!args.is_root_widget) {
-            logger.warning("UIWidgetOpenEvent::cancel: cannot cancel non-root widget open event");
+            logger.warning("UIWidgetCreateEvent::cancel: cannot cancel non-root widget create event");
             return;
         }
-        EventData<UIWidgetOpenEvent>::cancel();
+        EventData<UIWidgetCreateEvent>::cancel();
     }
 
     template<>
-    void EventHandler<UIWidgetOpenEvent>::init() {
+    void EventHandler<UIWidgetCreateEvent>::init() {
         static bool enabled = false;
         if(enabled) {
             return;
@@ -93,15 +93,15 @@ namespace Balltze::Event {
         }
 
         try {
-            Memory::override_function(widget_create_function_sig->data(), widget_open_event_before_asm, widget_create_function_override_return);
-            Memory::hook_function(widget_create_function_return_sig->data(), std::nullopt, widget_open_event_after_asm, false);
+            Memory::override_function(widget_create_function_sig->data(), widget_create_event_before_asm, widget_create_function_override_return);
+            Memory::hook_function(widget_create_function_return_sig->data(), std::nullopt, widget_create_event_after_asm, false);
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget open event: " + std::string(e.what()));
         }
 
         // Register debug command
-        register_command("debug_widget_open_event", "debug", "Sets whenever to log widget open event.", "[enable: boolean]", debug_widget_open_event, true, 0, 1);
+        register_command("debug_widget_create_event", "debug", "Sets whenever to log widget open event.", "[enable: boolean]", debug_widget_create_event, true, 0, 1);
     }
 
     extern "C" {
@@ -109,14 +109,14 @@ namespace Balltze::Event {
         void *widget_back_function_override_return;
 
         bool dispatch_widget_back_before_event(Engine::Widget *widget) {
-            UIWidgetEventArguments args{widget};
+            UIWidgetEventArgs args{widget};
             UIWidgetBackEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_back_after_event(Engine::Widget *widget) {
-            UIWidgetEventArguments args{widget};
+            UIWidgetEventArgs args{widget};
             UIWidgetBackEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -184,14 +184,14 @@ namespace Balltze::Event {
         void *widget_focus_function_override_return;
 
         bool dispatch_widget_focus_before_event(Engine::Widget *widget) {
-            UIWidgetEventArguments args{widget};
+            UIWidgetEventArgs args{widget};
             UIWidgetFocusEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_focus_after_event(Engine::Widget *widget) {
-            UIWidgetEventArguments args{widget};
+            UIWidgetEventArgs args{widget};
             UIWidgetFocusEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -259,14 +259,14 @@ namespace Balltze::Event {
         void widget_accept_event_asm();
 
         bool dispatch_widget_accept_before_event(Engine::Widget *widget) {
-            UIWidgetEventArguments args{widget};
+            UIWidgetEventArgs args{widget};
             UIWidgetAcceptEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_accept_after_event(Engine::Widget *widget) {
-            UIWidgetEventArguments args{widget};
+            UIWidgetEventArgs args{widget};
             UIWidgetAcceptEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -332,14 +332,14 @@ namespace Balltze::Event {
         void *widget_sound_function_override_return;
 
         bool dispatch_widget_sound_before_event(Engine::WidgetNavigationSound sound) {
-            UIWidgetSoundEventArguments args{sound};
+            UIWidgetSoundEventArgs args{sound};
             UIWidgetSoundEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_sound_after_event(Engine::WidgetNavigationSound sound) {
-            UIWidgetSoundEventArguments args{sound};
+            UIWidgetSoundEventArgs args{sound};
             UIWidgetSoundEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -416,14 +416,14 @@ namespace Balltze::Event {
         void widget_tab_children_previous_event_after_asm();
 
         bool dispatch_widget_list_tab_before_event(Engine::Widget *widget_list, UIWidgetListTabType tab_type) {
-            UIWidgetListTabEventArguments args{widget_list, tab_type};
+            UIWidgetListTabEventArgs args{widget_list, tab_type};
             UIWidgetListTabEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_list_tab_after_event(Engine::Widget *widget_list, UIWidgetListTabType tab_type) {
-            UIWidgetListTabEventArguments args{widget_list, tab_type};
+            UIWidgetListTabEventArgs args{widget_list, tab_type};
             UIWidgetListTabEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }

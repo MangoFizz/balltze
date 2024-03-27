@@ -4,8 +4,8 @@
 
 .text
 
-.globl _widget_open_event_before_asm
-_widget_open_event_before_asm:
+.globl _widget_create_event_before_asm
+_widget_create_event_before_asm:
     push ebp
     mov ebp, esp
     add ebp, 4
@@ -20,19 +20,19 @@ _widget_open_event_before_asm:
 
     ;# Check if we are on the root widget
     test eax, eax
-    jz widget_open_event_before_is_root_widget
+    jz widget_create_event_before_is_root_widget
     push 0
     mov eax, 0
-    jmp widget_open_event_before_call_events
-    widget_open_event_before_is_root_widget:
+    jmp widget_create_event_before_call_events
+    widget_create_event_before_is_root_widget:
     push eax
     mov eax, 1
 
-    widget_open_event_before_call_events:
+    widget_create_event_before_call_events:
     push eax
     push dword ptr [ebp + 0x4] ;# definition tag path
     push dword ptr [ebp + 0x8] ;# definition tag handle
-    call _dispatch_widget_open_before_event
+    call _dispatch_widget_create_before_event
     add esp, 0x10
 
     popfd
@@ -40,22 +40,22 @@ _widget_open_event_before_asm:
     popad
     pop eax
     pop ebp
-    jnz widget_open_event_before_exit
+    jnz widget_create_event_before_exit
 
     jmp dword ptr _widget_create_function_override_return
 
-    widget_open_event_before_exit:
+    widget_create_event_before_exit:
     mov eax, 0
     ret
 
-.globl _widget_open_event_after_asm
-_widget_open_event_after_asm:
+.globl _widget_create_event_after_asm
+_widget_create_event_after_asm:
     pushad
     pushfd
 
     ;# Check if the widget was created
     test eax, eax
-    jz widget_open_event_after_exit
+    jz widget_create_event_after_exit
     push eax ;# save this for later
     
     push ebp
@@ -68,25 +68,25 @@ _widget_open_event_after_asm:
     
     ;# Check if we are on the root widget
     test edx, edx
-    jz widget_open_event_after_is_root_widget
+    jz widget_create_event_after_is_root_widget
     push 0
     mov edx, 0
-    jmp widget_open_event_after_call_events
-    widget_open_event_after_is_root_widget:
+    jmp widget_create_event_after_call_events
+    widget_create_event_after_is_root_widget:
     push edx
     mov edx, 1
 
-    widget_open_event_after_call_events:
+    widget_create_event_after_call_events:
     push edx
     push eax ;# created widget
-    call _dispatch_widget_open_after_event
+    call _dispatch_widget_create_after_event
     add esp, 0xC
 
     pop edx
     pop ebp 
     pop eax
 
-    widget_open_event_after_exit:
+    widget_create_event_after_exit:
     popfd
     popad
     ret

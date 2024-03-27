@@ -54,9 +54,15 @@ namespace Balltze::Plugins {
     Engine::Point3D lua_to_point3_d(lua_State *state, int index);
     Engine::ColorARGBInt lua_to_color_a_r_g_b_int(lua_State *state, int index);
 
+    std::string input_device_to_string(Engine::InputDevice device);
+    Engine::InputDevice input_device_from_string(const std::string &device);
+
     void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept;
 
-    void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept;
+    void lua_push_engine_resource_handle(lua_State *state, const Engine::ResourceHandle &handle) noexcept;
+    void lua_push_engine_object_handle(lua_State *state, const Engine::ObjectHandle &handle) noexcept;
+    void lua_push_engine_tag_handle(lua_State *state, const Engine::TagHandle &handle) noexcept;
+    void lua_push_engine_player_handle(lua_State *state, const Engine::PlayerHandle &handle) noexcept;
 
     std::string unit_throwing_grenade_state_to_string(Engine::UnitThrowingGrenadeState state);
     std::string unit_animation_state_to_string(Engine::UnitAnimationState state);
@@ -86,91 +92,93 @@ namespace Balltze::Plugins {
     Engine::NetworkPlayerColor network_color_from_string(const std::string &color);
     Engine::PlayerObjectiveMode player_objective_mode_from_string(const std::string &mode);
 
-    void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
-    void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept;
-    void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point) noexcept;
-    void lua_push_meta_engine_point3_d(lua_State *state, Engine::Point3D &point) noexcept;
-    void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset) noexcept;
-    void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color) noexcept;
-    void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle) noexcept;
-    void lua_push_meta_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF &rectangle) noexcept;
-    void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point) noexcept;
-    void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler) noexcept;
-    void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler) noexcept;
-    void lua_push_meta_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3D &euler) noexcept;
-    void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector) noexcept;
-    void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector) noexcept;
-    void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color) noexcept;
-    void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion) noexcept;
-    void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane) noexcept;
-    void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept;
-    void lua_push_meta_engine_widget(lua_State *state, Engine::Widget &widget) noexcept;
-    void lua_push_meta_engine_camera_data(lua_State *state, Engine::CameraData &data) noexcept;
-    void lua_push_meta_engine_rotation_matrix(lua_State *state, Engine::RotationMatrix &matrix) noexcept;
-    void lua_push_meta_engine_model_node(lua_State *state, Engine::ModelNode &node) noexcept;
+    void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color, bool read_only = false) noexcept;
+    void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency, bool read_only = false) noexcept;
+    void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point, bool read_only = false) noexcept;
+    void lua_push_meta_engine_point3_d(lua_State *state, Engine::Point3D &point, bool read_only = false) noexcept;
+    void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset, bool read_only = false) noexcept;
+    void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color, bool read_only = false) noexcept;
+    void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle, bool read_only = false) noexcept;
+    void lua_push_meta_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF &rectangle, bool read_only = false) noexcept;
+    void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point, bool read_only = false) noexcept;
+    void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler, bool read_only = false) noexcept;
+    void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler, bool read_only = false) noexcept;
+    void lua_push_meta_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3D &euler, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector, bool read_only = false) noexcept;
+    void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color, bool read_only = false) noexcept;
+    void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion, bool read_only = false) noexcept;
+    void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane, bool read_only = false) noexcept;
+    void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane, bool read_only = false) noexcept;
+    void lua_push_meta_engine_widget(lua_State *state, Engine::Widget &widget, bool read_only = false) noexcept;
+    void lua_push_meta_engine_camera_data(lua_State *state, Engine::CameraData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_rotation_matrix(lua_State *state, Engine::RotationMatrix &matrix, bool read_only = false) noexcept;
+    void lua_push_meta_engine_model_node(lua_State *state, Engine::ModelNode &node, bool read_only = false) noexcept;
     
-    void lua_push_meta_engine_object_flags(lua_State *state, Engine::BaseObjectFlags &flags) noexcept;
-    void lua_push_meta_engine_object_network(lua_State *state, Engine::BaseObjectNetwork &network) noexcept;
-    void lua_push_meta_engine_scenario_location(lua_State *state, Engine::ScenarioLocation &location) noexcept;
-    void lua_push_meta_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags) noexcept;
-    void lua_push_meta_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags) noexcept;
-    void lua_push_meta_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &data) noexcept;
-    void lua_push_meta_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &destroyeds) noexcept;
-    void lua_push_meta_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &reference) noexcept;
-    void lua_push_meta_engine_object(lua_State *state, Engine::BaseObject &object) noexcept;
+    void lua_push_meta_engine_object_flags(lua_State *state, Engine::BaseObjectFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_object_network(lua_State *state, Engine::BaseObjectNetwork &network, bool read_only = false) noexcept;
+    void lua_push_meta_engine_scenario_location(lua_State *state, Engine::ScenarioLocation &location, bool read_only = false) noexcept;
+    void lua_push_meta_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds &destroyeds, bool read_only = false) noexcept;
+    void lua_push_meta_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference &reference, bool read_only = false) noexcept;
+    void lua_push_meta_engine_object(lua_State *state, Engine::BaseObject &object, bool read_only = false) noexcept;
 
-    void lua_push_meta_engine_unit_recent_damager(lua_State *state, Engine::UnitRecentDamager &damager) noexcept;
-    void lua_push_meta_engine_unit_flags(lua_State *state, Engine::UnitFlags &flags) noexcept;
-    void lua_push_meta_engine_unit_control_flags(lua_State *state, Engine::UnitControlFlags &flags) noexcept;
-    void lua_push_meta_engine_unit_animation_state_data(lua_State *state, Engine::UnitAnimationStateData &data) noexcept;
-    void lua_push_meta_engine_unit_animation_flags(lua_State *state, Engine::UnitAnimationFlags &data) noexcept;
-    void lua_push_meta_engine_unit_animation_data(lua_State *state, Engine::UnitAnimationData &data) noexcept;
-    void lua_push_meta_engine_ai_communication_packet(lua_State *state, Engine::AiCommunicationPacket &packet) noexcept;
-    void lua_push_meta_engine_unit_speech(lua_State *state, Engine::UnitSpeech &speech) noexcept;
-    void lua_push_meta_engine_unit_speech_data(lua_State *state, Engine::UnitSpeech &speech) noexcept;
-    void lua_push_meta_engine_unit_control_data(lua_State *state, Engine::UnitControlData &data) noexcept;
-    void lua_push_meta_engine_unit_object(lua_State *state, Engine::UnitObject &object) noexcept;
-    void lua_push_meta_engine_biped_flags(lua_State *state, Engine::BipedFlags &flags) noexcept;
-    void lua_push_meta_engine_biped_network_delta(lua_State *state, Engine::BipedNetworkDelta &delta) noexcept;
-    void lua_push_meta_engine_biped_network(lua_State *state, Engine::BipedNetwork &network) noexcept;
-    void lua_push_meta_engine_biped_object(lua_State *state, Engine::BipedObject &object) noexcept;
-    void lua_push_meta_engine_vehicle_flags(lua_State *state, Engine::VehicleFlags &flags) noexcept;
-    void lua_push_meta_engine_vehicle_network_data(lua_State *state, Engine::VehicleNetworkData &data) noexcept;
-    void lua_push_meta_engine_vehicle_network(lua_State *state, Engine::VehicleNetwork &network) noexcept;
-    void lua_push_meta_engine_vehicle_object(lua_State *state, Engine::VehicleObject &object) noexcept;
+    void lua_push_meta_engine_unit_recent_damager(lua_State *state, Engine::UnitRecentDamager &damager, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_flags(lua_State *state, Engine::UnitFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_control_flags(lua_State *state, Engine::UnitControlFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_animation_state_data(lua_State *state, Engine::UnitAnimationStateData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_animation_flags(lua_State *state, Engine::UnitAnimationFlags &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_animation_data(lua_State *state, Engine::UnitAnimationData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_ai_communication_packet(lua_State *state, Engine::AiCommunicationPacket &packet, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_speech(lua_State *state, Engine::UnitSpeech &speech, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_speech_data(lua_State *state, Engine::UnitSpeech &speech, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_control_data(lua_State *state, Engine::UnitControlData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_unit_object(lua_State *state, Engine::UnitObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_biped_flags(lua_State *state, Engine::BipedFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_biped_network_delta(lua_State *state, Engine::BipedNetworkDelta &delta, bool read_only = false) noexcept;
+    void lua_push_meta_engine_biped_network(lua_State *state, Engine::BipedNetwork &network, bool read_only = false) noexcept;
+    void lua_push_meta_engine_biped_object(lua_State *state, Engine::BipedObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vehicle_flags(lua_State *state, Engine::VehicleFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vehicle_network_data(lua_State *state, Engine::VehicleNetworkData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vehicle_network(lua_State *state, Engine::VehicleNetwork &network, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vehicle_object(lua_State *state, Engine::VehicleObject &object, bool read_only = false) noexcept;
 
-    void lua_push_meta_engine_item_object(lua_State *state, Engine::ItemObject &object) noexcept;
-    void lua_push_meta_engine_garbage_object(lua_State *state, Engine::GarbageObject &object) noexcept;
-    void lua_push_meta_engine_weapon_trigger(lua_State *state, Engine::WeaponTrigger &trigger) noexcept;
-    void lua_push_meta_engine_weapon_magazine(lua_State *state, Engine::WeaponMagazine &magazine) noexcept;
-    void lua_push_meta_engine_weapon_reload_start_data(lua_State *state, Engine::WeaponReloadStartData &data) noexcept;
-    void lua_push_meta_engine_weapon_network_data(lua_State *state, Engine::WeaponNetworkData &data) noexcept;
-    void lua_push_meta_engine_weapon_network(lua_State *state, Engine::WeaponNetwork &network) noexcept;
-    void lua_push_meta_engine_weapon_object(lua_State *state, Engine::WeaponObject &object) noexcept;
-    void lua_push_meta_engine_equipment_network_data(lua_State *state, Engine::EquipmentNetworkData &data) noexcept;
-    void lua_push_meta_engine_equipment_network(lua_State *state, Engine::EquipmentNetwork &network) noexcept;
-    void lua_push_meta_engine_equipment_object(lua_State *state, Engine::EquipmentObject &object) noexcept;
-    void lua_push_meta_engine_projectile_object_flags(lua_State *state, Engine::ProjectileObjectFlags &flags) noexcept;
-    void lua_push_meta_engine_projectile_network_data(lua_State *state, Engine::ProjectileNetworkData &data) noexcept;
-    void lua_push_meta_engine_projectile_network(lua_State *state, Engine::ProjectileNetwork &network) noexcept;
-    void lua_push_meta_engine_projectile_object(lua_State *state, Engine::ProjectileObject &object) noexcept;
+    void lua_push_meta_engine_item_object(lua_State *state, Engine::ItemObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_garbage_object(lua_State *state, Engine::GarbageObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_weapon_trigger(lua_State *state, Engine::WeaponTrigger &trigger, bool read_only = false) noexcept;
+    void lua_push_meta_engine_weapon_magazine(lua_State *state, Engine::WeaponMagazine &magazine, bool read_only = false) noexcept;
+    void lua_push_meta_engine_weapon_reload_start_data(lua_State *state, Engine::WeaponReloadStartData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_weapon_network_data(lua_State *state, Engine::WeaponNetworkData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_weapon_network(lua_State *state, Engine::WeaponNetwork &network, bool read_only = false) noexcept;
+    void lua_push_meta_engine_weapon_object(lua_State *state, Engine::WeaponObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_equipment_network_data(lua_State *state, Engine::EquipmentNetworkData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_equipment_network(lua_State *state, Engine::EquipmentNetwork &network, bool read_only = false) noexcept;
+    void lua_push_meta_engine_equipment_object(lua_State *state, Engine::EquipmentObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_projectile_object_flags(lua_State *state, Engine::ProjectileObjectFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_projectile_network_data(lua_State *state, Engine::ProjectileNetworkData &data, bool read_only = false) noexcept;
+    void lua_push_meta_engine_projectile_network(lua_State *state, Engine::ProjectileNetwork &network, bool read_only = false) noexcept;
+    void lua_push_meta_engine_projectile_object(lua_State *state, Engine::ProjectileObject &object, bool read_only = false) noexcept;
 
-    void lua_push_meta_engine_device_object_state(lua_State *state, Engine::DeviceObjectState &object_state) noexcept;
-    void lua_push_meta_engine_device_object(lua_State *state, Engine::DeviceObject &object) noexcept;
-    void lua_push_meta_engine_device_machine_object_flags(lua_State *state, Engine::DeviceMachineObjectFlags &flags) noexcept;
-    void lua_push_meta_engine_device_machine_object(lua_State *state, Engine::DeviceMachineObject &object) noexcept;
-    void lua_push_meta_engine_device_control_object_flags(lua_State *state, Engine::DeviceControlObjectFlags &flags) noexcept;
-    void lua_push_meta_engine_device_control_object(lua_State *state, Engine::DeviceControlObject &object) noexcept;
-    void lua_push_meta_engine_device_light_fixture_object(lua_State *state, Engine::DeviceLightFixtureObject &object) noexcept;
+    void lua_push_meta_engine_device_object_state(lua_State *state, Engine::DeviceObjectState &object_state, bool read_only = false) noexcept;
+    void lua_push_meta_engine_device_object(lua_State *state, Engine::DeviceObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_device_machine_object_flags(lua_State *state, Engine::DeviceMachineObjectFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_device_machine_object(lua_State *state, Engine::DeviceMachineObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_device_control_object_flags(lua_State *state, Engine::DeviceControlObjectFlags &flags, bool read_only = false) noexcept;
+    void lua_push_meta_engine_device_control_object(lua_State *state, Engine::DeviceControlObject &object, bool read_only = false) noexcept;
+    void lua_push_meta_engine_device_light_fixture_object(lua_State *state, Engine::DeviceLightFixtureObject &object, bool read_only = false) noexcept;
 
-    void lua_push_meta_engine_player_multiplayer_statistics(lua_State *state, Engine::PlayerMultiplayerStatistics &statistics) noexcept;
-    void lua_push_meta_engine_player(lua_State *state, Engine::Player &player) noexcept;
+    void lua_push_meta_engine_player_multiplayer_statistics(lua_State *state, Engine::PlayerMultiplayerStatistics &statistics, bool read_only = false) noexcept;
+    void lua_push_meta_engine_player(lua_State *state, Engine::Player &player, bool read_only = false) noexcept;
 
-    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::UIWidgetRenderVertices::Vertex &vertex) noexcept;
-    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::UIWidgetRenderVertices &vertices) noexcept;
+    void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::UIWidgetRenderVertices::Vertex &vertex, bool read_only = false) noexcept;
+    void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::UIWidgetRenderVertices &vertices, bool read_only = false) noexcept;
+
+    int lua_read_only__newindex(lua_State *state) noexcept;
 
     template<typename T>
-    void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex) noexcept {
+    void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex, bool read_only = false) noexcept {
         // Create table 
         lua_newtable(state);
         lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<T *>(&elem)));
@@ -182,7 +190,11 @@ namespace Balltze::Plugins {
         lua_newtable(state);
         lua_pushcfunction(state, index);
         lua_setfield(state, -2, "__index");
-        lua_pushcfunction(state, newindex);
+        if(read_only) {
+            lua_pushcfunction(state, lua_read_only__newindex);
+        } else {
+            lua_pushcfunction(state, newindex);
+        }
         lua_setfield(state, -2, "__newindex");
 
         // Set metatable for the table
