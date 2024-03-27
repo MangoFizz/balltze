@@ -59,10 +59,6 @@ Now use docker compose to build the project:
 docker compose run compile
 ```
 
-NOTE: If you want to build the project with the experimental features, you need to
-define the `BALLTZE_ENABLE_EXPERIMENTAL` CMake variable to `ON` when generating the 
-build files.
-
 ## Contributing
 If you have any suggestions or want to contribute in any other way to the project, feel 
 free to do so and submit a pull request. The project has big goals in mind, so any kind
