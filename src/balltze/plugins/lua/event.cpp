@@ -179,7 +179,7 @@ namespace Balltze::Plugins {
             }
         });
         lua_setfield(state, -2, "cancel");
-        lua_pushstring(state, Balltze::event_time_to_string(context.time).c_str());
+        lua_pushstring(state, event_time_to_string(context.time).c_str());
         lua_setfield(state, -2, "time");
     }
 

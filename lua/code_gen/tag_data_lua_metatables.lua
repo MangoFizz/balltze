@@ -62,22 +62,22 @@ namespace Balltze::Plugins {
     void lua_push_engine_matrix(lua_State *state, Engine::Matrix &matrix) noexcept;
     std::shared_ptr<Engine::Matrix> lua_to_engine_matrix(lua_State *state, int index) noexcept;
 
-    void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color) noexcept;
-    void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency) noexcept;
-    void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point) noexcept;
-    void lua_push_meta_engine_point3_d(lua_State *state, Engine::Point3D &point) noexcept;
-    void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset) noexcept;
-    void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color) noexcept;
-    void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle) noexcept;
-    void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point) noexcept;
-    void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler) noexcept;
-    void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler) noexcept;
-    void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector) noexcept;
-    void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector) noexcept;
-    void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color) noexcept;
-    void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion) noexcept;
-    void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane) noexcept;
-    void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane) noexcept;
+    void lua_push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt &color, bool read_only = false) noexcept;
+    void lua_push_meta_engine_tag_dependency(lua_State *state, Engine::TagDependency &dependency, bool read_only = false) noexcept;
+    void lua_push_meta_engine_point2_d(lua_State *state, Engine::Point2D &point, bool read_only = false) noexcept;
+    void lua_push_meta_engine_point3_d(lua_State *state, Engine::Point3D &point, bool read_only = false) noexcept;
+    void lua_push_meta_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset &offset, bool read_only = false) noexcept;
+    void lua_push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB &color, bool read_only = false) noexcept;
+    void lua_push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D &rectangle, bool read_only = false) noexcept;
+    void lua_push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt &point, bool read_only = false) noexcept;
+    void lua_push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D &euler, bool read_only = false) noexcept;
+    void lua_push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D &euler, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D &vector, bool read_only = false) noexcept;
+    void lua_push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D &vector, bool read_only = false) noexcept;
+    void lua_push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB &color, bool read_only = false) noexcept;
+    void lua_push_meta_engine_quaternion(lua_State *state, Engine::Quaternion &quaternion, bool read_only = false) noexcept;
+    void lua_push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D &plane, bool read_only = false) noexcept;
+    void lua_push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D &plane, bool read_only = false) noexcept;
 
     void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept;
 

@@ -59,6 +59,7 @@ namespace Balltze::Plugins {
 
     void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept;
 
+    void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept;
     void lua_push_engine_resource_handle(lua_State *state, const Engine::ResourceHandle &handle) noexcept;
     void lua_push_engine_object_handle(lua_State *state, const Engine::ObjectHandle &handle) noexcept;
     void lua_push_engine_tag_handle(lua_State *state, const Engine::TagHandle &handle) noexcept;

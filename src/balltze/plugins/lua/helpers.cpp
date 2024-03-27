@@ -732,6 +732,10 @@ namespace Balltze::Plugins {
         lua_setfield(state, -2, "index");
     }
 
+    void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept {
+        lua_push_engine_resource_handle(state, *handle);
+    }
+
     void lua_push_engine_object_handle(lua_State *state, const Engine::ObjectHandle &handle) noexcept {
         lua_push_engine_resource_handle(state, static_cast<const Engine::ResourceHandle &>(handle));
     }
