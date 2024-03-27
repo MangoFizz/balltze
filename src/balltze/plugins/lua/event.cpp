@@ -1135,15 +1135,18 @@ namespace Balltze::Plugins {
             auto *plugin = get_lua_plugin(state); \
             if(plugin) { \
                 int args = lua_gettop(state); \
-                if(args == 2) { \
-                    auto priority_str = luaL_checkstring(state, 2); \
-                    try { \
-                        auto priority = event_priority_from_string(priority_str); \
-                        return add_event_listener(state, eventTable, 1, priority, lua_event_##eventName##_remove_listener); \
+                if(args == 1 || args == 2) { \
+                    auto priority = EVENT_PRIORITY_DEFAULT; \
+                    if(args == 2) { \
+                        auto priority_str = luaL_checkstring(state, 2); \
+                        try { \
+                            priority = event_priority_from_string(priority_str); \
+                        } \
+                        catch(const std::invalid_argument &e) { \
+                            return luaL_error(state, "Invalid priority argument in function events." eventTable ".subscribe: %s.", priority_str); \
+                        } \
                     } \
-                    catch(const std::invalid_argument &e) { \
-                        return luaL_error(state, "Invalid priority argument in function events." eventTable ".subscribe: %s.", priority_str); \
-                    } \
+                    return add_event_listener(state, eventTable, 1, priority, lua_event_##eventName##_remove_listener); \
                 } \
                 else { \
                     return luaL_error(state, "Invalid number of arguments in function events." eventTable ".subscribe."); \

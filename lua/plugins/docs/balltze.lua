@@ -8,6 +8,8 @@
 
 Balltze = {}
 
+Balltze.apiVersion = "1.1.0"
+
 -------------------------------------------------------
 -- Balltze.command
 -------------------------------------------------------
@@ -69,7 +71,7 @@ Balltze.event.camera = {}
 
 -- Subscribe a listener to the camera event
 ---@param callbackFunction BalltzeCameraEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.camera.subscribe(callbackFunction, priority) end
 
@@ -88,7 +90,7 @@ Balltze.event.frame = {}
 
 -- Subscribe a listener to the frame event
 ---@param callbackFunction BalltzeFrameEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.frame.subscribe(callbackFunction, priority) end
 
@@ -115,7 +117,7 @@ Balltze.event.gameInput = {}
 
 -- Subscribe a listener to the gameInput event
 ---@param callbackFunction BalltzeGameInputEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.gameInput.subscribe(callbackFunction, priority) end
 
@@ -171,7 +173,7 @@ Balltze.event.hudHoldForActionMessage = {}
 
 -- Subscribe a listener to the hudHoldForActionMessage event
 ---@param callbackFunction BalltzeHudHoldForActionMessageEventArgsCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.hudHoldForActionMessage.subscribe(callbackFunction, priority) end
 
@@ -197,7 +199,7 @@ Balltze.event.mapFileLoad = {}
 
 -- Subscribe a listener to the mapFileLoad event
 ---@param callbackFunction BalltzeMapFileLoadEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.mapFileLoad.subscribe(callbackFunction, priority) end
 
@@ -222,7 +224,7 @@ Balltze.event.mapLoad = {}
 
 -- Subscribe a listener to the mapLoad event
 ---@param callbackFunction BalltzeMapLoadEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.mapLoad.subscribe(callbackFunction, priority) end
 
@@ -249,7 +251,7 @@ Balltze.event.networkGameChatMessage = {}
 
 -- Subscribe a listener to the networkGameChatMessage event
 ---@param callbackFunction BalltzeNetworkGameChatMessageEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.networkGameChatMessage.subscribe(callbackFunction, priority) end
 
@@ -278,7 +280,7 @@ Balltze.event.objectDamage = {}
 
 -- Subscribe a listener to the objectDamage event
 ---@param callbackFunction BalltzeObjectDamageEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.objectDamage.subscribe(callbackFunction, priority) end
 
@@ -303,7 +305,7 @@ Balltze.event.rconMessage = {}
 
 -- Subscribe a listener to the rconMessage event
 ---@param callbackFunction BalltzeRconMessageEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.rconMessage.subscribe(callbackFunction, priority) end
 
@@ -322,7 +324,7 @@ Balltze.event.uiRender = {}
 
 -- Subscribe a listener to the uiRender event
 ---@param callbackFunction BalltzeUiRenderEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiRender.subscribe(callbackFunction, priority) end
 
@@ -341,7 +343,7 @@ Balltze.event.hudRender = {}
 
 -- Subscribe a listener to the hudRender event
 ---@param callbackFunction BalltzeHudRenderEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.hudRender.subscribe(callbackFunction, priority) end
 
@@ -360,7 +362,7 @@ Balltze.event.postCarnageReportRender = {}
 
 -- Subscribe a listener to the postCarnageReportRender event
 ---@param callbackFunction BalltzePostCarnageReportRenderEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.postCarnageReportRender.subscribe(callbackFunction, priority) end
 
@@ -386,7 +388,7 @@ Balltze.event.hudElementBitmapRender = {}
 
 -- Subscribe a listener to the hudElementBitmapRender event
 ---@param callbackFunction BalltzeHudElementBitmapRenderEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.hudElementBitmapRender.subscribe(callbackFunction, priority) end
 
@@ -412,7 +414,7 @@ Balltze.event.widgetBackgroundRender = {}
 
 -- Subscribe a listener to the widgetBackgroundRender event
 ---@param callbackFunction BalltzeWidgetBackgroundRenderEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.widgetBackgroundRender.subscribe(callbackFunction, priority) end
 
@@ -431,7 +433,7 @@ Balltze.event.navpointsRender = {}
 
 -- Subscribe a listener to the navpointsRender event
 ---@param callbackFunction BalltzeNavpointsRenderEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.navpointsRender.subscribe(callbackFunction, priority) end
 
@@ -458,7 +460,7 @@ Balltze.event.serverConnect = {}
 
 -- Subscribe a listener to the serverConnect event
 ---@param callbackFunction BalltzeServerConnectEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.serverConnect.subscribe(callbackFunction, priority) end
 
@@ -484,7 +486,7 @@ Balltze.event.soundPlayback = {}
 
 -- Subscribe a listener to the soundPlayback event
 ---@param callbackFunction BalltzeSoundPlaybackEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.soundPlayback.subscribe(callbackFunction, priority) end
 
@@ -510,7 +512,7 @@ Balltze.event.tick = {}
 
 -- Subscribe a listener to the tick event
 ---@param callbackFunction BalltzeTickEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.tick.subscribe(callbackFunction, priority) end
 
@@ -537,7 +539,7 @@ Balltze.event.uiWidgetCreate = {}
 
 -- Subscribe a listener to the uiWidgetCreate event
 ---@param callbackFunction BalltzeUIWidgetCreateEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiWidgetCreate.subscribe(callbackFunction, priority) end
 
@@ -562,7 +564,7 @@ Balltze.event.uiWidgetBack = {}
 
 -- Subscribe a listener to the uiWidgetBack event
 ---@param callbackFunction BalltzeUIWidgetBackEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiWidgetBack.subscribe(callbackFunction, priority) end
 
@@ -587,7 +589,7 @@ Balltze.event.uiWidgetFocus = {}
 
 -- Subscribe a listener to the uiWidgetFocus event
 ---@param callbackFunction BalltzeUIWidgetFocusEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiWidgetFocus.subscribe(callbackFunction, priority) end
 
@@ -612,7 +614,7 @@ Balltze.event.uiWidgetAccept = {}
 
 -- Subscribe a listener to the uiWidgetAccept event
 ---@param callbackFunction BalltzeUIWidgetAcceptEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiWidgetAccept.subscribe(callbackFunction, priority) end
 
@@ -637,7 +639,7 @@ Balltze.event.uiWidgetSound = {}
 
 -- Subscribe a listener to the uiWidgetSound event
 ---@param callbackFunction BalltzeUIWidgetSoundEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiWidgetSound.subscribe(callbackFunction, priority) end
 
@@ -673,7 +675,7 @@ Balltze.event.uiWidgetListTab = {}
 
 -- Subscribe a listener to the uiWidgetListTab event
 ---@param callbackFunction BalltzeUIWidgetListTabEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.uiWidgetListTab.subscribe(callbackFunction, priority) end
 
