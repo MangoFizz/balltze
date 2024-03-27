@@ -37,6 +37,12 @@ Balltze.event = {}
 ---| "before" #Before the event is triggered
 ---| "after" #After the event is triggered
 
+---@alias BalltzeEventListenerPriority
+---| "highest" 
+---| "above_default"
+---| "default" 
+---| "lowest" 
+
 ---@class BalltzeEventListener
 local eventListener = {}
 
@@ -48,29 +54,31 @@ function eventListener:remove() end
 ---@field time BalltzeEventTime @The time the event was triggered 
 ---@field cancel fun(self: BalltzeEvent) @Cancel the event
 
-Balltze.event.tick = {}
+Balltze.event.camera = {}
 
----@class BalltzeTickEventArgs
----@field tickCount integer @The current tick count
----@field deltaTimeMs integer @The number of ticks since the last tick event
+---@class BalltzeCameraEventArgs
+---@field position EngineCameraData @The position of the camera
+---@field type EngineCameraType @The type of the camera
 
----@class BalltzeTickEvent : BalltzeEvent
----@field args BalltzeTickEventArgs @The arguments of the event
+---@class MetaBalltzeCameraEventArgs: BalltzeCameraEventArgs
 
----@alias BalltzeTickEventCallback fun(event: BalltzeTickEvent)
+---@class BalltzeCameraEvent: BalltzeEvent
+---@field args MetaBalltzeCameraEventArgs @The arguments of the event
 
--- Subscribe a listener to the tick event
----@param callbackFunction BalltzeTickEventCallback @The function to call when the event is triggered
+---@alias BalltzeCameraEventCallback fun(event: BalltzeCameraEvent)
+
+-- Subscribe a listener to the camera event
+---@param callbackFunction BalltzeCameraEventCallback @The function to call when the event is triggered
 ---@param priority BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
-function Balltze.event.tick.subscribe(callbackFunction, priority) end
+function Balltze.event.camera.subscribe(callbackFunction, priority) end
 
--- Remove a listener from the tick event
+-- Remove a listener from the camera event
 ---@param handle integer @The handle of the event listener
-function Balltze.event.tick.removeListener(handle) end
+function Balltze.event.camera.removeListener(handle) end
 
--- Remove all listeners from the tick event
-function Balltze.event.tick.removeAllListeners() end
+-- Remove all listeners from the camera event
+function Balltze.event.camera.removeAllListeners() end
 
 Balltze.event.frame = {}
 
@@ -91,95 +99,17 @@ function Balltze.event.frame.removeListener(handle) end
 -- Remove all listeners from the frame event
 function Balltze.event.frame.removeAllListeners() end
 
-Balltze.event.mapFileLoad = {}
-
----@class BalltzeMapFileLoadEventArgs
----@field mapPath string @The path of the map that was loaded
----@field mapName string @The name of the map that was loaded
-
----@class BalltzeMapFileLoadEvent: BalltzeEvent
----@field args BalltzeMapFileLoadEventArgs @The arguments of the event
-
----@alias BalltzeEventListenerPriority
----| "highest" 
----| "above_default"
----| "default" 
----| "lowest" 
-
----@alias BalltzeMapFileLoadEventCallback fun(event: BalltzeMapFileLoadEvent)
-
--- Subscribe a listener to the mapFileLoad event
----@param callbackFunction BalltzeMapFileLoadEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
----@return BalltzeEventListener @The handle of the event listener
-function Balltze.event.mapFileLoad.subscribe(callbackFunction, priority) end
-
--- Remove a listener from the mapFileLoad event
----@param handle integer @The handle of the event listener
-function Balltze.event.mapFileLoad.removeListener(handle) end
-
--- Remove all listeners from the mapFileLoad event
-function Balltze.event.mapFileLoad.removeAllListeners() end
-
-Balltze.event.serverConnect = {}
-
----@class BalltzeServerConnectEventArgs
----@field address string @The address of the server that was connected to
----@field port integer @The port of the server that was connected to
----@field password string @The password used to connect to the server
-
----@class BalltzeServerConnectEvent: BalltzeEvent
----@field args BalltzeServerConnectEventArgs @The arguments of the event
-
----@alias BalltzeServerConnectEventCallback fun(event: BalltzeServerConnectEvent)
-
--- Subscribe a listener to the serverConnect event
----@param callbackFunction BalltzeServerConnectEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
----@return BalltzeEventListener @The handle of the event listener
-function Balltze.event.serverConnect.subscribe(callbackFunction, priority) end
-
--- Remove a listener from the serverConnect event
----@param handle integer @The handle of the event listener
-function Balltze.event.serverConnect.removeListener(handle) end
-
--- Remove all listeners from the serverConnect event
-function Balltze.event.serverConnect.removeAllListeners() end
-
-Balltze.event.camera = {}
-
----@class BalltzeCameraEventArgs
----@field position MetaEnginePoint3D @The position of the camera
----@field orientation table<MetaEnginePoint3D> @The orientation of the camera
----@field pov number @The point of view of the camera
-
----@class BalltzeCameraEvent: BalltzeEvent
----@field args BalltzeCameraEventArgs @The arguments of the event
-
----@alias BalltzeCameraEventCallback fun(event: BalltzeCameraEvent)
-
--- Subscribe a listener to the camera event
----@param callbackFunction BalltzeCameraEventCallback @The function to call when the event is triggered
----@param priority BalltzeEventListenerPriority @The priority of the callback function
----@return BalltzeEventListener @The handle of the event listener
-function Balltze.event.camera.subscribe(callbackFunction, priority) end
-
--- Remove a listener from the camera event
----@param handle integer @The handle of the event listener
-function Balltze.event.camera.removeListener(handle) end
-
--- Remove all listeners from the camera event
-function Balltze.event.camera.removeAllListeners() end
-
 Balltze.event.gameInput = {}
 
 ---@class BalltzeGameInputEventArgs
 ---@field device EngineInputDevice @The device that triggered the event
----@field mapped boolean @Whether the input is mapped
+---@field mapped boolean @Whether the input is mapped to a game action
 ---@field button string @The button that was pressed
 
+---@class MetaBalltzeGameInputEventArgs: BalltzeGameInputEventArgs
+
 ---@class BalltzeGameInputEvent: BalltzeEvent
----@field args BalltzeGameInputEventArgs @The arguments of the event
+---@field args MetaBalltzeGameInputEventArgs @The arguments of the event
 
 ---@alias BalltzeGameInputEventCallback fun(event: BalltzeGameInputEvent)
 
@@ -196,13 +126,97 @@ function Balltze.event.gameInput.removeListener(handle) end
 -- Remove all listeners from the gameInput event
 function Balltze.event.gameInput.removeAllListeners() end
 
+Balltze.event.hudHoldForActionMessage = {}
+
+---@alias BalltzeHudHoldForActionMessageSlice
+---| "message" 
+---| "button_name_left_quote"
+---| "button_name_right_quote"
+---| "button_name"
+---| "weapon_icon"
+
+---@class BalltzeHudHoldForActionMessageOffset
+---@field y integer 
+---@field x integer 
+
+---@alias BalltzeHudHoldForActionMessageButtonType
+---| "button" 
+---| "axis"
+
+---@alias BalltzeHudHoldForActionMessageButtonAxisDirection
+---| "positive"
+---| "negative"
+
+---@class BalltzeHudHoldForActionMessageButton
+---@field input EngineInputDevice
+---@field type BalltzeHudHoldForActionMessageButtonType
+---@field index integer
+---@field direction BalltzeHudHoldForActionMessageButtonAxisDirection
+
+---@class MetaBalltzeHudHoldForActionMessageButton: BalltzeHudHoldForActionMessageButton
+
+---@class BalltzeHudHoldForActionMessageEventArgs
+---@field slice BalltzeHudHoldForActionMessageSlice
+---@field offset BalltzeHudHoldForActionMessageOffset
+---@field color EngineColorARGBInt
+---@field text lightuserdata
+---@field button MetaBalltzeHudHoldForActionMessageButton?
+
+---@class MetaBalltzeHudHoldForActionMessageEventArgs: BalltzeHudHoldForActionMessageEventArgs
+
+---@class BalltzeHudHoldForActionMessageEvent: BalltzeEvent
+---@field args MetaBalltzeHudHoldForActionMessageEventArgs @The arguments of the event
+
+---@alias BalltzeHudHoldForActionMessageEventArgsCallback fun(event: BalltzeHudHoldForActionMessageEvent)
+
+-- Subscribe a listener to the hudHoldForActionMessage event
+---@param callbackFunction BalltzeHudHoldForActionMessageEventArgsCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.hudHoldForActionMessage.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the hudHoldForActionMessage event
+---@param handle integer @The handle of the event listener
+function Balltze.event.hudHoldForActionMessage.removeListener(handle) end
+
+-- Remove all listeners from the hudHoldForActionMessage event
+function Balltze.event.hudHoldForActionMessage.removeAllListeners() end
+
+Balltze.event.mapFileLoad = {}
+
+---@class BalltzeMapFileLoadEventArgs
+---@field mapPath string @The path of the map that was loaded
+---@field mapName string @The name of the map that was loaded
+
+---@class MetaBalltzeMapFileLoadEventArgs: BalltzeMapFileLoadEventArgs
+
+---@class BalltzeMapFileLoadEvent: BalltzeEvent
+---@field args MetaBalltzeMapFileLoadEventArgs @The arguments of the event
+
+---@alias BalltzeMapFileLoadEventCallback fun(event: BalltzeMapFileLoadEvent)
+
+-- Subscribe a listener to the mapFileLoad event
+---@param callbackFunction BalltzeMapFileLoadEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.mapFileLoad.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the mapFileLoad event
+---@param handle integer @The handle of the event listener
+function Balltze.event.mapFileLoad.removeListener(handle) end
+
+-- Remove all listeners from the mapFileLoad event
+function Balltze.event.mapFileLoad.removeAllListeners() end
+
 Balltze.event.mapLoad = {}
 
 ---@class BalltzeMapLoadEventArgs
 ---@field mapPath string @The path of the map that was loaded
 
+---@class MetaBalltzeMapLoadEventArgs: BalltzeMapLoadEventArgs
+
 ---@class BalltzeMapLoadEvent: BalltzeEvent
----@field args BalltzeMapLoadEventArgs @The arguments of the event
+---@field args MetaBalltzeMapLoadEventArgs @The arguments of the event
 
 ---@alias BalltzeMapLoadEventCallback fun(event: BalltzeMapLoadEvent)
 
@@ -218,6 +232,87 @@ function Balltze.event.mapLoad.removeListener(handle) end
 
 -- Remove all listeners from the mapLoad event
 function Balltze.event.mapLoad.removeAllListeners() end
+
+Balltze.event.networkGameChatMessage = {}
+
+---@class BalltzeNetworkGameChatMessageEventArgs
+---@field message lightuserdata @The message that was sent
+---@field playerId integer @The player that sent the message
+---@field type EngineNetworkGameMessageHudChatType @The type of the message
+
+---@class MetaBalltzeNetworkGameChatMessageEventArgs: BalltzeNetworkGameChatMessageEventArgs
+
+---@class BalltzeNetworkGameChatMessageEvent: BalltzeEvent
+---@field args MetaBalltzeNetworkGameChatMessageEventArgs @The arguments of the event
+
+---@alias BalltzeNetworkGameChatMessageEventCallback fun(event: BalltzeNetworkGameChatMessageEvent)
+
+-- Subscribe a listener to the networkGameChatMessage event
+---@param callbackFunction BalltzeNetworkGameChatMessageEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.networkGameChatMessage.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the networkGameChatMessage event
+---@param handle integer @The handle of the event listener
+function Balltze.event.networkGameChatMessage.removeListener(handle) end
+
+-- Remove all listeners from the networkGameChatMessage event
+function Balltze.event.networkGameChatMessage.removeAllListeners() end
+
+Balltze.event.objectDamage = {}
+
+---@class BalltzeObjectDamageEventArgs
+---@field object EngineObjectHandle @The object that was damaged
+---@field damageEffect EngineTagHandle @The damage effect that was applied
+---@field multiplier number @The damage multiplier that was applied
+---@field causerPlayer EnginePlayerHandle @The player that caused the damage
+---@field causerObject EngineObjectHandle @The object that caused the damage
+
+---@class MetaBalltzeObjectDamageEventArgs: BalltzeObjectDamageEventArgs
+
+---@class BalltzeObjectDamageEvent: BalltzeEvent
+---@field args MetaBalltzeObjectDamageEventArgs @The arguments of the event
+
+---@alias BalltzeObjectDamageEventCallback fun(event: BalltzeObjectDamageEvent)
+
+-- Subscribe a listener to the objectDamage event
+---@param callbackFunction BalltzeObjectDamageEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.objectDamage.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the objectDamage event
+---@param handle integer @The handle of the event listener
+function Balltze.event.objectDamage.removeListener(handle) end
+
+-- Remove all listeners from the objectDamage event
+function Balltze.event.objectDamage.removeAllListeners() end
+
+Balltze.event.rconMessage = {}
+
+---@class BalltzeRconMessageEventArgs
+---@field message string @The message that was sent
+
+---@class MetaBalltzeRconMessageEventArgs: BalltzeRconMessageEventArgs
+
+---@class BalltzeRconMessageEvent: BalltzeEvent
+---@field args MetaBalltzeRconMessageEventArgs @The arguments of the event
+
+---@alias BalltzeRconMessageEventCallback fun(event: BalltzeRconMessageEvent)
+
+-- Subscribe a listener to the rconMessage event
+---@param callbackFunction BalltzeRconMessageEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.rconMessage.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the rconMessage event
+---@param handle integer @The handle of the event listener
+function Balltze.event.rconMessage.removeListener(handle) end
+
+-- Remove all listeners from the rconMessage event
+function Balltze.event.rconMessage.removeAllListeners() end
 
 Balltze.event.uiRender = {}
 
@@ -282,8 +377,10 @@ Balltze.event.hudElementBitmapRender = {}
 ---@field vertices EngineWidgetRenderVertices @The vertices of the bitmap
 ---@field bitmapData MetaEngineTagDataBitmapData @The bitmap data of the bitmap
 
+---@class MetaBalltzeHudElementBitmapRenderEventArgs: BalltzeHudElementBitmapRenderEventArgs
+
 ---@class BalltzeHudElementBitmapRenderEvent: BalltzeEvent
----@field args BalltzeHudElementBitmapRenderEventArgs @The arguments of the event
+---@field args MetaBalltzeHudElementBitmapRenderEventArgs @The arguments of the event
 
 ---@alias BalltzeHudElementBitmapRenderEventCallback fun(event: BalltzeHudElementBitmapRenderEvent)
 
@@ -306,8 +403,10 @@ Balltze.event.widgetBackgroundRender = {}
 ---@field vertices EngineWidgetRenderVertices @The vertices of the background
 ---@field widget MetaEngineWidget @The widget of the background
 
+---@class MetaBalltzeWidgetBackgroundRenderEventArgs: BalltzeWidgetBackgroundRenderEventArgs
+
 ---@class BalltzeWidgetBackgroundRenderEvent: BalltzeEvent
----@field args BalltzeWidgetBackgroundRenderEventArgs @The arguments of the event
+---@field args MetaBalltzeWidgetBackgroundRenderEventArgs @The arguments of the event
 
 ---@alias BalltzeWidgetBackgroundRenderEventCallback fun(event: BalltzeWidgetBackgroundRenderEvent)
 
@@ -342,6 +441,248 @@ function Balltze.event.navpointsRender.removeListener(handle) end
 
 -- Remove all listeners from the navpointsRender event
 function Balltze.event.navpointsRender.removeAllListeners() end
+
+Balltze.event.serverConnect = {}
+
+---@class BalltzeServerConnectEventArgs
+---@field address string @The address of the server that was connected to
+---@field port integer @The port of the server that was connected to
+---@field password string @The password used to connect to the server
+
+---@class MetaBalltzeServerConnectEventArgs: BalltzeServerConnectEventArgs
+
+---@class BalltzeServerConnectEvent: BalltzeEvent
+---@field args MetaBalltzeServerConnectEventArgs @The arguments of the event
+
+---@alias BalltzeServerConnectEventCallback fun(event: BalltzeServerConnectEvent)
+
+-- Subscribe a listener to the serverConnect event
+---@param callbackFunction BalltzeServerConnectEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.serverConnect.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the serverConnect event
+---@param handle integer @The handle of the event listener
+function Balltze.event.serverConnect.removeListener(handle) end
+
+-- Remove all listeners from the serverConnect event
+function Balltze.event.serverConnect.removeAllListeners() end
+
+Balltze.event.soundPlayback = {}
+
+---@class BalltzeSoundPlaybackEventArgs
+---@field sound MetaEngineTagDataSound @The sound that was played
+---@field permutation MetaEngineTagDataSoundPermutation @The permutation of the sound that was played
+
+---@class MetaBalltzeSoundPlaybackEventArgs: BalltzeSoundPlaybackEventArgs
+
+---@class BalltzeSoundPlaybackEvent: BalltzeEvent
+---@field args MetaBalltzeSoundPlaybackEventArgs @The arguments of the event
+
+---@alias BalltzeSoundPlaybackEventCallback fun(event: BalltzeSoundPlaybackEvent)
+
+-- Subscribe a listener to the soundPlayback event
+---@param callbackFunction BalltzeSoundPlaybackEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.soundPlayback.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the soundPlayback event
+---@param handle integer @The handle of the event listener
+function Balltze.event.soundPlayback.removeListener(handle) end
+
+-- Remove all listeners from the soundPlayback event
+function Balltze.event.soundPlayback.removeAllListeners() end
+
+Balltze.event.tick = {}
+
+---@class BalltzeTickEventArgs
+---@field tickCount integer @The current tick count
+---@field deltaTimeMS integer @The number of ticks since the last tick event
+
+---@class MetaBalltzeTickEventArgs: BalltzeTickEventArgs
+
+---@class BalltzeTickEvent : BalltzeEvent
+---@field args MetaBalltzeTickEventArgs @The arguments of the event
+
+---@alias BalltzeTickEventCallback fun(event: BalltzeTickEvent)
+
+-- Subscribe a listener to the tick event
+---@param callbackFunction BalltzeTickEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.tick.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the tick event
+---@param handle integer @The handle of the event listener
+function Balltze.event.tick.removeListener(handle) end
+
+-- Remove all listeners from the tick event
+function Balltze.event.tick.removeAllListeners() end
+
+Balltze.event.uiWidgetCreate = {}
+
+---@class BalltzeUIWidgetCreateEventArgs
+---@field widget MetaEngineWidget @The widget that is being created
+---@field definitionTagHandle EngineTagHandle @The tag handle of the widget definition
+---@field isRootWidget boolean @Whether the widget is a root widget
+
+---@class MetaBalltzeUIWidgetCreateEventArgs: BalltzeUIWidgetCreateEventArgs
+
+---@class BalltzeUIWidgetCreateEvent : BalltzeEvent
+---@field args MetaBalltzeUIWidgetCreateEventArgs @The arguments of the event
+
+---@alias BalltzeUIWidgetCreateEventCallback fun(event: BalltzeUIWidgetCreateEvent)
+
+-- Subscribe a listener to the uiWidgetCreate event
+---@param callbackFunction BalltzeUIWidgetCreateEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.uiWidgetCreate.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the uiWidgetCreate event
+---@param handle integer @The handle of the event listener
+function Balltze.event.uiWidgetCreate.removeListener(handle) end
+
+-- Remove all listeners from the uiWidgetCreate event
+function Balltze.event.uiWidgetCreate.removeAllListeners() end
+
+Balltze.event.uiWidgetBack = {}
+
+---@class BalltzeUIWidgetBackEventArgs
+---@field widget MetaEngineWidget @The widget that is being created
+
+---@class MetaBalltzeUIWidgetBackEventArgs: BalltzeUIWidgetBackEventArgs
+
+---@class BalltzeUIWidgetBackEvent : BalltzeEvent
+---@field args MetaBalltzeUIWidgetBackEventArgs @The arguments of the event
+
+---@alias BalltzeUIWidgetBackEventCallback fun(event: BalltzeUIWidgetBackEvent)
+
+-- Subscribe a listener to the uiWidgetBack event
+---@param callbackFunction BalltzeUIWidgetBackEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.uiWidgetBack.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the uiWidgetBack event
+---@param handle integer @The handle of the event listener
+function Balltze.event.uiWidgetBack.removeListener(handle) end
+
+-- Remove all listeners from the uiWidgetBack event
+function Balltze.event.uiWidgetBack.removeAllListeners() end
+
+Balltze.event.uiWidgetFocus = {}
+
+---@class BalltzeUIWidgetFocusEventArgs
+---@field widget MetaEngineWidget @The widget that is being created
+
+---@class MetaBalltzeUIWidgetFocusEventArgs: BalltzeUIWidgetFocusEventArgs
+
+---@class BalltzeUIWidgetFocusEvent : BalltzeEvent
+---@field args MetaBalltzeUIWidgetFocusEventArgs @The arguments of the event
+
+---@alias BalltzeUIWidgetFocusEventCallback fun(event: BalltzeUIWidgetFocusEvent)
+
+-- Subscribe a listener to the uiWidgetFocus event
+---@param callbackFunction BalltzeUIWidgetFocusEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.uiWidgetFocus.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the uiWidgetFocus event
+---@param handle integer @The handle of the event listener
+function Balltze.event.uiWidgetFocus.removeListener(handle) end
+
+-- Remove all listeners from the uiWidgetFocus event
+function Balltze.event.uiWidgetFocus.removeAllListeners() end
+
+Balltze.event.uiWidgetAccept = {}
+
+---@class BalltzeUIWidgetAcceptEventArgs
+---@field widget MetaEngineWidget @The widget that is being created
+
+---@class MetaBalltzeUIWidgetAcceptEventArgs: BalltzeUIWidgetAcceptEventArgs
+
+---@class BalltzeUIWidgetAcceptEvent : BalltzeEvent
+---@field args MetaBalltzeUIWidgetAcceptEventArgs @The arguments of the event
+
+---@alias BalltzeUIWidgetAcceptEventCallback fun(event: BalltzeUIWidgetAcceptEvent)
+
+-- Subscribe a listener to the uiWidgetAccept event
+---@param callbackFunction BalltzeUIWidgetAcceptEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.uiWidgetAccept.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the uiWidgetAccept event
+---@param handle integer @The handle of the event listener
+function Balltze.event.uiWidgetAccept.removeListener(handle) end
+
+-- Remove all listeners from the uiWidgetAccept event
+function Balltze.event.uiWidgetAccept.removeAllListeners() end
+
+Balltze.event.uiWidgetSound = {}
+
+---@class BalltzeUIWidgetSoundEventArgs
+---@field sound EngineWidgetNavigationSound @The sound that was played
+
+---@class MetaBalltzeUIWidgetSoundEventArgs: BalltzeUIWidgetSoundEventArgs
+
+---@class BalltzeUIWidgetSoundEvent : BalltzeEvent
+---@field args MetaBalltzeUIWidgetSoundEventArgs @The arguments of the event
+
+---@alias BalltzeUIWidgetSoundEventCallback fun(event: BalltzeUIWidgetSoundEvent)
+
+-- Subscribe a listener to the uiWidgetSound event
+---@param callbackFunction BalltzeUIWidgetSoundEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.uiWidgetSound.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the uiWidgetSound event
+---@param handle integer @The handle of the event listener
+function Balltze.event.uiWidgetSound.removeListener(handle) end
+
+-- Remove all listeners from the uiWidgetSound event
+function Balltze.event.uiWidgetSound.removeAllListeners() end
+
+Balltze.event.uiWidgetListTab = {}
+
+---@alias BalltzeUIWidgetListTabEventTabType
+---| "tab_thru_item_list_items_next_vertical"
+---| "tab_thru_item_list_items_next_horizontal"
+---| "tab_thru_item_list_items_prev_vertical"
+---| "tab_thru_item_list_items_prev_horizontal"
+---| "tab_thru_children_next_vertical"
+---| "tab_thru_children_next_horizontal"
+---| "tab_thru_children_prev"
+---| "unknown"
+
+---@class BalltzeUIWidgetListTabEventArgs
+---@field widgetList MetaEngineWidget @The widget list that is being navigated
+---@field tabType BalltzeUIWidgetListTabEventTabType @The type of the tab
+
+---@class MetaBalltzeUIWidgetListTabEventArgs: BalltzeUIWidgetListTabEventArgs
+
+---@class BalltzeUIWidgetListTabEvent : BalltzeEvent
+---@field args MetaBalltzeUIWidgetListTabEventArgs @The arguments of the event
+
+---@alias BalltzeUIWidgetListTabEventCallback fun(event: BalltzeUIWidgetListTabEvent)
+
+-- Subscribe a listener to the uiWidgetListTab event
+---@param callbackFunction BalltzeUIWidgetListTabEventCallback @The function to call when the event is triggered
+---@param priority BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.uiWidgetListTab.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the uiWidgetListTab event
+---@param handle integer @The handle of the event listener
+function Balltze.event.uiWidgetListTab.removeListener(handle) end
+
+-- Remove all listeners from the uiWidgetListTab event
+function Balltze.event.uiWidgetListTab.removeAllListeners() end
 
 -------------------------------------------------------
 -- Balltze.features
@@ -390,6 +731,9 @@ function Balltze.features.getTagCopy(tagHandle, copyName) end
 ---@param tagClass EngineTagClass @The class of the tag to get
 ---@return EngineTagHandle|nil @The handle of the tag; nil if the tag does not exist
 function Balltze.features.getImportedTag(mapPath, tagPath, tagClass) end
+
+-- Sets the aspect ratio of the menu
+function Balltze.features.setMenuAspectRatio(x, y) end
 
 -------------------------------------------------------
 -- Balltze.logger

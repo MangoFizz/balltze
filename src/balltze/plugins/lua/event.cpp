@@ -175,7 +175,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid context argument in function events.tick.cancel.");
+                return luaL_error(state, "Invalid context argument in function event.cancel.");
             }
         });
         lua_setfield(state, -2, "cancel");
@@ -205,7 +205,7 @@ namespace Balltze::Plugins {
                     lua_rawseti(state, -3, lua_rawlen(state, -3) + 1);
                 }
                 else {
-                    logger.error("Invalid event listener in events.tick: expected function, got {}.", lua_typename(state, lua_type(state, -1)));
+                    logger.error("Invalid event listener in events.{}: expected function, got {}.", name, lua_typename(state, lua_type(state, -1)));
                     lua_pop(state, 1);
                 }
             }
@@ -218,7 +218,7 @@ namespace Balltze::Plugins {
                 lua_pushvalue(state, event_table_index - 4);
                 int res = lua_pcall(state, 1, 0, 0);
                 if(res != LUA_OK) {
-                    logger.error("Error in event listener in events.tick: {}.", lua_tostring(state, -1));
+                    logger.error("Error in event listener in events.{}: {}.", name, lua_tostring(state, -1));
                     lua_pop(state, 1);
                 }
             }
@@ -226,7 +226,7 @@ namespace Balltze::Plugins {
             lua_pop(state, 1);
         }
         else {
-            logger.debug("Invalid event listener in events.tick: expected table, got {}.", lua_typename(state, lua_type(state, -1)));
+            logger.debug("Invalid event listener in events.{}: expected table, got {}.", name, lua_typename(state, lua_type(state, -1)));
         }
 
         lua_pop(state, 2);
@@ -450,10 +450,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "map_name") {
+        if(field == "mapName") {
             lua_pushstring(state, data->map_name.c_str());
         }
-        else if(field == "map_path") {
+        else if(field == "mapPath") {
             lua_pushstring(state, data->map_path.c_str());
         }
         else {
@@ -470,11 +470,11 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "map_name") {
-            return luaL_error(state, "Field map_name is read-only");
+        if(field == "mapName") {
+            return luaL_error(state, "Field mapName is read-only");
         }
-        else if(field == "map_path") {
-            return luaL_error(state, "Field map_path is read-only");
+        else if(field == "mapPath") {
+            return luaL_error(state, "Field mapPath is read-only");
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
@@ -540,7 +540,7 @@ namespace Balltze::Plugins {
         if(field == "type") {
             lua_pushstring(state, chat_message_type_to_string(data->chat_message->msg_type).c_str());
         }
-        else if(field == "player_id") {
+        else if(field == "playerId") {
             lua_pushinteger(state, data->chat_message->player_id);
         }
         else if(field == "message") {
@@ -563,8 +563,8 @@ namespace Balltze::Plugins {
         if(field == "type") {
             return luaL_error(state, "Field type is read-only");
         }
-        else if(field == "player_id") {
-            return luaL_error(state, "Field player_id is read-only");
+        else if(field == "playerId") {
+            return luaL_error(state, "Field playerId is read-only");
         }
         else if(field == "message") {
             return luaL_error(state, "Field message is read-only");
@@ -585,16 +585,16 @@ namespace Balltze::Plugins {
         if(field == "object") {
             lua_push_engine_object_handle(state, data->object);
         }
-        else if(field == "damage_effect") {
+        else if(field == "damageEffect") {
             lua_push_engine_tag_handle(state, data->damage_effect);
         }
         else if(field == "multiplier") {
             lua_pushnumber(state, data->multiplier);
         }
-        else if(field == "causer_player") {
+        else if(field == "causerPlayer") {
             lua_push_engine_player_handle(state, data->causer_player);
         }
-        else if(field == "causer_object") {
+        else if(field == "causerObject") {
             lua_push_engine_object_handle(state, data->causer_object);
         }
         else {
@@ -614,17 +614,17 @@ namespace Balltze::Plugins {
         if(field == "object") {
             return luaL_error(state, "Field object is read-only");
         }
-        else if(field == "damage_effect") {
-            return luaL_error(state, "Field damage_effect is read-only");
+        else if(field == "damageEffect") {
+            return luaL_error(state, "Field damageEffect is read-only");
         }
         else if(field == "multiplier") {
             return luaL_error(state, "Field multiplier is read-only");
         }
-        else if(field == "causer_player") {
-            return luaL_error(state, "Field causer_player is read-only");
+        else if(field == "causerPlayer") {
+            return luaL_error(state, "Field causerPlayer is read-only");
         }
-        else if(field == "causer_object") {
-            return luaL_error(state, "Field causer_object is read-only");
+        else if(field == "causerObject") {
+            return luaL_error(state, "Field causerObject is read-only");
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
@@ -839,10 +839,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "tick_count") {
+        if(field == "tickCount") {
             lua_pushinteger(state, data->tick_count);
         }
-        else if(field == "delta_time_ms") {
+        else if(field == "deltaTimeMS") {
             lua_pushinteger(state, data->delta_time_ms);
         }
         else {
@@ -859,11 +859,11 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "tick_count") {
-            return luaL_error(state, "Field tick_count is read-only");
+        if(field == "tickCount") {
+            return luaL_error(state, "Field tickCount is read-only");
         }
-        else if(field == "delta_time_ms") {
-            return luaL_error(state, "Field delta_time_ms is read-only");
+        else if(field == "deltaTimeMS") {
+            return luaL_error(state, "Field deltaTimeMS is read-only");
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
@@ -886,10 +886,10 @@ namespace Balltze::Plugins {
                 lua_pushnil(state);
             }
         }
-        else if(field == "definition_tag_handle") {
+        else if(field == "definitionTagHandle") {
             lua_push_engine_tag_handle(state, data->definition_tag_handle);
         }
-        else if(field == "is_root_widget") {
+        else if(field == "isRootWidget") {
             lua_pushboolean(state, data->is_root_widget);
         }
         else {
@@ -909,11 +909,11 @@ namespace Balltze::Plugins {
         if(field == "widget") {
             return luaL_error(state, "Field widget is read-only");
         }
-        else if(field == "definition_tag_handle") {
-            return luaL_error(state, "Field definition_tag_handle is read-only");
+        else if(field == "definitionTagHandle") {
+            return luaL_error(state, "Field definitionTagHandle is read-only");
         }
-        else if(field == "is_root_widget") {
-            return luaL_error(state, "Field is_root_widget is read-only");
+        else if(field == "isRootWidget") {
+            return luaL_error(state, "Field isRootWidget is read-only");
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
@@ -1081,10 +1081,10 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "widget_list") {
+        if(field == "widgetList") {
             lua_push_meta_engine_widget(state, *const_cast<Engine::Widget *>(data->widget_list));
         }
-        else if(field == "tab_type") {
+        else if(field == "tabType") {
             lua_pushstring(state, ui_widget_list_tab_type_to_string(data->tab).c_str());
         }
         else {
@@ -1101,11 +1101,11 @@ namespace Balltze::Plugins {
         } 
         
         std::string field = key;
-        if(field == "widget_list") {
-            return luaL_error(state, "Field widget_list is read-only");
+        if(field == "widgetList") {
+            return luaL_error(state, "Field widgetList is read-only");
         }
-        else if(field == "tab_type") {
-            return luaL_error(state, "Field tab_type is read-only");
+        else if(field == "tabType") {
+            return luaL_error(state, "Field tabType is read-only");
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());

@@ -77,6 +77,8 @@ Engine = {}
 
 ---@class EngineObjectHandle: EngineResourceHandle
 
+---@class EnginePlayerHandle: EngineResourceHandle
+
 ---@class EngineEuler3DPYR
 ---@field pitch number
 ---@field yaw number
@@ -413,7 +415,6 @@ Engine.gameState = {}
 ---@class MetaEngineAiCommunicationPacket
 ---@field type string
 ---@field broken boolean
-
 
 ---@class MetaEngineUnitSpeech
 ---@field priority string
@@ -1012,22 +1013,22 @@ function Engine.map.getCurrentMapHeader() end
 function Engine.map.getMapList() end
 
 -------------------------------------------------------
--- Engine.multiplayer
+-- Engine.netgame
 -------------------------------------------------------
 
-Engine.multiplayer = {}
+Engine.netgame = {}
 
----@alias EngineServerType
+---@alias EngineNetworkGameServerType
 ---| 'none'
 ---| 'dedicated'
 ---| 'local'
 ---| 'unknown'
 
 -- Get the server type
----@return EngineServerType
-function Engine.multiplayer.getServerType() end
+---@return EngineNetworkGameServerType
+function Engine.netgame.getServerType() end
 
----@alias EngineGameType
+---@alias EngineNetworkGameType
 ---| 'ctf'
 ---| 'slayer'
 ---| 'oddball'
@@ -1035,13 +1036,20 @@ function Engine.multiplayer.getServerType() end
 ---| 'race'
 ---| 'none'
 
+---@alias EngineNetworkGameMessageHudChatType
+---| 'none'
+---| 'all'
+---| 'team'
+---| 'vehicle'
+---| 'unknown'
+
 -- Get the server gametype
----@return EngineGameType @The server gametype
-function Engine.multiplayer.getServerGametype() end
+---@return EngineNetworkGameType @The server gametype
+function Engine.netgame.getServerGametype() end
 
 -- Get if the current game is a team game
 ---@return boolean @If the current game is a team game
-function Engine.multiplayer.currentGameIsTeam() end
+function Engine.netgame.currentGameIsTeam() end
 
 -------------------------------------------------------
 -- Engine.tag
@@ -1515,6 +1523,12 @@ Engine.userInterface = {}
 ---@field bitmapIndex integer
 
 ---@class MetaEngineWidget: EngineWidget
+
+---@alias EngineWidgetNavigationSound
+---| 'cursor'
+---| 'forward'
+---| 'back'
+---| 'flag_failure'
 
 -- Find a widget from a given widget definition; it only returns the first coincidence
 ---@param definitionTagHandleOrPath integer|string @The handle or path of the widget definition
