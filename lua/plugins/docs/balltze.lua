@@ -831,7 +831,7 @@ function Balltze.chimera.stop_timer(timerName) end
 function Balltze.chimera.spawn_object(tagPath, playerIndex, x, y, z, pitch, yaw, roll) end
 function Balltze.chimera.tick_rate() end
 function Balltze.chimera.ticks() end
-function Balltze.chimera.create_font_override(fontName, fontPath) end
+function Balltze.chimera.create_font_override(name, path, size, weight, shadowOffsetX, shadowOffsetY, offsetX, offsetY) end
 function Balltze.chimera.read_bit(address, bit) end
 function Balltze.chimera.write_bit(address, bit, value) end
 function Balltze.chimera.read_byte(addres) end
