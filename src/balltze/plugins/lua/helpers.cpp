@@ -7,8 +7,39 @@
 #include "helpers.hpp"
 
 namespace Balltze::Plugins {
-    int lua_read_only__newindex(lua_State *state) noexcept {
+    int lua_meta_object_read_only__newindex(lua_State *state) noexcept {
         return luaL_error(state, "Attempt to modify a read-only table");
+    }
+
+    int lua_meta_object__eq(lua_State *state) noexcept {
+        logger.warning("Comparing two meta objects.");
+
+        // this may never happen due getequalhandler function
+        if(!lua_istable(state, 1) || !lua_istable(state, 2)) { 
+            lua_pushboolean(state, false);
+            return 1;
+        }
+
+        lua_getfield(state, 1, "_data");
+        if(!lua_islightuserdata(state, -1)) {
+            lua_pop(state, 1);
+            lua_pushboolean(state, false);
+            return 1;
+        }
+        void *data1 = lua_touserdata(state, -1);
+        lua_pop(state, 1);
+
+        lua_getfield(state, 2, "_data");
+        if(!lua_islightuserdata(state, -1)) {
+            lua_pop(state, 1);
+            lua_pushboolean(state, false);
+            return 1;
+        }
+        void *data2 = lua_touserdata(state, -1);
+        lua_pop(state, 1);
+
+        lua_pushboolean(state, data1 == data2);
+        return 1;
     }
 
     void lua_create_functions_table(lua_State *state, const char *name, const luaL_Reg *functions) noexcept {
@@ -2924,7 +2955,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, widget->name);
             return 1;
         }
-        else if(field == "controller_index") {
+        else if(field == "controllerIndex") {
             lua_pushinteger(state, widget->controller_index);
             return 1;
         }
@@ -2935,6 +2966,26 @@ namespace Balltze::Plugins {
         else if(field == "type") {
             std::string type = lua_engine_u_i_widget_type_to_string(widget->type);
             lua_pushstring(state, type.c_str());
+            return 1;
+        }
+        else if(field == "visible") {
+            lua_pushboolean(state, widget->visible);
+            return 1;
+        }
+        else if(field == "renderRegardlessOfControllerIndex") {
+            lua_pushboolean(state, widget->render_regardless_of_controller_index);
+            return 1;
+        }
+        else if(field == "pausesGameTime") {
+            lua_pushboolean(state, widget->pauses_game_time);
+            return 1;
+        }
+        else if(field == "deleted") {
+            lua_pushboolean(state, widget->deleted);
+            return 1;
+        }
+        else if(field == "creationProcessStartTime") {
+            lua_pushinteger(state, widget->creation_process_start_time);
             return 1;
         }
         else if(field == "msToClose") {
@@ -2994,8 +3045,8 @@ namespace Balltze::Plugins {
             }
             return 1;
         }
-        else if(field == "text") {
-            lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<wchar_t *>(widget->text_box.text)));
+        else if(field == "textAddress") {
+            lua_pushinteger(state, reinterpret_cast<std::uint32_t>(const_cast<wchar_t *>(widget->text_box.text)));
             return 1;
         }
         else if(field == "cursorIndex") {
@@ -3029,7 +3080,7 @@ namespace Balltze::Plugins {
         else if(field == "name") {
             return luaL_error(state, "Unsupported operation");
         }
-        else if(field == "controller_index") {
+        else if(field == "controllerIndex") {
             widget->controller_index = static_cast<std::uint16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "position") {
@@ -3043,6 +3094,21 @@ namespace Balltze::Plugins {
             catch(...) {
                 return luaL_error(state, "Invalid value");
             }
+        }
+        else if(field == "visible") {
+            widget->visible = lua_toboolean(state, 3);
+        }
+        else if(field == "renderRegardlessOfControllerIndex") {
+            widget->render_regardless_of_controller_index = lua_toboolean(state, 3);
+        }
+        else if(field == "pausesGameTime") {
+            widget->pauses_game_time = lua_toboolean(state, 3);
+        }
+        else if(field == "deleted") {
+            widget->deleted = lua_toboolean(state, 3);
+        }
+        else if(field == "creationProcessStartTime") {
+            widget->creation_process_start_time = luaL_checkinteger(state, 3);
         }
         else if(field == "msToClose") {
             widget->ms_to_close = luaL_checkinteger(state, 3);

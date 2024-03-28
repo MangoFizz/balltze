@@ -82,7 +82,7 @@ namespace Balltze::Plugins {
             *curve = new_curve;
             lua_setfield(state, -2, "_curve");
             
-            lua_pushcclosure(state, lua_get_bezier_curve_point, 1);
+            lua_pushcfunction(state, lua_get_bezier_curve_point);
             lua_setfield(state, -2, "getPoint");
 
             return 1;

@@ -311,7 +311,7 @@ namespace Balltze::Engine {
         PADDING(0x3);
 
         /** Ok I trust open sauce */
-        std::uint32_t creator_process_start_time;
+        std::uint32_t creation_process_start_time;
 
         /** Milliseconds to close widgets */
         std::uint32_t ms_to_close;
@@ -695,6 +695,12 @@ namespace Balltze::Engine {
      * @param widget    Widget to be focused
      */
     BALLTZE_API void focus_widget(Widget *widget) noexcept;
+
+    /**
+     * Get the current root widget
+     * @return  Pointer to the root widget
+     */
+    BALLTZE_API Widget *get_root_widget() noexcept;
 
     /**
      * Open the pause menu

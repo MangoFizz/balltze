@@ -53,7 +53,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.find_widget.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.findWidget.");
             }
         }
         else {
@@ -106,7 +106,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.find_widgets.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.findWidgets.");
             }
         }
         else {
@@ -162,7 +162,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.open_widget.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.openWidget.");
             }
         }
         else {
@@ -180,7 +180,7 @@ namespace Balltze::Plugins {
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.close_widget.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.closeWidget.");
             }
         }
         else {
@@ -229,7 +229,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.replace_widget.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.replaceWidget.");
             }
         }
         else {
@@ -258,7 +258,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.replace_widget.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.reloadWidget.");
             }
         }
         else {
@@ -281,7 +281,31 @@ namespace Balltze::Plugins {
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.focus_widget.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.focusWidget.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }    
+    }
+
+    static int lua_engine_get_root_widget(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 0) {
+                auto *root_widget = Engine::get_root_widget();
+                if(root_widget) {
+                    lua_push_meta_engine_widget(state, *root_widget);
+                }
+                else {
+                    lua_pushnil(state);
+                }
+                return 1;
+            }
+            else {
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.getRootWidget.");
             }
         }
         else {
@@ -299,7 +323,7 @@ namespace Balltze::Plugins {
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.open_pause_menu.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.openPauseMenu.");
             }
         }
         else {
@@ -320,7 +344,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_hud_globals.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.getHudGlobals.");
             }
         }
         else {
@@ -353,7 +377,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_bitmap_sprite_resolution.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.getBitmapSpriteResolution.");
             }
         }
         else {
@@ -390,7 +414,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.draw_hud_message_sprite.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.drawHudMessageSprite.");
             }
         }
         else {
@@ -435,7 +459,7 @@ namespace Balltze::Plugins {
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.play_sound.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.playSound.");
             }
         }
         else {
@@ -461,7 +485,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_sound_permutation_samples_duration.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.getSoundPermutationSamplesDuration.");
             }
         }
         else {
@@ -478,6 +502,7 @@ namespace Balltze::Plugins {
         {"replaceWidget", lua_engine_replace_widget},
         {"reloadWidget", lua_engine_reload_widget},
         {"focusWidget", lua_engine_focus_widget},
+        {"getRootWidget", lua_engine_get_root_widget},
         {"openPauseMenu", lua_engine_open_pause_menu},
         {"getHudGlobals", lua_engine_get_hud_globals},
         {"getBitmapSpriteResolution", lua_get_bitmap_sprite_resolution},

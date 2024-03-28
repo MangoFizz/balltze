@@ -177,7 +177,8 @@ namespace Balltze::Plugins {
     void lua_push_meta_event_widget_render_vertex(lua_State *state, Event::UIWidgetRenderVertices::Vertex &vertex, bool read_only = false) noexcept;
     void lua_push_meta_event_widget_render_vertices(lua_State *state, Event::UIWidgetRenderVertices &vertices, bool read_only = false) noexcept;
 
-    int lua_read_only__newindex(lua_State *state) noexcept;
+    int lua_meta_object_read_only__newindex(lua_State *state) noexcept;
+    int lua_meta_object__eq(lua_State *state) noexcept;
 
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex, bool read_only = false) noexcept {
@@ -199,11 +200,13 @@ namespace Balltze::Plugins {
         lua_pushcfunction(state, index);
         lua_setfield(state, -2, "__index");
         if(read_only) {
-            lua_pushcfunction(state, lua_read_only__newindex);
+            lua_pushcfunction(state, lua_meta_object_read_only__newindex);
         } else {
             lua_pushcfunction(state, newindex);
         }
         lua_setfield(state, -2, "__newindex");
+        lua_pushcfunction(state, lua_meta_object__eq);
+        lua_setfield(state, -2, "__eq");
 
         // Set metatable for the table
         lua_setmetatable(state, -2);

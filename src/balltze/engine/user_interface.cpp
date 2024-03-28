@@ -262,6 +262,11 @@ namespace Balltze::Engine {
         }
     }
 
+    Widget *get_root_widget() noexcept {
+        auto *widget_globals = get_widget_globals();
+        return widget_globals->root_widget;
+    }
+
     void open_pause_menu() noexcept {
         if(get_widget_globals()->root_widget) {
             return;
