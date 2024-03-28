@@ -794,6 +794,32 @@ function logger:muteDebug(setting) end
 function Balltze.logger.createLogger(name) end
 
 -------------------------------------------------------
+-- Balltze.math
+-------------------------------------------------------
+
+Balltze.math = {}
+
+---@class BalltzeMathBezierCurve
+---@field getPoint fun(t: number): number @Get a point on the curve
+
+-- Create a bezier curve
+---@param x1 number @The x coordinate of the first point
+---@param y1 number @The y coordinate of the first point
+---@param x2 number @The x coordinate of the second point
+---@param y2 number @The y coordinate of the second point
+---@return BalltzeMathBezierCurve @The bezier curve
+function Balltze.math.createBezierCurve(x1, y1, x2, y2) end
+
+-- Get a point on a bezier curve
+---@param bezier BalltzeMathBezierCurve @The bezier curve
+---@param initialValue number @The starting point
+---@param finalValue number @The destination point
+---@param t number @The t value
+---@param reverse boolean @Whether to reverse the curve
+---@return number @The interpolated value 
+function Balltze.math.getBezierCurvePoint(bezier, initialValue, finalValue, t, reverse) end
+
+-------------------------------------------------------
 -- Balltze.output
 -------------------------------------------------------
 
