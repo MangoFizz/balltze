@@ -81,7 +81,7 @@ namespace Balltze::Plugins {
     }
 
     void DLLPlugin::get_directory() {
-        m_directory = get_plugins_path() / m_metadata->name;
+        m_directory = get_plugins_path() / m_filepath.stem().string();
     }
 
     HMODULE DLLPlugin::handle() {
@@ -238,7 +238,7 @@ namespace Balltze::Plugins {
     }
 
     void LuaPlugin::get_directory() {
-        m_directory =  get_plugins_path() / ("lua_" + m_metadata->name);
+        m_directory =  get_plugins_path() / ("lua_" + m_filepath.stem().string());
     }
 
     lua_State* LuaPlugin::state() noexcept {
@@ -390,13 +390,14 @@ namespace Balltze::Plugins {
         if(m_state) {
             luaL_openlibs(m_state);
             lua_open_balltze_api(m_state);
+            get_directory();
 
             // Set package.path and package.cpath
             lua_getglobal(m_state, "package");
-            auto new_lua_path = m_directory.string() + "\\?.lua";
+            auto new_lua_path = m_directory.string() + "\\modules\\?.lua";
             lua_pushstring(m_state, new_lua_path.c_str());
             lua_setfield(m_state, -2, "path");
-            auto new_lua_cpath = get_plugins_path().string() + "\\?.dll;" + m_directory.string() + "\\?.dll";
+            auto new_lua_cpath = get_plugins_path().string() + "\\?.dll;" + m_directory.string() + "\\modules\\?.dll";
             lua_pushstring(m_state, new_lua_cpath.c_str());
             lua_setfield(m_state, -2, "cpath");
             lua_pop(m_state, 1);
@@ -411,7 +412,6 @@ namespace Balltze::Plugins {
                     throw std::runtime_error("Could not execute Lua plugin.");
                 }
                 read_metadata();
-                get_directory();
             }
             else {
                 lua_close(m_state);
