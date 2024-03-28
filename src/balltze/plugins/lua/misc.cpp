@@ -83,39 +83,11 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_deep_copy_table(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            if(lua_istable(state, 1)) {
-                lua_newtable(state);
-                lua_pushnil(state);
-                while(lua_next(state, 1) != 0) {
-                    if(lua_istable(state, -1)) {
-                        lua_deep_copy_table(state);
-                    }
-                    else {
-                        lua_pushvalue(state, -1);
-                    }
-                    lua_pushvalue(state, -2);
-                    lua_settable(state, -4);
-                }
-                return 1;
-            }
-            else {
-                return luaL_error(state, "invalid table in Balltze.misc.deepCopy function");
-            }
-        }
-        else {
-            return luaL_error(state, "invalid number of arguments in Balltze.misc.deepCopy function");
-        }
-    }
-
     static const luaL_Reg misc_functions[] = {
         {"setTimestamp", lua_set_timestamp},
         {"getTimestampElapsedMilliseconds", lua_get_elapsed_milliseconds},
         {"getTimestampElapsedSeconds", lua_get_elapsed_seconds},
         {"resetTimestamp", lua_reset_timestamp},
-        {"deepCopyTable", lua_deep_copy_table},
         {nullptr, nullptr}
     };
 
