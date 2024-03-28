@@ -747,29 +747,43 @@ Balltze.logger = {}
 local logger = {}
 
 -- Log a debug message
----@param message string @The message to log
-function logger:debug(message) end
+---@param format string @The format of the message
+---@vararg any @The arguments of the message
+function logger:debug(format, ...) end
 
 -- Log an info message
----@param message string @The message to log
-function logger:info(message) end
+---@param format string @The format of the message
+---@vararg any @The arguments of the message
+function logger:info(format, ...) end
 
 -- Log a warning message
----@param message string @The message to log
-function logger:warning(message) end
+---@param format string @The format of the message
+---@vararg any @The arguments of the message
+function logger:warning(format, ...) end
 
 -- Log an error message
----@param message string @The message to log
-function logger:error(message) end
+---@param format string @The format of the message
+---@vararg any @The arguments of the message
+function logger:error(format, ...) end
 
 -- Log a fatal message
----@param message string @The message to log
-function logger:fatal(message) end
+---@param format string @The format of the message
+---@vararg any @The arguments of the message
+function logger:fatal(format, ...) end
 
 -- Set a file to log to
 ---@param filePath string @The path of the file to log to
 function logger:setFile(filePath) end
 
+-- Set whether to log to the in-game console
+---@param setting? boolean @Whether to log to the in-game console
+---@return boolean|nil @The current setting if no argument is provided
+function logger:muteIngame(setting) end
+
+-- Set whether to log debug messages
+---@param setting? boolean @Whether to log debug messages
+---@return boolean|nil @The current setting if no argument is provided
+function logger:muteDebug(setting) end
 -- Create a new logger
 ---@param name string @The name of the logger
 ---@return Logger @The logger

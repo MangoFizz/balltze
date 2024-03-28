@@ -113,6 +113,84 @@ namespace Balltze::Plugins {
         return 0;
     }
 
+    static int lua_logger_mute_ingame(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 1 || args == 2) {
+                /* Get the logger name */
+                lua_getfield(state, 1, "_name");
+                std::string logger_name = luaL_checkstring(state, -1);
+                lua_pop(state, 1);
+
+                Logger *llogger = plugin->get_logger(logger_name);
+                if(!llogger) {
+                    logger.warning("Could not get logger {} for plugin {}", logger_name, plugin->filename());
+                    return luaL_error(state, "Unknown logger.");
+                }
+
+                if(args == 2) {
+                    /* Get the mute value */
+                    bool mute = lua_toboolean(state, 2);
+                    llogger->mute_ingame(mute);
+                    return 0;
+                }
+                else {
+                    lua_pushboolean(state, llogger->mute_ingame());
+                    return 1;
+                }
+            }
+            else {
+                logger.warning("Invalid number of arguments for logger.mute_ingame.");
+                return luaL_error(state, "Invalid number of arguments for logger.mute_ingame.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        return 0;
+    }
+
+    static int lua_logger_mute_debug(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            int args = lua_gettop(state);
+            if(args == 1 || args == 2) {
+                /* Get the logger name */
+                lua_getfield(state, 1, "_name");
+                std::string logger_name = luaL_checkstring(state, -1);
+                lua_pop(state, 1);
+
+                Logger *llogger = plugin->get_logger(logger_name);
+                if(!llogger) {
+                    logger.warning("Could not get logger {} for plugin {}", logger_name, plugin->filename());
+                    return luaL_error(state, "Unknown logger.");
+                }
+
+                if(args == 2) {
+                    /* Get the mute value */
+                    bool mute = lua_toboolean(state, 2);
+                    llogger->mute_debug(mute);
+                    return 0;
+                }
+                else {
+                    lua_pushboolean(state, llogger->mute_debug());
+                    return 1;
+                }
+            }
+            else {
+                logger.warning("Invalid number of arguments for logger.mute_debug.");
+                return luaL_error(state, "Invalid number of arguments for logger.mute_debug.");
+            }
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+        return 0;
+    }
+
     static int lua_logger__gc(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
@@ -163,6 +241,12 @@ namespace Balltze::Plugins {
 
                 lua_pushcfunction(state, lua_logger_set_file);
                 lua_setfield(state, -2, "setFile");
+
+                lua_pushcfunction(state, lua_logger_mute_ingame);
+                lua_setfield(state, -2, "muteIngame");
+
+                lua_pushcfunction(state, lua_logger_mute_debug);
+                lua_setfield(state, -2, "muteDebug");
 
                 // Set the garbage collector metatable
                 lua_createtable(state, 0, 1);
