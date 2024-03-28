@@ -800,7 +800,7 @@ function Balltze.logger.createLogger(name) end
 Balltze.math = {}
 
 ---@class BalltzeMathBezierCurve
----@field getPoint fun(t: number): number @Get a point on the curve
+---@field getPoint fun(t: BalltzeMathBezierCurve, initialValue: number, finalValue: number, t: number, reverse?: boolean): number @Get a point on the curve
 
 -- Create a bezier curve
 ---@param x1 number @The x coordinate of the first point
@@ -816,7 +816,7 @@ function Balltze.math.createBezierCurve(x1, y1, x2, y2) end
 ---@param initialValue number @The starting point
 ---@param finalValue number @The destination point
 ---@param t number @The t value
----@param reverse boolean @Whether to reverse the curve
+---@param reverse? boolean @Whether to reverse the curve
 ---@return number @The interpolated value 
 function Balltze.math.getBezierCurvePoint(bezier, initialValue, finalValue, t, reverse) end
 
