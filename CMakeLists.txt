@@ -136,6 +136,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/lua-fmt/lfmt.c
     src/balltze/plugins/lua/logger.cpp
     src/balltze/plugins/lua/math.cpp
+    src/balltze/plugins/lua/misc.cpp
     src/balltze/plugins/lua/output.cpp
     src/balltze/balltze.cpp
 

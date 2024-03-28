@@ -808,6 +808,7 @@ Balltze.math = {}
 ---@param x2 number @The x coordinate of the second point
 ---@param y2 number @The y coordinate of the second point
 ---@return BalltzeMathBezierCurve @The bezier curve
+---@overload fun(curvePresetName: string): BalltzeMathBezierCurve
 function Balltze.math.createBezierCurve(x1, y1, x2, y2) end
 
 -- Get a point on a bezier curve
@@ -818,6 +819,40 @@ function Balltze.math.createBezierCurve(x1, y1, x2, y2) end
 ---@param reverse boolean @Whether to reverse the curve
 ---@return number @The interpolated value 
 function Balltze.math.getBezierCurvePoint(bezier, initialValue, finalValue, t, reverse) end
+
+-------------------------------------------------------
+-- Balltze.misc
+-------------------------------------------------------
+
+Balltze.misc = {}
+
+---@class BalltzeMiscTimestamp
+---@field getElapsedMilliseconds fun(): integer @Get the number of milliseconds since the timestamp was set
+---@field getElapsedSeconds fun(): integer @Get the number of seconds since the timestamp was set
+---@field reset fun() @Reset the timestamp
+
+-- Create a timestamp
+---@return BalltzeMiscTimestamp @The timestamp
+function Balltze.misc.setTimestamp() end
+
+-- Get the elapsed milliseconds since the timestamp was set
+---@param timestamp BalltzeMiscTimestamp @The timestamp
+---@return integer @The number of milliseconds since the timestamp was set
+function Balltze.misc.getElapsedMilliseconds(timestamp) end
+
+-- Get the elapsed seconds since the timestamp was set
+---@param timestamp BalltzeMiscTimestamp @The timestamp
+---@return integer @The number of seconds since the timestamp was set
+function Balltze.misc.getElapsedSeconds(timestamp) end
+
+-- Reset the timestamp
+---@param timestamp BalltzeMiscTimestamp @The timestamp
+function Balltze.misc.resetTimestamp(timestamp) end
+
+-- Create a deep copy of a table
+---@param table table @The table to copy
+---@return table @The copy of the table
+function Balltze.misc.deepCopyTable(table) end
 
 -------------------------------------------------------
 -- Balltze.output
