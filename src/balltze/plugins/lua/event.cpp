@@ -934,7 +934,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widget") {
-            lua_push_meta_engine_widget(state, *const_cast<Engine::Widget *>(data->widget));
+            lua_push_meta_engine_widget(state, *data->widget);
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
@@ -967,7 +967,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widget") {
-            lua_push_meta_engine_widget(state, *const_cast<Engine::Widget *>(data->widget));
+            lua_push_meta_engine_widget(state, *data->widget);
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
@@ -1000,7 +1000,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widget") {
-            lua_push_meta_engine_widget(state, *const_cast<Engine::Widget *>(data->widget));
+            lua_push_meta_engine_widget(state, *data->widget);
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
@@ -1087,7 +1087,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widgetList") {
-            lua_push_meta_engine_widget(state, *const_cast<Engine::Widget *>(data->widget_list));
+            lua_push_meta_engine_widget(state, *data->widget_list);
         }
         else if(field == "tabType") {
             lua_pushstring(state, ui_widget_list_tab_type_to_string(data->tab).c_str());

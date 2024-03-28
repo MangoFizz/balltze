@@ -8,17 +8,17 @@
 
 namespace Balltze::Event {
     struct UIWidgetEventArgs {
-        Engine::Widget const *widget;
+        Engine::Widget *const widget;
 
-        UIWidgetEventArgs(Engine::Widget const *widget) : widget(widget) {}
+        UIWidgetEventArgs(Engine::Widget *const widget) : widget(widget) {}
     };
 
     struct UIWidgetCreateEventArgs : UIWidgetEventArgs {
         const Engine::TagHandle definition_tag_handle;
         const bool is_root_widget;
-        Engine::Widget const *parent_widget;
+        Engine::Widget *const parent_widget;
 
-        UIWidgetCreateEventArgs(Engine::Widget const *widget, Engine::TagHandle definition_tag_handle, bool is_root_widget, Engine::Widget const *parent_widget) : UIWidgetEventArgs(widget), definition_tag_handle(definition_tag_handle), is_root_widget(is_root_widget), parent_widget(parent_widget) {}
+        UIWidgetCreateEventArgs(Engine::Widget *const widget, Engine::TagHandle definition_tag_handle, bool is_root_widget, Engine::Widget *const parent_widget) : UIWidgetEventArgs(widget), definition_tag_handle(definition_tag_handle), is_root_widget(is_root_widget), parent_widget(parent_widget) {}
     };
 
     class UIWidgetCreateEvent : public EventData<UIWidgetCreateEvent> {
@@ -94,10 +94,10 @@ namespace Balltze::Event {
     };
 
     struct UIWidgetListTabEventArgs {
-        Engine::Widget const *widget_list;
+        Engine::Widget *const widget_list;
         const UIWidgetListTabType tab;
 
-        UIWidgetListTabEventArgs(Engine::Widget const *widget_list, UIWidgetListTabType tab) : widget_list(widget_list), tab(tab) {}
+        UIWidgetListTabEventArgs(Engine::Widget *const widget_list, UIWidgetListTabType tab) : widget_list(widget_list), tab(tab) {}
     };
 
     class UIWidgetListTabEvent : public EventData<UIWidgetListTabEvent> {
