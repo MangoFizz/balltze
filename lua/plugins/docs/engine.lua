@@ -194,7 +194,7 @@ Engine = {}
 ---@field u number
 ---@field v number
 
----@class EngineWidgetRenderVertices
+---@class EngineUIWidgetRenderVertices
 ---@field topLeft EngineWidgetRenderVertex
 ---@field topRight EngineWidgetRenderVertex
 ---@field bottomLeft EngineWidgetRenderVertex
@@ -1165,249 +1165,251 @@ function Engine.tag.getTagDataHeader() end
 ---@field dataAddress integer
 ---@field indexed boolean
 
----@class EngineActorTag: EngineTag
+---@class MetaEngineTag: EngineTag
+
+---@class EngineActorTag: MetaEngineTag
 ---@field data MetaEngineTagDataActor
 
----@class EngineActorVariantTag: EngineTag
+---@class EngineActorVariantTag: MetaEngineTag
 ---@field data MetaEngineTagDataActorVariant
 
----@class EngineAntennaTag: EngineTag
+---@class EngineAntennaTag: MetaEngineTag
 ---@field data MetaEngineTagDataAntenna
 
----@class EngineModelAnimationsTag: EngineTag
+---@class EngineModelAnimationsTag: MetaEngineTag
 ---@field data MetaEngineTagDataModelAnimations
 
----@class EngineBipedTag: EngineTag
+---@class EngineBipedTag: MetaEngineTag
 ---@field data MetaEngineTagDataBiped
 
----@class EngineBitmapTag: EngineTag
+---@class EngineBitmapTag: MetaEngineTag
 ---@field data MetaEngineTagDataBitmap
 
----@class EngineContinuousDamageEffectTag: EngineTag
+---@class EngineContinuousDamageEffectTag: MetaEngineTag
 ---@field data MetaEngineTagDataContinuousDamageEffect
 
----@class EngineModelCollisionGeometryTag: EngineTag
+---@class EngineModelCollisionGeometryTag: MetaEngineTag
 ---@field data MetaEngineTagDataModelCollisionGeometry
 
----@class EngineColorTableTag: EngineTag
+---@class EngineColorTableTag: MetaEngineTag
 ---@field data MetaEngineTagDataColorTable
 
----@class EngineContrailTag: EngineTag
+---@class EngineContrailTag: MetaEngineTag
 ---@field data MetaEngineTagDataContrail
 
----@class EngineDeviceControlTag: EngineTag
+---@class EngineDeviceControlTag: MetaEngineTag
 ---@field data MetaEngineTagDataDeviceControl
 
----@class EngineDecalTag: EngineTag
+---@class EngineDecalTag: MetaEngineTag
 ---@field data MetaEngineTagDataDecal
 
----@class EngineUiWidgetDefinitionTag: EngineTag
+---@class EngineUiWidgetDefinitionTag: MetaEngineTag
 ---@field data MetaEngineTagDataUiWidgetDefinition
 
----@class EngineInputDeviceDefaultsTag: EngineTag
+---@class EngineInputDeviceDefaultsTag: MetaEngineTag
 ---@field data MetaEngineTagDataInputDeviceDefaults
 
----@class EngineDeviceTag: EngineTag
+---@class EngineDeviceTag: MetaEngineTag
 ---@field data MetaEngineTagDataDevice
 
----@class EngineDetailObjectCollectionTag: EngineTag
+---@class EngineDetailObjectCollectionTag: MetaEngineTag
 ---@field data MetaEngineTagDataDetailObjectCollection
 
----@class EngineEffectTag: EngineTag
+---@class EngineEffectTag: MetaEngineTag
 ---@field data MetaEngineTagDataEffect
 
----@class EngineEquipmentTag: EngineTag
+---@class EngineEquipmentTag: MetaEngineTag
 ---@field data MetaEngineTagDataEquipment
 
----@class EngineFlagTag: EngineTag
+---@class EngineFlagTag: MetaEngineTag
 ---@field data MetaEngineTagDataFlag
 
----@class EngineFogTag: EngineTag
+---@class EngineFogTag: MetaEngineTag
 ---@field data MetaEngineTagDataFog
 
----@class EngineFontTag: EngineTag
+---@class EngineFontTag: MetaEngineTag
 ---@field data MetaEngineTagDataFont
 
----@class EngineLightningTag: EngineTag
+---@class EngineLightningTag: MetaEngineTag
 ---@field data MetaEngineTagDataLightning
 
----@class EngineMaterialEffectsTag: EngineTag
+---@class EngineMaterialEffectsTag: MetaEngineTag
 ---@field data MetaEngineTagDataMaterialEffects
 
----@class EngineGarbageTag: EngineTag
+---@class EngineGarbageTag: MetaEngineTag
 ---@field data MetaEngineTagDataGarbage
 
----@class EngineGlowTag: EngineTag
+---@class EngineGlowTag: MetaEngineTag
 ---@field data MetaEngineTagDataGlow
 
----@class EngineGrenadeHudInterfaceTag: EngineTag
+---@class EngineGrenadeHudInterfaceTag: MetaEngineTag
 ---@field data MetaEngineTagDataGrenadeHudInterface
 
----@class EngineHudMessageTextTag: EngineTag
+---@class EngineHudMessageTextTag: MetaEngineTag
 ---@field data MetaEngineTagDataHudMessageText
 
----@class EngineHudNumberTag: EngineTag
+---@class EngineHudNumberTag: MetaEngineTag
 ---@field data MetaEngineTagDataHudNumber
 
----@class EngineHudGlobalsTag: EngineTag
+---@class EngineHudGlobalsTag: MetaEngineTag
 ---@field data MetaEngineTagDataHudGlobals
 
----@class EngineItemTag: EngineTag
+---@class EngineItemTag: MetaEngineTag
 ---@field data MetaEngineTagDataItem
 
----@class EngineItemCollectionTag: EngineTag
+---@class EngineItemCollectionTag: MetaEngineTag
 ---@field data MetaEngineTagDataItemCollection
 
----@class EngineDamageEffectTag: EngineTag
+---@class EngineDamageEffectTag: MetaEngineTag
 ---@field data MetaEngineTagDataDamageEffect
 
----@class EngineLensFlareTag: EngineTag
+---@class EngineLensFlareTag: MetaEngineTag
 ---@field data MetaEngineTagDataLensFlare
 
----@class EngineDeviceLightFixtureTag: EngineTag
+---@class EngineDeviceLightFixtureTag: MetaEngineTag
 ---@field data MetaEngineTagDataDeviceLightFixture
 
----@class EngineLightTag: EngineTag
+---@class EngineLightTag: MetaEngineTag
 ---@field data MetaEngineTagDataLight
 
----@class EngineSoundLoopingTag: EngineTag
+---@class EngineSoundLoopingTag: MetaEngineTag
 ---@field data MetaEngineTagDataSoundLooping
 
----@class EngineDeviceMachineTag: EngineTag
+---@class EngineDeviceMachineTag: MetaEngineTag
 ---@field data MetaEngineTagDataDeviceMachine
 
----@class EngineGlobalsTag: EngineTag
+---@class EngineGlobalsTag: MetaEngineTag
 ---@field data MetaEngineTagDataGlobals
 
----@class EngineMeterTag: EngineTag
+---@class EngineMeterTag: MetaEngineTag
 ---@field data MetaEngineTagDataMeter
 
----@class EngineLightVolumeTag: EngineTag
+---@class EngineLightVolumeTag: MetaEngineTag
 ---@field data MetaEngineTagDataLightVolume
 
----@class EngineGbxmodelTag: EngineTag
+---@class EngineGbxmodelTag: MetaEngineTag
 ---@field data MetaEngineTagDataGbxmodel
 
----@class EngineModelTag: EngineTag
+---@class EngineModelTag: MetaEngineTag
 ---@field data MetaEngineTagDataModel
 
----@class EngineMultiplayerScenarioDescriptionTag: EngineTag
+---@class EngineMultiplayerScenarioDescriptionTag: MetaEngineTag
 ---@field data MetaEngineTagDataMultiplayerScenarioDescription
 
----@class EnginePreferencesNetworkGameTag: EngineTag
+---@class EnginePreferencesNetworkGameTag: MetaEngineTag
 ---@field data MetaEngineTagDataPreferencesNetworkGame
 
----@class EngineObjectTag: EngineTag
+---@class EngineObjectTag: MetaEngineTag
 ---@field data MetaEngineTagDataObject
 
----@class EngineParticleTag: EngineTag
+---@class EngineParticleTag: MetaEngineTag
 ---@field data MetaEngineTagDataParticle
 
----@class EngineParticleSystemTag: EngineTag
+---@class EngineParticleSystemTag: MetaEngineTag
 ---@field data MetaEngineTagDataParticleSystem
 
----@class EnginePhysicsTag: EngineTag
+---@class EnginePhysicsTag: MetaEngineTag
 ---@field data MetaEngineTagDataPhysics
 
----@class EnginePlaceholderTag: EngineTag
+---@class EnginePlaceholderTag: MetaEngineTag
 ---@field data MetaEngineTagDataPlaceholder
 
----@class EnginePointPhysicsTag: EngineTag
+---@class EnginePointPhysicsTag: MetaEngineTag
 ---@field data MetaEngineTagDataPointPhysics
 
----@class EngineProjectileTag: EngineTag
+---@class EngineProjectileTag: MetaEngineTag
 ---@field data MetaEngineTagDataProjectile
 
----@class EngineWeatherParticleSystemTag: EngineTag
+---@class EngineWeatherParticleSystemTag: MetaEngineTag
 ---@field data MetaEngineTagDataWeatherParticleSystem
 
----@class EngineScenarioStructureBspTag: EngineTag
+---@class EngineScenarioStructureBspTag: MetaEngineTag
 ---@field data MetaEngineTagDataScenarioStructureBsp
 
----@class EngineSceneryTag: EngineTag
+---@class EngineSceneryTag: MetaEngineTag
 ---@field data MetaEngineTagDataScenery
 
----@class EngineShaderTransparentChicagoExtendedTag: EngineTag
+---@class EngineShaderTransparentChicagoExtendedTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderTransparentChicagoExtended
 
----@class EngineShaderTransparentChicagoTag: EngineTag
+---@class EngineShaderTransparentChicagoTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderTransparentChicago
 
----@class EngineScenarioTag: EngineTag
+---@class EngineScenarioTag: MetaEngineTag
 ---@field data MetaEngineTagDataScenario
 
----@class EngineShaderEnvironmentTag: EngineTag
+---@class EngineShaderEnvironmentTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderEnvironment
 
----@class EngineShaderTransparentGlassTag: EngineTag
+---@class EngineShaderTransparentGlassTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderTransparentGlass
 
----@class EngineShaderTag: EngineTag
+---@class EngineShaderTag: MetaEngineTag
 ---@field data MetaEngineTagDataShader
 
----@class EngineSkyTag: EngineTag
+---@class EngineSkyTag: MetaEngineTag
 ---@field data MetaEngineTagDataSky
 
----@class EngineShaderTransparentMeterTag: EngineTag
+---@class EngineShaderTransparentMeterTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderTransparentMeter
 
----@class EngineSoundTag: EngineTag
+---@class EngineSoundTag: MetaEngineTag
 ---@field data MetaEngineTagDataSound
 
----@class EngineSoundEnvironmentTag: EngineTag
+---@class EngineSoundEnvironmentTag: MetaEngineTag
 ---@field data MetaEngineTagDataSoundEnvironment
 
----@class EngineShaderModelTag: EngineTag
+---@class EngineShaderModelTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderModel
 
----@class EngineShaderTransparentGenericTag: EngineTag
+---@class EngineShaderTransparentGenericTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderTransparentGeneric
 
 ---@class MetaEngineTagDataUiWidgetCollection: MetaEngineTagDataTagCollection
 
----@class EngineUiWidgetCollectionTag: EngineTag
+---@class EngineUiWidgetCollectionTag: MetaEngineTag
 ---@field data MetaEngineTagDataUiWidgetCollection
 
----@class EngineShaderTransparentPlasmaTag: EngineTag
+---@class EngineShaderTransparentPlasmaTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderTransparentPlasma
 
----@class EngineSoundSceneryTag: EngineTag
+---@class EngineSoundSceneryTag: MetaEngineTag
 ---@field data MetaEngineTagDataSoundScenery
 
----@class EngineStringListTag: EngineTag
+---@class EngineStringListTag: MetaEngineTag
 ---@field data MetaEngineTagDataStringList
 
----@class EngineShaderTransparentWaterTag: EngineTag
+---@class EngineShaderTransparentWaterTag: MetaEngineTag
 ---@field data MetaEngineTagDataShaderTransparentWater
 
----@class EngineTagCollectionTag: EngineTag
+---@class EngineTagCollectionTag: MetaEngineTag
 ---@field data MetaEngineTagDataTagCollection
 
----@class EngineCameraTrackTag: EngineTag
+---@class EngineCameraTrackTag: MetaEngineTag
 ---@field data MetaEngineTagDataCameraTrack
 
----@class EngineUnitHudInterfaceTag: EngineTag
+---@class EngineUnitHudInterfaceTag: MetaEngineTag
 ---@field data MetaEngineTagDataUnitHudInterface
 
----@class EngineUnitTag: EngineTag
+---@class EngineUnitTag: MetaEngineTag
 ---@field data MetaEngineTagDataUnit
 
----@class EngineUnicodeStringListTag: EngineTag
+---@class EngineUnicodeStringListTag: MetaEngineTag
 ---@field data MetaEngineTagDataUnicodeStringList
 
----@class EngineVirtualKeyboardTag: EngineTag
+---@class EngineVirtualKeyboardTag: MetaEngineTag
 ---@field data MetaEngineTagDataVirtualKeyboard
 
----@class EngineVehicleTag: EngineTag
+---@class EngineVehicleTag: MetaEngineTag
 ---@field data MetaEngineTagDataVehicle
 
----@class EngineWeaponTag: EngineTag
+---@class EngineWeaponTag: MetaEngineTag
 ---@field data MetaEngineTagDataWeapon
 
----@class EngineWindTag: EngineTag
+---@class EngineWindTag: MetaEngineTag
 ---@field data MetaEngineTagDataWind
 
----@class EngineWeaponHudInterfaceTag: EngineTag
+---@class EngineWeaponHudInterfaceTag: MetaEngineTag
 ---@field data MetaEngineTagDataWeaponHudInterface
 
 -- Get a tag

@@ -58,6 +58,7 @@ namespace Balltze::Plugins {
     Engine::InputDevice input_device_from_string(const std::string &device);
 
     void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept;
+    void lua_push_meta_engine_tag(lua_State *state, Engine::Tag &tag, bool read_only = false) noexcept;
 
     void lua_push_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept;
     void lua_push_engine_resource_handle(lua_State *state, const Engine::ResourceHandle &handle) noexcept;
@@ -180,6 +181,12 @@ namespace Balltze::Plugins {
 
     template<typename T>
     void lua_push_meta_object(lua_State *state, T &elem, lua_CFunction index, lua_CFunction newindex, bool read_only = false) noexcept {
+        // Just to be sure
+        if(&elem == nullptr) {
+            lua_pushnil(state);
+            return;
+        }
+
         // Create table 
         lua_newtable(state);
         lua_pushlightuserdata(state, reinterpret_cast<void *>(const_cast<T *>(&elem)));

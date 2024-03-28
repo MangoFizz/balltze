@@ -213,7 +213,7 @@ function Balltze.event.mapFileLoad.removeAllListeners() end
 Balltze.event.mapLoad = {}
 
 ---@class BalltzeMapLoadEventArgs
----@field mapPath string @The path of the map that was loaded
+---@field name string @The name of the map that was loaded
 
 ---@class MetaBalltzeMapLoadEventArgs: BalltzeMapLoadEventArgs
 
@@ -376,7 +376,7 @@ function Balltze.event.postCarnageReportRender.removeAllListeners() end
 Balltze.event.hudElementBitmapRender = {}
 
 ---@class BalltzeHudElementBitmapRenderEventArgs
----@field vertices EngineWidgetRenderVertices @The vertices of the bitmap
+---@field vertices EngineUIWidgetRenderVertices @The vertices of the bitmap
 ---@field bitmapData MetaEngineTagDataBitmapData @The bitmap data of the bitmap
 
 ---@class MetaBalltzeHudElementBitmapRenderEventArgs: BalltzeHudElementBitmapRenderEventArgs
@@ -399,31 +399,31 @@ function Balltze.event.hudElementBitmapRender.removeListener(handle) end
 -- Remove all listeners from the hudElementBitmapRender event
 function Balltze.event.hudElementBitmapRender.removeAllListeners() end
 
-Balltze.event.widgetBackgroundRender = {}
+Balltze.event.uiWidgetBackgroundRender = {}
 
----@class BalltzeWidgetBackgroundRenderEventArgs
----@field vertices EngineWidgetRenderVertices @The vertices of the background
+---@class BalltzeUIWidgetBackgroundRenderEventArgs
+---@field vertices EngineUIWidgetRenderVertices @The vertices of the background
 ---@field widget MetaEngineWidget @The widget of the background
 
----@class MetaBalltzeWidgetBackgroundRenderEventArgs: BalltzeWidgetBackgroundRenderEventArgs
+---@class MetaBalltzeUIWidgetBackgroundRenderEventArgs: BalltzeUIWidgetBackgroundRenderEventArgs
 
----@class BalltzeWidgetBackgroundRenderEvent: BalltzeEvent
----@field args MetaBalltzeWidgetBackgroundRenderEventArgs @The arguments of the event
+---@class BalltzeUIWidgetBackgroundRenderEvent: BalltzeEvent
+---@field args MetaBalltzeUIWidgetBackgroundRenderEventArgs @The arguments of the event
 
----@alias BalltzeWidgetBackgroundRenderEventCallback fun(event: BalltzeWidgetBackgroundRenderEvent)
+---@alias BalltzeUIWidgetBackgroundRenderEventCallback fun(event: BalltzeUIWidgetBackgroundRenderEvent)
 
--- Subscribe a listener to the widgetBackgroundRender event
----@param callbackFunction BalltzeWidgetBackgroundRenderEventCallback @The function to call when the event is triggered
+-- Subscribe a listener to the uiWidgetBackgroundRender event
+---@param callbackFunction BalltzeUIWidgetBackgroundRenderEventCallback @The function to call when the event is triggered
 ---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
-function Balltze.event.widgetBackgroundRender.subscribe(callbackFunction, priority) end
+function Balltze.event.uiWidgetBackgroundRender.subscribe(callbackFunction, priority) end
 
--- Remove a listener from the widgetBackgroundRender event
+-- Remove a listener from the uiWidgetBackgroundRender event
 ---@param handle integer @The handle of the event listener
-function Balltze.event.widgetBackgroundRender.removeListener(handle) end
+function Balltze.event.uiWidgetBackgroundRender.removeListener(handle) end
 
--- Remove all listeners from the widgetBackgroundRender event
-function Balltze.event.widgetBackgroundRender.removeAllListeners() end
+-- Remove all listeners from the uiWidgetBackgroundRender event
+function Balltze.event.uiWidgetBackgroundRender.removeAllListeners() end
 
 Balltze.event.navpointsRender = {}
 
@@ -737,6 +737,9 @@ function Balltze.features.getImportedTag(mapPath, tagPath, tagClass) end
 -- Sets the aspect ratio of the menu
 function Balltze.features.setMenuAspectRatio(x, y) end
 
+-- Resets the aspect ratio of the menu
+function Balltze.features.resetMenuAspectRatio() end
+
 -------------------------------------------------------
 -- Balltze.logger
 -------------------------------------------------------
@@ -784,6 +787,7 @@ function logger:muteIngame(setting) end
 ---@param setting? boolean @Whether to log debug messages
 ---@return boolean|nil @The current setting if no argument is provided
 function logger:muteDebug(setting) end
+
 -- Create a new logger
 ---@param name string @The name of the logger
 ---@return Logger @The logger

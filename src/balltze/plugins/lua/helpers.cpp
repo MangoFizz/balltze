@@ -719,6 +719,95 @@ namespace Balltze::Plugins {
         lua_setfield(state, -2, "data");
     }
 
+    static int lua_meta_engine_tag__index(lua_State *state) noexcept {
+        auto *tag = lua_from_meta_object<Engine::Tag>(state, 1);
+        auto *key = lua_tostring(state, 2);
+
+        if(key == nullptr) {
+            return luaL_error(state, "Invalid key type");
+        }
+
+        std::string field = key;
+        if(field == "primaryClass") {
+            lua_pushstring(state, Engine::tag_class_to_string(tag->primary_class).c_str());
+        }
+        else if(field == "secondaryClass") {
+            lua_pushstring(state, Engine::tag_class_to_string(tag->secondary_class).c_str());
+        }
+        else if(field == "tertiaryClass") {
+            lua_pushstring(state, Engine::tag_class_to_string(tag->tertiary_class).c_str());
+        }
+        else if(field == "handle") {
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&tag->handle));
+        }
+        else if(field == "path") {
+            lua_pushstring(state, tag->path);
+        }
+        else if(field == "dataAddress") {
+            lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag->data));
+        }
+        else if(field == "indexed") {
+            lua_pushboolean(state, tag->indexed);
+        }
+        else {
+            return luaL_error(state, "Invalid key");
+        }
+        return 1;
+    }
+
+    static int lua_meta_engine_tag__newindex(lua_State *state) noexcept {
+        auto *tag = lua_from_meta_object<Engine::Tag>(state, 1); 
+        auto *key = lua_tostring(state, 2);
+
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key type"); 
+        }
+
+        std::string field = key;
+        if(field == "primaryClass") {
+            auto primary_class = Engine::tag_class_from_string(luaL_checkstring(state, 3));
+            if(primary_class == Engine::TAG_CLASS_NULL) {
+                return luaL_error(state, "Invalid tag class");
+            }
+            tag->primary_class = primary_class;
+        }
+        else if(field == "secondaryClass") {
+            auto secondary_class = Engine::tag_class_from_string(luaL_checkstring(state, 3));
+            if(secondary_class == Engine::TAG_CLASS_NULL) {
+                return luaL_error(state, "Invalid tag class");
+            }
+            tag->secondary_class = secondary_class;
+        }
+        else if(field == "tertiaryClass") {
+            auto tertiary_class = Engine::tag_class_from_string(luaL_checkstring(state, 3));
+            if(tertiary_class == Engine::TAG_CLASS_NULL) {
+                return luaL_error(state, "Invalid tag class");
+            }
+            tag->tertiary_class = tertiary_class;
+        }
+        else if(field == "handle") {
+            return luaL_error(state, "Cannot modify tag handle");
+        }
+        else if(field == "path") {
+            return luaL_error(state, "Cannot modify tag path");
+        }
+        else if(field == "dataAddress") {
+            auto data = luaL_checkinteger(state, 3);
+            tag->data = reinterpret_cast<std::byte *>(data);
+        }
+        else if(field == "indexed") {
+            return luaL_error(state, "Cannot modify indexed flag");
+        }
+        else {
+            return luaL_error(state, "Invalid key");
+        }
+        return 0;
+    }
+
+    void lua_push_meta_engine_tag(lua_State *state, Engine::Tag &tag, bool read_only) noexcept {
+        lua_push_meta_object(state, tag, lua_meta_engine_tag__index, lua_meta_engine_tag__newindex, read_only);
+    }
+
     void lua_push_engine_resource_handle(lua_State *state, const Engine::ResourceHandle &handle) noexcept {
         lua_newtable(state);
 
