@@ -717,7 +717,12 @@ namespace Balltze::Plugins {
             lua_push_meta_event_widget_render_vertices(state, *data->vertices);
         }
         else if(field == "widget") {
-            lua_push_meta_engine_widget(state, *data->widget);
+            if(data->widget) {
+                lua_push_meta_engine_widget(state, *data->widget);
+            }
+            else {
+                lua_pushnil(state);
+            }
         }
         else {
             return luaL_error(state, "Invalid field %s", field.c_str());
