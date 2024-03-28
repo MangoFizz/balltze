@@ -849,11 +849,6 @@ function Balltze.misc.getElapsedSeconds(timestamp) end
 ---@param timestamp BalltzeMiscTimestamp @The timestamp
 function Balltze.misc.resetTimestamp(timestamp) end
 
--- Create a deep copy of a table
----@param table table @The table to copy
----@return table @The copy of the table
-function Balltze.misc.deepCopyTable(table) end
-
 -------------------------------------------------------
 -- Balltze.output
 -------------------------------------------------------
