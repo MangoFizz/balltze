@@ -306,6 +306,11 @@ namespace Balltze::Plugins {
         return 0;
     }
 
+    static int lua_reset_menu_aspect_ratio(lua_State *state) noexcept {
+        Features::reset_menu_aspect_ratio();
+        return 0;
+    }
+
     static const luaL_Reg features_functions[] = {
         {"importTagFromMap", lua_import_tag_from_map},
         {"importTagsFromMap", lua_import_tags_from_map},
@@ -316,6 +321,7 @@ namespace Balltze::Plugins {
         {"getTagCopy", lua_get_tag_copy},
         {"getImportedTag", lua_get_imported_tag},
         {"setMenuAspectRatio", lua_set_menu_aspect_ratio},
+        {"resetMenuAspectRatio", lua_reset_menu_aspect_ratio},
         {nullptr, nullptr}
     };
 

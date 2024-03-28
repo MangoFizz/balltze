@@ -19,6 +19,11 @@ namespace Balltze::Features {
     BALLTZE_API void set_menu_aspect_ratio(std::uint16_t x, std::uint16_t y) noexcept;
 
     /**
+     * Reset the current menu aspect ratio
+     */
+    BALLTZE_API void reset_menu_aspect_ratio() noexcept;
+
+    /**
      * Get the current mouse horizontal bounds
      * @return  Left and right mouse bounds
      */

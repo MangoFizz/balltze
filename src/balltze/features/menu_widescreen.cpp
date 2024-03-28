@@ -102,8 +102,11 @@ namespace Balltze::Features {
 
     void set_menu_aspect_ratio(std::uint16_t x, std::uint16_t y) noexcept {
         menu_aspect_ratio = static_cast<float>(x) / static_cast<float>(y);
-        
-        // Recalculate values for new aspect ratio
+        screen_width_480p = 0;
+    }
+
+    void reset_menu_aspect_ratio() noexcept {
+        menu_aspect_ratio = static_cast<float>(4) / static_cast<float>(3);
         screen_width_480p = 0;
     }
 
@@ -174,7 +177,7 @@ namespace Balltze::Features {
     }
 
     static void on_tick(TickEvent const &ev) {
-        if(ev.time == EVENT_TIME_AFTER) {
+        if(ev.time == EVENT_TIME_BEFORE) {
             static auto &resolution = Engine::get_resolution();
             float current_aspect_ratio = static_cast<float>(resolution.width) / static_cast<float>(resolution.height);
             float current_screen_width = current_aspect_ratio * 480.000f;
