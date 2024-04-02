@@ -64,6 +64,10 @@ If you have any suggestions or want to contribute in any other way to the projec
 free to do so and submit a pull request. The project has big goals in mind, so any kind
 of help is more than welcome.
 
+## Documentation
+- [Getting Started](docs/GETTING-STARTED.md)
+- [API Reference](docs/API.md)
+
 ## Special mentions 
 - [Chimera](https://github.com/SnowyMouse/chimera) - The biggest mod for Halo 1 on PC and 
 a great source of inspiration for the development of this mod.

@@ -12,7 +12,7 @@ the `create` function can be accessed as `balltze.create_object`.
 
 - [Balltze - Lua API](#balltze---lua-api)
   - [Functions](#functions)
-    - [create\_dynamic\_object](#create_object)
+    - [create\_object](#create_object)
     - [unit\_enter\_vehicle](#unit_enter_vehicle)
 
 
