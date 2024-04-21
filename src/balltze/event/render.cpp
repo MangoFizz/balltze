@@ -8,13 +8,13 @@
 #include "../logger.hpp"
 
 namespace Balltze::Event {
-    static std::uint32_t render_ui_param;
+    static std::uint32_t render_user_interface_param;
 
     extern "C" {
         bool ui_render_event_before_dispatcher_asm();
     
         bool ui_render_event_before_dispatcher(std::uint32_t unknown) {
-            render_ui_param = unknown;
+            render_user_interface_param = unknown;
             UIRenderEventArgs args = {unknown};
             UIRenderEvent ui_render_event(EVENT_TIME_BEFORE, args);
             ui_render_event.dispatch();
@@ -22,7 +22,7 @@ namespace Balltze::Event {
         }
     
         void ui_render_event_after_dispatcher() {
-            UIRenderEventArgs args = {render_ui_param};
+            UIRenderEventArgs args = {render_user_interface_param};
             UIRenderEvent ui_render_event(EVENT_TIME_AFTER, args);
             ui_render_event.dispatch();
         }
@@ -40,12 +40,12 @@ namespace Balltze::Event {
             return;
         }
 
-        auto *render_ui_sig = Memory::get_signature("render_ui_function_call");
-        if(!render_ui_sig) {
+        auto *render_user_interface_sig = Memory::get_signature("render_user_interface_function_call");
+        if(!render_user_interface_sig) {
             throw std::runtime_error("Could not find signature for UI render event");
         }
 
-        Memory::hook_function(render_ui_sig->data(), std::function<bool()>(ui_render_event_before_dispatcher_asm), ui_render_event_after_dispatcher);
+        Memory::hook_function(render_user_interface_sig->data(), std::function<bool()>(ui_render_event_before_dispatcher_asm), ui_render_event_after_dispatcher);
     }
 
     static bool hud_render_event_before_dispatcher() {

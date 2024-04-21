@@ -48,8 +48,8 @@ add_library(balltze SHARED
     src/balltze/engine/map.cpp
     src/balltze/engine/netgame.cpp
     src/balltze/engine/netgame.S
-    src/balltze/engine/renderer.cpp
-    src/balltze/engine/renderer.S
+    src/balltze/engine/rasterizer.cpp
+    src/balltze/engine/rasterizer.S
     src/balltze/engine/script.cpp
     src/balltze/engine/script.S
     src/balltze/engine/tag.cpp
@@ -88,6 +88,8 @@ add_library(balltze SHARED
     src/balltze/features/loading_screen/loading_screen.cpp
     src/balltze/features/loading_screen/loading_screen.S
     src/balltze/features/loading_screen/loading_screen.rc
+    src/balltze/features/shaders/shader_transparent_chicago.cpp
+    src/balltze/features/shaders/shader_transparent_chicago.S
     src/balltze/features/sound_subtitles.cpp
     src/balltze/features/tag_data_importing/map.cpp
     src/balltze/features/tag_data_importing/tag_data_importing.cpp
@@ -122,7 +124,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/engine/game_state.cpp
     src/balltze/plugins/lua/engine/map.cpp
     src/balltze/plugins/lua/engine/netgame.cpp
-    src/balltze/plugins/lua/engine/renderer.cpp
+    src/balltze/plugins/lua/engine/rasterizer.cpp
     src/balltze/plugins/lua/engine/tag.cpp
     src/balltze/plugins/lua/engine/user_interface.cpp
     src/balltze/plugins/lua/chimera.cpp

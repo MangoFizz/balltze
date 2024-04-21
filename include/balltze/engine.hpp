@@ -5,7 +5,7 @@
 #include "engine/map.hpp"
 #include "engine/netgame_messages.hpp"
 #include "engine/netgame.hpp"
-#include "engine/renderer.hpp"
+#include "engine/rasterizer.hpp"
 #include "engine/tag.hpp"
 #include "engine/tag_definitions.hpp"
 #include "engine/tag_classes.hpp"

@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <balltze/event.hpp>
+#include <balltze/engine/rasterizer.hpp>
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>

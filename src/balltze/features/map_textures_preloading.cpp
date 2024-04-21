@@ -3,12 +3,14 @@
 #include <chrono>
 #include <balltze/events/map_load.hpp>
 #include <balltze/engine/tag.hpp>
-#include <balltze/engine/renderer.hpp>
+#include <balltze/engine/rasterizer.hpp>
 #include <balltze/memory.hpp>
 #include "../config/config.hpp"
 #include "../logger.hpp"
 
 namespace Balltze::Features {
+    using namespace Engine;
+
     static bool preload_map_textures = false;
     static std::size_t min_map_size;
 
@@ -29,17 +31,17 @@ namespace Balltze::Features {
             logger.info("Preloading map textures...");
             auto start = std::chrono::steady_clock::now();
             std::size_t count = 0;
-            auto &tag_data_address = Engine::get_tag_data_header();
+            auto &tag_data_address = get_tag_data_header();
             for(std::size_t i = 0; i < tag_data_address.tag_count; i++) {
                 auto &tag = tag_data_address.tag_array[i];
                 if(tag.indexed) {
                     continue;
                 }
-                if(tag.primary_class == Engine::TAG_CLASS_BITMAP) {
-                    auto *bitmap = reinterpret_cast<Engine::TagDefinitions::Bitmap *>(tag.data);
+                if(tag.primary_class == TAG_CLASS_BITMAP) {
+                    auto *bitmap = reinterpret_cast<TagDefinitions::Bitmap *>(tag.data);
                     for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
                         auto &bitmap_data = bitmap->bitmap_data.offset[j];
-                        Engine::load_bitmap(&bitmap_data, true, true);
+                        Rasterizer::load_bitmap_data_texture(&bitmap_data, true, true);
                         count++;
                     }
                 }

@@ -101,6 +101,13 @@ namespace Balltze::Engine {
      * @param unit_handle       Handle of the unit to exit the vehicle
      */
     void unit_scripting_exit_vehicle(ObjectHandle unit_handle);
+
+    /**
+     * Gets the numeric countdown timer
+     * @param units     time units
+     * @return          unit value
+     */
+    std::uint16_t get_numeric_countdown_timer(std::uint16_t units);
 }
 
 #endif

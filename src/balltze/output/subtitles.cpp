@@ -9,7 +9,7 @@
 #include <chrono>
 #include <balltze/math.hpp>
 #include <balltze/engine/core.hpp>
-#include <balltze/engine/renderer.hpp>
+#include <balltze/engine/rasterizer.hpp>
 #include <balltze/events/frame.hpp>
 #include "../output/draw_text.hpp"
 #include "../logger.hpp"
@@ -231,7 +231,7 @@ namespace Balltze {
         subtitle_line_margin = 5;
         bottom_margin = 65;
         
-        auto res = Engine::get_resolution();
+        auto res = Engine::Rasterizer::get_resolution();
         float screen_height = 480;
         float width = static_cast<float>(res.width) / res.height * screen_height;
         screen_width = std::round(width);

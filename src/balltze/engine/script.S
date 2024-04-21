@@ -5,10 +5,12 @@
 .data
 unit_scripting_enter_vehicle_function_addr: .long 0
 unit_scripting_exit_vehicle_function_addr: .long 0
+get_numeric_countdown_timer_function_addr: .long 0
 
 .text
 unit_scripting_enter_vehicle_function_sig: .string "unit_enter_vehicle_function"
 unit_scripting_exit_vehicle_function_sig: .string "unit_exit_vehicle_function"
+get_numeric_countdown_timer_function_sig: .string "get_numeric_countdown_timer_function"
 
 .globl _unit_scripting_enter_vehicle_asm
 _unit_scripting_enter_vehicle_asm:
@@ -53,3 +55,21 @@ _unit_scripting_exit_vehicle_asm:
     call dword ptr unit_scripting_exit_vehicle_function_addr
 
     ret
+
+.globl _script_get_numeric_countdown_timer
+_script_get_numeric_countdown_timer:
+    cmp dword ptr get_numeric_countdown_timer_function_addr, 0
+    jnz get_numeric_countdown_timer_function_found
+    pushad
+    pushfd
+    lea eax, byte ptr get_numeric_countdown_timer_function_sig
+    push eax
+    call _get_address_for_signature
+    add esp, 4
+    mov get_numeric_countdown_timer_function_addr, eax
+    popfd
+    popad
+    get_numeric_countdown_timer_function_found:
+
+    mov eax, [esp + 4]
+    jmp dword ptr get_numeric_countdown_timer_function_addr

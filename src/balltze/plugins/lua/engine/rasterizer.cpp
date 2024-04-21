@@ -13,7 +13,7 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                auto resolution = Engine::get_resolution();
+                auto resolution = Engine::Rasterizer::get_resolution();
                 lua_newtable(state);
                 lua_pushinteger(state, resolution.width);
                 lua_setfield(state, -2, "width");
@@ -36,9 +36,9 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void set_engine_renderer_functions(lua_State *state) noexcept {
+    void set_engine_rasterizer_functions(lua_State *state) noexcept {
         luaL_newlibtable(state, engine_renderer_functions);
         luaL_setfuncs(state, engine_renderer_functions, 0);
-        lua_setfield(state, -2, "renderer");
+        lua_setfield(state, -2, "rasterizer");
     }
 }

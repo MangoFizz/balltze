@@ -13,7 +13,7 @@
 #include <balltze/hook.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/event.hpp>
-#include <balltze/engine/renderer.hpp>
+#include <balltze/engine/rasterizer.hpp>
 #include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
 #include "../../config/config.hpp"

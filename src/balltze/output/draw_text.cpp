@@ -4,7 +4,7 @@
 #include <variant>
 #include <filesystem>
 #include <fmt/format.h>
-#include <balltze/engine/renderer.hpp>
+#include <balltze/engine/rasterizer.hpp>
 #include <balltze/engine/tag.hpp>
 #include <balltze/events/d3d9.hpp>
 #include <balltze/events/frame.hpp>
@@ -18,6 +18,8 @@
 #include <d3dx9.h>
 
 namespace Balltze {
+    using namespace Engine;
+
     static LPD3DXFONT system_font_override = nullptr, console_font_override = nullptr, small_font_override = nullptr, large_font_override = nullptr, smaller_font_override = nullptr, ticker_font_override = nullptr;
     static std::pair<int, int> system_font_shadow, console_font_shadow, small_font_shadow, large_font_shadow, smaller_font_shadow, ticker_font_shadow;
     static std::pair<int, int> system_font_offset, console_font_offset, small_font_offset, large_font_offset, smaller_font_offset, ticker_font_offset;
@@ -26,7 +28,7 @@ namespace Balltze {
 
     struct CustomFontOverride {
         std::string family;
-        Engine::TagHandle tag_handle;
+        TagHandle tag_handle;
         LPD3DXFONT override;
         int weight;
         int scaled_size;
@@ -58,13 +60,13 @@ namespace Balltze {
         }
     }
 
-    static LPD3DXFONT get_override_font(const std::variant<Engine::TagHandle, GenericFont> &font) {
+    static LPD3DXFONT get_override_font(const std::variant<TagHandle, GenericFont> &font) {
         auto *generic = std::get_if<1>(&font);
         if(generic) {
             return get_override_font(*generic);
         }
         else {
-            Engine::TagHandle tag_handle = std::get<Engine::TagHandle>(font);
+            TagHandle tag_handle = std::get<TagHandle>(font);
             for(auto &font : map_custom_overrides) {
                 if(font.tag_handle.handle == tag_handle.handle) {
                     return font.override;
@@ -74,9 +76,9 @@ namespace Balltze {
         }
     }
 
-    const Engine::TagHandle &get_generic_font(GenericFont font) noexcept {
+    const TagHandle &get_generic_font(GenericFont font) noexcept {
         if(font == GenericFont::FONT_SMALLER) {
-            auto *tag = get_tag("ui\\gamespy", Engine::TagClassInt::TAG_CLASS_FONT);
+            auto *tag = get_tag("ui\\gamespy", TagClassInt::TAG_CLASS_FONT);
             if(tag) {
                 return tag->handle;
             }
@@ -86,7 +88,7 @@ namespace Balltze {
         }
 
         if(font == GenericFont::FONT_TICKER) {
-            auto *tag = get_tag("ui\\ticker", Engine::TagClassInt::TAG_CLASS_FONT);
+            auto *tag = get_tag("ui\\ticker", TagClassInt::TAG_CLASS_FONT);
             if(tag) {
                 return tag->handle;
             }
@@ -96,29 +98,29 @@ namespace Balltze {
         }
 
         // Get the globals tag
-        auto *globals_tag = get_tag("globals\\globals", Engine::TagClassInt::TAG_CLASS_GLOBALS);
+        auto *globals_tag = get_tag("globals\\globals", TagClassInt::TAG_CLASS_GLOBALS);
         auto *interface_bitmaps = *reinterpret_cast<std::byte **>(globals_tag->data + 0x144);
 
         // Console font is referenced here
         if(font == GenericFont::FONT_CONSOLE) {
-            return *reinterpret_cast<const Engine::TagHandle *>(interface_bitmaps + 0x10 + 0xC);
+            return *reinterpret_cast<const TagHandle *>(interface_bitmaps + 0x10 + 0xC);
         }
         // System font
         else if(font == GenericFont::FONT_SYSTEM) {
-            return *reinterpret_cast<const Engine::TagHandle *>(interface_bitmaps + 0x00 + 0xC);
+            return *reinterpret_cast<const TagHandle *>(interface_bitmaps + 0x00 + 0xC);
         }
 
         // Get HUD globals which has the remaining two fonts.
-        auto *hud_globals = get_tag(*reinterpret_cast<const Engine::TagHandle *>(interface_bitmaps + 0x60 + 0xC));
+        auto *hud_globals = get_tag(*reinterpret_cast<const TagHandle *>(interface_bitmaps + 0x60 + 0xC));
         if(font == GenericFont::FONT_LARGE) {
-            return *reinterpret_cast<const Engine::TagHandle *>(hud_globals->data + 0x48 + 0xC);
+            return *reinterpret_cast<const TagHandle *>(hud_globals->data + 0x48 + 0xC);
         }
         else {
-            return *reinterpret_cast<const Engine::TagHandle *>(hud_globals->data + 0x58 + 0xC);
+            return *reinterpret_cast<const TagHandle *>(hud_globals->data + 0x58 + 0xC);
         }
     }
 
-    static const Engine::TagHandle &get_generic_font_if_generic(const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
+    static const TagHandle &get_generic_font_if_generic(const std::variant<TagHandle, GenericFont> &font) noexcept {
         auto *generic = std::get_if<1>(&font);
         if(generic) {
             return get_generic_font(*generic);
@@ -167,10 +169,10 @@ namespace Balltze {
         std::int16_t height;
 
         // Color of the text
-        Engine::ColorARGB color;
+        ColorARGB color;
 
         // Font to use
-        Engine::TagHandle font;
+        TagHandle font;
 
         // Alignment of the font
         FontAlignment alignment;
@@ -188,7 +190,7 @@ namespace Balltze {
         FontAlignment align;
     };
 
-    template<typename String> static std::vector<TextRect<String>> handle_formatting(String text, std::int16_t x, std::int16_t y, std::int16_t width, std::int16_t height, FontAlignment align, const std::variant<Engine::TagHandle, GenericFont> &font) {
+    template<typename String> static std::vector<TextRect<String>> handle_formatting(String text, std::int16_t x, std::int16_t y, std::int16_t width, std::int16_t height, FontAlignment align, const std::variant<TagHandle, GenericFont> &font) {
         auto size = text.size();
         std::vector<TextRect<String>> fmt;
         if(size == 0) {
@@ -317,7 +319,7 @@ namespace Balltze {
     static void draw_text_now(const Text &text) {
         auto old_font_data = *font_data;
         if(text.override) {
-            auto res = Engine::get_resolution();
+            auto res = Rasterizer::get_resolution();
             double scale = res.height / 480.0;
 
             // Figure out shadow
@@ -454,15 +456,15 @@ namespace Balltze {
         text_list.clear();
     }
 
-    std::int16_t get_font_pixel_height(const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
+    std::int16_t get_font_pixel_height(const std::variant<TagHandle, GenericFont> &font) noexcept {
         // Find the font
-        Engine::TagHandle font_tag = get_generic_font_if_generic(font);
+        TagHandle font_tag = get_generic_font_if_generic(font);
         auto *override_font = get_override_font(font);
 
         if(override_font) {
             TEXTMETRIC tm;
             override_font->GetTextMetrics(&tm);
-            auto res = Engine::get_resolution();
+            auto res = Rasterizer::get_resolution();
             return static_cast<int>((tm.tmAscent + tm.tmDescent) * 480 + 240) / res.height;
         }
 
@@ -471,9 +473,9 @@ namespace Balltze {
         return *reinterpret_cast<std::uint16_t *>(tag_data + 0x4) + *reinterpret_cast<std::uint16_t *>(tag_data + 0x6);
     }
 
-    template<typename T> std::int16_t text_pixel_length_t(const T *text, const std::variant<Engine::TagHandle, GenericFont> &font) {
+    template<typename T> std::int16_t text_pixel_length_t(const T *text, const std::variant<TagHandle, GenericFont> &font) {
         // Find the font
-        Engine::TagHandle font_tag = get_generic_font_if_generic(font);
+        TagHandle font_tag = get_generic_font_if_generic(font);
         LPD3DXFONT override_font = get_override_font(font);
 
         // Do the buffer thing
@@ -512,7 +514,7 @@ namespace Balltze {
                 override_font->DrawTextW(NULL, reinterpret_cast<const wchar_t *>(buffer), -1, &rect, DT_CALCRECT, 0xFFFFFFFF);
             }
 
-            auto res = Engine::get_resolution();
+            auto res = Rasterizer::get_resolution();
             return static_cast<int>((rect.right - rect.left - added_width) * 480 + 240) / res.height;
         }
 
@@ -568,19 +570,19 @@ namespace Balltze {
         return length;
     }
 
-    std::int16_t get_text_pixel_length(const char *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
+    std::int16_t get_text_pixel_length(const char *text, const std::variant<TagHandle, GenericFont> &font) noexcept {
         return text_pixel_length_t(text, font);
     }
 
-    std::int16_t get_text_pixel_length(const wchar_t *text, const std::variant<Engine::TagHandle, GenericFont> &font) noexcept {
+    std::int16_t get_text_pixel_length(const wchar_t *text, const std::variant<TagHandle, GenericFont> &font) noexcept {
         return text_pixel_length_t(text, font);
     }
 
     float widescreen_width_480p = 640.0;
 
-    void apply_text(std::variant<std::string, std::wstring> text, std::int16_t x, std::int16_t y, std::int16_t width, std::int16_t height, const Engine::ColorARGB &color, const std::variant<Engine::TagHandle, GenericFont> &font, FontAlignment alignment, TextAnchor anchor, bool immediate) noexcept {
+    void apply_text(std::variant<std::string, std::wstring> text, std::int16_t x, std::int16_t y, std::int16_t width, std::int16_t height, const ColorARGB &color, const std::variant<TagHandle, GenericFont> &font, FontAlignment alignment, TextAnchor anchor, bool immediate) noexcept {
         // Find the font
-        Engine::TagHandle font_tag = get_generic_font_if_generic(font);
+        TagHandle font_tag = get_generic_font_if_generic(font);
         LPD3DXFONT override_font = get_override_font(font);
 
         // Adjust the coordinates based on the given anchor
@@ -635,7 +637,7 @@ namespace Balltze {
         #undef handle_formatting_call
     }
 
-    void override_custom_font(Engine::TagHandle font_tag, std::string family, int size, int weight, std::pair<int, int> offset, std::pair<int, int> shadow) {
+    void override_custom_font(TagHandle font_tag, std::string family, int size, int weight, std::pair<int, int> offset, std::pair<int, int> shadow) {
         auto *tag = get_tag(font_tag);
         if(!tag) {
             throw std::runtime_error("invalid font tag");
@@ -648,7 +650,7 @@ namespace Balltze {
             }
         }
 
-        auto scale = Engine::get_resolution().height / 480.0;
+        auto scale = Rasterizer::get_resolution().height / 480.0;
         int scaled_size = size * scale;
         int shadow_x = shadow.first * (scale / 2);
         int shadow_y = shadow.second * (scale / 2);
@@ -686,7 +688,7 @@ namespace Balltze {
             dev = device;
 
             auto ini = Config::get_chimera_ini();
-            auto scale = Engine::get_resolution().height / 480.0;
+            auto scale = Rasterizer::get_resolution().height / 480.0;
 
             #define generate_font(override_var, override_name, shadow, offset) \
                 if(ini.get_value_bool("font_override." override_name "_font_override").value_or(false)) { \

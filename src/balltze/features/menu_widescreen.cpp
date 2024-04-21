@@ -8,6 +8,7 @@
 
 namespace Balltze::Features {
     using namespace Event;
+    using namespace Engine;
 
     static bool enabled = false;
     static bool ready = false;
@@ -30,7 +31,7 @@ namespace Balltze::Features {
     static void jason_jones_widgets() noexcept;
 
     extern "C" {
-        Engine::Rectangle2D *widescreen_text_input_element;
+        Rectangle2D *widescreen_text_input_element;
         std::int32_t widescreen_mouse_left_bound = 0;
         std::int32_t widescreen_mouse_right_bound = 640;
         std::int32_t *widescreen_mouse_x = nullptr;
@@ -160,9 +161,9 @@ namespace Balltze::Features {
 
     static void jason_jones_widgets() noexcept {
         auto stretch_widget = [](const char *widget_path) noexcept {
-            auto *tag = Engine::get_tag(widget_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
+            auto *tag = get_tag(widget_path, TAG_CLASS_UI_WIDGET_DEFINITION);
             if(tag) {
-                auto *data = reinterpret_cast<Engine::TagDefinitions::UiWidgetDefinition *>(tag->data);
+                auto *data = reinterpret_cast<TagDefinitions::UiWidgetDefinition *>(tag->data);
                 auto &bounds = data->bounds;
                 if(bounds.left == 0.0f && bounds.right == 640.0f) {
                     bounds.right = 639.0f;
@@ -178,7 +179,7 @@ namespace Balltze::Features {
 
     static void on_tick(TickEvent const &ev) {
         if(ev.time == EVENT_TIME_BEFORE) {
-            static auto &resolution = Engine::get_resolution();
+            static auto &resolution = Rasterizer::get_resolution();
             float current_aspect_ratio = static_cast<float>(resolution.width) / static_cast<float>(resolution.height);
             float current_screen_width = current_aspect_ratio * 480.000f;
 
@@ -251,7 +252,7 @@ namespace Balltze::Features {
         }
     }
 
-    extern "C" void widescreen_displace_menu_text(Engine::Rectangle2D *text_box_bounds) noexcept {
+    extern "C" void widescreen_displace_menu_text(Rectangle2D *text_box_bounds) noexcept {
         text_box_bounds->right += menu_displacement;
         text_box_bounds->left += menu_displacement;
     }
