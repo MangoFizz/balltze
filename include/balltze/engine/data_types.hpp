@@ -113,15 +113,6 @@ namespace Balltze::Engine {
 	};
 	static_assert(sizeof(Point3D) == 0xC);
 
-	struct TagDataOffset {
-		std::uint32_t size;
-		std::uint32_t external;
-		std::uint32_t file_offset;
-		std::byte *pointer;
-		std::byte pad_5[4];
-	};
-    static_assert(sizeof(TagDataOffset) == 0x14);
-
 	struct ColorARGB {
 		float alpha;
 		float red;

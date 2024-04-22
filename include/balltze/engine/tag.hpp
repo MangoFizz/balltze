@@ -104,6 +104,15 @@ namespace Balltze::Engine {
 	};
     static_assert(sizeof(TagDependency) == 0x10);
 
+    struct TagDataOffset {
+		std::uint32_t size;
+		std::uint32_t external;
+		std::uint32_t file_offset;
+		std::byte *pointer;
+		std::byte pad_5[4];
+	};
+    static_assert(sizeof(TagDataOffset) == 0x14);
+
     /**
      * Get the tag data address
      * @return tag data address
