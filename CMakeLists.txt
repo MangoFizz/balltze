@@ -96,8 +96,8 @@ add_library(balltze SHARED
     src/balltze/features/tags_handling/tag_data_importing.S
     src/balltze/features/map_data_read_warden.cpp
     src/balltze/features/map_textures_preloading.cpp
-    src/balltze/features/menu_widescreen.cpp
-    src/balltze/features/menu_widescreen.S
+    src/balltze/features/user_interface_widescreen.cpp
+    src/balltze/features/user_interface_widescreen.S
     src/balltze/features/extended_limits.cpp
     src/balltze/features/extended_limits.S
     src/balltze/features/echo_message.cpp

@@ -4,7 +4,7 @@
 #include <balltze/event.hpp>
 #include <balltze/hook.hpp>
 #include "../logger.hpp"
-#include <balltze/features/menu_widescreen.hpp>
+#include <balltze/features/user_interface.hpp>
 
 namespace Balltze::Features {
     using namespace Event;
@@ -13,11 +13,11 @@ namespace Balltze::Features {
     static bool enabled = false;
     static bool ready = false;
     static float screen_width_480p = 0;
-    static float menu_aspect_ratio = 0;
-    static float menu_displacement = 0;
+    static float ui_aspect_ratio = 0;
+    static float ui_displacement = 0;
 
-    static Memory::Hook *widescreen_menu_text_hook;
-    static Memory::Hook *widescreen_menu_text_2_hook;
+    static Memory::Hook *widescreen_ui_text_hook;
+    static Memory::Hook *widescreen_ui_text_2_hook;
     static Memory::Hook *widescreen_input_text_hook;
     static Memory::Hook *widescreen_mouse_hook;
 
@@ -27,7 +27,7 @@ namespace Balltze::Features {
 
     static void on_tick(TickEvent const &ev);
     static void on_map_load(MapLoadEvent const &ev);
-    static void widescreen_displace_menu_elements(UIWidgetBackgroundRenderEvent &ev);
+    static void widescreen_displace_ui_widgets(UIWidgetBackgroundRenderEvent &ev);
     static void jason_jones_widgets() noexcept;
 
     extern "C" {
@@ -38,8 +38,7 @@ namespace Balltze::Features {
         std::int32_t **widescreen_fix_mouse_x_ptr = nullptr;
         std::int32_t *widescreen_mouse_y = nullptr;
         
-        void menu_render_background_bitmap_asm();
-        void menu_render_text_asm();
+        void ui_widget_render_text_asm();
 
         void widescreen_input_text();
         void widescreen_input_text_undo();
@@ -59,22 +58,22 @@ namespace Balltze::Features {
                 *widescreen_fix_mouse_x_ptr = &gotya;
 
                 // Hook everything
-                widescreen_menu_text_hook->hook();
-                widescreen_menu_text_2_hook->hook();
+                widescreen_ui_text_hook->hook();
+                widescreen_ui_text_2_hook->hook();
                 widescreen_input_text_hook->hook();
                 widescreen_mouse_hook->hook();
 
                 // Register events
                 tick_listener_handler = TickEvent::subscribe_const(on_tick);
                 map_load_listener_handler = MapLoadEvent::subscribe_const(on_map_load);
-                ui_widget_background_render_listener_handler = UIWidgetBackgroundRenderEvent::subscribe(widescreen_displace_menu_elements);
+                ui_widget_background_render_listener_handler = UIWidgetBackgroundRenderEvent::subscribe(widescreen_displace_ui_widgets);
 
                 // Stretch stock widgets
                 jason_jones_widgets();
 
                 // Set default aspect ratio
-                if(menu_aspect_ratio == 0) {
-                    set_menu_aspect_ratio(4, 3);
+                if(ui_aspect_ratio == 0) {
+                    set_ui_aspect_ratio(4, 3);
                 }
             }
             else {
@@ -88,8 +87,8 @@ namespace Balltze::Features {
                 widescreen_mouse_x = nullptr;
 
                 // Release all hooks
-                widescreen_menu_text_hook->release();
-                widescreen_menu_text_2_hook->release();
+                widescreen_ui_text_hook->release();
+                widescreen_ui_text_2_hook->release();
                 widescreen_input_text_hook->release();
                 widescreen_mouse_hook->release();
             }
@@ -97,17 +96,17 @@ namespace Balltze::Features {
         enabled = setting;
     }
 
-    float get_menu_aspect_ratio() noexcept {
-        return menu_aspect_ratio;
+    float get_ui_aspect_ratio() noexcept {
+        return ui_aspect_ratio;
     }
 
-    void set_menu_aspect_ratio(std::uint16_t x, std::uint16_t y) noexcept {
-        menu_aspect_ratio = static_cast<float>(x) / static_cast<float>(y);
+    void set_ui_aspect_ratio(std::uint16_t x, std::uint16_t y) noexcept {
+        ui_aspect_ratio = static_cast<float>(x) / static_cast<float>(y);
         screen_width_480p = 0;
     }
 
-    void reset_menu_aspect_ratio() noexcept {
-        menu_aspect_ratio = static_cast<float>(4) / static_cast<float>(3);
+    void reset_ui_aspect_ratio() noexcept {
+        ui_aspect_ratio = static_cast<float>(4) / static_cast<float>(3);
         screen_width_480p = 0;
     }
 
@@ -115,7 +114,7 @@ namespace Balltze::Features {
         return std::make_pair(widescreen_mouse_left_bound, widescreen_mouse_right_bound);
     }
 
-    void set_up_menu_widescreen_override() noexcept {
+    void set_up_ui_widescreen_override() noexcept {
         if(ready) {
             return;
         }
@@ -125,11 +124,11 @@ namespace Balltze::Features {
         first_tick = TickEvent::subscribe_const([](TickEvent const &ev) {
             if(ev.time == EVENT_TIME_BEFORE) {
                 try {
-                    auto *widescreen_menu_text_sig = Memory::get_signature("widescreen_menu_text");
-                    widescreen_menu_text_hook = Memory::hook_function(widescreen_menu_text_sig->data(), menu_render_text_asm, std::nullopt, false, true);
+                    auto *widescreen_ui_text_sig = Memory::get_signature("widescreen_ui_text");
+                    widescreen_ui_text_hook = Memory::hook_function(widescreen_ui_text_sig->data(), ui_widget_render_text_asm, std::nullopt, false, true);
                     
-                    auto *widescreen_menu_text_2_sig = Memory::get_signature("widescreen_menu_text_2");
-                    widescreen_menu_text_2_hook = Memory::hook_function(widescreen_menu_text_2_sig->data(), menu_render_text_asm, std::nullopt, false, true);
+                    auto *widescreen_ui_text_2_sig = Memory::get_signature("widescreen_ui_text_2");
+                    widescreen_ui_text_2_hook = Memory::hook_function(widescreen_ui_text_2_sig->data(), ui_widget_render_text_asm, std::nullopt, false, true);
                     
                     auto *widescreen_input_text_sig = Memory::get_signature("widescreen_input_text");
                     auto *widescreen_input_text_address = Memory::follow_32bit_jump(widescreen_input_text_sig->data()) + 9;
@@ -190,17 +189,17 @@ namespace Balltze::Features {
                  * Calculate how much we need to displace back widgets with respect to the 
                  * displacement that will be applied by the Chimera's widescreen fix.
                  */
-                float menu_frame_width = menu_aspect_ratio * 480.000f;
+                float ui_frame_width = ui_aspect_ratio * 480.000f;
                 float screen_extra_width = screen_width_480p - 640.000f;
-                float menu_frame_offset = (screen_width_480p - menu_frame_width) / 2.0f;
-                menu_displacement = menu_frame_offset - screen_extra_width / 2.0f;
+                float ui_frame_offset = (screen_width_480p - ui_frame_width) / 2.0f;
+                ui_displacement = ui_frame_offset - screen_extra_width / 2.0f;
 
                 // Calculate mouse cursor bounds
-                std::int32_t mouse_increase = static_cast<std::int32_t>(screen_width_480p - menu_frame_width) / 2;
+                std::int32_t mouse_increase = static_cast<std::int32_t>(screen_width_480p - ui_frame_width) / 2;
                 widescreen_mouse_left_bound = -mouse_increase;
-                widescreen_mouse_right_bound = menu_frame_width + mouse_increase;
+                widescreen_mouse_right_bound = ui_frame_width + mouse_increase;
 
-                if(*widescreen_mouse_x > menu_frame_width + mouse_increase) {
+                if(*widescreen_mouse_x > ui_frame_width + mouse_increase) {
                     *widescreen_mouse_x = widescreen_mouse_right_bound;
                 }
                 if(*widescreen_mouse_x < -mouse_increase) {
@@ -216,7 +215,7 @@ namespace Balltze::Features {
         }
     }
 
-    static void widescreen_displace_menu_elements(UIWidgetBackgroundRenderEvent &ev) {
+    static void widescreen_displace_ui_widgets(UIWidgetBackgroundRenderEvent &ev) {
         if(ev.time == EVENT_TIME_BEFORE) {
             auto &vertices = ev.args.vertices;
             float min_x = vertices->top_left.x;
@@ -244,26 +243,26 @@ namespace Balltze::Features {
                 vertices->bottom_right.x += screen_extra_width;
             }
             else {
-                vertices->top_left.x += menu_displacement;
-                vertices->top_right.x += menu_displacement;
-                vertices->bottom_right.x += menu_displacement;
-                vertices->bottom_left.x += menu_displacement;
+                vertices->top_left.x += ui_displacement;
+                vertices->top_right.x += ui_displacement;
+                vertices->bottom_right.x += ui_displacement;
+                vertices->bottom_left.x += ui_displacement;
             }
         }
     }
 
-    extern "C" void widescreen_displace_menu_text(Rectangle2D *text_box_bounds) noexcept {
-        text_box_bounds->right += menu_displacement;
-        text_box_bounds->left += menu_displacement;
+    extern "C" void widescreen_displace_ui_text(Rectangle2D *text_box_bounds) noexcept {
+        text_box_bounds->right += ui_displacement;
+        text_box_bounds->left += ui_displacement;
     }
 
-    extern "C" void reposition_menu_text_input() noexcept {
-        widescreen_text_input_element->right -= menu_displacement;
-        widescreen_text_input_element->left -= menu_displacement;
+    extern "C" void reposition_ui_text_input() noexcept {
+        widescreen_text_input_element->right -= ui_displacement;
+        widescreen_text_input_element->left -= ui_displacement;
     }
 
-    extern "C" void unreposition_menu_text_input() noexcept {
-        widescreen_text_input_element->right += menu_displacement;
-        widescreen_text_input_element->left += menu_displacement;
+    extern "C" void unreposition_ui_text_input() noexcept {
+        widescreen_text_input_element->right += ui_displacement;
+        widescreen_text_input_element->left += ui_displacement;
     }
 }

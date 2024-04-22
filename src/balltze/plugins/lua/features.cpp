@@ -293,21 +293,21 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_set_menu_aspect_ratio(lua_State *state) noexcept {
+    static int lua_set_ui_aspect_ratio(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 2) {
             std::uint16_t x = luaL_checknumber(state, 1);
             std::uint16_t y = luaL_checknumber(state, 2);
-            Features::set_menu_aspect_ratio(x, y);
+            Features::set_ui_aspect_ratio(x, y);
         }
         else {
-            luaL_error(state, "invalid number of arguments in balltze function features.setMenuAspectRatio.");
+            luaL_error(state, "invalid number of arguments in balltze function features.setUIAspectRatio.");
         }
         return 0;
     }
 
-    static int lua_reset_menu_aspect_ratio(lua_State *state) noexcept {
-        Features::reset_menu_aspect_ratio();
+    static int lua_reset_ui_aspect_ratio(lua_State *state) noexcept {
+        Features::reset_ui_aspect_ratio();
         return 0;
     }
 
@@ -320,8 +320,8 @@ namespace Balltze::Plugins {
         {"cloneTag", lua_clone_tag},
         {"getTagCopy", lua_get_tag_copy},
         {"getImportedTag", lua_get_imported_tag},
-        {"setMenuAspectRatio", lua_set_menu_aspect_ratio},
-        {"resetMenuAspectRatio", lua_reset_menu_aspect_ratio},
+        {"setUIAspectRatio", lua_set_ui_aspect_ratio},
+        {"resetUIAspectRatio", lua_reset_ui_aspect_ratio},
         {nullptr, nullptr}
     };
 

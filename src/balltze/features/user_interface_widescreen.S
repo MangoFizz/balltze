@@ -4,13 +4,13 @@
 
 .text
 
-.globl _menu_render_text_asm
-_menu_render_text_asm:
+.globl _ui_widget_render_text_asm
+_ui_widget_render_text_asm:
     pushfd
     pushad
 
     push ecx
-    call _widescreen_displace_menu_text
+    call _widescreen_displace_ui_text
     add esp, 4
 
     popad
@@ -22,7 +22,7 @@ _widescreen_input_text:
     pushfd
     pushad
     mov dword ptr _widescreen_text_input_element, ecx
-    call _reposition_menu_text_input
+    call _reposition_ui_text_input
     popad
     popfd
     ret
@@ -31,7 +31,7 @@ _widescreen_input_text:
 _widescreen_input_text_undo:
     pushfd
     pushad
-    call _unreposition_menu_text_input
+    call _unreposition_ui_text_input
     popad
     popfd
     ret
