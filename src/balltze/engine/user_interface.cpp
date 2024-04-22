@@ -54,6 +54,10 @@ namespace Balltze::Engine {
             if(widget->next_widget) {
                 search_instances(widget->next_widget);
             }
+
+            if(widget->extended_description) {
+                search_instances(widget->extended_description);
+            }
         };
         search_instances(widget_base);
 

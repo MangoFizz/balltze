@@ -267,6 +267,10 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 7);
                         instruction_size = 7;
                     }
+                    else if(instruction[1] == 0x89 && instruction[2] == 0x78) { // mov word ptr [eax + disp8], di
+                        m_cave.insert(&instruction[0], 4);
+                        instruction_size = 4;
+                    }
                     else {
                         throw std::runtime_error("Unsupported cmp instruction.");
                     }
@@ -357,6 +361,11 @@ namespace Balltze::Memory {
                     else if(instruction[1] == 0x5C && instruction[2] == 0x24) {
                         m_cave.insert(&instruction[0], 4);
                         instruction_size = 4;
+                    }
+                    // mov eax, dword ptr [eax + disp8]
+                    else if(instruction[1] == 0x40) {
+                        m_cave.insert(&instruction[0], 3);
+                        instruction_size = 3;
                     }
                     // mov ecx, dword ptr [eax + imm8]
                     else if(instruction[1] == 0x48) {
