@@ -27,6 +27,9 @@ mercury install balltze
 - MinGW GCC 12.2.0.
 - CMake 3.16 or later.
 - Lua 5.1 or later.
+- libflac 1.4.3
+- libogg 1.3.5
+- libvorbis 1.3.7
 
 ### Compiling
 1. Clone the repository.
