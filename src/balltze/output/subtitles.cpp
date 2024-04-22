@@ -231,7 +231,7 @@ namespace Balltze {
         subtitle_line_margin = 5;
         bottom_margin = 65;
         
-        auto res = Engine::Rasterizer::get_resolution();
+        auto res = Engine::get_resolution();
         float screen_height = 480;
         float width = static_cast<float>(res.width) / res.height * screen_height;
         screen_width = std::round(width);

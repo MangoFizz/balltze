@@ -3,7 +3,7 @@
 #include <optional>
 #include <balltze/engine/rasterizer.hpp>
 
-namespace Balltze::Engine::Rasterizer {
+namespace Balltze::Engine {
     extern "C" {
         void *load_bitmap_function_address = nullptr;
         IDirect3DTexture9 *load_bitmap_asm(TagDefinitions::BitmapData *bitmap_data, bool immediate, bool force_pixels_read);
@@ -104,7 +104,11 @@ namespace Balltze::Engine::Rasterizer {
         return load_bitmap_asm(bitmap_data, immediate, force_pixels_read);
     }
 
-    bool set_bitmap_data_texture(IDirect3DDevice9 *device, std::size_t stage, TagDefinitions::BitmapData *bitmap_data) {
+    bool set_bitmap_data_texture(std::size_t stage, TagDefinitions::BitmapData *bitmap_data) {
+        auto *device = get_d3d9_device();
+        if(!device) {
+            return false;
+        }
         if(bitmap_data->texture_cache_id == 0xFFFFFFFF) {
             try {
                 load_bitmap_data_texture(bitmap_data, true, true);

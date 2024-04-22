@@ -16,7 +16,6 @@
 namespace Balltze::Features {
     using namespace Engine;
     using namespace Engine::TagDefinitions;
-    using namespace Engine::Rasterizer;
 
     extern "C" {
         bool use_shader_transparent_chicago_reimplementation = true;

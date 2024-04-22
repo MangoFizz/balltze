@@ -9,7 +9,7 @@
 #include "tag_definitions/shader_transparent_chicago.hpp"
 #include "../api.hpp"
 
-namespace Balltze::Engine::Rasterizer {
+namespace Balltze::Engine {
     struct WindowGlobals {
         /** A handle to the application instance. */
         HINSTANCE hInstance;
@@ -269,7 +269,7 @@ namespace Balltze::Engine::Rasterizer {
      * @param stage         stage to set the texture on
      * @param bitmap_data   bitmap to set the texture to
      */
-    BALLTZE_API bool set_bitmap_data_texture(IDirect3DDevice9 *device, std::size_t stage, TagDefinitions::BitmapData *bitmap_data);
+    BALLTZE_API bool set_bitmap_data_texture(std::size_t stage, TagDefinitions::BitmapData *bitmap_data);
 
     /**
      * Set the texture of a bitmap to a stage of the device

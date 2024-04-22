@@ -319,7 +319,7 @@ namespace Balltze {
     static void draw_text_now(const Text &text) {
         auto old_font_data = *font_data;
         if(text.override) {
-            auto res = Rasterizer::get_resolution();
+            auto res = get_resolution();
             double scale = res.height / 480.0;
 
             // Figure out shadow
@@ -464,7 +464,7 @@ namespace Balltze {
         if(override_font) {
             TEXTMETRIC tm;
             override_font->GetTextMetrics(&tm);
-            auto res = Rasterizer::get_resolution();
+            auto res = get_resolution();
             return static_cast<int>((tm.tmAscent + tm.tmDescent) * 480 + 240) / res.height;
         }
 
@@ -514,7 +514,7 @@ namespace Balltze {
                 override_font->DrawTextW(NULL, reinterpret_cast<const wchar_t *>(buffer), -1, &rect, DT_CALCRECT, 0xFFFFFFFF);
             }
 
-            auto res = Rasterizer::get_resolution();
+            auto res = get_resolution();
             return static_cast<int>((rect.right - rect.left - added_width) * 480 + 240) / res.height;
         }
 
@@ -650,7 +650,7 @@ namespace Balltze {
             }
         }
 
-        auto scale = Rasterizer::get_resolution().height / 480.0;
+        auto scale = get_resolution().height / 480.0;
         int scaled_size = size * scale;
         int shadow_x = shadow.first * (scale / 2);
         int shadow_y = shadow.second * (scale / 2);
@@ -688,7 +688,7 @@ namespace Balltze {
             dev = device;
 
             auto ini = Config::get_chimera_ini();
-            auto scale = Rasterizer::get_resolution().height / 480.0;
+            auto scale = get_resolution().height / 480.0;
 
             #define generate_font(override_var, override_name, shadow, offset) \
                 if(ini.get_value_bool("font_override." override_name "_font_override").value_or(false)) { \

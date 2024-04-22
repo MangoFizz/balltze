@@ -179,7 +179,7 @@ namespace Balltze::Features {
 
     static void on_tick(TickEvent const &ev) {
         if(ev.time == EVENT_TIME_BEFORE) {
-            static auto &resolution = Rasterizer::get_resolution();
+            static auto &resolution = get_resolution();
             float current_aspect_ratio = static_cast<float>(resolution.width) / static_cast<float>(resolution.height);
             float current_screen_width = current_aspect_ratio * 480.000f;
 

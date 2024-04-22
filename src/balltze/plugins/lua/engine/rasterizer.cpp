@@ -13,7 +13,7 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                auto resolution = Engine::Rasterizer::get_resolution();
+                auto resolution = Engine::get_resolution();
                 lua_newtable(state);
                 lua_pushinteger(state, resolution.width);
                 lua_setfield(state, -2, "width");
