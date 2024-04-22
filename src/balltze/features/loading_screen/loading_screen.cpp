@@ -289,8 +289,8 @@ namespace Balltze::Features {
             return true;
         }, false, 0, 1);
 
-        auto enable = Config::get_config().get<bool>("loading_screen.enable");
-        if(!enable.value_or(true)) {
+        auto enable = Config::get_config().get<bool>("loading_screen.enable").value_or(true);
+        if(!enable) {
             return;
         }
 
