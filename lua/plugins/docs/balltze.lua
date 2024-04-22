@@ -734,11 +734,11 @@ function Balltze.features.getTagCopy(tagHandle, copyName) end
 ---@return EngineTagHandle|nil @The handle of the tag; nil if the tag does not exist
 function Balltze.features.getImportedTag(mapPath, tagPath, tagClass) end
 
--- Sets the aspect ratio of the menu
-function Balltze.features.setMenuAspectRatio(x, y) end
+-- Sets the aspect ratio of the user interface
+function Balltze.features.setUIAspectRatio(x, y) end
 
--- Resets the aspect ratio of the menu
-function Balltze.features.resetMenuAspectRatio() end
+-- Resets the aspect ratio of the user interface
+function Balltze.features.resetUIAspectRatio() end
 
 -------------------------------------------------------
 -- Balltze.logger
