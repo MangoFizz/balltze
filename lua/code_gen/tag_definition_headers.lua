@@ -44,7 +44,8 @@ local function generateHeader(definitionName, tagDefinition, dependencies)
 #define BALLTZE_API__ENGINE__TAG_DEFINITION__]] .. definitionName:upper() .. [[_HPP
 
 #include "../../memory.hpp"
-#include "../data_types.hpp"
+#include "../tag.hpp"
+#include "../script.hpp"
 #include "enum.hpp"
 #include "bitfield.hpp"
 
@@ -119,8 +120,10 @@ namespace Balltze::Engine::TagDefinitions {
                     add("std::byte")
                 elseif field.type == "float" then
                     add(field.type)
-                elseif field.type == "TagReflexive" then
+                elseif field.type == "TagBlock" then
                     add(parser.snakeCaseToCamelCase(field.type) .. "<" .. parser.snakeCaseToCamelCase(field.struct) .. ">")
+                elseif field.type == "TagFourCC" then
+                    add("TagClassInt")
                 else
                     add(parser.snakeCaseToCamelCase(field.type))
                 end
@@ -274,8 +277,10 @@ namespace Balltze::HEK::TagDefinitions {
                     add("std::byte")
                 elseif field.type == "float" then
                     add("Memory::BigEndian<float>")
-                elseif field.type == "TagReflexive" or field.type == "tag_reflexive" then
+                elseif field.type == "TagBlock" or field.type == "tag_block" then
                     add(parser.snakeCaseToCamelCase(field.type) .. "<" .. parser.snakeCaseToCamelCase(field.struct) .. ">")
+                elseif field.type == "TagFourCC" then
+                    add("TagClassInt")
                 else
                     if(isStruct(field.type)) then
                         add(parser.snakeCaseToCamelCase(field.type))

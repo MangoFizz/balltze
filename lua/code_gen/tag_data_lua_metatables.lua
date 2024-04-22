@@ -122,7 +122,7 @@ namespace Balltze::Plugins {
     #define LUA_ENGINE_TAG_REFLEXIVE__INDEX_LAMBDA(type, push_function) \
         +[](lua_State *state) -> int { \
             lua_getfield(state, 1, "_data"); \
-            auto *elem = static_cast<Engine::TagReflexive<type> *>(lua_touserdata(state, -1)); \
+            auto *elem = static_cast<Engine::TagBlock<type> *>(lua_touserdata(state, -1)); \
             lua_pop(state, 1); \
             if(lua_isstring(state, 2)) { \
                 std::string key = luaL_checkstring(state, 2); \
@@ -139,7 +139,7 @@ namespace Balltze::Plugins {
                 if (key < 0 || key >= elem->count) { \
                     return luaL_error(state, "Index out of bounds"); \
                 } \
-                push_function(state, elem->offset[key]); \
+                push_function(state, elem->elements[key]); \
             } \
             return 1; \
         }
@@ -147,13 +147,13 @@ namespace Balltze::Plugins {
     #define LUA_ENGINE_TAG_REFLEXIVE__LEN_LAMBDA(type) \
         +[](lua_State *state) -> int { \
             lua_getfield(state, 1, "_data"); \
-            auto *elem = static_cast<Engine::TagReflexive<type> *>(lua_touserdata(state, -1)); \
+            auto *elem = static_cast<Engine::TagBlock<type> *>(lua_touserdata(state, -1)); \
             lua_pop(state, 1); \
             lua_pushinteger(state, elem->count); \
             return 1; \
         }
 
-    int lua_engine_tag_reflexive__newindex(lua_State *state) noexcept {
+    int lua_engine_tag_block__newindex(lua_State *state) noexcept {
         return luaL_error(state, "Invalid operation");
     }
     
@@ -281,14 +281,14 @@ for structName, struct in pairs(structs) do
                 add("lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&data->" .. field.name .. ")); \n");
             elseif(sneakCaseFieldType == "scenario_script_node_value") then
                 add("lua_pushinteger(state, data->" .. field.name .. ".tag_handle.handle); \n");
-            elseif(sneakCaseFieldType == "tag_reflexive") then
+            elseif(sneakCaseFieldType == "tag_block") then
                 local sneakCaseStructName = definitionParser.camelCaseToSnakeCase(field.struct)
                 local camelCaseStructName = definitionParser.snakeCaseToCamelCase(sneakCaseStructName)
                 add("lua_CFunction index = LUA_ENGINE_TAG_REFLEXIVE__INDEX_LAMBDA(" .. camelCaseStructName .. ", lua_push_meta_engine_" .. sneakCaseStructName .. "); \n");
                 indent(3)
                 add("lua_CFunction len = LUA_ENGINE_TAG_REFLEXIVE__LEN_LAMBDA(" .. camelCaseStructName .. "); \n");
                 indent(3)
-                add("lua_push_meta_object(state, data->" .. field.name .. ", index, lua_engine_tag_reflexive__newindex, len); \n");
+                add("lua_push_meta_object(state, data->" .. field.name .. ", index, lua_engine_tag_block__newindex, len); \n");
             else
                 add("lua_push_meta_engine_" .. sneakCaseFieldType .. "(state, data->" .. field.name .. "); \n");
             end

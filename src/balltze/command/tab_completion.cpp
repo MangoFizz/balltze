@@ -33,7 +33,7 @@ namespace Balltze {
             new_command->name = command->full_name();
             new_command->help_message = command->help();
             new_command->help_parameters = command->params_help();
-            *reinterpret_cast<std::uint16_t *>(new_command->gap_71) = 0x15;
+            *reinterpret_cast<std::uint16_t *>(new_command->gap_72) = 0x15;
             new_entries_list.emplace_back(new_command.get());
         }
 

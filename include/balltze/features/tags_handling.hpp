@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__FEATURES__TAG_DATA_HANDLING_HPP
-#define BALLTZE_API__FEATURES__TAG_DATA_HANDLING_HPP
+#ifndef BALLTZE_API__FEATURES__TAGS_HANDLING_HPP
+#define BALLTZE_API__FEATURES__TAGS_HANDLING_HPP
 
 #include <string>
 #include <filesystem>

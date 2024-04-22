@@ -40,7 +40,7 @@ namespace Balltze::Features {
                 if(tag.primary_class == TAG_CLASS_BITMAP) {
                     auto *bitmap = reinterpret_cast<TagDefinitions::Bitmap *>(tag.data);
                     for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
-                        auto &bitmap_data = bitmap->bitmap_data.offset[j];
+                        auto &bitmap_data = bitmap->bitmap_data.elements[j];
                         Rasterizer::load_bitmap_data_texture(&bitmap_data, true, true);
                         count++;
                     }

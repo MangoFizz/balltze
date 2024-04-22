@@ -13,6 +13,8 @@
 #include "../api.hpp"
 #include "../memory.hpp"
 #include "../engine/data_types.hpp"
+#include "../engine/script.hpp"
+#include "../engine/tag_classes.hpp"
 
 namespace Balltze::HEK {
     using Angle = Memory::BigEndian<float>;
@@ -20,11 +22,11 @@ namespace Balltze::HEK {
 	using Index = Memory::BigEndian<std::uint16_t>;
 	using TagEnum = Memory::BigEndian<std::uint16_t>;
 	using Matrix = Memory::BigEndian<float>[3][3];
-    using TagHandle = Engine::TagHandle;
-	using TagFourCC = Engine::TagFourCC;
+    using TagHandle = Engine::ResourceHandle;
     using TagString = Engine::TagString;
     using ColorARGBInt = Engine::ColorARGBInt;
     using ScenarioScriptNodeValue = Memory::BigEndian<Engine::ScenarioScriptNodeValue>;
+	using TagClassInt = Engine::TagClassInt;
 
     /**
      * This header takes up the first 64 bytes of a Halo Editing Kit tag file.
@@ -42,7 +44,7 @@ namespace Balltze::HEK {
         TagString tag_name_unused;
 
         /** Tag class of this tag */
-        Memory::BigEndian<TagFourCC> tag_fourcc;
+        Memory::BigEndian<TagClassInt> tag_class;
 
         /** CRC32? Unread? */
         Memory::BigEndian<std::uint32_t> crc32;
@@ -62,10 +64,10 @@ namespace Balltze::HEK {
         Memory::BigEndian<std::uint32_t> blam;
 
         /** Get the correct version value for the tag */
-        static std::uint16_t version_for_tag(TagFourCC tag_fourcc);
+        static std::uint16_t version_for_tag(TagClassInt tag_class);
 
         /** Generate a new tag file header for a tag class */
-        TagFileHeader(TagFourCC tag_fourcc);
+        TagFileHeader(TagClassInt tag_class);
 
         /**
          * Validate the header, throwing an exception if not valid
@@ -74,7 +76,7 @@ namespace Balltze::HEK {
          * @param expected_tag_class tag class expected
          * @throws                   std::exception if not valid
          */
-        static void validate_header(const TagFileHeader *header, std::size_t tag_file_size, std::optional<TagFourCC> expected_tag_class = std::nullopt);
+        static void validate_header(const TagFileHeader *header, std::size_t tag_file_size, std::optional<TagClassInt> expected_tag_class = std::nullopt);
 
         /** Make a blank tag file header. No values will be initialized. */
         TagFileHeader() = default;
@@ -84,19 +86,22 @@ namespace Balltze::HEK {
     };
     static_assert(sizeof(TagFileHeader) == 0x40);
 
-    template<typename T> struct TagReflexive {
+    template<typename T> struct TagBlock {
         Memory::BigEndian<std::uint32_t> count;
         Memory::BigEndian<std::uint32_t> offset;
-		std::byte pad_3[4];
+		void *definition;
 
-		T *data() {
-			return reinterpret_cast<T *>(reinterpret_cast<std::byte *>(this) + sizeof(TagReflexive<T>) + offset);
+		T *element(std::uint32_t index = 0) {
+			if(index >= count) {
+				return nullptr;
+			}
+			return reinterpret_cast<T *>(reinterpret_cast<std::byte *>(this) + sizeof(TagBlock<T>) + offset);
 		}
 	};
-	static_assert(sizeof(TagReflexive<void>) == 0xC);
+	static_assert(sizeof(TagBlock<void>) == 0xC);
 
 	struct TagDependency {
-		TagFourCC tag_fourcc;
+		TagClassInt tag_class;
 		Memory::BigEndian<std::uint32_t> path_pointer;
 		std::size_t path_size;
 		Memory::BigEndian<TagHandle> tag_handle;

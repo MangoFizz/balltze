@@ -21,6 +21,7 @@
 #include "../../plugins/loader.hpp"
 #include "../../logger.hpp"
 #include "map.hpp"
+#include "tags_handling.hpp"
 
 namespace Balltze::Features {
     namespace fs = std::filesystem;
@@ -402,18 +403,18 @@ namespace Balltze::Features {
                 return new_tag_entry.handle;
             }
 
-            new_tag_entry.rebase_data_offsets(m_raw_tag_data.get(), [&](std::uint32_t offset) -> std::uint32_t {
+            rebase_tag_data_offsets(&new_tag_entry, m_raw_tag_data.get(), [&](std::uint32_t offset) -> std::uint32_t {
                 return new_tag_entry.indexed ? offset : offset + data_base_offset;
             });
 
-            new_tag_entry.resolve_dependencies(tag_handle_resolver);
+            resolve_tag_dependencies(&new_tag_entry, tag_handle_resolver);
 
             switch(new_tag_entry.primary_class) {
                 case TAG_CLASS_BITMAP: {
                     Bitmap *bitmap = reinterpret_cast<Bitmap *>(new_tag_entry.data);
                     if(bitmap->bitmap_data.count > 0) {
                         for(std::size_t j = 0; j < bitmap->bitmap_data.count; j++) {
-                            bitmap->bitmap_data.offset[j].pixel_data_offset += data_base_offset; 
+                            bitmap->bitmap_data.elements[j].pixel_data_offset += data_base_offset; 
                         }
                     }
                     break;
@@ -422,10 +423,10 @@ namespace Balltze::Features {
                 case TAG_CLASS_GBXMODEL: {
                     auto *gbxmodel = reinterpret_cast<Gbxmodel *>(new_tag_entry.data);
                     for(std::size_t i = 0; i < gbxmodel->geometries.count; i++) {
-                        for(std::size_t j = 0; j < gbxmodel->geometries.offset[i].parts.count; j++) {
-                            gbxmodel->geometries.offset[i].parts.offset[j].vertex_offset += model_data_base_offset;
-                            gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset += model_data_base_offset - map_cache->tag_data_header().vertex_size + m_tag_data_header->vertex_size;
-                            gbxmodel->geometries.offset[i].parts.offset[j].triangle_offset_2 += model_data_base_offset - map_cache->tag_data_header().vertex_size + m_tag_data_header->vertex_size;
+                        for(std::size_t j = 0; j < gbxmodel->geometries.elements[i].parts.count; j++) {
+                            gbxmodel->geometries.elements[i].parts.elements[j].vertex_offset += model_data_base_offset;
+                            gbxmodel->geometries.elements[i].parts.elements[j].triangle_offset += model_data_base_offset - map_cache->tag_data_header().vertex_size + m_tag_data_header->vertex_size;
+                            gbxmodel->geometries.elements[i].parts.elements[j].triangle_offset_2 += model_data_base_offset - map_cache->tag_data_header().vertex_size + m_tag_data_header->vertex_size;
                         }                               
                     }
                     break;
@@ -436,7 +437,7 @@ namespace Balltze::Features {
                 }
             }
 
-            new_tag_entry.data = new_tag_entry.copy_data([](std::byte *data, std::size_t size) -> std::byte * {
+            new_tag_entry.data = copy_tag_data(&new_tag_entry, [](std::byte *data, std::size_t size) -> std::byte * {
                 auto *new_data = virtual_tag_data->reserve_tag_data_space(size);
                 std::memcpy(new_data, data, size);
                 return new_data;
@@ -759,11 +760,11 @@ namespace Balltze::Features {
             auto *raw_tag = map_cache->get_raw_tag(original_tag->handle);
             if(raw_tag->data >= tag_data_address && raw_tag->data < tag_data_address + map_cache->header().tag_data_size) {
                 raw_tag->data = map_cache->translate_address(raw_tag->data);
-                raw_tag->rebase_data_offsets(map_cache->tag_data());
+                rebase_tag_data_offsets(raw_tag, map_cache->tag_data());
             }
 
             auto *tag_data = target_tag->data;
-            target_tag->data = raw_tag->copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
+            target_tag->data = copy_tag_data(raw_tag, [&tag_data](std::byte *data, std::size_t size) -> std::byte * {
                 auto *new_data = tag_data;
                 std::memcpy(new_data, data, size);
                 tag_data += size;
@@ -776,7 +777,7 @@ namespace Balltze::Features {
                 if(origin_handle) {
                     auto *raw_tag = map->get_raw_tag(*origin_handle);
                     auto *tag_data = target_tag->data;
-                    target_tag->data = raw_tag->copy_data([&tag_data](std::byte *data, std::size_t size) -> std::byte * {
+                    target_tag->data = copy_tag_data(raw_tag, [&tag_data](std::byte *data, std::size_t size) -> std::byte * {
                         auto *new_data = tag_data;
                         std::memcpy(new_data, data, size);
                         tag_data += size;
@@ -822,7 +823,7 @@ namespace Balltze::Features {
             raw_tag = map_cache->get_raw_tag(tag->handle);
             if(raw_tag->data >= tag_data_address && raw_tag->data < tag_data_address + map_cache->header().tag_data_size) {
                 raw_tag->data = map_cache->translate_address(raw_tag->data);
-                raw_tag->rebase_data_offsets(map_cache->tag_data());
+                rebase_tag_data_offsets(raw_tag, map_cache->tag_data());
             }
             map = map_cache.get();
         }
@@ -842,7 +843,7 @@ namespace Balltze::Features {
         }
 
         auto &new_entry = virtual_tag_data->insert_tag_entry(*raw_tag);
-        new_entry.data = raw_tag->copy_data([](std::byte *data, std::size_t size) -> std::byte * {
+        new_entry.data = copy_tag_data(raw_tag, [](std::byte *data, std::size_t size) -> std::byte * {
             auto *new_data = virtual_tag_data->reserve_tag_data_space(size);
             std::memcpy(new_data, data, size);
             return new_data;
@@ -894,7 +895,7 @@ namespace Balltze::Features {
         auto &tag_data_header = get_tag_data_header();
         for(std::size_t i = 0; i < tag_data_header.tag_count; i++) {
             auto &current_tag = tag_data_header.tag_array[i];
-            current_tag.resolve_dependencies([tag_handle, new_tag_handle, &current_tag](TagHandle dependency_handle) -> TagHandle {
+            resolve_tag_dependencies(&current_tag, [tag_handle, new_tag_handle, &current_tag](TagHandle dependency_handle) -> TagHandle {
                 if(dependency_handle == tag_handle && current_tag.handle != tag_handle) {
                     return new_tag_handle;
                 }

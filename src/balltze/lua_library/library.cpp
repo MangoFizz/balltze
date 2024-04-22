@@ -126,7 +126,7 @@ namespace Balltze::LuaLibrary {
             if(seat_index >= vehicle_tag_data->seats.count) {
                 return luaL_error(state, "invalid seat index in ballte unit_enter_vehicle");
             }
-            Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, vehicle_tag_data->seats.offset[seat_index].label.string);
+            Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, vehicle_tag_data->seats.elements[seat_index].label.string);
         }
         else {
             return luaL_error(state, "invalid number of arguments in balltze unit_enter_vehicle");

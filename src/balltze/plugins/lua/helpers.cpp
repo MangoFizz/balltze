@@ -2057,7 +2057,7 @@ namespace Balltze::Plugins {
             return 1; 
         }
         else if(field == "class") {
-            auto tag_class = Engine::tag_class_to_string(*reinterpret_cast<Engine::TagClassInt *>(dependency->tag_fourcc)); 
+            auto tag_class = Engine::tag_class_to_string(*reinterpret_cast<Engine::TagClassInt *>(dependency->tag_class)); 
             lua_pushstring(state, tag_class.c_str()); 
             return 1; 
         }
@@ -2089,7 +2089,7 @@ namespace Balltze::Plugins {
             if(tag_class == nullptr) {
                 return luaL_error(state, "Invalid tag class");
             }
-            *reinterpret_cast<Engine::TagClassInt *>(dependency->tag_fourcc) = Engine::tag_class_from_string(tag_class);
+            *reinterpret_cast<Engine::TagClassInt *>(dependency->tag_class) = Engine::tag_class_from_string(tag_class);
         }
         else if(field == "path") { 
             auto *path = lua_tostring(state, 3);

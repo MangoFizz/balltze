@@ -40,11 +40,15 @@ add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
 
+#include <optional>
+#include <functional>
+#include <cstdint>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/tag_definitions.hpp>
 
-namespace Balltze::Engine {
-    using namespace TagDefinitions;
+namespace Balltze::Features {
+    using namespace Engine;
+    using namespace Engine::TagDefinitions;
     
 ]])
 
@@ -82,11 +86,11 @@ for structName, struct in pairs(structs) do
             add(fieldAccess .. " = dependency_resolver(" .. fieldAccess .. ");\n")
             indent(2)
             add("}\n")
-        elseif(field.type == "TagReflexive") then
+        elseif(field.type == "TagBlock") then
             indent(2)
             add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
             indent(3)
-            add("resolve_dependencies_req(" .. fieldAccess .. ".offset[i], dependency_resolver);\n")
+            add("resolve_dependencies_req(" .. fieldAccess .. ".elements[i], dependency_resolver);\n")
             indent(2)
             add("}\n")
         elseif(structs[field.type]) then
@@ -99,8 +103,8 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    void Tag::resolve_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver) {
-        switch(this->primary_class) {
+    void resolve_tag_dependencies(Tag *tag, std::function<TagHandle(TagHandle)> dependency_resolver) {
+        switch(tag->primary_class) {
 ]])
 
 for _, file in ipairs(files) do
@@ -110,7 +114,7 @@ for _, file in ipairs(files) do
         indent(3)
         add("case TAG_CLASS_" .. definitionName:upper() .. ": { \n")
         indent(4)
-        add("auto *tag_data = reinterpret_cast<TagDefinitions::" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(this->data); \n")
+        add("auto *tag_data = reinterpret_cast<TagDefinitions::" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(tag->data); \n")
         indent(4)
         add("resolve_dependencies_req(*tag_data, dependency_resolver); \n")
         indent(4)

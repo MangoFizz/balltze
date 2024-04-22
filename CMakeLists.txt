@@ -91,9 +91,9 @@ add_library(balltze SHARED
     src/balltze/features/shaders/shader_transparent_chicago.cpp
     src/balltze/features/shaders/shader_transparent_chicago.S
     src/balltze/features/sound_subtitles.cpp
-    src/balltze/features/tag_data_importing/map.cpp
-    src/balltze/features/tag_data_importing/tag_data_importing.cpp
-    src/balltze/features/tag_data_importing/tag_data_importing.S
+    src/balltze/features/tags_handling/map.cpp
+    src/balltze/features/tags_handling/tag_data_importing.cpp
+    src/balltze/features/tags_handling/tag_data_importing.S
     src/balltze/features/map_data_read_warden.cpp
     src/balltze/features/map_textures_preloading.cpp
     src/balltze/features/menu_widescreen.cpp

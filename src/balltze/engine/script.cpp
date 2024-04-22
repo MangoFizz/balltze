@@ -34,7 +34,7 @@ namespace Balltze::Engine {
         auto *tag_data = reinterpret_cast<TagDefinitions::Vehicle *>(tag->data);
 
         for(std::size_t seat_index = 0; seat_index < tag_data->seats.count; seat_index++) {
-            auto &seat = tag_data->seats.offset[seat_index];
+            auto &seat = tag_data->seats.elements[seat_index];
             if(seat.label.string == seat_label) {
                 unit_scripting_enter_vehicle_asm(unit_handle, vehicle_handle, seat_label.c_str());
                 return;
@@ -64,7 +64,7 @@ namespace Balltze::Engine {
             throw std::runtime_error("seat index out of bounds");
         }
 
-        auto &seat_name = tag_data->seats.offset[seat_index].label.string;
+        auto &seat_name = tag_data->seats.elements[seat_index].label.string;
         unit_scripting_enter_vehicle_asm(unit_handle, vehicle_handle, seat_name);
     }
 

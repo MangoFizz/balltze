@@ -25,7 +25,7 @@ end
 
 local function hasOffsetFields(tagDefinition)
     for _, field in ipairs(tagDefinition.fields) do
-        if(field.type == "TagReflexive" or field.type == "TagDataOffset") then
+        if(field.type == "TagBlock" or field.type == "TagDataOffset") then
             return true
         end
     end
@@ -49,11 +49,15 @@ add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
 
+#include <optional>
+#include <functional>
+#include <cstdint>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/tag_definitions.hpp>
 
-namespace Balltze::Engine {
-    using namespace TagDefinitions;
+namespace Balltze::Features {
+    using namespace Engine;
+    using namespace Engine::TagDefinitions;
 
     template<typename T>
     static void displace_offset(T &value, std::ptrdiff_t offset) {
@@ -83,16 +87,16 @@ for structName, struct in pairs(structs) do
     
     for _, field in ipairs(struct.fields) do
         local fieldAccess = structName .. "." .. (field.name or "")
-        if(field.type == "TagReflexive") then
+        if(field.type == "TagBlock") then
             indent(2)
             add("if(" .. fieldAccess .. ".count > 0) {\n")
             indent(3)
-            add("displace_offset(" .. fieldAccess .. ".offset, disp);\n")
+            add("displace_offset(" .. fieldAccess .. ".elements, disp);\n")
             if(structs[definitionParser.snakeCaseToCamelCase(field.struct)]) then
                 indent(3)
                 add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
                 indent(4)
-                add("displace_offsets(" .. fieldAccess .. ".offset[i], disp, external_data_offset_resolver);\n")
+                add("displace_offsets(" .. fieldAccess .. ".elements[i], disp, external_data_offset_resolver);\n")
                 indent(3)
                 add("}\n")
             end
@@ -124,10 +128,10 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    void Tag::rebase_data_offsets(std::byte *new_tag_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver) {
+    void rebase_tag_data_offsets(Tag *tag, std::byte *new_tag_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver) {
         std::ptrdiff_t offset_disp = reinterpret_cast<std::int32_t>(new_tag_data_address - get_tag_data_address());
 
-        switch(this->primary_class) {
+        switch(tag->primary_class) {
 ]])
 
 for _, file in ipairs(files) do
@@ -137,7 +141,7 @@ for _, file in ipairs(files) do
         indent(3)
         add("case TAG_CLASS_" .. definitionName:upper() .. ": { \n")
         indent(4)
-        add("auto &tag_data = *reinterpret_cast<TagDefinitions::" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(this->data); \n")
+        add("auto &tag_data = *reinterpret_cast<TagDefinitions::" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(tag->data); \n")
         if(structs[definitionParser.snakeCaseToCamelCase(definitionName)]) then
             indent(4)
             add("displace_offsets(tag_data, offset_disp, external_data_offset_resolver); \n")

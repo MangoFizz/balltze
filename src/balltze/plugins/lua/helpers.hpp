@@ -230,9 +230,9 @@ namespace Balltze::Plugins {
     }
 
     template<typename T>
-    int lua_engine_tag_reflexive__index(lua_State *state, std::function<void (lua_State *, T &)> push_function) noexcept {
+    int lua_engine_tag_block__index(lua_State *state, std::function<void (lua_State *, T &)> push_function) noexcept {
         lua_getfield(state, 1, "_data"); 
-        auto *elem = static_cast<Engine::TagReflexive<T> *>(lua_touserdata(state, -1));
+        auto *elem = static_cast<Engine::TagBlock<T> *>(lua_touserdata(state, -1));
         lua_pop(state, 1); 
         auto key = luaL_checkinteger(state, 2);
         if (key < 0 || key >= elem->count) {

@@ -64,13 +64,13 @@ void append_subtitles_to_tag(std::filesystem::path tag_file, std::wstring subtit
             std::cout << "Warning: More than one pitch range found, only appending subtitles to the first permutation." << std::endl;
         }
 
-        auto *pitch_range = tag->data.pitch_ranges.data();
+        auto *pitch_range = tag->data.pitch_ranges.element();
         if(pitch_range->permutations.count > 0) {
             if(pitch_range->permutations.count > 1) {
                 std::cout << "Warning: More than one permutation found, only appending subtitles to the first one." << std::endl;
             }
         
-            auto *permutations = pitch_range[0].permutations.data();
+            auto *permutations = pitch_range[0].permutations.element();
             auto filesize = get_file_size(file);
 
             if(permutations[0].subtitle_data.file_offset != 0) {

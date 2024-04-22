@@ -36,7 +36,6 @@ _rasterizer_get_vertex_shader_permutation_index:
     popfd
     popad
     rasterizer_get_vertex_shader_permutation_index_function_found:
-
     mov ecx, [esp + 4]
     jmp dword ptr rasterizer_get_vertex_shader_permutation_index_function_addr
 
@@ -54,7 +53,6 @@ _rasterizer_get_transparent_geometry_group_vertex_type:
     popfd
     popad
     rasterizer_get_transparent_geometry_group_vertex_type_function_found:
-
     mov ecx, [esp + 4]
     jmp dword ptr rasterizer_get_transparent_geometry_group_vertex_type_function_addr
 
@@ -72,7 +70,6 @@ _rasterizer_render_transparent_geometry_group:
     popfd
     popad
     rasterizer_render_transparent_geometry_group_function_found:
-
     jmp dword ptr rasterizer_render_transparent_geometry_group_function_addr
 
 .globl _rasterizer_render_transparent_geometry_group_vertices
@@ -89,7 +86,6 @@ _rasterizer_render_transparent_geometry_group_vertices:
     popfd
     popad
     rasterizer_render_transparent_geometry_group_vertices_function_found:
-
     mov ecx, [esp + 8]
     jmp dword ptr rasterizer_render_transparent_geometry_group_vertices_function_addr
 
@@ -107,7 +103,6 @@ _rasterizer_set_framebuffer_blend_function:
     popfd
     popad
     rasterizer_set_framebuffer_blend_function_function_found:
-
     mov ecx, [esp + 4]
     jmp dword ptr rasterizer_set_framebuffer_blend_function_function_addr
 
@@ -125,7 +120,6 @@ _rasterizer_set_bitmap_data_texture:
     popfd
     popad
     rasterizer_set_bitmap_data_texture_function_found:
-
     mov eax, [esp + 0x14]
     jmp dword ptr rasterizer_set_bitmap_data_texture_function_addr
 
@@ -143,7 +137,6 @@ _rasterizer_apply_shader_texture_animation:
     popfd
     popad
     rasterizer_apply_shader_texture_animation_function_found:
-
     push ebp
     mov ebp, esp
     add ebp, 4
@@ -178,7 +171,6 @@ _rasterizer_prepare_shader_transparent_chicago:
     popfd
     popad
     rasterizer_prepare_shader_transparent_chicago_function_found:
-
     mov ebx, [esp + 4]
     jmp dword ptr rasterizer_prepare_shader_transparent_chicago_function_addr
 

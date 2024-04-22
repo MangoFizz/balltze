@@ -4,7 +4,7 @@
 #include <balltze/engine/tag.hpp>
 #include <balltze/events/map_load.hpp>
 #include <balltze/features.hpp>
-#include "../../features/tag_data_importing/map.hpp"
+#include "../../features/tags_handling/map.hpp"
 #include "../../logger.hpp"
 #include "../loader.hpp"
 #include "helpers.hpp"

@@ -54,7 +54,7 @@ namespace Balltze::Features {
         auto icon = get_icon(button);
         auto &hud_globals = Engine::get_hud_globals();
         if(icon && *icon < hud_globals.button_icons.count) {
-            auto &hud_icon = hud_globals.button_icons.offset[*icon];
+            auto &hud_icon = hud_globals.button_icons.elements[*icon];
             if(!hud_globals.icon_bitmap.tag_handle.is_null()) {
                 auto message_icons_tag_handle = hud_globals.icon_bitmap.tag_handle;
                 auto *message_icons_tag = Engine::get_tag(message_icons_tag_handle);
@@ -62,13 +62,13 @@ namespace Balltze::Features {
                     auto *message_icons = message_icons_tag->get_data<Engine::TagDefinitions::Bitmap>();
                     auto *bitmap = message_icons;
                     if(hud_icon.sequence_index < bitmap->bitmap_group_sequence.count) {
-                        auto &sequence = bitmap->bitmap_group_sequence.offset[hud_icon.sequence_index];
+                        auto &sequence = bitmap->bitmap_group_sequence.elements[hud_icon.sequence_index];
                         if(sequence.sprites.count > 0) {
                             button_icon.button = button;
                             button_icon.icon_index = *icon;
                             button_icon.bitmap = bitmap;
                             button_icon.sequence_index = hud_icon.sequence_index;
-                            button_icon.sprites_count = bitmap->bitmap_group_sequence.offset[button_icon.sequence_index].sprites.count;
+                            button_icon.sprites_count = bitmap->bitmap_group_sequence.elements[button_icon.sequence_index].sprites.count;
                             button_icon.animation_current_sprite_index = 0;
                             button_icon.last_animation_frame = std::chrono::steady_clock::now();
                             

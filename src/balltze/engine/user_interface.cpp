@@ -302,17 +302,17 @@ namespace Balltze::Engine {
         if(sequence_index >= bitmap->bitmap_group_sequence.count) {
             throw std::runtime_error("Invalid sequence index");
         }
-        auto &sequence = bitmap->bitmap_group_sequence.offset[sequence_index];
+        auto &sequence = bitmap->bitmap_group_sequence.elements[sequence_index];
         
         if(sequence.sprites.count <= sprite_index) {
             throw std::runtime_error("Invalid sprite index");
         }
-        auto &sprite = sequence.sprites.offset[sprite_index];
+        auto &sprite = sequence.sprites.elements[sprite_index];
 
         if(sprite.bitmap_index >= bitmap->bitmap_data.count) {
             throw std::runtime_error("Invalid bitmap index in sprite");
         }
-        auto &bitmap_data = bitmap->bitmap_data.offset[sprite.bitmap_index];
+        auto &bitmap_data = bitmap->bitmap_data.elements[sprite.bitmap_index];
 
         std::uint16_t sprite_width = (sprite.right - sprite.left) * bitmap_data.width;
         std::uint16_t sprite_height = (sprite.bottom - sprite.top) * bitmap_data.height;
@@ -324,12 +324,12 @@ namespace Balltze::Engine {
         if(sequence_index >= bitmap->bitmap_group_sequence.count) {
             throw std::runtime_error("Invalid sequence index");
         }
-        auto &sequence = bitmap->bitmap_group_sequence.offset[sequence_index];
+        auto &sequence = bitmap->bitmap_group_sequence.elements[sequence_index];
         if(sprite_index >= sequence.sprites.count) {
             throw std::runtime_error("Invalid sprite index");
         }
-        auto &sprite = sequence.sprites.offset[sprite_index];
-        auto &bitmap_data = bitmap->bitmap_data.offset[sprite.bitmap_index];
+        auto &sprite = sequence.sprites.elements[sprite_index];
+        auto &bitmap_data = bitmap->bitmap_data.elements[sprite.bitmap_index];
 
         hud_draw_bitmap_sprite(position, color, &bitmap_data, &sprite);
     }
@@ -366,9 +366,9 @@ namespace Balltze::Engine {
         
         bool found = false;
         for(std::size_t i = 0; i < sound->pitch_ranges.count; i++) {
-            auto &pitch_range = sound->pitch_ranges.offset[i];
+            auto &pitch_range = sound->pitch_ranges.elements[i];
             if(pitch_range.permutations.count > 0) {
-                if(permutation >= pitch_range.permutations.offset && permutation < pitch_range.permutations.offset + pitch_range.permutations.count) {
+                if(permutation >= pitch_range.permutations.elements && permutation < pitch_range.permutations.elements + pitch_range.permutations.count) {
                     found = true;
                     break;
                 }

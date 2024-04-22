@@ -6,14 +6,12 @@
 #include <cstdint> 
 #include <cstddef>
 #include "../memory.hpp"
-#include "tag_classes.hpp"
 
 namespace Balltze::Engine {
 	using Angle = float;
 	using Fraction = float;
 	using Index = std::uint16_t;
 	using TagEnum = std::uint16_t;
-	using TagFourCC = TagClassInt;
 	using Matrix = float[3][3];
     using Point = float;
 	using TickCount32 = std::uint32_t;
@@ -62,14 +60,6 @@ namespace Balltze::Engine {
 
     using PlayerHandle = ResourceHandle;
     using ObjectHandle = ResourceHandle;
-    using TagHandle = ResourceHandle;
-
-    template<typename T> struct TagReflexive {
-        std::uint32_t count;
-        T *offset;
-		std::byte pad_3[4];
-	};
-	static_assert(sizeof(TagReflexive<void>) == 0xC);
     
 	struct ColorARGBInt {
 		std::uint8_t blue;
@@ -78,14 +68,6 @@ namespace Balltze::Engine {
 		std::uint8_t alpha;
 	};
     static_assert(sizeof(ColorARGBInt) == 0x4);
-
-	struct TagDependency {
-		TagFourCC tag_fourcc;
-		char *path;
-		std::size_t path_size;
-		TagHandle tag_handle;
-	};
-    static_assert(sizeof(TagDependency) == 0x10);
 
 	struct Point2D {
 		Point x;
@@ -259,68 +241,6 @@ namespace Balltze::Engine {
         std::uint16_t height;
         std::uint16_t width;
     };
-
-	union ScenarioScriptNodeValue {
-        std::int8_t bool_int;
-        std::int16_t short_int;
-        std::int32_t long_int;
-        float real;
-        TagHandle tag_handle;
-
-        ScenarioScriptNodeValue() = default;
-        ScenarioScriptNodeValue(const ScenarioScriptNodeValue &copy) = default;
-
-        ScenarioScriptNodeValue(std::uint8_t v) {
-            this->bool_int = v;
-        }
-
-        ScenarioScriptNodeValue(std::uint16_t v) {
-            this->short_int = v;
-        }
-
-        ScenarioScriptNodeValue(std::uint32_t v) {
-            this->long_int = v;
-        }
-
-        ScenarioScriptNodeValue(float v) {
-            this->real = v;
-        }
-
-        ScenarioScriptNodeValue(TagHandle v) {
-            this->tag_handle = v;
-        }
-
-        void operator=(std::uint8_t v) {
-            this->long_int = 0xFFFFFFFF;
-            this->bool_int = v;
-        }
-
-        void operator=(std::uint16_t v) {
-            this->long_int = 0xFFFFFFFF;
-            this->short_int = v;
-        }
-
-        void operator=(std::uint32_t v) {
-            this->long_int = v;
-        }
-
-        void operator=(float v) {
-            this->real = v;
-        }
-
-        void operator=(TagHandle v) {
-            this->tag_handle = v;
-        }
-        
-        bool operator==(const ScenarioScriptNodeValue &other) const noexcept {
-            return this->long_int == other.long_int;
-        }
-        
-        bool operator!=(const ScenarioScriptNodeValue &other) const noexcept {
-            return this->long_int != other.long_int;
-        }
-    };
-	static_assert(sizeof(ScenarioScriptNodeValue) == 0x4);
 }
 
 #endif

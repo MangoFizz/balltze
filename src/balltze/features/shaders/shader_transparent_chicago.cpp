@@ -26,7 +26,7 @@ namespace Balltze::Features {
             auto *device = get_d3d9_device();
             auto *shader_data = reinterpret_cast<ShaderTransparentChicago *>(transparent_geometry_group->shader_tag_data);
             
-            auto *maps_elements = shader_data->maps.offset;
+            auto *maps_elements = shader_data->maps.elements;
             if(maps_elements == nullptr) {
                 return;
             }
@@ -44,7 +44,7 @@ namespace Balltze::Features {
             
             for(int i = 0; i < shader_data->extra_layers.count; i++) {
                 TransparentGeometryGroup group_copy;
-                auto *extra_layer_elements = shader_data->extra_layers.offset;
+                auto *extra_layer_elements = shader_data->extra_layers.elements;
                 memcpy(&group_copy, transparent_geometry_group, sizeof(TransparentGeometryGroup));
                 auto *extra_layer_shader_tag = get_tag(extra_layer_elements[i].shader.tag_handle);
                 group_copy.shader_tag_data = extra_layer_shader_tag->data;
@@ -63,7 +63,7 @@ namespace Balltze::Features {
 
             short bitmap_data_index = transparent_geometry_group->bitmap_index;
             if(flags.numeric && transparent_geometry_group->field_0x74 != nullptr && shader_data->maps.count > 0) {
-                auto *bitmap_tag = get_tag(shader_data->maps.offset[0].map.tag_handle);
+                auto *bitmap_tag = get_tag(shader_data->maps.elements[0].map.tag_handle);
                 auto *bitmap_data = reinterpret_cast<Bitmap *>(bitmap_tag->data);
                 auto bitmap_count = bitmap_data->bitmap_data.count;
                 auto extra_flags = *reinterpret_cast<std::uint32_t *>(&shader_data->extra_flags);
@@ -96,7 +96,7 @@ namespace Balltze::Features {
                 map_index = i;
                 if(shader_data->maps.count > map_index) {
                     float first_map_type = shader_data->first_map_type;
-                    auto *map = shader_data->maps.offset + map_index;
+                    auto *map = shader_data->maps.elements + map_index;
                     BitmapDataType bitmap_data_type;
                     if(map_index == 0) {
                         bitmap_data_type = reinterpret_cast<BitmapDataType *>(0x005fc9d0)[shader_data->first_map_type];
@@ -195,7 +195,7 @@ namespace Balltze::Features {
                         }
                     }
                     else {
-                        auto *map_elements = shader_data->maps.offset;
+                        auto *map_elements = shader_data->maps.elements;
                         auto map_v_scale = map_elements[map_index].map_v_scale;
                         auto map_u_scale = map_elements[map_index].map_u_scale;
 

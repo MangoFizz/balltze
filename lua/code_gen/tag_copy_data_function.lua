@@ -25,7 +25,7 @@ end
 
 local function hasOffsetFields(tagDefinition)
     for _, field in ipairs(tagDefinition.fields) do
-        if(field.type == "TagReflexive" or field.type == "TagDataOffset") then
+        if(field.type == "TagBlock" or field.type == "TagDataOffset") then
             return true
         end
     end
@@ -49,12 +49,16 @@ add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
 
+#include <optional>
+#include <functional>
+#include <cstdint>
 #include <cstddef>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/tag_definitions.hpp>
 
-namespace Balltze::Engine {
-    using namespace TagDefinitions;
+namespace Balltze::Features {
+    using namespace Engine;
+    using namespace Engine::TagDefinitions;
 
     template<typename T>
     static void displace_offset(T &value, std::ptrdiff_t offset) {
@@ -89,18 +93,18 @@ for structName, struct in pairs(structs) do
     
     for _, field in ipairs(struct.fields) do
         local fieldAccess = "data." .. (field.name or "")
-        if(field.type == "TagReflexive") then
+        if(field.type == "TagBlock") then
             indent(2)
             add("if(" .. fieldAccess .. ".count > 0) {\n")
             indent(3)
-            add("auto *new_offset = reinterpret_cast<decltype(" .. fieldAccess .. ".offset)>(data_allocator(reinterpret_cast<std::byte *>(" .. fieldAccess .. ".offset), sizeof(" .. fieldAccess .. ".offset[0]) * " .. fieldAccess .. ".count));\n")
+            add("auto *new_offset = reinterpret_cast<decltype(" .. fieldAccess .. ".elements)>(data_allocator(reinterpret_cast<std::byte *>(" .. fieldAccess .. ".elements), sizeof(" .. fieldAccess .. ".elements[0]) * " .. fieldAccess .. ".count));\n")
             indent(3)
-            add(fieldAccess .. ".offset = new_offset;\n")
+            add(fieldAccess .. ".elements = new_offset;\n")
             if(structs[definitionParser.snakeCaseToCamelCase(field.struct)]) then
                 indent(3)
                 add("for(std::size_t i = 0; i < " .. fieldAccess .. ".count; i++) {\n")
                 indent(4)
-                add("copy_struct_data(" .. fieldAccess .. ".offset[i], data_allocator, true);\n")
+                add("copy_struct_data(" .. fieldAccess .. ".elements[i], data_allocator, true);\n")
                 indent(3)
                 add("}\n")
             end
@@ -133,8 +137,8 @@ for structName, struct in pairs(structs) do
 end
 
 add([[
-    std::byte *Tag::copy_data(std::function<std::byte *(std::byte *, std::size_t)> data_allocator) const {
-        switch(this->primary_class) {
+    std::byte *copy_tag_data(Tag *tag, std::function<std::byte *(std::byte *, std::size_t)> data_allocator) {
+        switch(tag->primary_class) {
 ]])
 
 for _, file in ipairs(files) do
@@ -148,7 +152,7 @@ for _, file in ipairs(files) do
         indent(3)
         add("case TAG_CLASS_" .. definitionName:upper() .. ": { \n")
         indent(4)
-        add("auto &tag_data = *reinterpret_cast<" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(this->data); \n")
+        add("auto &tag_data = *reinterpret_cast<" .. definitionParser.snakeCaseToCamelCase(definitionName) .. " *>(tag->data); \n")
         if(structs[definitionParser.snakeCaseToCamelCase(definitionName)]) then
             indent(4)
             add("return copy_struct_data(tag_data, data_allocator, false); \n")

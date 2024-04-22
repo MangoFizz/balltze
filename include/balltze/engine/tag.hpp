@@ -4,21 +4,15 @@
 #define BALLTZE_API__ENGINE__TAG_HPP
 
 #include <string>
-#include <functional>
-#include <variant>
-#include <optional>
-#include <cstring>
 #include <cstddef>
-
 #include "../memory.hpp"
 #include "data_types.hpp"
 #include "tag_classes.hpp"
 
 namespace Balltze::Engine {
-    /**
-     * Tags are the building block of a map
-     */
-    struct BALLTZE_API Tag {
+    using TagHandle = ResourceHandle;
+
+    struct Tag {
         /** Primary tag class; this value is only read for a few tags as well as any indexed tags */
         TagClassInt primary_class;
 
@@ -56,26 +50,6 @@ namespace Balltze::Engine {
         T *get_data() noexcept {
             return reinterpret_cast<T *>(this->data);
         }
-
-        /**
-         * Fix tag offsets with a new data address 
-         * @param new_tag_data_address          New data address for tag data
-         * @param external_data_offset_resolver Function to resolve external data offsets
-         */
-        void rebase_data_offsets(std::byte *new_tag_data_address, std::optional<std::function<std::uint32_t(std::uint32_t)>> external_data_offset_resolver = std::nullopt);
-
-        /**
-         * Fix tag dependencies
-         * @param dependency_resolver A function that resolves tag handles from tag dependencies
-         */
-        void resolve_dependencies(std::function<TagHandle(TagHandle)> dependency_resolver);
-
-        /**
-         * Copy tag data to a new location
-         * @param  data_allocator A function that allocates memory for the copied structures from the original data and returns a pointer to the reserved memory
-         * @return                Pointer to copied data
-         */
-        std::byte *copy_data(std::function<std::byte *(std::byte *, std::size_t)> data_allocator) const;
     };
     static_assert(sizeof(Tag) == 0x20);
 
@@ -115,12 +89,31 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(TagDataHeader) == 0x28);
 
+    template<typename T> struct TagBlock {
+        std::uint32_t count;
+        T *elements;
+		void *definition;
+	};
+	static_assert(sizeof(TagBlock<void>) == 0xC);
+
+    struct TagDependency {
+		TagClassInt tag_class;
+		char *path;
+		std::size_t path_size;
+		TagHandle tag_handle;
+	};
+    static_assert(sizeof(TagDependency) == 0x10);
+
     /**
      * Get the tag data address
      * @return tag data address
      */
     BALLTZE_API std::byte *get_tag_data_address() noexcept;
 
+    /**
+     * Get the tag data header
+     * @return  pointer to tag data header struct
+     */
     inline TagDataHeader &get_tag_data_header() noexcept {
         return *reinterpret_cast<TagDataHeader *>(get_tag_data_address());
     }
@@ -151,9 +144,13 @@ namespace Balltze::Engine {
      * Get tag class from a given string
      * @return  A tag class int
     */
-    TagClassInt tag_class_from_string(std::string tag_class_name) noexcept;
+    BALLTZE_API TagClassInt tag_class_from_string(std::string tag_class_name) noexcept;
 
-    std::string tag_class_to_string(TagClassInt tag_class);
+    /**
+     * Get the name of a tag class
+     * @return  tag class name 
+    */
+    BALLTZE_API std::string tag_class_to_string(TagClassInt tag_class);
 }
 
 #endif

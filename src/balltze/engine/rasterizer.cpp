@@ -4,6 +4,19 @@
 #include <balltze/engine/rasterizer.hpp>
 
 namespace Balltze::Engine::Rasterizer {
+    extern "C" {
+        void *load_bitmap_function_address = nullptr;
+        IDirect3DTexture9 *load_bitmap_asm(TagDefinitions::BitmapData *bitmap_data, bool immediate, bool force_pixels_read);
+        std::uint16_t rasterizer_get_vertex_shader_permutation_index(TagDefinitions::Shader *shader_data);
+        std::uint16_t rasterizer_get_transparent_geometry_group_vertex_type(TransparentGeometryGroup *group);
+        void rasterizer_render_transparent_geometry_group(TransparentGeometryGroup *group, std::uint32_t *param_2);
+        void rasterizer_render_transparent_geometry_group_vertices(bool param_2, TransparentGeometryGroup *group);
+        void rasterizer_set_framebuffer_blend_function(std::uint16_t blend_function);
+        bool rasterizer_set_bitmap_data_texture(std::uint16_t stage, std::uint16_t bitmap_type, std::uint16_t param_3, std::uint16_t bitmap_data_index, TagHandle bitmap_tag_handle);
+        void rasterizer_apply_shader_texture_animation(void *anim_data, float map_u_scale, float map_v_scale, float map_u_offset, float map_v_offset, float map_rotation, float frame_params, float **param_8, float *param_9, float *param_10);
+        bool rasterizer_prepare_shader_transparent_chicago(TagDefinitions::ShaderTransparentChicago *shader_data);
+    }
+
     WindowGlobals *get_window_globals() {
         static std::optional<WindowGlobals *> window_globals;
         if(!window_globals.has_value()) {
@@ -74,19 +87,6 @@ namespace Balltze::Engine::Rasterizer {
         }
         static auto *rasterizer_vertex_declarations_table_address = *reinterpret_cast<VertexDeclaration **>(rasterizer_vertex_declarations_table_address_sig->data());
         return rasterizer_vertex_declarations_table_address + index;
-    }
-
-    extern "C" {
-        void *load_bitmap_function_address = nullptr;
-        IDirect3DTexture9 *load_bitmap_asm(TagDefinitions::BitmapData *bitmap_data, bool immediate, bool force_pixels_read);
-        std::uint16_t rasterizer_get_vertex_shader_permutation_index(TagDefinitions::Shader *shader_data);
-        std::uint16_t rasterizer_get_transparent_geometry_group_vertex_type(TransparentGeometryGroup *group);
-        void rasterizer_render_transparent_geometry_group(TransparentGeometryGroup *group, std::uint32_t *param_2);
-        void rasterizer_render_transparent_geometry_group_vertices(bool param_2, TransparentGeometryGroup *group);
-        void rasterizer_set_framebuffer_blend_function(std::uint16_t blend_function);
-        bool rasterizer_set_bitmap_data_texture(std::uint16_t stage, std::uint16_t bitmap_type, std::uint16_t param_3, std::uint16_t bitmap_data_index, TagHandle bitmap_tag_handle);
-        void rasterizer_apply_shader_texture_animation(void *anim_data, float map_u_scale, float map_v_scale, float map_u_offset, float map_v_offset, float map_rotation, float frame_params, float **param_8, float *param_9, float *param_10);
-        bool rasterizer_prepare_shader_transparent_chicago(TagDefinitions::ShaderTransparentChicago *shader_data);
     }
 
     std::uint16_t get_vertex_shader_permutation_index(TagDefinitions::Shader *shader_data) {

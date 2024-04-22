@@ -50,7 +50,7 @@
 ---@type table<string, DataType>
 local commonStructs = {
     tag_handle = {width = 0x4},
-    tag_reflexive = {width = 0xC, template = true},
+    tag_block = {width = 0xC, template = true},
     point2_d = {width = 0x8},
     point2_d_int = {width = 0x4},
     point3_d = {width = 0xC},
@@ -276,7 +276,7 @@ local function parseStruct(structDefinition)
         elseif field.type == "Pointer" then
             structField = {name = fieldName, type = "byte", pointer = true}
         elseif field.type == "TagReflexive" then
-            structField = {name = fieldName, type = "TagReflexive", struct = field.struct}    
+            structField = {name = fieldName, type = "TagBlock", struct = field.struct}    
         else
             structField = {name = fieldName, type = fieldType}
         end
@@ -412,10 +412,10 @@ local function getDependencies(definitions)
                 end
             end
             for _, field in pairs(struct.fields) do
-                if field.type == "tag_reflexive" then
+                if field.type == "tag_block" then
                     local exists, dependency, dependencyType = findType(field.struct)
                     if not exists or dependencyType ~= "struct" then
-                        error("Struct " .. struct.name .. " has a reflexive field with an unknown struct type: " .. field.struct)
+                        error("Struct " .. struct.name .. " has a block field with an unknown struct type: " .. field.struct)
                     end
                     if dependency then
                         if not dependencies[definitionName] then

@@ -7,6 +7,7 @@
 #include <chrono>
 #include <variant>
 #include "engine/data_types.hpp"
+#include "engine/tag.hpp"
 #include "api.hpp"
 
 namespace Balltze {
