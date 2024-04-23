@@ -26,8 +26,8 @@ Balltze.command = {}
 ---@param maxArgs integer @The maximum number of arguments the command accepts
 ---@param canCallFromConsole boolean @Whether the command can be called from the console
 ---@param public boolean @Whether the command can be called by other plugins
----@param callbackFunction function @The function to call when the command is executed
-function Balltze.command.registerCommand(name, category, help, paramsHelp, autosave, minArgs, maxArgs, canCallFromConsole, public, callbackFunction) end
+---@param commandFunction fun(args: table<integer, string>): boolean
+function Balltze.command.registerCommand(name, category, help, paramsHelp, autosave, minArgs, maxArgs, canCallFromConsole, public, commandFunction) end
 
 -------------------------------------------------------
 -- Balltze.event

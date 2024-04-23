@@ -161,7 +161,7 @@ Engine = {}
 
 ---@class MetaEngineQuaternion: EngineQuaternion
 
----@class EngineMatrix: table<table<number>>
+---@class EngineMatrix: table<integer, table<integer, number>>
 
 ---@class MetaEngineMatrix: EngineMatrix
 
@@ -257,7 +257,7 @@ Engine.gameState = {}
 ---@field validPosition boolean
 ---@field position MetaEngineVector3D
 ---@field validForwardAndUp boolean
----@field orientation table<MetaEnginePoint3D>
+---@field orientation table<integer, MetaEnginePoint3D>
 ---@field validTransitionalVelocity boolean
 ---@field transitionalVelocity MetaEnginePoint3D
 ---@field validTimestamp boolean
@@ -280,8 +280,8 @@ Engine.gameState = {}
 ---@field killedNoStats boolean
 
 ---@class MetaEngineObjectAttachmentsData
----@field types table<string>
----@field attachments table<integer>
+---@field types table<integer, string>
+---@field attachments table<integer, integer>
 ---@field firstWidget integer
 
 ---@class MetaEngineObjectRegionDestroyeds
@@ -308,7 +308,7 @@ Engine.gameState = {}
 ---@field network MetaEngineObjectNetwork
 ---@field position MetaEnginePoint3D
 ---@field velocity MetaEnginePoint3D
----@field orientation table<MetaEnginePoint3D>
+---@field orientation table<integer, MetaEnginePoint3D>
 ---@field rotationVelocity MetaEngineEuler3DPYR
 ---@field scenarioLocation MetaEngineScenarioLocation
 ---@field centerPosition MetaEnginePoint3D
@@ -339,11 +339,11 @@ Engine.gameState = {}
 ---@field cachedRenderState integer
 ---@field regionDestroyeds MetaEngineObjectRegionDestroyeds
 ---@field shaderPermutation integer
----@field regionHealths table<integer>
----@field regionPermutationIds table<integer>
----@field colorChange table<MetaEngineColorRGB>
----@field colorChange2 table<MetaEngineColorRGB>
----@field nodeOrientations table<MetaEngineObjectBlockReference>
+---@field regionHealths table<integer, integer>
+---@field regionPermutationIds table<integer, integer>
+---@field colorChange table<integer, MetaEngineColorRGB>
+---@field colorChange2 table<integer, MetaEngineColorRGB>
+---@field nodeOrientations table<integer, MetaEngineObjectBlockReference>
 ---@field nodeMatricesBlock MetaEngineObjectBlockReference
 
 ---@class MetaEngineUnitFlags
@@ -501,26 +501,26 @@ Engine.gameState = {}
 ---@field vehicleSeatId integer
 ---@field currentWeaponId integer
 ---@field nextWeaponId integer
----@field weapons table<integer>
----@field weaponReadyTicks table<integer>
+---@field weapons table<integer, integer>
+---@field weaponReadyTicks table<integer, integer>
 ---@field equipmentHandle integer
 ---@field currentGrenadeIndex integer
 ---@field nextGrenadeIndex integer
----@field grenadeCounts table<integer>
+---@field grenadeCounts table<integer, integer>
 ---@field zoomLevel integer
 ---@field desiredZoomLevel integer
 ---@field ticksSinceLastVehicleSpeech integer
 ---@field aimingChange integer
----@field poweredSeatsRiders table<integer>
+---@field poweredSeatsRiders table<integer, integer>
 ---@field unknown22 integer
 ---@field someTickTime integer
 ---@field encounterId integer
 ---@field squadId integer
----@field poweredSeatsPower table<number>
+---@field poweredSeatsPower table<integer, number>
 ---@field integratedLightPower number
 ---@field integratedLightTogglePower number
 ---@field integratedNightVisionTogglePower number
----@field seatRelated table<MetaEngineVector3D>
+---@field seatRelated table<integer, MetaEngineVector3D>
 ---@field camoPower number
 ---@field fullSpectrumVisionPower number
 ---@field dialogueDefinition integer
@@ -538,7 +538,7 @@ Engine.gameState = {}
 ---@field stunTicks integer
 ---@field spreeCount integer
 ---@field spreeStartingTime integer
----@field recentDamage table<MetaEngineUnitRecentDamager>
+---@field recentDamage table<integer, MetaEngineUnitRecentDamager>
 ---@field opensauceZoomLevel integer
 ---@field opensauceDesiredZoomLevel integer
 ---@field controlData MetaEngineUnitControlData
@@ -560,7 +560,7 @@ Engine.gameState = {}
 ---| 'unknown'
 
 ---@class MetaEngineBipedNetworkDelta
----@field grenadeCounts table<number>
+---@field grenadeCounts table<integer, number>
 ---@field bodyVitality number
 ---@field shieldVitality number
 ---@field shieldStunTicksGreaterThanZero boolean
@@ -635,7 +635,7 @@ Engine.gameState = {}
 ---@field threadPositionRight number
 ---@field hover number
 ---@field thrust number
----@field suspensionStates table<integer>
+---@field suspensionStates table<integer, integer>
 ---@field hoverPosition MetaEngineVector3D
 ---@field unknownVehicle3 MetaEngineVector3D
 ---@field unknownVehicle4 MetaEngineVector3D
@@ -679,14 +679,14 @@ Engine.gameState = {}
 ---@field unknown2 integer
 
 ---@class MetaEngineWeaponReloadStartData
----@field totalRounds table<integer>
----@field loadedRounds table<integer>
+---@field totalRounds table<integer, integer>
+---@field loadedRounds table<integer, integer>
 
 ---@class MetaEngineWeaponNetworkData
 ---@field position MetaEngineVector3D
 ---@field transitionalVelocity MetaEngineVector3D
 ---@field angularVelocity MetaEngineVector3D
----@field magazineRoundsTotal table<number>
+---@field magazineRoundsTotal table<integer, number>
 ---@field age number
 
 ---@class MetaEngineWeaponNetwork
@@ -709,8 +709,8 @@ Engine.gameState = {}
 ---@field integratedLightPower number
 ---@field trackedObject integer
 ---@field altShotsLoaded integer
----@field triggers table<MetaEngineWeaponTrigger>
----@field magazines table<MetaEngineWeaponMagazine>
+---@field triggers table<integer, MetaEngineWeaponTrigger>
+---@field magazines table<integer, MetaEngineWeaponMagazine>
 ---@field lastTriggerFireTick integer
 ---@field reloadStartingPoint MetaEngineWeaponReloadStartData
 ---@field network MetaEngineWeaponNetwork
@@ -965,7 +965,7 @@ function Engine.core.getCameraType() end
 
 ---@class EngineCameraData
 ---@field position EnginePoint3D
----@field orientation table<EnginePoint3D>
+---@field orientation table<integer, EnginePoint3D>
 ---@field fov number
 
 -- Get the camera data
@@ -1009,7 +1009,7 @@ Engine.map = {}
 function Engine.map.getCurrentMapHeader() end
 
 -- Get the map list
----@return table<string> @The map list
+---@return table<integer, string> @The map list
 function Engine.map.getMapList() end
 
 -------------------------------------------------------
@@ -1546,7 +1546,7 @@ function Engine.userInterface.findWidget(definitionTagHandleOrPath, baseWidget) 
 -- Find all widgets from a given widget definition
 ---@param definitionTagHandleOrPath integer|string @The handle or path of the widget definition
 ---@param baseWidget? MetaEngineWidget @The base widget to start the search from; If nil, the search will start from the root widget
----@return table<MetaEngineWidget>|nil @Found widgets; nil if any widget was found
+---@return table<integer, MetaEngineWidget>|nil @Found widgets; nil if any widget was found
 function Engine.userInterface.findWidgets(definitionTagHandleOrPath, baseWidget) end
 
 -- Open a widget
