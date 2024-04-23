@@ -5696,7 +5696,7 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, unit->last_completed_client_update_id);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return lua_engine_object__index(state); 
         }
         return 1;
     }
@@ -6002,7 +6002,7 @@ namespace Balltze::Plugins {
             unit->last_completed_client_update_id = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return lua_engine_object__newindex(state); 
         }
         return 0;
     }
@@ -6833,7 +6833,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_euler2_d(state, item->unknown_collision_angle);
         }
         else {
-            return lua_engine_unit_object__index(state);
+            return lua_engine_object__index(state);
         }
         return 1;
     }
@@ -6878,7 +6878,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Invalid operation");
         }
         else {
-            return lua_engine_unit_object__newindex(state);
+            return lua_engine_object__newindex(state);
         }
         return 0;
     }
@@ -7610,7 +7610,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return lua_engine_item_object__index(state);
+            return luaL_error(state, "Invalid key type"); 
         } 
         
         std::string field = key;
@@ -7628,7 +7628,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return lua_engine_item_object__newindex(state);
+            return luaL_error(state, "Invalid key type"); 
         } 
         
         std::string field = key;
@@ -7839,7 +7839,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return lua_engine_item_object__index(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -7902,7 +7902,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return lua_engine_item_object__newindex(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8021,7 +8021,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return lua_engine_item_object__index(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8044,7 +8044,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, device->operates_automatically);
         }
         else {
-            return lua_engine_item_object__index(state);
+            return lua_engine_object__index(state);
         }
         return 1;        
     }
@@ -8054,7 +8054,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return lua_engine_item_object__newindex(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8097,7 +8097,7 @@ namespace Balltze::Plugins {
             }
         }
         else {
-            return lua_engine_item_object__newindex(state);
+            return lua_engine_object__newindex(state);
         }
         return 0;        
     }
@@ -8169,7 +8169,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return lua_engine_device_object__index(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8193,7 +8193,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return lua_engine_device_object__newindex(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8261,7 +8261,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return lua_engine_device_object__index(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8282,7 +8282,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return lua_engine_device_object__newindex(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8307,7 +8307,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return lua_engine_device_object__index(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
@@ -8334,7 +8334,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return lua_engine_device_object__newindex(state);
+            return luaL_error(state, "Invalid key type"); 
         }
         
         std::string field = key;
