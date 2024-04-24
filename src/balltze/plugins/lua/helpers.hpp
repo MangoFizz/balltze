@@ -217,15 +217,9 @@ namespace Balltze::Plugins {
         if(!lua_istable(state, index)) {
             return nullptr;
         }
-        T *elem = nullptr;
-        lua_getfield(state, index, "_type");
-        if(lua_isinteger(state, -1) && lua_tointeger(state, -1) == typeid(T).hash_code()) {
-            lua_getfield(state, index, "_data");
-            if(lua_islightuserdata(state, -1)) {
-                elem = reinterpret_cast<T *>(lua_touserdata(state, -1));
-            }
-        }
-        lua_pop(state, 2);
+        lua_getfield(state, index, "_data");
+        T *elem = reinterpret_cast<T *>(lua_touserdata(state, -1));
+        lua_pop(state, 1);
         return elem;
     }
 
