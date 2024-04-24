@@ -2,20 +2,11 @@
 
 #include <balltze/api.hpp>
 #include <balltze/utils.hpp>
+#include "functions.hpp"
+#include "libraries.hpp"
 #include "api.hpp"
 
 namespace Balltze::Plugins {
-    void lua_set_logger_table(lua_State *state) noexcept;
-    void lua_set_engine_table(lua_State *state) noexcept;
-    void lua_set_event_table(lua_State *state) noexcept;
-    void lua_set_features_table(lua_State *state) noexcept;
-    void lua_set_command_table(lua_State *state) noexcept;
-    void lua_set_chimera_table(lua_State *state) noexcept;
-    void lua_set_output_table(lua_State *state) noexcept;
-    void lua_set_preloaded_libraries(lua_State *state) noexcept;
-    void lua_set_math_table(lua_State *state) noexcept;
-    void lua_set_misc_table(lua_State *state) noexcept;
-
     void lua_open_balltze_api(lua_State *state) {
         // Set up balltze registry table
         auto balltze_module = Balltze::get_current_module();

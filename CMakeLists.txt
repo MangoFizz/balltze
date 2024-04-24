@@ -119,29 +119,39 @@ add_library(balltze SHARED
     src/balltze/output/subtitles.cpp
     src/balltze/output/video.cpp
     src/balltze/output/video.S
+    src/balltze/plugins/lua/functions/engine/core.cpp
+    src/balltze/plugins/lua/functions/engine/game_state.cpp
+    src/balltze/plugins/lua/functions/engine/map.cpp
+    src/balltze/plugins/lua/functions/engine/netgame.cpp
+    src/balltze/plugins/lua/functions/engine/rasterizer.cpp
+    src/balltze/plugins/lua/functions/engine/tag.cpp
+    src/balltze/plugins/lua/functions/engine/user_interface.cpp
+    src/balltze/plugins/lua/functions/chimera.cpp
+    src/balltze/plugins/lua/functions/command.cpp
+    src/balltze/plugins/lua/functions/engine.cpp
+    src/balltze/plugins/lua/functions/features.cpp
+    src/balltze/plugins/lua/functions/event.cpp
+    src/balltze/plugins/lua/functions/logger.cpp
+    src/balltze/plugins/lua/functions/math.cpp
+    src/balltze/plugins/lua/functions/misc.cpp
+    src/balltze/plugins/lua/functions/output.cpp
+    src/balltze/plugins/lua/helpers/engine_data_types.cpp
+    src/balltze/plugins/lua/helpers/enum.cpp
+    src/balltze/plugins/lua/helpers/metaobject.cpp
+    src/balltze/plugins/lua/libraries/lua-fmt/lfmt.c
+    src/balltze/plugins/lua/libraries/preloaded_libraries.cpp
+    src/balltze/plugins/lua/libraries/preloaded_libraries.rc
+    src/balltze/plugins/lua/metatables/engine_data_types.cpp
+    src/balltze/plugins/lua/metatables/engine_gamestate_device_object.cpp
+    src/balltze/plugins/lua/metatables/engine_gamestate_item_object.cpp
+    src/balltze/plugins/lua/metatables/engine_gamestate_object.cpp
+    src/balltze/plugins/lua/metatables/engine_gamestate_player.cpp
+    src/balltze/plugins/lua/metatables/engine_gamestate_unit_object.cpp
+    src/balltze/plugins/lua/metatables/engine_rasterizer.cpp
+    src/balltze/plugins/lua/metatables/engine_user_interface.cpp
+    src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
-    src/balltze/plugins/lua/api.cpp
-    src/balltze/plugins/lua/engine/core.cpp
-    src/balltze/plugins/lua/engine/game_state.cpp
-    src/balltze/plugins/lua/engine/map.cpp
-    src/balltze/plugins/lua/engine/netgame.cpp
-    src/balltze/plugins/lua/engine/rasterizer.cpp
-    src/balltze/plugins/lua/engine/tag.cpp
-    src/balltze/plugins/lua/engine/user_interface.cpp
-    src/balltze/plugins/lua/chimera.cpp
-    src/balltze/plugins/lua/command.cpp
-    src/balltze/plugins/lua/engine.cpp
-    src/balltze/plugins/lua/features.cpp
-    src/balltze/plugins/lua/event.cpp
-    src/balltze/plugins/lua/helpers.cpp
-    src/balltze/plugins/lua/preloaded_libraries.cpp
-    src/balltze/plugins/lua/preloaded_libraries.rc
-    src/balltze/plugins/lua/lua-fmt/lfmt.c
-    src/balltze/plugins/lua/logger.cpp
-    src/balltze/plugins/lua/math.cpp
-    src/balltze/plugins/lua/misc.cpp
-    src/balltze/plugins/lua/output.cpp
     src/balltze/balltze.cpp
 
     ${TAG_REBASE_OFFSETS_FUNCTION_CPP} 

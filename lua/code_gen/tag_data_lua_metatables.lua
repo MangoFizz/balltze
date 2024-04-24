@@ -162,9 +162,9 @@ namespace Balltze::Plugins {
 for structName, _ in pairs(structs) do
     local camelCaseName = definitionParser.snakeCaseToCamelCase(structName)
     indent(1)
-    add("int lua_engine_" .. structName .. "__index(lua_State *state) noexcept; \n");
+    add("static int lua_engine_" .. structName .. "__index(lua_State *state) noexcept; \n");
     indent(1)
-    add("int lua_engine_" .. structName .. "__newindex(lua_State *state) noexcept; \n");
+    add("static int lua_engine_" .. structName .. "__newindex(lua_State *state) noexcept; \n");
     indent(1)
     add("void lua_push_meta_engine_" .. structName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept; \n");
 end
@@ -173,9 +173,9 @@ add("\n")
 for bitfieldName, _ in pairs(bitfields) do
     local camelCaseName = definitionParser.snakeCaseToCamelCase(bitfieldName)
     indent(1)
-    add("int lua_engine_" .. bitfieldName .. "__index(lua_State *state) noexcept; \n");
+    add("static int lua_engine_" .. bitfieldName .. "__index(lua_State *state) noexcept; \n");
     indent(1)
-    add("int lua_engine_" .. bitfieldName .. "__newindex(lua_State *state) noexcept; \n");
+    add("static int lua_engine_" .. bitfieldName .. "__newindex(lua_State *state) noexcept; \n");
     indent(1)
     add("void lua_push_meta_engine_" .. bitfieldName .. "(lua_State *state, " .. camelCaseName .. " &data) noexcept; \n");
 end
