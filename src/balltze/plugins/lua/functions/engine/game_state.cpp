@@ -94,6 +94,105 @@ namespace Balltze::Plugins {
         }
     }
 
+    static int lua_engine_get_biped_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "biped");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getBipedObject.");
+        }
+    }
+
+    static int lua_engine_get_vehicle_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "vehicle");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getVehicleObject.");
+        }
+    }
+
+    static int lua_engine_get_weapon_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "weapon");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getWeaponObject.");
+        }
+    }
+
+    static int lua_engine_get_equipment_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "equipment");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getEquipmentObject.");
+        }
+    }
+
+    static int lua_engine_get_garbage_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "garbage");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getGarbageObject.");
+        }
+    }
+
+    static int lua_engine_get_projectile_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "projectile");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getProjectileObject.");
+        }
+    }
+
+    static int lua_engine_get_device_machine_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "device_machine");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getDeviceMachineObject.");
+        }
+    }
+
+    static int lua_engine_get_device_control_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "device_control");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getDeviceControlObject.");
+        }
+    }
+
+    static int lua_engine_get_device_light_fixture_object(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            lua_pushstring(state, "device_light_fixture");
+            return lua_engine_get_object(state);
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.getDeviceLightFixtureObject.");
+        }
+    }
+
     static int lua_engine_create_object(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
@@ -328,6 +427,15 @@ namespace Balltze::Plugins {
 
     static const luaL_Reg engine_game_state_functions[] = {
         {"getObject", lua_engine_get_object},
+        {"getBipedObject", lua_engine_get_biped_object},
+        {"getVehicleObject", lua_engine_get_vehicle_object},
+        {"getGarbageObject", lua_engine_get_garbage_object},
+        {"getWeaponObject", lua_engine_get_weapon_object},
+        {"getEquipmentObject", lua_engine_get_equipment_object},
+        {"getProjectileObject", lua_engine_get_projectile_object},
+        {"getDeviceMachineObject", lua_engine_get_device_machine_object},
+        {"getDeviceControlObject", lua_engine_get_device_control_object},
+        {"getDeviceLightFixtureObject", lua_engine_get_device_light_fixture_object},
         {"createObject", lua_engine_create_object},
         {"deleteObject", lua_engine_delete_object},
         {"unitEnterVehicle", lua_unit_enter_vehicle},
