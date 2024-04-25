@@ -2,6 +2,7 @@
 
 #include <lua.hpp>
 #include <balltze/engine.hpp>
+#include <balltze/helpers/string_literal.hpp>
 #include "../../../../logger.hpp"
 #include "../../../plugin.hpp"
 #include "../../../loader.hpp"
@@ -15,21 +16,26 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 1 || args == 2) {
+                auto object_handle = lua_to_engine_object_handle(state, 1);
+                if(object_handle.is_null()) {
+                    return luaL_error(state, "Invalid object handle.");
+                }
+
                 auto &object_table = Engine::get_object_table();
                 Engine::BaseObject *object;
-                Engine::ObjectHandle object_handle;
-                object_handle.handle = luaL_checkinteger(state, 1);
                 if(object_handle.id != 0) {
                     object = object_table.get_object(object_handle);
                 }
                 else {
                     object = object_table.get_object(object_handle.index);
                 }
+
                 if(object) {
                     try {
-                        auto object_type = object_type_from_string(luaL_checkstring(state, 2));
+                        auto object_type_name = luaL_checkstring(state, 2);
+                        auto object_type = object_type_from_string(object_type_name);
                         if(object->type != object_type) {
-                            return luaL_error(state, "Object type does not match.");
+                            return luaL_error(state, "Requested object type (%s) does not match object type.", object_type_name);
                         }
                     }
                     catch(std::runtime_error &e) {
@@ -85,7 +91,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_object.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.gameState.getObject.");
             }
         }
         else {
@@ -94,104 +100,28 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_get_biped_object(lua_State *state) noexcept {
+    template<StringLiteral functionName, StringLiteral objectType>
+    int lua_engine_get_object_specialization(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1) {
-            lua_pushstring(state, "biped");
+            lua_pushstring(state, objectType.value);
             return lua_engine_get_object(state);
         }
         else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getBipedObject.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.gameState.%s.", functionName.value);
         }
     }
 
-    static int lua_engine_get_vehicle_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "vehicle");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getVehicleObject.");
-        }
-    }
-
-    static int lua_engine_get_weapon_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "weapon");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getWeaponObject.");
-        }
-    }
-
-    static int lua_engine_get_equipment_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "equipment");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getEquipmentObject.");
-        }
-    }
-
-    static int lua_engine_get_garbage_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "garbage");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getGarbageObject.");
-        }
-    }
-
-    static int lua_engine_get_projectile_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "projectile");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getProjectileObject.");
-        }
-    }
-
-    static int lua_engine_get_device_machine_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "device_machine");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getDeviceMachineObject.");
-        }
-    }
-
-    static int lua_engine_get_device_control_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "device_control");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getDeviceControlObject.");
-        }
-    }
-
-    static int lua_engine_get_device_light_fixture_object(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 1) {
-            lua_pushstring(state, "device_light_fixture");
-            return lua_engine_get_object(state);
-        }
-        else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.getDeviceLightFixtureObject.");
-        }
-    }
+    // explicitly instantiate the template for each object type
+    template int lua_engine_get_object_specialization<"getBipedObject", "biped">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getVehicleObject", "vehicle">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getGarbageObject", "garbage">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getWeaponObject", "weapon">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getEquipmentObject", "equipment">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getProjectileObject", "projectile">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getDeviceMachineObject", "device_machine">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getDeviceControlObject", "device_control">(lua_State *state) noexcept;
+    template int lua_engine_get_object_specialization<"getDeviceLightFixtureObject", "device_light_fixture">(lua_State *state) noexcept;
 
     static int lua_engine_create_object(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
@@ -199,14 +129,21 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
 
             if(args == 3 || args == 5) {
-                auto object_tag = Engine::TagHandle(luaL_checkinteger(state, 1));
-                Engine::ObjectHandle parent_object_handle = Engine::ObjectHandle::null();
-                auto position = lua_to_point3_d(state, 3);
-                if(!lua_isnil(state, 2)) {
-                    parent_object_handle.handle = luaL_checkinteger(state, 2);
+                auto object_tag_handle = lua_to_engine_tag_handle(state, 1);
+                if(object_tag_handle.is_null()) {
+                    return luaL_error(state, "Invalid object tag handle.");
                 }
+                Engine::ObjectHandle parent_object_handle = Engine::ObjectHandle::null();
+                if(!lua_isnil(state, 2)) {
+                    parent_object_handle = lua_to_engine_object_handle(state, 2);
+                    if(parent_object_handle.is_null()) {
+                        return luaL_error(state, "Invalid parent object handle.");
+                    }
+                }
+                auto position = lua_to_point3_d(state, 3);
+
                 auto &object_table = Engine::get_object_table();
-                auto object_handle = object_table.create_object(object_tag, position, parent_object_handle);
+                auto object_handle = object_table.create_object(object_tag_handle, position, parent_object_handle);
                 if(object_handle != Engine::ObjectHandle::null()) {
                     auto *object = object_table.get_object(object_handle);
                     if(object) {
@@ -222,7 +159,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.create_object.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.gameState.createObject.");
             }
         }
         else {
@@ -245,12 +182,14 @@ namespace Balltze::Plugins {
                         object_table.delete_object(object_handle);
                     }
                     else {
-                        return luaL_error(state, "Invalid object.");
+                        return luaL_error(state, "Invalid object in function Engine.gameState.deleteObject.");
                     }
                 }
-                else if(lua_isinteger(state, 1)) {
-                    Engine::ObjectHandle object_handle;
-                    object_handle.handle = luaL_checkinteger(state, 1);
+                else {
+                    auto object_handle = lua_to_engine_object_handle(state, 1);
+                    if(object_handle.is_null()) {
+                        return luaL_error(state, "Invalid object handle in function Engine.gameState.deleteObject.");
+                    }
                     if(object_handle.id != 0) {
                         object_table.delete_object(object_handle);
                     }
@@ -258,13 +197,10 @@ namespace Balltze::Plugins {
                         object_table.delete_object(object_handle.index);
                     }
                 }
-                else {
-                    return luaL_error(state, "Invalid value type (expected table or integer).");
-                }
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.delete_object.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.gameState.deleteObject.");
             }
         }
         else {
@@ -278,16 +214,23 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 3) {
-                Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
-                Engine::ObjectHandle vehicle_handle(luaL_checkinteger(state, 2));
-                auto &object_table = Engine::get_object_table();
+                auto unit_handle = lua_to_engine_object_handle(state, 1);
+                if(unit_handle.is_null()) {
+                    return luaL_error(state, "invalid unit object handle in function Engine.gameState.unitEnterVehicle");
+                }
+                
+                auto vehicle_handle = lua_to_engine_object_handle(state, 2);
+                if(vehicle_handle.is_null()) {
+                    return luaL_error(state, "invalid vehicle object handle in function Engine.gameState.unitEnterVehicle");
+                }
 
+                auto &object_table = Engine::get_object_table();
                 auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(unit_handle));
                 if(!unit) {
-                    return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
+                    return luaL_error(state, "invalid unit handle in function Engine.gameState.unitEnterVehicle");
                 }
                 if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
-                    return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped or vehicle");
+                    return luaL_error(state, "invalid object type in function Engine.gameState.unitEnterVehicle, expected biped or vehicle");
                 }
                 
                 try {
@@ -300,15 +243,15 @@ namespace Balltze::Plugins {
                         Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, seat_label);
                     }
                     else {
-                        return luaL_error(state, "invalid seat index or label in balltze unit_enter_vehicle, expected integer or string");
+                        return luaL_error(state, "invalid seat index or label in function Engine.gameState.unitEnterVehicle, expected integer or string");
                     }
                 }
                 catch(std::runtime_error &e) {
-                    return luaL_error(state, "%s in balltze unit_enter_vehicle", e.what());
+                    return luaL_error(state, "%s in function Engine.gameState.unitEnterVehicle", e.what());
                 }
             }
             else {
-                return luaL_error(state, "invalid number of arguments in balltze unit_enter_vehicle");
+                return luaL_error(state, "invalid number of arguments in function Engine.gameState.unitEnterVehicle");
             }
         }
         else {
@@ -326,13 +269,15 @@ namespace Balltze::Plugins {
                 auto &player_table = Engine::get_player_table();
                 Engine::Player *player = nullptr;
                 if(args == 1) {
-                    auto player_index_or_handle = luaL_checkinteger(state, 1);
-                    if(player_index_or_handle > 0xFFFF) {
-                        Engine::PlayerHandle player_handle(player_index_or_handle);
+                    auto player_handle = lua_to_engine_player_handle(state, 1);
+                    if(player_handle.is_null()) {
+                        return luaL_error(state, "invalid player handle in function Engine.gameState.getPlayer");
+                    }
+                    if(player_handle.id != 0) {
                         player = player_table.get_player(player_handle);
                     }
                     else {
-                        auto *player_entry = player_table.get_element(player_index_or_handle);
+                        auto *player_entry = player_table.get_element(player_handle.index);
                         if(player_entry->player_id != 0xFFFF) {
                             player = player_entry;
                         }
@@ -350,7 +295,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "invalid number of arguments in balltze get_player");
+                return luaL_error(state, "invalid number of arguments in function Engine.gameState.getPlayer");
             }
         }
         else {
@@ -377,7 +322,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "invalid number of arguments in balltze get_player_by_rcon_handle");
+                return luaL_error(state, "invalid number of arguments in function Engine.gameState.getPlayerByRconHandle");
             }
         }
         else {
@@ -397,7 +342,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_data.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.gameState.getCameraData.");
             }
         }
         else {
@@ -416,7 +361,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_camera_type.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.gameState.getCameraType.");
             }
         }
         else {
@@ -427,15 +372,15 @@ namespace Balltze::Plugins {
 
     static const luaL_Reg engine_game_state_functions[] = {
         {"getObject", lua_engine_get_object},
-        {"getBipedObject", lua_engine_get_biped_object},
-        {"getVehicleObject", lua_engine_get_vehicle_object},
-        {"getGarbageObject", lua_engine_get_garbage_object},
-        {"getWeaponObject", lua_engine_get_weapon_object},
-        {"getEquipmentObject", lua_engine_get_equipment_object},
-        {"getProjectileObject", lua_engine_get_projectile_object},
-        {"getDeviceMachineObject", lua_engine_get_device_machine_object},
-        {"getDeviceControlObject", lua_engine_get_device_control_object},
-        {"getDeviceLightFixtureObject", lua_engine_get_device_light_fixture_object},
+        {"getBipedObject", lua_engine_get_object_specialization<"getBipedObject", "biped">},
+        {"getVehicleObject", lua_engine_get_object_specialization<"getVehicleObject", "vehicle">},
+        {"getGarbageObject", lua_engine_get_object_specialization<"getGarbageObject", "garbage">},
+        {"getWeaponObject", lua_engine_get_object_specialization<"getWeaponObject", "weapon">},
+        {"getEquipmentObject", lua_engine_get_object_specialization<"getEquipmentObject", "equipment">},
+        {"getProjectileObject", lua_engine_get_object_specialization<"getProjectileObject", "projectile">},
+        {"getDeviceMachineObject", lua_engine_get_object_specialization<"getDeviceMachineObject", "device_machine">},
+        {"getDeviceControlObject", lua_engine_get_object_specialization<"getDeviceControlObject", "device_control">},
+        {"getDeviceLightFixtureObject", lua_engine_get_object_specialization<"getDeviceLightFixtureObject", "device_light_fixture">},
         {"createObject", lua_engine_create_object},
         {"deleteObject", lua_engine_delete_object},
         {"unitEnterVehicle", lua_unit_enter_vehicle},

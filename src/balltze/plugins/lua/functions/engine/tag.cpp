@@ -43,7 +43,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_tag_data_header.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTagDataHeader.");
             }
         }
         else {
@@ -58,14 +58,15 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             Engine::Tag *tag_entry = nullptr;
             if(args == 1) {
-                auto tag_number_thing = lua_tointeger(state, 1);
-                if(tag_number_thing < 0xFFFF) {
-                    tag_entry = Engine::get_tag(tag_number_thing);
+                auto tag_handle = lua_to_engine_tag_handle(state, 1);
+                if(tag_handle.is_null()) {
+                    return luaL_error(state, "Invalid tag handle in function Engine.tag.getTag.");
+                }
+                if(tag_handle.id != 0) {
+                    tag_entry = Engine::get_tag(tag_handle);
                 }
                 else {
-                    Engine::TagHandle tag_handle;
-                    tag_handle.handle = tag_number_thing;
-                    tag_entry = Engine::get_tag(tag_handle);
+                    tag_entry = Engine::get_tag(tag_handle.index);
                 }
             }
             else if(args == 2) {
@@ -80,7 +81,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_tag_entry.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTag.");
             }
 
             if(tag_entry) {

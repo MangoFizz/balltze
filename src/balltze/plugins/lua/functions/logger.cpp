@@ -41,7 +41,7 @@ namespace Balltze::Plugins {
                     } \
                 } \
                 else { \
-                    logger.warning("Invalid number of arguments for logger." #name "."); \
+                    logger.warning("Invalid number of arguments for Balltze.logger." #name "."); \
                     return luaL_error(state, "Invalid number of arguments for logger print function."); \
                 } \
             } \
@@ -99,8 +99,8 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                logger.warning("Invalid number of arguments for logger.set_file.");
-                return luaL_error(state, "Invalid number of arguments for logger.set_file.");
+                logger.warning("Invalid number of arguments for Balltze.logger.setFile.");
+                return luaL_error(state, "Invalid number of arguments for Balltze.logger.setFile.");
             }
         }
         else {
@@ -138,8 +138,8 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                logger.warning("Invalid number of arguments for logger.mute_ingame.");
-                return luaL_error(state, "Invalid number of arguments for logger.mute_ingame.");
+                logger.warning("Invalid number of arguments for Balltze.logger.muteIngame.");
+                return luaL_error(state, "Invalid number of arguments for Balltze.logger.muteIngame.");
             }
         }
         else {
@@ -177,8 +177,8 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                logger.warning("Invalid number of arguments for logger.mute_debug.");
-                return luaL_error(state, "Invalid number of arguments for logger.mute_debug.");
+                logger.warning("Invalid number of arguments for Balltze.logger.muteDebug.");
+                return luaL_error(state, "Invalid number of arguments for Balltze.logger.muteDebug.");
             }
         }
         else {

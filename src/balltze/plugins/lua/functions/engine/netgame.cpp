@@ -20,7 +20,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_server_type.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.netgame.getServerType.");
             }
         }
         else {
@@ -45,7 +45,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_server_gametype.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.netgame.getServerGametype.");
             }
         }
         else {
@@ -64,7 +64,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.current_game_is_team.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.netgame.currentGameIsTeam.");
             }
         }
         else {

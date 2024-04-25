@@ -22,7 +22,7 @@ namespace Balltze::Plugins {
                         color = lua_to_color_argb(state, 1);
                     }
                     catch(const std::exception &e) {
-                        return luaL_error(state, "Invalid color argument in function engine.console.printf.");
+                        return luaL_error(state, "Invalid color argument in function Engine.core.consolePrint.");
                     }
                 }
                 else {
@@ -45,7 +45,7 @@ namespace Balltze::Plugins {
                 Engine::console_print(message, color);
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.console.printf.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.core.consolePrint.");
             }
         }
         else {
@@ -64,7 +64,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_tick_count.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.core.getTickCount.");
             }
         }
         else {
@@ -96,7 +96,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_engine_edition.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.core.getEngineEdition.");
             }
         }
         else {

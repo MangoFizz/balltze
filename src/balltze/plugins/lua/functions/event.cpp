@@ -104,7 +104,7 @@ namespace Balltze::Plugins {
             return 1;
         }
         else {
-            return luaL_error(state, "Invalid listener argument in function events.%s.subscribe.", name);
+            return luaL_error(state, "Invalid listener argument in function Balltze.events.%s.subscribe.", name);
         }
     }
 
@@ -137,11 +137,11 @@ namespace Balltze::Plugins {
                 lua_pop(state, 1);
             }
             else {
-                luaL_error(state, "Invalid listener handle in function events.%s.remove_listener: tried to remove listener for event %s, but handle is for event %s.", name, name, event_name);
+                luaL_error(state, "Invalid listener handle in function Balltze.events.%s.remove_listener: tried to remove listener for event %s, but handle is for event %s.", name, name, event_name);
             }
         }
         else {
-            luaL_error(state, "Invalid listener handle in function events.%s.remove_listener.", name);
+            luaL_error(state, "Invalid listener handle in function Balltze.events.%s.remove_listener.", name);
         }
     }
 
@@ -206,7 +206,7 @@ namespace Balltze::Plugins {
                     lua_rawseti(state, -3, lua_rawlen(state, -3) + 1);
                 }
                 else {
-                    logger.error("Invalid event listener in events.{}: expected function, got {}.", name, lua_typename(state, lua_type(state, -1)));
+                    logger.error("Invalid event listener in Balltze.events.{}: expected function, got {}.", name, lua_typename(state, lua_type(state, -1)));
                     lua_pop(state, 1);
                 }
             }
@@ -219,15 +219,14 @@ namespace Balltze::Plugins {
                 lua_pushvalue(state, event_table_index - 4);
                 int res = lua_pcall(state, 1, 0, 0);
                 if(res != LUA_OK) {
-                    logger.error("Error in event listener in events.{}: {}.", name, lua_tostring(state, -1));
+                    logger.error("Error in event listener in Balltze.events.{}: {}.", name, lua_tostring(state, -1));
                     lua_pop(state, 1);
                 }
             }
-            
             lua_pop(state, 1);
         }
         else {
-            logger.debug("Invalid event listener in events.{}: expected table, got {}.", name, lua_typename(state, lua_type(state, -1)));
+            logger.debug("Invalid event listener in Balltze.events.{}: expected table, got {}.", name, lua_typename(state, lua_type(state, -1)));
         }
 
         lua_pop(state, 2);
@@ -237,7 +236,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<CameraEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in CameraEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -248,7 +247,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, camera_type_to_string(data->type).c_str());
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in CameraEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -257,7 +256,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<CameraEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in CameraEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -268,7 +267,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field type is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in CameraEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -276,7 +275,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<GameInputEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in GameInputEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -302,7 +301,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, data->mapped);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in GameInputEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -311,7 +310,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<GameInputEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in GameInputEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -325,7 +324,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field mapped is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in GameInputEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -385,7 +384,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<HudHoldForActionMessageArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in HudHoldForActionMessageArgs metaobject.");
         } 
         
         std::string field = key;
@@ -410,7 +409,7 @@ namespace Balltze::Plugins {
             }
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in HudHoldForActionMessageArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -419,7 +418,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<HudHoldForActionMessageArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in HudHoldForActionMessageArgs metaobject.");
         } 
         
         std::string field = key;
@@ -439,7 +438,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field button is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in HudHoldForActionMessageArgs metaobject.", field.c_str());
         }
     }
 
@@ -447,7 +446,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<MapFileLoadEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in MapFileLoadEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -458,7 +457,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, data->map_path.c_str());
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in MapFileLoadEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -467,7 +466,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<MapFileLoadEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in MapFileLoadEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -478,7 +477,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field mapPath is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in MapFileLoadEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -486,7 +485,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<MapLoadEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in MapLoadEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -494,7 +493,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, data->name.c_str());
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in MapLoadEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -503,7 +502,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<MapLoadEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in MapLoadEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -511,7 +510,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field name is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in MapLoadEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -534,7 +533,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<NetworkGameChatMessageEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in NetworkGameChatMessageEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -548,7 +547,7 @@ namespace Balltze::Plugins {
             lua_pushlightuserdata(state, data->chat_message->message);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in NetworkGameChatMessageEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -557,7 +556,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<NetworkGameChatMessageEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in NetworkGameChatMessageEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -571,7 +570,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field message is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in NetworkGameChatMessageEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -579,7 +578,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<ObjectDamageEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in ObjectDamageEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -599,7 +598,7 @@ namespace Balltze::Plugins {
             lua_push_engine_object_handle(state, const_cast<Engine::ObjectHandle *>(&data->causer_object));
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in ObjectDamageEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -608,7 +607,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<ObjectDamageEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in ObjectDamageEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -628,7 +627,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field causerObject is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in ObjectDamageEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -636,7 +635,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<RconMessageEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in RconMessageEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -644,7 +643,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, data->message.c_str());
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in RconMessageEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -653,7 +652,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<RconMessageEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in RconMessageEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -661,7 +660,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field message is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in RconMessageEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -671,7 +670,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<HUDElementBitmapRenderEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in HUDElementBitmapRenderEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -682,7 +681,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_bitmap_data(state, *data->bitmap_data);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in HUDElementBitmapRenderEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -691,7 +690,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<HUDElementBitmapRenderEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in HUDElementBitmapRenderEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -702,7 +701,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Invalid operation");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in HUDElementBitmapRenderEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -710,7 +709,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetBackgroundRenderEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetBackgroundRenderEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -726,7 +725,7 @@ namespace Balltze::Plugins {
             }
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetBackgroundRenderEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -735,7 +734,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetBackgroundRenderEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetBackgroundRenderEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -746,7 +745,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Invalid operation");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetBackgroundRenderEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -754,7 +753,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<ServerConnectEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in ServerConnectEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -768,7 +767,7 @@ namespace Balltze::Plugins {
             lua_pushlightuserdata(state, const_cast<wchar_t *>(data->password.data()));
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in ServerConnectEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -777,7 +776,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<ServerConnectEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in ServerConnectEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -791,7 +790,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field password is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in ServerConnectEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -802,7 +801,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<SoundPlaybackEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in SoundPlaybackEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -813,7 +812,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_sound_permutation(state, *const_cast<Engine::TagDefinitions::SoundPermutation *>(data->permutation));
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in SoundPlaybackEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -822,7 +821,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<SoundPlaybackEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in SoundPlaybackEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -833,7 +832,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field permutation is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in SoundPlaybackEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -841,7 +840,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<TickEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in TickEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -852,7 +851,7 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, data->delta_time_ms);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in TickEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -861,7 +860,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<TickEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in TickEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -872,7 +871,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field deltaTimeMS is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in TickEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -880,7 +879,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetCreateEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetCreateEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -899,7 +898,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, data->is_root_widget);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetCreateEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -908,7 +907,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetCreateEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetCreateEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -922,7 +921,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field isRootWidget is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetCreateEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -930,7 +929,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -938,7 +937,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_widget(state, *data->widget);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -947,7 +946,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -955,7 +954,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field widget is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -963,7 +962,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -971,7 +970,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_widget(state, *data->widget);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -980,7 +979,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -988,7 +987,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field widget is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -996,7 +995,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -1004,7 +1003,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_widget(state, *data->widget);
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -1013,7 +1012,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -1021,7 +1020,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field widget is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -1029,7 +1028,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetSoundEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetSoundEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -1037,7 +1036,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, Engine::get_widget_navigation_sound_name(data->sound).c_str());
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetSoundEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -1046,7 +1045,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetSoundEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetSoundEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -1054,7 +1053,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field sound is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetSoundEventArgs metaobject.", field.c_str());
         }
     }
 
@@ -1083,7 +1082,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetListTabEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetListTabEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -1094,7 +1093,7 @@ namespace Balltze::Plugins {
             lua_pushstring(state, ui_widget_list_tab_type_to_string(data->tab).c_str());
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetListTabEventArgs metaobject.", field.c_str());
         }
         return 1;
     }
@@ -1103,7 +1102,7 @@ namespace Balltze::Plugins {
         auto *data = lua_from_meta_object<UIWidgetListTabEventArgs>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in UIWidgetListTabEventArgs metaobject.");
         } 
         
         std::string field = key;
@@ -1114,7 +1113,7 @@ namespace Balltze::Plugins {
             return luaL_error(state, "Field tabType is read-only");
         }
         else {
-            return luaL_error(state, "Invalid field %s", field.c_str());
+            return luaL_error(state, "Invalid field '%s' in UIWidgetListTabEventArgs metaobject.", field.c_str());
         }
     }
 

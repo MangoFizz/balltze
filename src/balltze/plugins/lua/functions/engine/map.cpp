@@ -83,7 +83,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_current_map_header.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.map.getCurrentMapHeader.");
             }
         }
         else {
@@ -126,7 +126,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_map_list.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.map.getMapList.");
             }
         }
         else {

@@ -52,7 +52,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.importTagFromMap.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.features.importTagFromMap.");
             }
         }
         else {
@@ -93,7 +93,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.importTagsFromMap.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.features.importTagsFromMap.");
             }
         }
         else {
@@ -121,11 +121,14 @@ namespace Balltze::Plugins {
             int args = lua_gettop(state);
             if(args == 1 || args == 2) {
                 Engine::TagHandle tag_handle;
-                if(args == 1 && lua_isnumber(state, 1)) {
-                    tag_handle.handle = lua_tointeger(state, 1);
+                if(args == 1 && (lua_isnumber(state, 1) || lua_istable(state, 1))) {
+                    tag_handle = lua_to_engine_tag_handle(state, 1);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Balltze.features.reloadTagData.");
+                    }
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag in balltze function features.reloadTagData.");
+                        return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
                     }
                 } 
                 else {
@@ -137,7 +140,7 @@ namespace Balltze::Plugins {
                         tag_handle = tag->handle;
                     }
                     else {
-                        return luaL_error(state, "Could not find tag in balltze function features.reloadTagData.");
+                        return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
                     }
                 }
                 try {
@@ -148,7 +151,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.reloadTagData.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.features.reloadTagData.");
             }
         }
         else {
@@ -163,8 +166,16 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 2) {
-                auto tag_handle = luaL_checkinteger(state, 1);
-                auto new_tag_handle = luaL_checkinteger(state, 2);
+                auto tag_handle = lua_to_engine_tag_handle(state, 1);
+                if(tag_handle.is_null()) {
+                    return luaL_error(state, "Invalid tag handle in function Balltze.features.replaceTagReferences.");
+                }
+                
+                auto new_tag_handle = lua_to_engine_tag_handle(state, 2);
+                if(new_tag_handle.is_null()) {
+                    return luaL_error(state, "Invalid new tag handle in function Balltze.features.replaceTagReferences.");
+                }
+
                 try {
                     Features::replace_tag_references(tag_handle, new_tag_handle);
                 }
@@ -173,7 +184,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.replaceTagReferences.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.features.replaceTagReferences.");
             }
         }
         else {
@@ -188,7 +199,11 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 2) {
-                auto tag_handle = luaL_checkinteger(state, 1);
+                auto tag_handle = lua_to_engine_tag_handle(state, 1);
+                if(tag_handle.is_null()) {
+                    return luaL_error(state, "Invalid tag handle in function Balltze.features.cloneTag.");
+                }
+
                 auto copy_name = luaL_checkstring(state, 2);
                 try {
                     auto new_tag_handle = Features::clone_tag(tag_handle, copy_name);
@@ -200,7 +215,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.cloneTag.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.features.cloneTag.");
             }
         }
         else {
@@ -214,7 +229,11 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 2) {
-                auto tag_handle = luaL_checkinteger(state, 1);
+                auto tag_handle = lua_to_engine_tag_handle(state, 1);
+                if(tag_handle.is_null()) {
+                    return luaL_error(state, "Invalid tag handle in function Balltze.features.getTagCopy.");
+                }
+                
                 auto copy_name = luaL_checkstring(state, 2);
                 try {
                     auto *tag_copy = Features::get_tag_copy(tag_handle, copy_name);
@@ -226,7 +245,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.getTagCopy.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.features.getTagCopy.");
             }
         }
         else {
@@ -254,7 +273,7 @@ namespace Balltze::Plugins {
                 }
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in balltze function features.getImportedTag.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.features.getImportedTag.");
             }
         }
         else {
@@ -302,7 +321,7 @@ namespace Balltze::Plugins {
             Features::set_ui_aspect_ratio(x, y);
         }
         else {
-            luaL_error(state, "invalid number of arguments in balltze function features.setUIAspectRatio.");
+            luaL_error(state, "invalid number of arguments in function Balltze.features.setUIAspectRatio.");
         }
         return 0;
     }

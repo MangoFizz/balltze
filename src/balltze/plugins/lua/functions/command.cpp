@@ -51,16 +51,18 @@ namespace Balltze::Plugins {
             if(lua_pcall(state, 1, 1, 0) == LUA_OK) {
                 if(!lua_isnil(state, -1)) {
                     if(lua_toboolean(state, -1)) {
+                        lua_pop(state, 1);
                         return COMMAND_RESULT_SUCCESS;
                     }
                 }
                 else {
                     logger.warning("Lua command {} returned nil", *m_full_name);
                 }
+                lua_pop(state, 1);
             }
             else {
-                logger.debug("Lua command {} failed: {}", *m_full_name, lua_tostring(state, -1));
-                lua_pop(state, 1);
+                logger.debug("Lua command {} failed: {}", *m_full_name, plugin->get_error_message());
+                plugin->print_traceback();
             }
         }
         else {
@@ -116,7 +118,7 @@ namespace Balltze::Plugins {
                     autosave = lua_toboolean(state, 5);
                 }
                 else {
-                    return luaL_error(state, "Argument 5 of register_command must be a boolean.");
+                    return luaL_error(state, "Argument 5 of Balltze.command.registerCommand must be a boolean.");
                 }
                 std::size_t min_args = luaL_checkinteger(state, 6);
                 std::size_t max_args = luaL_checkinteger(state, 7);
@@ -125,20 +127,20 @@ namespace Balltze::Plugins {
                     can_call_from_console = lua_toboolean(state, 8);
                 }
                 else {
-                    return luaL_error(state, "Argument 8 of register_command must be a boolean.");
+                    return luaL_error(state, "Argument 8 of Balltze.command.registerCommand must be a boolean.");
                 }
                 bool is_public;
                 if(lua_isboolean(state, 9)) {
                     is_public = lua_toboolean(state, 9);
                 }
                 else {
-                    return luaL_error(state, "Argument 9 of register_command must be a boolean.");
+                    return luaL_error(state, "Argument 9 of Balltze.command.registerCommand must be a boolean.");
                 }
                 if(lua_isfunction(state, 10)) {
                     lua_pushvalue(state, 10);
                 }
                 else {
-                    return luaL_error(state, "Argument 10 of register_command must be a function.");
+                    return luaL_error(state, "Argument 10 of Balltze.command.registerCommand must be a function.");
                 }
 
                 LuaCommand command(name, category, help, params_help, autosave, min_args, max_args, can_call_from_console, is_public);
@@ -152,7 +154,7 @@ namespace Balltze::Plugins {
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function command.register_command.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.command.registerCommand.");
             }
         }
         else {

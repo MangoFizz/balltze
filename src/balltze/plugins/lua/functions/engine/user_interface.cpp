@@ -17,23 +17,26 @@ namespace Balltze::Plugins {
             if(args == 1 || args == 2) {
                 Engine::TagHandle tag_handle;
 
-                if(lua_isinteger(state, 1)) {
-                    tag_handle.handle = luaL_checkinteger(state, 1);
+                if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                    tag_handle = lua_to_engine_tag_handle(state, 1);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Engine.userInterface.findWidget.");
+                    }
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.findWidget.");
                     }
                     if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
-                        return luaL_error(state, "Tag is not a widget definition.");
+                        return luaL_error(state, "Tag is not a widget definition in function Engine.userInterface.findWidget.");
                     }
                 }
                 else {
                     const char *tag_path = luaL_checkstring(state, 1);
                     auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.findWidget.");
                     }
-                    tag_handle.handle = tag->handle.handle;
+                    tag_handle = tag->handle;
                 }
 
                 Engine::Widget *base_widget = nullptr;
@@ -72,30 +75,33 @@ namespace Balltze::Plugins {
             if(args == 1 || args == 2) {
                 Engine::TagHandle tag_handle;
 
-                if(lua_isinteger(state, 1)) {
-                    tag_handle.handle = luaL_checkinteger(state, 1);
+                if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                    tag_handle = lua_to_engine_tag_handle(state, 1);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Engine.userInterface.findWidgets.");
+                    }
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.findWidgets.");
                     }
                     if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
-                        return luaL_error(state, "Tag is not a widget definition.");
+                        return luaL_error(state, "Tag is not a widget definition in function Engine.userInterface.findWidgets.");
                     }
                 }
                 else {
                     const char *tag_path = luaL_checkstring(state, 1);
                     auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.findWidget.");
                     }
-                    tag_handle.handle = tag->handle.handle;
+                    tag_handle = tag->handle;
                 }
 
                 Engine::Widget *base_widget = nullptr;
                 if(args == 2) {
                     base_widget = lua_from_meta_object<Engine::Widget>(state, 2);
                     if(!base_widget) {
-                        return luaL_error(state, "Invalid base widget.");
+                        return luaL_error(state, "Invalid base widget in function Engine.userInterface.findWidgets.");
                     }
                 }
 
@@ -125,23 +131,26 @@ namespace Balltze::Plugins {
             if(args == 1 || args == 2) {
                 Engine::TagHandle tag_handle;
 
-                if(lua_isinteger(state, 1)) {
-                    tag_handle.handle = luaL_checkinteger(state, 1);
+                if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                    tag_handle = lua_to_engine_tag_handle(state, 1);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Engine.userInterface.openWidget.");
+                    }
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.openWidget.");
                     }
                     if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
-                        return luaL_error(state, "Tag is not a widget definition.");
+                        return luaL_error(state, "Tag is not a widget definition in function Engine.userInterface.openWidget.");
                     }
                 }
                 else {
                     const char *tag_path = luaL_checkstring(state, 1);
                     auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.openWidget.");
                     }
-                    tag_handle.handle = tag->handle.handle;
+                    tag_handle = tag->handle;
                 }
 
                 bool push_history = false;
@@ -150,7 +159,7 @@ namespace Balltze::Plugins {
                         push_history = lua_toboolean(state, 2);
                     }
                     else {
-                        return luaL_error(state, "Invalid push history argument.");
+                        return luaL_error(state, "Invalid push history argument in function Engine.userInterface.openWidget.");
                     }
                 }
 
@@ -198,27 +207,30 @@ namespace Balltze::Plugins {
             if(args == 2) {
                 Engine::Widget *target_widget = lua_from_meta_object<Engine::Widget>(state, 1);
                 if(!target_widget) {
-                    return luaL_error(state, "Invalid target widget.");
+                    return luaL_error(state, "Invalid target widget in function Engine.userInterface.replaceWidget.");
                 }
 
                 Engine::TagHandle tag_handle;
-                if(lua_isinteger(state, 2)) {
-                    tag_handle.handle = luaL_checkinteger(state, 2);
+                if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                    tag_handle = lua_to_engine_tag_handle(state, 2);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Engine.userInterface.replaceWidget.");
+                    }
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.replaceWidget.");
                     }
                     if(tag->primary_class != Engine::TAG_CLASS_UI_WIDGET_DEFINITION) {
-                        return luaL_error(state, "Tag is not a widget definition.");
+                        return luaL_error(state, "Tag is not a widget definition in function Engine.userInterface.replaceWidget.");
                     }
                 }
                 else {
                     const char *tag_path = luaL_checkstring(state, 2);
                     auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.replaceWidget.");
                     }
-                    tag_handle.handle = tag->handle.handle;
+                    tag_handle = tag->handle;
                 }
 
                 auto *widget = Engine::replace_widget(target_widget, tag_handle);
@@ -247,7 +259,7 @@ namespace Balltze::Plugins {
             if(args == 1) {
                 Engine::Widget *target_widget = lua_from_meta_object<Engine::Widget>(state, 1);
                 if(!target_widget) {
-                    return luaL_error(state, "Invalid target widget.");
+                    return luaL_error(state, "Invalid target widget in function Engine.userInterface.reloadWidget.");
                 }
 
                 auto *widget = Engine::reload_widget(target_widget);
@@ -276,7 +288,7 @@ namespace Balltze::Plugins {
             if(args == 1) {
                 Engine::Widget *target_widget = lua_from_meta_object<Engine::Widget>(state, 1);
                 if(!target_widget) {
-                    return luaL_error(state, "Invalid target widget.");
+                    return luaL_error(state, "Invalid target widget in function Engine.userInterface.focusWidget.");
                 }
 
                 Engine::focus_widget(target_widget);
@@ -363,7 +375,7 @@ namespace Balltze::Plugins {
             if(args == 3) {
                 auto *bitmap = lua_from_meta_object<Engine::TagDefinitions::Bitmap>(state, 1);
                 if(!bitmap) {
-                    return luaL_error(state, "Invalid bitmap.");
+                    return luaL_error(state, "Invalid bitmap in function Engine.userInterface.getBitmapSpriteResolution.");
                 }
 
                 auto sequence_index = luaL_checkinteger(state, 2);
@@ -396,7 +408,7 @@ namespace Balltze::Plugins {
             if(args == 4 || args == 5) {
                 auto *bitmap = lua_from_meta_object<Engine::TagDefinitions::Bitmap>(state, 1);
                 if(!bitmap) {
-                    return luaL_error(state, "Invalid bitmap.");
+                    return luaL_error(state, "Invalid bitmap in function Engine.userInterface.drawHudMessageSprite.");
                 }
 
                 auto sequence_index = luaL_checkinteger(state, 2);
@@ -432,23 +444,26 @@ namespace Balltze::Plugins {
 
             if(args == 1) {
                 Engine::TagHandle tag_handle;
-                if(lua_isinteger(state, 1)) {
-                    tag_handle.handle = luaL_checkinteger(state, 1);
+                if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                    tag_handle = lua_to_engine_tag_handle(state, 1);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Engine.userInterface.playSound.");
+                    }
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.playSound.");
                     }
                     if(tag->primary_class != Engine::TAG_CLASS_SOUND) {
-                        return luaL_error(state, "Tag is not a sound.");
+                        return luaL_error(state, "Tag is not a sound in function Engine.userInterface.playSound.");
                     }
                 }
                 else {
                     const char *tag_path = luaL_checkstring(state, 1);
                     auto *tag = Engine::get_tag(tag_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                     if(!tag) {
-                        return luaL_error(state, "Could not find tag.");
+                        return luaL_error(state, "Could not find tag in function Engine.userInterface.playSound.");
                     }
-                    tag_handle.handle = tag->handle.handle;
+                    tag_handle = tag->handle;
                 }
 
                 try {

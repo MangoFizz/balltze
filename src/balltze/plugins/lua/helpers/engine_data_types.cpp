@@ -286,4 +286,39 @@ namespace Balltze::Plugins {
     void lua_push_engine_player_handle(lua_State *state, Engine::PlayerHandle *handle) noexcept {
         lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(handle));
     }
+
+    Engine::ResourceHandle lua_to_engine_resource_handle(lua_State *state, int index) noexcept {
+        Engine::ResourceHandle handle;
+        if(lua_istable(state, index)) {
+            lua_getfield(state, index, "handle");
+            if(lua_isinteger(state, -1)) {
+                handle.handle = luaL_checkinteger(state, -1);
+            }
+            else {
+                return Engine::ResourceHandle::null();
+            }
+            lua_pop(state, 1);
+        }
+        else {
+            if(lua_isinteger(state, index)) {
+                handle.handle = luaL_checkinteger(state, index);
+            }
+            else {
+                return Engine::ResourceHandle::null();
+            }
+        }
+        return handle;
+    }
+
+    Engine::ObjectHandle lua_to_engine_object_handle(lua_State *state, int index) noexcept {
+        return static_cast<Engine::ObjectHandle>(lua_to_engine_resource_handle(state, index));
+    }
+    
+    Engine::TagHandle lua_to_engine_tag_handle(lua_State *state, int index) noexcept {
+        return static_cast<Engine::TagHandle>(lua_to_engine_resource_handle(state, index));
+    }
+
+    Engine::PlayerHandle lua_to_engine_player_handle(lua_State *state, int index) noexcept {
+        return static_cast<Engine::PlayerHandle>(lua_to_engine_resource_handle(state, index));
+    }
 }

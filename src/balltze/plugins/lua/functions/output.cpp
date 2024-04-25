@@ -19,7 +19,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.console.printf.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.output.getGenericFont.");
             }
         }
         else {
@@ -46,7 +46,7 @@ namespace Balltze::Plugins {
                     font = Engine::TagHandle(font_handle);
                 }
                 else {
-                    return luaL_error(state, "Invalid argument type in function text_pixel_length.");
+                    return luaL_error(state, "Invalid argument type in function Balltze.output.textPixelLength.");
                 }
 
                 auto length = get_text_pixel_length(text, font);
@@ -54,7 +54,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.console.printf.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.output.textPixelLength.");
             }
         }
         else {
@@ -79,7 +79,7 @@ namespace Balltze::Plugins {
                     font = Engine::TagHandle(font_handle);
                 }
                 else {
-                    return luaL_error(state, "Invalid argument type in function font_pixel_height.");
+                    return luaL_error(state, "Invalid argument type in function Balltze.output.fontPixelHeight.");
                 }
 
                 auto height = get_font_pixel_height(font);
@@ -87,7 +87,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.console.printf.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.output.fontPixelHeight.");
             }
         }
         else {
@@ -110,7 +110,7 @@ namespace Balltze::Plugins {
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.console.printf.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.output.addSubtitle.");
             }
         }
         else {
@@ -130,7 +130,7 @@ namespace Balltze::Plugins {
                 return 0;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.console.printf.");
+                return luaL_error(state, "Invalid number of arguments in function Balltze.output.playBikVideo.");
             }
         }
         else {

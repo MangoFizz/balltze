@@ -23,7 +23,7 @@ namespace Balltze::Plugins {
                 return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function engine.get_resolution.");
+                return luaL_error(state, "Invalid number of arguments in function Engine.rasterizer.getResolution.");
             }
         }
         else {

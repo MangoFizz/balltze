@@ -84,6 +84,8 @@ namespace Balltze::Plugins {
         void import_all_tags(std::string map_name_or_path);
         void clear_tag_imports() noexcept;
         std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &imported_tags() const noexcept;
+        void print_traceback();
+        std::string get_error_message();
         PluginInitResult init();
         void load();
         void unload();

@@ -79,7 +79,7 @@ namespace Balltze::Plugins {
             return 1;
         }
         else {
-            return luaL_error(state, "invalid number of arguments in harmony set_timestamp function");
+            return luaL_error(state, "invalid number of arguments in function Balltze.misc.setTimestamp");
         }
     }
 
