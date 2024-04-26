@@ -131,13 +131,13 @@ namespace Balltze::Plugins {
             if(args == 3 || args == 5) {
                 auto object_tag_handle = lua_to_engine_tag_handle(state, 1);
                 if(object_tag_handle.is_null()) {
-                    return luaL_error(state, "Invalid object tag handle.");
+                    return luaL_error(state, "Invalid object tag handle in function Engine.gameState.createObject.");
                 }
                 Engine::ObjectHandle parent_object_handle = Engine::ObjectHandle::null();
                 if(!lua_isnil(state, 2)) {
                     parent_object_handle = lua_to_engine_object_handle(state, 2);
                     if(parent_object_handle.is_null()) {
-                        return luaL_error(state, "Invalid parent object handle.");
+                        return luaL_error(state, "Invalid parent object handle in function Engine.gameState.createObject.");
                     }
                 }
                 auto position = lua_to_point3_d(state, 3);
@@ -147,15 +147,15 @@ namespace Balltze::Plugins {
                 if(object_handle != Engine::ObjectHandle::null()) {
                     auto *object = object_table.get_object(object_handle);
                     if(object) {
-                        lua_push_meta_engine_object(state, *object);
+                        lua_push_engine_object_handle(state, &object_handle);
                         return 1;
                     }
                     else {
-                        return luaL_error(state, "Could not get object.");
+                        return luaL_error(state, "Could not get object after creation in function Engine.gameState.createObject.");
                     }
                 }
                 else {
-                    return luaL_error(state, "Could not create object.");
+                    return luaL_error(state, "Could not create object in function Engine.gameState.createObject.");
                 }
             }
             else {

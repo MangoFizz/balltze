@@ -41,9 +41,19 @@ namespace Balltze::Plugins {
                     auto font_str = generic_font_from_string(luaL_checkstring(state, 2));
                     font = get_generic_font(font_str);
                 }
-                else if(lua_isinteger(state, 2)) {
-                    auto font_handle = luaL_checkinteger(state, 2);
-                    font = Engine::TagHandle(font_handle);
+                else if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                    auto tag_handle = lua_to_engine_tag_handle(state, 1);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Balltze.output.textPixelLength.");
+                    }
+                    auto *tag = Engine::get_tag(tag_handle);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag in function Balltze.output.textPixelLength.");
+                    }
+                    if(tag->primary_class != Engine::TAG_CLASS_FONT) {
+                        return luaL_error(state, "Tag is not a font in function Balltze.output.textPixelLength.");
+                    }
+                    font = tag_handle;
                 }
                 else {
                     return luaL_error(state, "Invalid argument type in function Balltze.output.textPixelLength.");
@@ -74,9 +84,19 @@ namespace Balltze::Plugins {
                     auto font_str = generic_font_from_string(luaL_checkstring(state, 1));
                     font = get_generic_font(font_str);
                 }
-                else if(lua_isinteger(state, 1)) {
-                    auto font_handle = luaL_checkinteger(state, 1);
-                    font = Engine::TagHandle(font_handle);
+                else if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                    auto tag_handle = lua_to_engine_tag_handle(state, 1);
+                    if(tag_handle.is_null()) {
+                        return luaL_error(state, "Invalid tag handle in function Balltze.output.textPixelLength.");
+                    }
+                    auto *tag = Engine::get_tag(tag_handle);
+                    if(!tag) {
+                        return luaL_error(state, "Could not find tag in function Balltze.output.textPixelLength.");
+                    }
+                    if(tag->primary_class != Engine::TAG_CLASS_FONT) {
+                        return luaL_error(state, "Tag is not a font in function Balltze.output.textPixelLength.");
+                    }
+                    font = tag_handle;
                 }
                 else {
                     return luaL_error(state, "Invalid argument type in function Balltze.output.fontPixelHeight.");
