@@ -11,7 +11,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectFlags metaobject.");
         } 
         
         std::string field = key;
@@ -73,7 +73,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, flags->has_collision_model);
         }
         else { 
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineBaseObjectFlags metaobject.");
         }
         return 1;
     }
@@ -83,7 +83,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectFlags metaobject.");
         }
         
         std::string field = key;
@@ -146,7 +146,7 @@ namespace Balltze::Plugins {
             flags->has_collision_model = value;
         }
         else { 
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineBaseObjectFlags metaobject.");
         }
         return 0;
     }
@@ -159,7 +159,7 @@ namespace Balltze::Plugins {
         auto *object_network = lua_from_meta_object<Engine::BaseObjectNetwork>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectNetwork metaobject.");
         } 
         
         std::string field = key;
@@ -192,7 +192,7 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, object_network->timestamp);
         }
         else { 
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineBaseObjectNetwork metaobject.");
         }
         return 1;
     }
@@ -202,7 +202,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectNetwork metaobject.");
         } 
         
         std::string field = key;
@@ -211,40 +211,40 @@ namespace Balltze::Plugins {
                 object_network->valid_position = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value");
+                return luaL_error(state, "Invalid value on field 'validPosition' in EngineBaseObjectNetwork metaobject.");
             }
         }
         else if(field == "position") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field 'position' in EngineBaseObjectNetwork metaobject.");
         }
         else if(field == "validForwardAndUp") { 
             if(lua_isboolean(state, 3)) {
                 object_network->valid_forward_and_up = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value");
+                return luaL_error(state, "Invalid value on field 'validForwardAndUp' in EngineBaseObjectNetwork metaobject.");
             }
         }
         else if(field == "orientation") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field 'orientation' in EngineBaseObjectNetwork metaobject.");
         }
         else if(field == "validTransitionalVelocity") { 
             if(lua_isboolean(state, 3)) {
                 object_network->valid_transitional_velocity = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value");
+                return luaL_error(state, "Invalid value on field 'validTransitionalVelocity' in EngineBaseObjectNetwork metaobject.");
             }
         }
         else if(field == "transitionalVelocity") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field 'transitionalVelocity' in EngineBaseObjectNetwork metaobject.");
         }
         else if(field == "validTimestamp") { 
             if(lua_isboolean(state, 3)) {
                 object_network->valid_timestamp = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value");
+                return luaL_error(state, "Invalid value on field 'validTimestamp' in EngineBaseObjectNetwork metaobject.");
             }
         }
         else if(field == "timestamp") { 
@@ -252,11 +252,11 @@ namespace Balltze::Plugins {
                 object_network->timestamp = static_cast<Engine::TickCount32>(lua_tointeger(state, 3));
             }
             else {
-                return luaL_error(state, "Invalid value");
+                return luaL_error(state, "Invalid value on field 'timestamp' in EngineBaseObjectNetwork metaobject.");
             }
         }
         else { 
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field '%s' in EngineBaseObjectNetwork metaobject.", field.c_str());
         }
         return 0;
     }
@@ -269,7 +269,7 @@ namespace Balltze::Plugins {
         auto *location = lua_from_meta_object<Engine::ScenarioLocation>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineScenarioLocation metaobject.");
         } 
         
         std::string field = key;
@@ -280,7 +280,7 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, location->cluster_id);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field '%s' in EngineScenarioLocation metaobject.", field.c_str());
         }
         return 1;
     }
@@ -290,7 +290,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid key in EngineScenarioLocation metaobject.");
         } 
         
         std::string field = key;
@@ -301,7 +301,7 @@ namespace Balltze::Plugins {
             location->cluster_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field '%s' in EngineScenarioLocation metaobject.", field.c_str());
         }
         return 0;
     }
@@ -315,7 +315,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectVitalsFlags metaobject.");
         } 
         
         std::string field = key;
@@ -350,7 +350,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, flags->killed_no_stats);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field '%s' in EngineBaseObjectVitalsFlags metaobject.", field.c_str());
         }
         return 1;
     }
@@ -360,7 +360,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectVitalsFlags metaobject.");
         } 
         
         std::string field = key;
@@ -396,7 +396,7 @@ namespace Balltze::Plugins {
             flags->killed_no_stats = value;
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field '%s' in EngineBaseObjectVitalsFlags metaobject.", field.c_str());
         }
         return 0;
     }
@@ -409,7 +409,7 @@ namespace Balltze::Plugins {
         auto *vitals = lua_from_meta_object<Engine::BaseObjectVitals>(state, 1); 
         auto *key = lua_tostring(state, 2);
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectVitals metaobject.");
         } 
         
         std::string field = key;
@@ -453,7 +453,7 @@ namespace Balltze::Plugins {
             lua_push_meta_engine_object_vitals_flags(state, vitals->flags);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field '%s' in EngineBaseObjectVitals metaobject.", field.c_str());
         }
         return 1;
     }
@@ -463,7 +463,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid key in EngineBaseObjectVitals metaobject.");
         } 
         
         std::string field = key;
@@ -504,10 +504,10 @@ namespace Balltze::Plugins {
             vitals->shield_stun_time = static_cast<Engine::TickCount16>(luaL_checkinteger(state, 3));
         }
         else if(field == "flags") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field 'flags' in EngineBaseObjectVitals metaobject.");
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field '%s' in EngineBaseObjectVitals metaobject.", field.c_str());
         }
         return 0;
     }

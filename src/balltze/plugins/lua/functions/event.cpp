@@ -261,10 +261,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "camera") {
-            return luaL_error(state, "Field camera is read-only");
+            return luaL_error(state, "Field camera is read-only in CameraEventArgs metaobject.");
         }
         else if(field == "type") {
-            return luaL_error(state, "Field type is read-only");
+            return luaL_error(state, "Field type is read-only in CameraEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in CameraEventArgs metaobject.", field.c_str());
@@ -315,13 +315,13 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "device") {
-            return luaL_error(state, "Field device is read-only");
+            return luaL_error(state, "Field device is read-only in GameInputEventArgs metaobject.");
         }
         else if(field == "button") {
-            return luaL_error(state, "Field button is read-only");
+            return luaL_error(state, "Field button is read-only in GameInputEventArgs metaobject.");
         }
         else if(field == "mapped") {
-            return luaL_error(state, "Field mapped is read-only");
+            return luaL_error(state, "Field mapped is read-only in GameInputEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in GameInputEventArgs metaobject.", field.c_str());
@@ -423,19 +423,19 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "slice") {
-            return luaL_error(state, "Field slice is read-only");
+            return luaL_error(state, "Field slice is read-only in HudHoldForActionMessageArgs metaobject.");
         }
         else if(field == "offset") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field offset in HudHoldForActionMessageArgs metaobject.");
         }
         else if(field == "color") {
-            return luaL_error(state, "Field color is read-only");
+            return luaL_error(state, "Field color is read-only in HudHoldForActionMessageArgs metaobject.");
         }
         else if(field == "text") {
-            return luaL_error(state, "Invalid operation. Write the text using a write operation on the string address.");
+            return luaL_error(state, "Invalid operation on field text in HudHoldForActionMessageArgs metaobject. Write the text using a write operation on the string address.");
         }
         else if(field == "button") {
-            return luaL_error(state, "Field button is read-only");
+            return luaL_error(state, "Field button is read-only in HudHoldForActionMessageArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in HudHoldForActionMessageArgs metaobject.", field.c_str());
@@ -471,10 +471,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "mapName") {
-            return luaL_error(state, "Field mapName is read-only");
+            return luaL_error(state, "Field mapName is read-only in MapFileLoadEventArgs metaobject.");
         }
         else if(field == "mapPath") {
-            return luaL_error(state, "Field mapPath is read-only");
+            return luaL_error(state, "Field mapPath is read-only in MapFileLoadEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in MapFileLoadEventArgs metaobject.", field.c_str());
@@ -507,7 +507,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "name") {
-            return luaL_error(state, "Field name is read-only");
+            return luaL_error(state, "Field name is read-only in MapLoadEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in MapLoadEventArgs metaobject.", field.c_str());
@@ -561,13 +561,13 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "type") {
-            return luaL_error(state, "Field type is read-only");
+            return luaL_error(state, "Field type is read-only in NetworkGameChatMessageEventArgs metaobject.");
         }
         else if(field == "playerId") {
-            return luaL_error(state, "Field playerId is read-only");
+            return luaL_error(state, "Field playerId is read-only in NetworkGameChatMessageEventArgs metaobject.");
         }
         else if(field == "message") {
-            return luaL_error(state, "Field message is read-only");
+            return luaL_error(state, "Field message is read-only in NetworkGameChatMessageEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in NetworkGameChatMessageEventArgs metaobject.", field.c_str());
@@ -612,19 +612,19 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "object") {
-            return luaL_error(state, "Field object is read-only");
+            return luaL_error(state, "Field object is read-only in ObjectDamageEventArgs metaobject.");
         }
         else if(field == "damageEffect") {
-            return luaL_error(state, "Field damageEffect is read-only");
+            return luaL_error(state, "Field damageEffect is read-only in ObjectDamageEventArgs metaobject.");
         }
         else if(field == "multiplier") {
-            return luaL_error(state, "Field multiplier is read-only");
+            return luaL_error(state, "Field multiplier is read-only in ObjectDamageEventArgs metaobject.");
         }
         else if(field == "causerPlayer") {
-            return luaL_error(state, "Field causerPlayer is read-only");
+            return luaL_error(state, "Field causerPlayer is read-only in ObjectDamageEventArgs metaobject.");
         }
         else if(field == "causerObject") {
-            return luaL_error(state, "Field causerObject is read-only");
+            return luaL_error(state, "Field causerObject is read-only in ObjectDamageEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in ObjectDamageEventArgs metaobject.", field.c_str());
@@ -657,7 +657,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "message") {
-            return luaL_error(state, "Field message is read-only");
+            return luaL_error(state, "Field message is read-only in RconMessageEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in RconMessageEventArgs metaobject.", field.c_str());
@@ -695,10 +695,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "vertices") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field vertices in HUDElementBitmapRenderEventArgs metaobject.");
         }
         else if(field == "bitmapData") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field bitmapData in HUDElementBitmapRenderEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in HUDElementBitmapRenderEventArgs metaobject.", field.c_str());
@@ -739,10 +739,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "vertices") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field vertices in UIWidgetBackgroundRenderEventArgs metaobject.");
         }
         else if(field == "widget") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field widget in UIWidgetBackgroundRenderEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in UIWidgetBackgroundRenderEventArgs metaobject.", field.c_str());
@@ -781,13 +781,13 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "address") {
-            return luaL_error(state, "Field address is read-only");
+            return luaL_error(state, "Field address is read-only in ServerConnectEventArgs metaobject.");
         }
         else if(field == "port") {
-            return luaL_error(state, "Field port is read-only");
+            return luaL_error(state, "Field port is read-only in ServerConnectEventArgs metaobject.");
         }
         else if(field == "password") {
-            return luaL_error(state, "Field password is read-only");
+            return luaL_error(state, "Field password is read-only in ServerConnectEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in ServerConnectEventArgs metaobject.", field.c_str());
@@ -826,10 +826,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "sound") {
-            return luaL_error(state, "Field sound is read-only");
+            return luaL_error(state, "Field sound is read-only in SoundPlaybackEventArgs metaobject.");
         }
         else if(field == "permutation") {
-            return luaL_error(state, "Field permutation is read-only");
+            return luaL_error(state, "Field permutation is read-only in SoundPlaybackEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in SoundPlaybackEventArgs metaobject.", field.c_str());
@@ -865,10 +865,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "tickCount") {
-            return luaL_error(state, "Field tickCount is read-only");
+            return luaL_error(state, "Field tickCount is read-only in TickEventArgs metaobject.");
         }
         else if(field == "deltaTimeMS") {
-            return luaL_error(state, "Field deltaTimeMS is read-only");
+            return luaL_error(state, "Field deltaTimeMS is read-only in TickEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in TickEventArgs metaobject.", field.c_str());
@@ -912,13 +912,13 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widget") {
-            return luaL_error(state, "Field widget is read-only");
+            return luaL_error(state, "Field widget is read-only in UIWidgetCreateEventArgs metaobject.");
         }
         else if(field == "definitionTagHandle") {
-            return luaL_error(state, "Field definitionTagHandle is read-only");
+            return luaL_error(state, "Field definitionTagHandle is read-only in UIWidgetCreateEventArgs metaobject.");
         }
         else if(field == "isRootWidget") {
-            return luaL_error(state, "Field isRootWidget is read-only");
+            return luaL_error(state, "Field isRootWidget is read-only in UIWidgetCreateEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in UIWidgetCreateEventArgs metaobject.", field.c_str());
@@ -951,7 +951,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widget") {
-            return luaL_error(state, "Field widget is read-only");
+            return luaL_error(state, "Field widget is read-only in UIWidgetEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
@@ -1017,7 +1017,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widget") {
-            return luaL_error(state, "Field widget is read-only");
+            return luaL_error(state, "Field widget is read-only in UIWidgetEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in UIWidgetEventArgs metaobject.", field.c_str());
@@ -1050,7 +1050,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "sound") {
-            return luaL_error(state, "Field sound is read-only");
+            return luaL_error(state, "Field sound is read-only in UIWidgetSoundEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in UIWidgetSoundEventArgs metaobject.", field.c_str());
@@ -1107,10 +1107,10 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "widgetList") {
-            return luaL_error(state, "Field widgetList is read-only");
+            return luaL_error(state, "Field widgetList is read-only in UIWidgetListTabEventArgs metaobject.");
         }
         else if(field == "tabType") {
-            return luaL_error(state, "Field tabType is read-only");
+            return luaL_error(state, "Field tabType is read-only in UIWidgetListTabEventArgs metaobject.");
         }
         else {
             return luaL_error(state, "Invalid field '%s' in UIWidgetListTabEventArgs metaobject.", field.c_str());

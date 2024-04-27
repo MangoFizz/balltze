@@ -14,7 +14,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceObjectState metaobject.");
         }
         
         std::string field = key;
@@ -28,7 +28,7 @@ namespace Balltze::Plugins {
             lua_pushnumber(state, state_data->change);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineDeviceObjectState metaobject.");
         }
         return 1;
     }
@@ -37,8 +37,8 @@ namespace Balltze::Plugins {
         auto *state_data = lua_from_meta_object<Engine::DeviceObjectState>(state, 1); 
         auto *key = lua_tostring(state, 2);
 
-        if(key == nullptr || !lua_isnumber(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+        if(key == nullptr) {  
+            return luaL_error(state, "Invalid key in EngineDeviceObjectState metaobject.");
         }
         
         std::string field = key;
@@ -52,7 +52,7 @@ namespace Balltze::Plugins {
             state_data->change = static_cast<float>(luaL_checknumber(state, 3));
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineDeviceObjectState metaobject.");
         }
         return 0;
     }
@@ -66,7 +66,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceObject metaobject.");
         }
         
         std::string field = key;
@@ -99,7 +99,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceObject metaobject.");
         }
         
         std::string field = key;
@@ -108,7 +108,7 @@ namespace Balltze::Plugins {
                 device->position_reversed = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value type");
+                return luaL_error(state, "Invalid value type on field positionReversed in EngineDeviceObject metaobject.");
             }
         }
         else if(field == "notUsableFromAnySide") {
@@ -116,21 +116,21 @@ namespace Balltze::Plugins {
                 device->not_usable_from_any_side = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value type");
+                return luaL_error(state, "Invalid value type on field notUsableFromAnySide in EngineDeviceObject metaobject.");
             }
         }
         else if(field == "power") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field power in EngineDeviceObject metaobject.");
         }
         else if(field == "position") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field position in EngineDeviceObject metaobject.");
         }
         else if(field == "oneSided") {
             if(lua_isboolean(state, 3)) {
                 device->one_sided = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value type");
+                return luaL_error(state, "Invalid value type on field oneSided in EngineDeviceObject metaobject.");
             }
         }
         else if(field == "operatesAutomatically") {
@@ -138,7 +138,7 @@ namespace Balltze::Plugins {
                 device->operates_automatically = lua_toboolean(state, 3);
             }
             else {
-                return luaL_error(state, "Invalid value type");
+                return luaL_error(state, "Invalid value type on field operatesAutomatically in EngineDeviceObject metaobject.");
             }
         }
         else {
@@ -156,7 +156,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceMachineObjectFlags metaobject.");
         }
         
         std::string field = key;
@@ -173,7 +173,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, flags->opened_by_melee_attack);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineDeviceMachineObjectFlags metaobject.");
         }
         return 1;
     }
@@ -183,7 +183,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceMachineObjectFlags metaobject.");
         }
         
         std::string field = key;
@@ -200,7 +200,7 @@ namespace Balltze::Plugins {
             flags->opened_by_melee_attack = lua_toboolean(state, 3);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineDeviceMachineObjectFlags metaobject.");
         }
         return 0;
     }
@@ -214,7 +214,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceMachineObject metaobject.");
         }
         
         std::string field = key;
@@ -238,18 +238,18 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceMachineObject metaobject.");
         }
         
         std::string field = key;
         if(field == "deviceFlags") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field deviceFlags in EngineDeviceMachineObject metaobject.");
         }
         else if(field == "ticksSinceStartedOpening") {
             device->ticks_since_started_opening = static_cast<std::uint32_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "elevatorPosition") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field elevatorPosition in EngineDeviceMachineObject metaobject.");
         }
         else {
             return lua_engine_device_object__newindex(state);
@@ -266,7 +266,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceControlObjectFlags metaobject.");
         }
         
         std::string field = key;
@@ -274,7 +274,7 @@ namespace Balltze::Plugins {
             lua_pushboolean(state, flags->usable_from_both_sides);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid field in EngineDeviceControlObjectFlags metaobject.");
         }
         return 1;
     }
@@ -284,7 +284,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
 
         if(key == nullptr || !lua_isboolean(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceControlObjectFlags metaobject.");
         }
         
         std::string field = key;
@@ -292,7 +292,7 @@ namespace Balltze::Plugins {
             flags->usable_from_both_sides = lua_toboolean(state, 3);
         }
         else {
-            return luaL_error(state, "Invalid key"); 
+            return luaL_error(state, "Invalid key in EngineDeviceControlObjectFlags metaobject.");
         }
         return 0;
     }
@@ -306,7 +306,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceControlObject metaobject.");
         }
         
         std::string field = key;
@@ -327,12 +327,12 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key type in EngineDeviceControlObject metaobject.");
         }
         
         std::string field = key;
         if(field == "deviceControlFlags") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field deviceControlFlags in EngineDeviceControlObject metaobject.");
         }
         else if(field == "customNameId") {
             device->custom_name_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
@@ -352,7 +352,7 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceLightFixtureObject metaobject.");
         }
         
         std::string field = key;
@@ -379,12 +379,12 @@ namespace Balltze::Plugins {
         auto *key = lua_tostring(state, 2);
         
         if(key == nullptr || !lua_istable(state, 3)) {  
-            return luaL_error(state, "Invalid key type"); 
+            return luaL_error(state, "Invalid key in EngineDeviceLightFixtureObject metaobject.");
         }
         
         std::string field = key;
         if(field == "light_color") {
-            return luaL_error(state, "Invalid operation");
+            return luaL_error(state, "Invalid operation on field lightColor in EngineDeviceLightFixtureObject metaobject.");
         }
         else if(field == "lightIntensity") {
             device->light_intensity = static_cast<float>(luaL_checknumber(state, 3));
