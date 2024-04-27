@@ -49,7 +49,7 @@ namespace Balltze::Engine {
 
     /**
      * Get the Halo profile path
-     * @return Halo profile path
+     * @return ABSOLUTE path to the Halo profile folder
      */
     BALLTZE_API std::filesystem::path get_path();
 

@@ -130,6 +130,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/functions/command.cpp
     src/balltze/plugins/lua/functions/engine.cpp
     src/balltze/plugins/lua/functions/features.cpp
+    src/balltze/plugins/lua/functions/filesystem.cpp
     src/balltze/plugins/lua/functions/event.cpp
     src/balltze/plugins/lua/functions/logger.cpp
     src/balltze/plugins/lua/functions/math.cpp

@@ -55,7 +55,7 @@ namespace Balltze::Engine {
                 }
             }
         }
-        return path.value();
+        return std::filesystem::absolute(path.value());
     }
 
     std::size_t get_tick_count() noexcept {
