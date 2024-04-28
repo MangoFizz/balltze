@@ -357,7 +357,7 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 2);
                         instruction_size = 2;
                     }
-                    // mov ebx, dword ptr [esp + imm8]
+                    // mov ebx, dword ptr [esp + disp8]
                     else if(instruction[1] == 0x5C && instruction[2] == 0x24) {
                         m_cave.insert(&instruction[0], 4);
                         instruction_size = 4;
@@ -367,10 +367,15 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 3);
                         instruction_size = 3;
                     }
-                    // mov ecx, dword ptr [eax + imm8]
+                    // mov ecx, dword ptr [eax + disp8]
                     else if(instruction[1] == 0x48) {
                         m_cave.insert(&instruction[0], 3);
                         instruction_size = 3;
+                    }
+                    // mov edx, dword ptr [esp + disp8]
+                    else if(instruction[1] == 0x54 && instruction[2] == 0x24) {
+                        m_cave.insert(&instruction[0], 4);
+                        instruction_size = 4;
                     }
                     else {
                         throw std::runtime_error("Unsupported lea / mov instruction.");

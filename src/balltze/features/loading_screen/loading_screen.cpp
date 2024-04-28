@@ -166,7 +166,7 @@ namespace Balltze::Features {
         std::uint32_t load_map_function_result = false;
         void load_map_worker_asm(const char *);
         void load_map_override_asm();
-        void set_video_mode_asm();
+        void set_d3d9_device_multithreaded_flag();
         void *set_video_mode_return = nullptr;
 
         void set_map_load_thread_done_flag() {
@@ -297,15 +297,12 @@ namespace Balltze::Features {
         Event::D3D9EndSceneEvent::subscribe(update_d3d9_device, Event::EVENT_PRIORITY_HIGHEST);
         Event::D3D9DeviceResetEvent::subscribe(on_device_reset, Event::EVENT_PRIORITY_HIGHEST);
 
-        auto set_video_mode_sig = Memory::get_signature("d3d9_set_video_mode");
-        if(!set_video_mode_sig) {
+        auto behavior_flags_sig = Memory::get_signature("d3d9_device_behavior_flags");
+        if(!behavior_flags_sig) {
             logger.error("Failed to find signatures for loading screen.");
             return;
         }
-
-        auto *set_video_mode_address = Memory::follow_32bit_jump(set_video_mode_sig->data()) + 12;
-        Memory::override_function(set_video_mode_address, set_video_mode_asm, set_video_mode_return);
-        set_video_mode_return = set_video_mode_sig->data() + 5;
+        Memory::hook_function(behavior_flags_sig->data(), set_d3d9_device_multithreaded_flag, std::nullopt, false);
 
         auto load_map_function_sig = Memory::get_signature("load_map_function");
         auto loading_screen_handler_sig = Memory::get_signature("loading_screen_handler");
