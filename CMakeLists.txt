@@ -17,6 +17,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(lua/code_gen/tag_definitions.cmake)
 include(lib/lua/lua.cmake)
 include(lib/fmt/fmt.cmake)
+include(lib/luacstruct/luacstruct.cmake)
 include(lib/invader/invader.cmake)
 include(src/sound-subtitles-stapler/sss.cmake)
 
@@ -166,7 +167,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze lua53 fmt invader d3d9 gdiplus)
+target_link_libraries(balltze lua53 fmt invader luacstruct d3d9 gdiplus)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
