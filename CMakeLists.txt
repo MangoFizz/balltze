@@ -129,6 +129,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/functions/engine/user_interface.cpp
     src/balltze/plugins/lua/functions/chimera.cpp
     src/balltze/plugins/lua/functions/command.cpp
+    src/balltze/plugins/lua/functions/config.cpp
     src/balltze/plugins/lua/functions/engine.cpp
     src/balltze/plugins/lua/functions/features.cpp
     src/balltze/plugins/lua/functions/filesystem.cpp

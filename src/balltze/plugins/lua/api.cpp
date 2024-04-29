@@ -21,6 +21,7 @@ namespace Balltze::Plugins {
         lua_set_command_table(state);
         lua_set_math_table(state);
         lua_set_misc_table(state);
+        lua_set_config_table(state);
         if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
             lua_set_output_table(state);
             lua_set_features_table(state);

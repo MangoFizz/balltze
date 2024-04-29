@@ -16,6 +16,7 @@ namespace Balltze::Plugins {
     void lua_set_math_table(lua_State *state) noexcept;
     void lua_set_misc_table(lua_State *state) noexcept;
     void lua_set_filesystem_table(lua_State *state) noexcept;
+    void lua_set_config_table(lua_State *state) noexcept;
 }
 
 #endif
