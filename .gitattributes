@@ -4,4 +4,5 @@ include/nlohmann/** linguist-vendored
 lib/clipboardxx/** linguist-vendored
 lib/lua/** linguist-vendored
 lib/fmt/** linguist-vendored
+lib/luacstruct/** linguist-vendored
 lua/modules/** linguist-vendored
