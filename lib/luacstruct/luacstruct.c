@@ -309,6 +309,22 @@ luacs_checkstruct(lua_State *L, int csidx)
 	return (luaL_checkudata(L, csidx, METANAME_LUACSTRUCT));
 }
 
+bool
+luacs_ctype_exists0(lua_State *L, const char *tname)
+{
+	char			 metaname[METANAMELEN];
+
+	snprintf(metaname, sizeof(metaname), "%s%s", METANAME_LUACTYPE, tname);
+	lua_getfield(L, LUA_REGISTRYINDEX, metaname);
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		return (false);
+	}
+	lua_pop(L, 1);
+
+	return (true);
+}
+
 int
 luacs_struct__gc(lua_State *L)
 {

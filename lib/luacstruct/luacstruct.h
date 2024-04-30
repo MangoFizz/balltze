@@ -54,6 +54,7 @@ extern "C" {
 #endif
 
 int	 luacs_newstruct0(lua_State *, const char *, const char *);
+bool luacs_ctype_exists0(lua_State *L, const char *tname);
 int	 luacs_declare_method(lua_State *, const char *, int (*)(lua_State *));
 int	 luacs_declare_const(lua_State *, const char *, int);
 int	 luacs_delstruct(lua_State *, const char *);
@@ -77,6 +78,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 }
 #endif
 
+#ifndef __cplusplus
 #define luacs_newstruct(_L, _typename)				\
 	do {							\
 		{ struct _typename; /* check valid for type */}	\
@@ -88,6 +90,21 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		luacs_newenum0((_L), #_enumname,		\
 		    sizeof(enum _enumname));			\
 	} while(0/*CONSTCOND*/)
+#else 
+#define luacs_newstruct(_L, _typename)				\
+	do {							\
+		{ _typename; /* check valid for type */}	\
+		luacs_newstruct0((_L), #_typename, NULL);	\
+	} while(0/*CONSTCOND*/)
+#define luacs_newenum(_L, _enumname)				\
+	do {							\
+		{ _enumname; /* check valid for enum */}	\
+		luacs_newenum0((_L), #_enumname,		\
+		    sizeof(_enumname));			\
+	} while(0/*CONSTCOND*/)
+#endif
+#define luacs_ctype_exists(_L, _typename)			\
+		luacs_ctype_exists0((_L), #_typename)
 #define validintwidth(_w)	\
 	((_w) == 1 || (_w) == 2 || (_w) == 4 || (_w) == 8)
 #define luacs_int_field(_L, _type, _field, _flags)		\
