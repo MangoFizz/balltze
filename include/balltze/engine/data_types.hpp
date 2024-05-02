@@ -12,10 +12,13 @@ namespace Balltze::Engine {
 	using Fraction = float;
 	using Index = std::uint16_t;
 	using TagEnum = std::uint16_t;
-	using Matrix = float[3][3];
     using Point = float;
 	using TickCount32 = std::uint32_t;
     using TickCount16 = std::uint16_t;
+
+	struct Matrix {
+		Vector3D m[3];
+	};
 
 	struct TagString {
         char string[0x20] = {};
