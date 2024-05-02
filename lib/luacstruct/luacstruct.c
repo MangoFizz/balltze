@@ -178,7 +178,7 @@ static int	 luacs_array_copy(lua_State *);
 static int	 luacs_array__next(lua_State *);
 static int	 luacs_array__pairs(lua_State *);
 static int	 luacs_array__gc(lua_State *);
-static int	 luacs_newobject0(lua_State *, void *);
+static int	 luacs_newobject1(lua_State *, void *);
 static int	 luacs_object__luacstructdump(struct lua_State *);
 struct luacobj_compat;
 static void	 luacs_object_compat(lua_State *, int, struct luacobj_compat *);
@@ -716,7 +716,7 @@ luacs_array__index(lua_State *L)
 			if (lua_isnil(L, -1)) {
 				lua_pop(L, 1);
 				luacs_getref(L, obj->typref);
-				luacs_newobject0(L, ptr);
+				luacs_newobject1(L, ptr);
 				lua_pushvalue(L, -1);
 				lua_rawseti(L, -4, idx);
 				lua_remove(L, -2);
@@ -1008,7 +1008,7 @@ luacs_array__gc(lua_State *L)
 
 /* object */
 int
-luacs_newobject(lua_State *L, const char *tname, void *ptr)
+luacs_newobject0(lua_State *L, const char *tname, void *ptr)
 {
 	int			 ret;
 	char			 metaname[METANAMELEN];
@@ -1016,14 +1016,14 @@ luacs_newobject(lua_State *L, const char *tname, void *ptr)
 	snprintf(metaname, sizeof(metaname), "%s%s", METANAME_LUACTYPE, tname);
 	lua_getfield(L, LUA_REGISTRYINDEX, metaname);
 
-	ret = luacs_newobject0(L, ptr);
+	ret = luacs_newobject1(L, ptr);
 	lua_remove(L, -2);
 
 	return (ret);
 }
 
 int
-luacs_newobject0(lua_State *L, void *ptr)
+luacs_newobject1(lua_State *L, void *ptr)
 {
 	struct luacobject	*obj;
 	struct luacstruct	*cs;
@@ -1252,7 +1252,7 @@ luacs_object__get(lua_State *L, struct luacobject *obj,
 			}
 			if (cache == NULL) {
 				luacs_getref(L, field->regeon.typref);
-				luacs_newobject0(L, ptr);
+				luacs_newobject1(L, ptr);
 				lua_pushvalue(L, -1);
 				lua_setfield(L, -4, field->fieldname);
 				lua_remove(L, -2);
@@ -1563,6 +1563,9 @@ luacs_pushregeon(lua_State *L, struct luacobject *obj,
 	case LUACS_TSTRPTR:
 		lua_pushstring(L, *(const char **)(obj->ptr + regeon->off));
 		break;
+	case LUACS_FLOAT:
+		lua_pushnumber(L, *(float *)(obj->ptr + regeon->off));
+		break;
 	case LUACS_TENUM:
 	    {
 		intmax_t		 value;
@@ -1667,6 +1670,9 @@ luacs_pullregeon(lua_State *L, struct luacobject *obj,
 		break;
 	case LUACS_TBOOL:
 		*(bool *)(obj->ptr + regeon->off) = lua_toboolean(L, absidx);
+		break;
+	case LUACS_FLOAT:
+		*(float *)(obj->ptr + regeon->off) = lua_tonumber(L, absidx);
 		break;
 	case LUACS_TENUM:
 	    {
