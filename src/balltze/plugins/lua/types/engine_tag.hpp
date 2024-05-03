@@ -12,6 +12,7 @@ namespace Balltze::Plugins::Lua {
     using EngineTag = Engine::Tag;
     using EngineTagDependency = Engine::TagDependency;
     using EngineTagDataOffset = Engine::TagDataOffset;
+    using EngineTagString = Engine::TagString;
 
     void lua_define_engine_tag_class_enum(lua_State *state) noexcept;
 
@@ -23,6 +24,9 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_tag_data_offset_struct(lua_State *state) noexcept;
     void lua_push_engine_tag_data_offset(lua_State *state, Engine::TagDataOffset *tag_data_offset) noexcept;
+
+    void lua_define_engine_tag_string_struct(lua_State *state) noexcept;
+    void lua_push_engine_tag_string(lua_State *state, Engine::TagString *tag_string) noexcept;
 }
 
 #endif 

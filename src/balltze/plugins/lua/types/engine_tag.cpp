@@ -133,4 +133,14 @@ namespace Balltze::Plugins::Lua {
         luacs_extref_field(state, EngineTagDataOffset, pointer, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
+
+    void lua_define_engine_tag_string_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineTagString);
+        luacs_string_field(state, EngineTagString, string, 0);
+        lua_pop(state, 1);
+    }
+
+    void lua_push_engine_tag_string(lua_State *state, Engine::TagString *tag_string) noexcept {
+        luacs_newobject(state, EngineTagString, tag_string);
+    }
 }
