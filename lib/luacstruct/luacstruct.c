@@ -85,12 +85,15 @@
 #define __unused       __attribute__((__unused__))
 #endif
 
+SPLAY_HEAD(luacstruct_fields, luacstruct_field);
+TAILQ_HEAD(luacstruct_fields_sorted,luacstruct_field);
+
 struct luacstruct {
 	const char			*typename;
 	char				 metaname[METANAMELEN];
-	SPLAY_HEAD(luacstruct_fields, luacstruct_field)
-					 fields;
-	TAILQ_HEAD(,luacstruct_field)	 sorted;
+	
+	struct luacstruct_fields fields;
+	struct luacstruct_fields_sorted sorted;
 };
 
 struct luacarraytype {
@@ -134,14 +137,15 @@ struct luacobject {
 	unsigned			 flags;
 };
 
+SPLAY_HEAD(luacenum_labels, luacenum_value);
+SPLAY_HEAD(luacenum_values, luacenum_value);
+
 struct luacenum {
 	const char			*enumname;
 	char				 metaname[METANAMELEN];
 	size_t				 valwidth;
-	SPLAY_HEAD(luacenum_labels, luacenum_value)
-					 labels;
-	SPLAY_HEAD(luacenum_values, luacenum_value)
-					 values;
+	struct luacenum_labels labels;
+	struct luacenum_values values;
 	int				 func_get;
 	int				 func_memberof;
 };

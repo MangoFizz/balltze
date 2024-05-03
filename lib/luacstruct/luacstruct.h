@@ -89,12 +89,10 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 
 #define luacs_newstruct(_L, _typename)				\
 	do {							\
-		{ STRUCT _typename; /* check valid for type */}	\
 		luacs_newstruct0((_L), #_typename, NULL);	\
 	} while(0/*CONSTCOND*/)
 #define luacs_newenum(_L, _enumname)				\
 	do {							\
-		{ ENUM _enumname; /* check valid for ENUM */}	\
 		luacs_newenum0((_L), #_enumname,		\
 		    sizeof(ENUM _enumname));			\
 	} while(0/*CONSTCOND*/)
@@ -321,7 +319,6 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 	} while (0/*CONSTCOND*/)
 #define luacs_newobject(_L, _typename, _ptr)				\
 	do {							\
-		{ STRUCT _typename; /* check valid for type */}	\
 		luacs_newobject0((_L), #_typename, _ptr);	\
 	} while(0/*CONSTCOND*/)
 #define luacs_ctype_exists(_L, _typename)			\
