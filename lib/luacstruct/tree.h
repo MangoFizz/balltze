@@ -55,6 +55,38 @@ struct {                        											\
 #define SPLAY_ROOT(head)			(head)->sph_root
 #define SPLAY_EMPTY(head)			(SPLAY_ROOT(head) == NULL)
 
+/* SPLAY_ROTATE_{LEFT,RIGHT} expect that tmp hold SPLAY_{RIGHT,LEFT} */
+#define SPLAY_ROTATE_RIGHT(head, tmp, field) do {							\
+	SPLAY_LEFT((head)->sph_root, field) = SPLAY_RIGHT(tmp, field);			\
+	SPLAY_RIGHT(tmp, field) = (head)->sph_root;								\
+	(head)->sph_root = tmp;													\
+} while (0)
+
+#define SPLAY_ROTATE_LEFT(head, tmp, field) do {							\
+	SPLAY_RIGHT((head)->sph_root, field) = SPLAY_LEFT(tmp, field);			\
+	SPLAY_LEFT(tmp, field) = (head)->sph_root;								\
+	(head)->sph_root = tmp;													\
+} while (0)
+
+#define SPLAY_LINKLEFT(head, tmp, field) do {								\
+	SPLAY_LEFT(tmp, field) = (head)->sph_root;								\
+	tmp = (head)->sph_root;													\
+	(head)->sph_root = SPLAY_LEFT((head)->sph_root, field);					\
+} while (0)
+
+#define SPLAY_LINKRIGHT(head, tmp, field) do {								\
+	SPLAY_RIGHT(tmp, field) = (head)->sph_root;								\
+	tmp = (head)->sph_root;													\
+	(head)->sph_root = SPLAY_RIGHT((head)->sph_root, field);				\
+} while (0)
+
+#define SPLAY_ASSEMBLE(head, node, left, right, field) do {					\
+	SPLAY_RIGHT(left, field) = SPLAY_LEFT((head)->sph_root, field);			\
+	SPLAY_LEFT(right, field) = SPLAY_RIGHT((head)->sph_root, field);		\
+	SPLAY_LEFT((head)->sph_root, field) = SPLAY_RIGHT(node, field);			\
+	SPLAY_RIGHT((head)->sph_root, field) = SPLAY_LEFT(node, field);			\
+} while (0)
+
 #define SPLAY_PROTOTYPE(name, type, field, cmp)				        		\
 void name##_SPLAY(struct name *, struct type *);			        		\
 void name##_SPLAY_MINMAX(struct name *, int);				        		\
@@ -130,7 +162,96 @@ name##_SPLAY_INSERT(struct name *head, struct type *elm)					\
 		    return ((head)->sph_root);										\
     }																		\
     (head)->sph_root = (elm);												\
-    return (NULL);															\
-}	
+return (NULL);																\
+}																			\
+																			\
+struct type *																\
+name##_SPLAY_REMOVE(struct name *head, struct type *elm)					\
+{																			\
+	struct type *__tmp;														\
+	if (SPLAY_EMPTY(head))													\
+		return (NULL);														\
+	name##_SPLAY(head, elm);												\
+	if ((cmp)(elm, (head)->sph_root) == 0) {								\
+		if (SPLAY_LEFT((head)->sph_root, field) == NULL) {					\
+			(head)->sph_root = SPLAY_RIGHT((head)->sph_root, field);		\
+		} else {															\
+			__tmp = SPLAY_RIGHT((head)->sph_root, field);					\
+			(head)->sph_root = SPLAY_LEFT((head)->sph_root, field);			\
+			name##_SPLAY(head, elm);										\
+			SPLAY_RIGHT((head)->sph_root, field) = __tmp;					\
+		}																	\
+		return (elm);														\
+	}																		\
+	return (NULL);															\
+}																			\
+																			\
+void																		\
+name##_SPLAY(struct name *head, struct type *elm)							\
+{																			\
+	struct type __node, *__left, *__right, *__tmp;							\
+	int __comp;																\
+																			\
+	SPLAY_LEFT(&__node, field) = SPLAY_RIGHT(&__node, field) = NULL;		\
+	__left = __right = &__node;												\
+																			\
+	while ((__comp = (cmp)(elm, (head)->sph_root))) {						\
+		if (__comp < 0) {													\
+			__tmp = SPLAY_LEFT((head)->sph_root, field);					\
+			if (__tmp == NULL)												\
+				break;														\
+			if ((cmp)(elm, __tmp) < 0){										\
+				SPLAY_ROTATE_RIGHT(head, __tmp, field);						\
+				if (SPLAY_LEFT((head)->sph_root, field) == NULL)			\
+					break;													\
+			}																\
+			SPLAY_LINKLEFT(head, __right, field);							\
+		} else if (__comp > 0) {											\
+			__tmp = SPLAY_RIGHT((head)->sph_root, field);					\
+			if (__tmp == NULL)												\
+				break;														\
+			if ((cmp)(elm, __tmp) > 0){										\
+				SPLAY_ROTATE_LEFT(head, __tmp, field);						\
+				if (SPLAY_RIGHT((head)->sph_root, field) == NULL)			\
+					break;													\
+			}																\
+			SPLAY_LINKRIGHT(head, __left, field);							\
+		}																	\
+	}																		\
+	SPLAY_ASSEMBLE(head, &__node, __left, __right, field);					\
+}																			\
+																			\
+void name##_SPLAY_MINMAX(struct name *head, int __comp) 					\
+{																			\
+	struct type __node, *__left, *__right, *__tmp;							\
+																			\
+	SPLAY_LEFT(&__node, field) = SPLAY_RIGHT(&__node, field) = NULL;		\
+	__left = __right = &__node;												\
+																			\
+	while (1) {																\
+		if (__comp < 0) {													\
+			__tmp = SPLAY_LEFT((head)->sph_root, field);					\
+			if (__tmp == NULL)												\
+				break;														\
+			if (__comp < 0){												\
+				SPLAY_ROTATE_RIGHT(head, __tmp, field);						\
+				if (SPLAY_LEFT((head)->sph_root, field) == NULL)			\
+					break;													\
+			}																\
+			SPLAY_LINKLEFT(head, __right, field);							\
+		} else if (__comp > 0) {											\
+			__tmp = SPLAY_RIGHT((head)->sph_root, field);					\
+			if (__tmp == NULL)												\
+				break;														\
+			if (__comp > 0) {												\
+				SPLAY_ROTATE_LEFT(head, __tmp, field);						\
+				if (SPLAY_RIGHT((head)->sph_root, field) == NULL)			\
+					break;													\
+			}																\
+			SPLAY_LINKRIGHT(head, __left, field);							\
+		}																	\
+	}																		\
+	SPLAY_ASSEMBLE(head, &__node, __left, __right, field);					\
+}
 
 #endif
