@@ -246,6 +246,16 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    offsetof(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
+#define luacs_float_array_field(_L, _type, _field, _flags)	\
+	do {							\
+		static_assert(sizeof(float) ==			\
+		    sizeof(((STRUCT _type *)0)->_field[0]),	\
+		    "`"#_field"' is not a float value");		\
+		luacs_declare_field((_L), LUACS_FLOAT, NULL,	\
+		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
+		    offsetof(STRUCT _type, _field),		\
+		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+	} while (0/*CONSTCOND*/)
 #define luacs_enum_array_field(_L, _type, _etype, _field, _flags)\
 	do {							\
 		static_assert(validintwidth(			\
