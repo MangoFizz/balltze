@@ -22,7 +22,10 @@ namespace Balltze::Plugins::Lua {
     using EngineQuaternion = Engine::Quaternion;
     using EnginePlane3D = Engine::Plane3D;
     using EnginePlane2D = Engine::Plane2D;
-    using EngineMatrix = Engine::Matrix;
+
+    struct EngineMatrix {
+		Engine::Vector3D m[3];
+	};
 
     /**
      * @todo Fix structure snake_case naming in function names.
@@ -74,7 +77,7 @@ namespace Balltze::Plugins::Lua {
     void lua_push_engine_plane2_d(lua_State *state, Engine::Plane2D *plane) noexcept;
 
     void lua_define_engine_matrix_struct(lua_State *state) noexcept;
-    void lua_push_engine_matrix(lua_State *state, Engine::Matrix *matrix) noexcept;
+    void lua_push_engine_matrix(lua_State *state, EngineMatrix *matrix) noexcept;
 }
 
 #endif 

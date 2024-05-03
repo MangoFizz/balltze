@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <luacstruct/luacstruct.h>
-#include "../helpers/table.hpp"
-#include "engine_data_types.hpp"
 #include "engine_tag.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -99,12 +97,12 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_tag_base_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineTag);
-        luacs_enum_field(state, EngineTag, EngineTagClass, primary_class, NULL);
-        luacs_enum_field(state, EngineTag, EngineTagClass, secondary_class, NULL);
-        luacs_enum_field(state, EngineTag, EngineTagClass, tertiary_class, NULL);
+        luacs_enum_field(state, EngineTag, EngineTagClass, primary_class, 0);
+        luacs_enum_field(state, EngineTag, EngineTagClass, secondary_class, 0);
+        luacs_enum_field(state, EngineTag, EngineTagClass, tertiary_class, 0);
         luacs_objref_field(state, EngineTag, EngineResourceHandle, handle, LUACS_FREADONLY);
         luacs_strptr_field(state, EngineTag, path, LUACS_FREADONLY);
-        luacs_pseudo_field(state, EngineTag, dataAddress, NULL);
+        luacs_pseudo_field(state, EngineTag, dataAddress, 0);
         lua_pop(state, 1);
     }
 
@@ -112,5 +110,27 @@ namespace Balltze::Plugins::Lua {
         luacs_newobject(state, EngineTag, tag);
         lua_pushinteger(state, reinterpret_cast<std::uintptr_t>(tag->data));
         lua_setfield(state, -2, "dataAddress");
+    }
+
+    void lua_define_engine_tag_dependency_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineTagDependency);
+        luacs_enum_field(state, EngineTagDependency, EngineTagClass, tag_class, 0);
+        luacs_strptr_field(state, EngineTagDependency, path, LUACS_FREADONLY);
+        luacs_unsigned_field(state, EngineTagDependency, path_size, LUACS_FREADONLY);
+        luacs_nested_field(state, EngineTagDependency, EngineResourceHandle, tag_handle, 0);
+        lua_pop(state, 1);
+    }
+
+    void lua_push_engine_tag_dependency(lua_State *state, Engine::TagDependency *tag_dependency) noexcept {
+        luacs_newobject(state, EngineTagDependency, tag_dependency);
+    }
+
+    void lua_define_engine_tag_data_offset_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineTagDataOffset);
+        luacs_unsigned_field(state, EngineTagDataOffset, size, LUACS_FREADONLY);
+        luacs_unsigned_field(state, EngineTagDataOffset, external, LUACS_FREADONLY);
+        luacs_unsigned_field(state, EngineTagDataOffset, file_offset, LUACS_FREADONLY);
+        luacs_extref_field(state, EngineTagDataOffset, pointer, LUACS_FREADONLY);
+        lua_pop(state, 1);
     }
 }

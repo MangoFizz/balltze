@@ -5,7 +5,7 @@
 
 #include <string>
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include "engine_types.hpp"
 
 namespace Balltze::Plugins::Lua {
     using EngineTagClass = Engine::TagClassInt;

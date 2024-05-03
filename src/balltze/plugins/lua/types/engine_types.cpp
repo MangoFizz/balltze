@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <luacstruct/luacstruct.h>
-#include "../helpers/table.hpp"
 #include "engine_types.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -9,9 +8,9 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_resource_handle_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineResourceHandle);
-        luacs_unsigned_field(state, EngineResourceHandle, handle, NULL);
-        luacs_unsigned_field(state, EngineResourceHandle, id, NULL);
-        luacs_unsigned_field(state, EngineResourceHandle, index, NULL);
+        luacs_unsigned_field(state, EngineResourceHandle, handle, 0);
+        luacs_unsigned_field(state, EngineResourceHandle, id, 0);
+        luacs_unsigned_field(state, EngineResourceHandle, index, 0);
         lua_pop(state, 1);
     }
 
@@ -21,10 +20,10 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_color_a_r_g_b_int_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineColorARGBInt);
-        luacs_unsigned_field(state, EngineColorARGBInt, alpha, NULL);
-        luacs_unsigned_field(state, EngineColorARGBInt, red, NULL);
-        luacs_unsigned_field(state, EngineColorARGBInt, green, NULL);
-        luacs_unsigned_field(state, EngineColorARGBInt, blue, NULL);
+        luacs_unsigned_field(state, EngineColorARGBInt, alpha, 0);
+        luacs_unsigned_field(state, EngineColorARGBInt, red, 0);
+        luacs_unsigned_field(state, EngineColorARGBInt, green, 0);
+        luacs_unsigned_field(state, EngineColorARGBInt, blue, 0);
         lua_pop(state, 1);
     }
 
@@ -34,10 +33,10 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_color_a_r_g_b_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineColorARGB);
-        luacs_float_field(state, EngineColorARGB, alpha, NULL);
-        luacs_float_field(state, EngineColorARGB, red, NULL);
-        luacs_float_field(state, EngineColorARGB, green, NULL);
-        luacs_float_field(state, EngineColorARGB, blue, NULL);
+        luacs_float_field(state, EngineColorARGB, alpha, 0);
+        luacs_float_field(state, EngineColorARGB, red, 0);
+        luacs_float_field(state, EngineColorARGB, green, 0);
+        luacs_float_field(state, EngineColorARGB, blue, 0);
         lua_pop(state, 1);
     }
 
@@ -47,8 +46,8 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_point2_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EnginePoint2D);
-        luacs_float_field(state, EnginePoint2D, x, NULL);
-        luacs_float_field(state, EnginePoint2D, y, NULL);
+        luacs_float_field(state, EnginePoint2D, x, 0);
+        luacs_float_field(state, EnginePoint2D, y, 0);
         lua_pop(state, 1);
     }
 
@@ -58,8 +57,8 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_point2_d_int_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EnginePoint2DInt);
-        luacs_int_field(state, EnginePoint2DInt, x, NULL);
-        luacs_int_field(state, EnginePoint2DInt, y, NULL);
+        luacs_int_field(state, EnginePoint2DInt, x, 0);
+        luacs_int_field(state, EnginePoint2DInt, y, 0);
         lua_pop(state, 1);
     }
 
@@ -69,9 +68,9 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_point3_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EnginePoint3D);
-        luacs_float_field(state, EnginePoint3D, x, NULL);
-        luacs_float_field(state, EnginePoint3D, y, NULL);
-        luacs_float_field(state, EnginePoint3D, z, NULL);
+        luacs_float_field(state, EnginePoint3D, x, 0);
+        luacs_float_field(state, EnginePoint3D, y, 0);
+        luacs_float_field(state, EnginePoint3D, z, 0);
         lua_pop(state, 1);
     }
 
@@ -81,10 +80,10 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_rectangle2_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineRectangle2D);
-        luacs_int_field(state, EngineRectangle2D, left, NULL);
-        luacs_int_field(state, EngineRectangle2D, top, NULL);
-        luacs_int_field(state, EngineRectangle2D, right, NULL);
-        luacs_int_field(state, EngineRectangle2D, bottom, NULL);
+        luacs_int_field(state, EngineRectangle2D, left, 0);
+        luacs_int_field(state, EngineRectangle2D, top, 0);
+        luacs_int_field(state, EngineRectangle2D, right, 0);
+        luacs_int_field(state, EngineRectangle2D, bottom, 0);
         lua_pop(state, 1);
     }
 
@@ -94,8 +93,8 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_euler2_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineEuler2D);
-        luacs_float_field(state, EngineEuler2D, yaw, NULL);
-        luacs_float_field(state, EngineEuler2D, pitch, NULL);
+        luacs_float_field(state, EngineEuler2D, yaw, 0);
+        luacs_float_field(state, EngineEuler2D, pitch, 0);
         lua_pop(state, 1);
     }
 
@@ -105,9 +104,9 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_euler3_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineEuler3D);
-        luacs_float_field(state, EngineEuler3D, yaw, NULL);
-        luacs_float_field(state, EngineEuler3D, pitch, NULL);
-        luacs_float_field(state, EngineEuler3D, roll, NULL);
+        luacs_float_field(state, EngineEuler3D, yaw, 0);
+        luacs_float_field(state, EngineEuler3D, pitch, 0);
+        luacs_float_field(state, EngineEuler3D, roll, 0);
         lua_pop(state, 1);
     }
 
@@ -117,8 +116,8 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_vector2_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineVector2D);
-        luacs_float_field(state, EngineVector2D, i, NULL);
-        luacs_float_field(state, EngineVector2D, j, NULL);
+        luacs_float_field(state, EngineVector2D, i, 0);
+        luacs_float_field(state, EngineVector2D, j, 0);
         lua_pop(state, 1);
     }
 
@@ -128,9 +127,9 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_vector3_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineVector3D);
-        luacs_float_field(state, EngineVector3D, i, NULL);
-        luacs_float_field(state, EngineVector3D, j, NULL);
-        luacs_float_field(state, EngineVector3D, k, NULL);
+        luacs_float_field(state, EngineVector3D, i, 0);
+        luacs_float_field(state, EngineVector3D, j, 0);
+        luacs_float_field(state, EngineVector3D, k, 0);
         lua_pop(state, 1);
     }
 
@@ -140,10 +139,10 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_quaternion_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineQuaternion);
-        luacs_float_field(state, EngineQuaternion, i, NULL);
-        luacs_float_field(state, EngineQuaternion, j, NULL);
-        luacs_float_field(state, EngineQuaternion, k, NULL);
-        luacs_float_field(state, EngineQuaternion, w, NULL);
+        luacs_float_field(state, EngineQuaternion, i, 0);
+        luacs_float_field(state, EngineQuaternion, j, 0);
+        luacs_float_field(state, EngineQuaternion, k, 0);
+        luacs_float_field(state, EngineQuaternion, w, 0);
         lua_pop(state, 1);
     }
 
@@ -153,8 +152,8 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_plane3_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EnginePlane3D);
-        luacs_nested_field(state, EnginePlane3D, EngineVector3D, vector, NULL);
-        luacs_float_field(state, EnginePlane3D, w, NULL);
+        luacs_nested_field(state, EnginePlane3D, EngineVector3D, vector, 0);
+        luacs_float_field(state, EnginePlane3D, w, 0);
         lua_pop(state, 1);
     }
 
@@ -164,8 +163,8 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_plane2_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EnginePlane2D);
-        luacs_nested_field(state, EnginePlane2D, EngineVector2D, vector, NULL);
-        luacs_float_field(state, EnginePlane2D, w, NULL);
+        luacs_nested_field(state, EnginePlane2D, EngineVector2D, vector, 0);
+        luacs_float_field(state, EnginePlane2D, w, 0);
         lua_pop(state, 1);
     }
 
@@ -175,7 +174,11 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_matrix_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineMatrix);
-        luacs_nested_array_field(state, EngineMatrix, EngineVector3D, m, NULL);
+        luacs_nested_array_field(state, EngineMatrix, EngineVector3D, m, 0);
         lua_pop(state, 1);
+    }
+
+    void lua_push_engine_matrix(lua_State *state, EngineMatrix *matrix) noexcept {
+        luacs_newobject(state, EngineMatrix, matrix);
     }
 }

@@ -20,7 +20,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#ifndef __cplusplus
 #include <lua.h>
+#else
+#include <lua.hpp>
+#endif
 
 enum luacstruct_type {
 	LUACS_TINT8,

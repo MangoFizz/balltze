@@ -152,6 +152,8 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/metatables/engine_gamestate_unit_object.cpp
     src/balltze/plugins/lua/metatables/engine_rasterizer.cpp
     src/balltze/plugins/lua/metatables/engine_user_interface.cpp
+    src/balltze/plugins/lua/types/engine_types.cpp
+    src/balltze/plugins/lua/types/engine_tag.cpp
     src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
@@ -168,7 +170,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze lua53 fmt invader luacstruct d3d9 gdiplus)
+target_link_libraries(balltze lua53 fmt invader luacstruct d3d9 gdiplus ws2_32)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
