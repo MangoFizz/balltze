@@ -87,22 +87,11 @@ for enumName, _ in pairs(enums) do
     add("using Engine" .. camelCaseName .. " = Engine::TagDefinitions::" .. camelCaseName .. "; \n");
 end
 
-add("\n")
-
-for structName, _ in pairs(structs) do
-    local camelCaseName = definitionParser.snakeCaseToCamelCase(structName)
-    indent(1)
-    add("void lua_push_engine_" .. structName .. "(lua_State *state, Engine::TagDefinitions::" .. camelCaseName .. " *data) noexcept; \n")
-end
-
-for bitfieldName, _ in pairs(bitfields) do
-    local camelCaseName = definitionParser.snakeCaseToCamelCase(bitfieldName)
-    indent(1)
-    add("void lua_push_engine_" .. bitfieldName .. "(lua_State *state, Engine::TagDefinitions::" .. camelCaseName .. " *data) noexcept; \n")
-end
-
 add([[
+
+    void lua_define_engine_tag_data_structs(lua_State *state) noexcept;
 }
+
 
 #endif
 
@@ -117,13 +106,14 @@ add([[
 // This file is auto-generated. DO NOT EDIT!
 
 #include "engine_tag_data.hpp"
+#include "../../../logger.hpp"
 
 namespace Balltze::Plugins::Lua {
     #define lua_define_tag_block(state, parentType, type) \
-        using Engine##parentType##TagBlock##type = Engine::TagBlock<Engine::TagDefinitions::type>; \
-        luacs_newstruct(state, Engine##parentType##TagBlock##type); \
-        luacs_unsigned_field(state, Engine##parentType##TagBlock##type, count, LUACS_FREADONLY); \
-        luacs_declare_field(state, LUACS_TOBJREF, #type, "elements", sizeof(((Engine##parentType##TagBlock##type *)0)->elements[0]), offsetof(Engine##parentType##TagBlock##type, elements), 65535, LUACS_FREADONLY); \
+        using parentType##TagBlock##type = Engine::TagBlock<Engine::TagDefinitions::type>; \
+        luacs_newstruct(state, parentType##TagBlock##type); \
+        luacs_unsigned_field(state, parentType##TagBlock##type, count, LUACS_FREADONLY); \
+        luacs_declare_field(state, LUACS_TOBJREF, "Engine" #type, "elements", sizeof(((parentType##TagBlock##type *)0)->elements[0]), offsetof(parentType##TagBlock##type, elements), 65535, LUACS_FREADONLY); \
         lua_pop(state, 1);
 
     #define lua_bitfield_struct_method(state, bitfieldType, field) \
@@ -154,17 +144,35 @@ for structName, struct in pairs(structs) do
     local sneakCaseName = definitionParser.camelCaseToSnakeCase(structName)
     local camelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
     local typename = "Engine" .. camelCaseName
-    local parentTypename = "NULL"
+
+    indent(1)
+    add("inline void lua_create_engine_" .. structName .. "_struct(lua_State *state) noexcept { \n")
+    indent(2)
     if(struct.inherits) then
         local sneakCaseParentName = definitionParser.camelCaseToSnakeCase(struct.inherits)
         local camelCaseParentName = definitionParser.snakeCaseToCamelCase(sneakCaseParentName)
-        parentTypename = "Engine" .. camelCaseParentName
+        add("luacs_newderivedstruct(state, " .. typename .. ", Engine" .. camelCaseParentName .. "); \n")
+    else 
+        add("luacs_newstruct(state, " .. typename .. "); \n")
     end
+    indent(2)
+    add("lua_pop(state, 1); \n")
+    indent(1)
+    add("} \n\n")
 
     indent(1)
     add("static void lua_define_engine_" .. structName .. "_struct(lua_State *state) noexcept { \n")
     indent(2)
-    add("luacs_newderivedstruct(state, " .. typename .. ", " .. parentTypename .. "); \n")
+    add("logger.debug(\"Defining struct " .. structName .. "\"); \n")
+    indent(2)
+    local parentTypename = "NULL"
+    if(struct.inherits) then
+        local sneakCaseParentName = definitionParser.camelCaseToSnakeCase(struct.inherits)
+        local camelCaseParentName = definitionParser.snakeCaseToCamelCase(sneakCaseParentName)
+        add("luacs_newderivedstruct(state, " .. typename .. ", Engine" .. camelCaseParentName .. "); \n")
+    else 
+        add("luacs_newstruct(state, " .. typename .. "); \n")
+    end
     for _, field in ipairs(struct.fields) do
         local sneakCaseFieldType = definitionParser.camelCaseToSnakeCase(field.type)
         local camelCaseFieldType = definitionParser.snakeCaseToCamelCase(sneakCaseFieldType)
@@ -218,7 +226,7 @@ for structName, struct in pairs(structs) do
                     add("luacs_nested_field(state, " .. typename .. ", Engine" .. camelCaseFieldType .. ", " .. field.name .. ", 0); \n");
                 end
             elseif(definitionParser.commonEnums[sneakCaseFieldType] ~= nil or enums[sneakCaseFieldType]) then
-                add("luacs_enum_field(state, " .. typename .. ", Engine" .. camelCaseFieldType .. "TagData, " .. field.name .. ", 0); \n");
+                add("luacs_enum_field(state, " .. typename .. ", Engine" .. camelCaseFieldType .. ", " .. field.name .. ", 0); \n");
             elseif(definitionParser.commonBitfields[sneakCaseFieldType] ~= nil or bitfields[sneakCaseFieldType]) then
                 add("luacs_nested_field(state, " .. typename .. ", Engine" .. camelCaseFieldType .. ", " .. field.name .. ", 0); \n");
             else
@@ -259,13 +267,6 @@ for structName, struct in pairs(structs) do
     indent(2)
     add("lua_pop(state, 1); \n")
     indent(1)
-    add("} \n\n");
-
-    indent(1)
-    add("void lua_push_engine_" .. structName .. "(lua_State *state, Engine::TagDefinitions::" .. camelCaseName .. " *data) noexcept { \n")
-    indent(2)
-    add("luacs_newobject(state, Engine" .. camelCaseName .. ", data); \n")
-    indent(1)
     add("} \n\n")
 end
 
@@ -285,6 +286,15 @@ for bitfieldName, bitfield in pairs(bitfields) do
     end
 
     indent(1)
+    add("inline void lua_create_engine_" .. bitfieldName .. "_struct(lua_State *state) noexcept { \n")
+    indent(2)
+    add("luacs_newstruct(state, " .. typename .. "); \n")
+    indent(2)
+    add("lua_pop(state, 1); \n")
+    indent(1)
+    add("} \n\n")
+
+    indent(1)
     add("static void lua_define_engine_" .. bitfieldName .. "_struct(lua_State *state) noexcept { \n")
     indent(2)
     add("luacs_newstruct(state, " .. typename .. "); \n")
@@ -301,19 +311,23 @@ for bitfieldName, bitfield in pairs(bitfields) do
     add("lua_pop(state, 1); \n")
     indent(1)
     add("} \n\n");
-    indent(1)
-    add("void lua_push_engine_" .. bitfieldName .. "(lua_State *state, Engine::TagDefinitions::" .. camelCaseName .. " *data) noexcept { \n")
-    indent(2)
-    add("luacs_newobject(state, Engine" .. camelCaseName .. ", data); \n")
-    indent(1)
-    add("} \n\n")
 end
 
 for enumName, enum in pairs(enums) do
     local sneakCaseName = definitionParser.camelCaseToSnakeCase(enumName)
     local camelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
+
     indent(1)
-    add("void lua_define_engine_" .. enumName .. "_enum(lua_State *state) noexcept { \n")
+    add("inline void lua_create_engine_" .. enumName .. "_enum(lua_State *state) noexcept { \n")
+    indent(2)
+    add("luacs_newenum(state, Engine" .. camelCaseName .. "); \n")
+    indent(2)
+    add("lua_pop(state, 1); \n")
+    indent(1)
+    add("} \n\n")
+
+    indent(1)
+    add("static void lua_define_engine_" .. enumName .. "_enum(lua_State *state) noexcept { \n")
     indent(2)
     add("luacs_newenum(state, Engine" .. camelCaseName .. "); \n")
     for _, value in ipairs(enum.values) do
@@ -327,7 +341,60 @@ for enumName, enum in pairs(enums) do
     add("} \n\n")
 end
 
+indent(1)
+add("void lua_define_engine_tag_data_structs(lua_State *state) noexcept { \n")
+
+for bitfieldName, _ in pairs(bitfields) do
+    indent(2)
+    add("lua_create_engine_" .. bitfieldName .. "_struct(state); \n")
+end
+
+for enumName, _ in pairs(enums) do
+    indent(2)
+    add("lua_create_engine_" .. enumName .. "_enum(state); \n")
+end
+
+local definedStructs = {}
+local undefinedStructFound = true
+while undefinedStructFound do
+    undefinedStructFound = false
+    for structName, struct in pairs(structs) do
+        if struct.inherits then
+            local parentStructName = definitionParser.camelCaseToSnakeCase(struct.inherits)
+            if definedStructs[parentStructName] then
+                indent(2)
+                add("lua_create_engine_" .. structName .. "_struct(state); \n")
+                definedStructs[structName] = true
+            else
+                undefinedStructFound = true
+            end
+        else
+            if not definedStructs[structName] then
+                indent(2)
+                add("lua_create_engine_" .. structName .. "_struct(state); \n")
+                definedStructs[structName] = true
+            end
+        end
+    end
+end
+
+for structName, _ in pairs(structs) do
+    indent(2)
+    add("lua_define_engine_" .. structName .. "_struct(state); \n")
+end
+
+for bitfieldName, _ in pairs(bitfields) do
+    indent(2)
+    add("lua_define_engine_" .. bitfieldName .. "_struct(state); \n")
+end
+
+for enumName, _ in pairs(enums) do
+    indent(2)
+    add("lua_define_engine_" .. enumName .. "_enum(state); \n")
+end
+
 add([[
+    }
 }
 
 ]])

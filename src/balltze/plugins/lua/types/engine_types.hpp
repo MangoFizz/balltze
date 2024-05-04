@@ -11,6 +11,7 @@ namespace Balltze::Plugins::Lua {
     using EngineResourceHandle = Engine::ResourceHandle;
     using EngineColorARGBInt = Engine::ColorARGBInt;
     using EngineColorARGB = Engine::ColorARGB;
+    using EngineColorRGB = Engine::ColorRGB;
     using EnginePoint2D = Engine::Point2D;
     using EnginePoint2DInt = Engine::Point2DInt;
     using EnginePoint3D = Engine::Point3D;
@@ -42,6 +43,9 @@ namespace Balltze::Plugins::Lua {
 
     void lua_define_engine_color_a_r_g_b_struct(lua_State *state) noexcept;
     void lua_push_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB *color) noexcept;
+
+    void lua_define_engine_color_r_g_b_struct(lua_State *state) noexcept;
+    void lua_push_engine_color_r_g_b(lua_State *state, Engine::ColorRGB *color) noexcept;
 
     void lua_define_engine_point2_d_struct(lua_State *state) noexcept;
     void lua_push_engine_point2_d(lua_State *state, Engine::Point2D *point) noexcept;

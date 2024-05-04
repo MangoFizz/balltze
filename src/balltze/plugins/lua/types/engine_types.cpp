@@ -44,6 +44,18 @@ namespace Balltze::Plugins::Lua {
         luacs_newobject(state, EngineColorARGB, color);
     }
 
+    void lua_define_engine_color_r_g_b_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineColorRGB);
+        luacs_float_field(state, EngineColorRGB, red, 0);
+        luacs_float_field(state, EngineColorRGB, green, 0);
+        luacs_float_field(state, EngineColorRGB, blue, 0);
+        lua_pop(state, 1);
+    }
+
+    void lua_push_engine_color_r_g_b(lua_State *state, Engine::ColorRGB *color) noexcept {
+        luacs_newobject(state, EngineColorRGB, color);
+    }
+
     void lua_define_engine_point2_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EnginePoint2D);
         luacs_float_field(state, EnginePoint2D, x, 0);

@@ -6,7 +6,7 @@
 namespace Balltze::Plugins::Lua {
     using namespace Engine;
 
-    void lua_define_engine_tag_class_enum(lua_State *state, int table_idx) noexcept {
+    void lua_define_engine_tag_class_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineTagClass);
         luacs_enum_declare_value(state, "ACTOR", TAG_CLASS_ACTOR);
         luacs_enum_declare_value(state, "ACTOR_VARIANT", TAG_CLASS_ACTOR_VARIANT);
@@ -92,7 +92,7 @@ namespace Balltze::Plugins::Lua {
         luacs_enum_declare_value(state, "WEAPON", TAG_CLASS_WEAPON);
         luacs_enum_declare_value(state, "WIND", TAG_CLASS_WIND);
         luacs_enum_declare_value(state, "WEAPON_HUD_INTERFACE", TAG_CLASS_WEAPON_HUD_INTERFACE);
-        lua_setfield(state, table_idx, "TAG_CLASS");
+        lua_pop(state, 1);
     }
 
     void lua_define_engine_tag_base_struct(lua_State *state) noexcept {

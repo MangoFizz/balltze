@@ -4,6 +4,7 @@
 #include <balltze/utils.hpp>
 #include "functions.hpp"
 #include "libraries.hpp"
+#include "types.hpp"
 #include "api.hpp"
 
 namespace Balltze::Plugins {
@@ -34,5 +35,7 @@ namespace Balltze::Plugins {
 
         // Set up prelaoded libraries
         lua_set_preloaded_libraries(state);
+
+        Lua::lua_define_engine_structs(state);
     }
 }
