@@ -18,6 +18,8 @@ set(TAG_FILE_DEFINITIONS_HPP_COLLECTION "${INCLUDES_PATH}/hek/tag_definitions.hp
 set(TAG_RESOLVE_DEPENDENCIES_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_resolve_dependencies.cpp")
 set(TAG_REBASE_OFFSETS_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_rebase_offsets.cpp")
 set(TAG_LUA_METATABLE_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_data_lua_metatables.cpp")
+set(TAG_LUA_TAG_DEFINITIONS_CPP "${CMAKE_SOURCE_DIR}/src/balltze/plugins/lua/types/engine_tag_data.cpp")
+set(TAG_LUA_TAG_DEFINITIONS_HPP "${CMAKE_SOURCE_DIR}/src/balltze/plugins/lua/types/engine_tag_data.hpp")
 set(TAG_COPY_DATA_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_copy_data.cpp")
 set(TAG_LUA_ANNOTATIONS "${CMAKE_SOURCE_DIR}/lua/plugins/docs/engine_tag_data.lua")
 set(TAG_DEFINITION_HPP_FILES)
@@ -40,6 +42,7 @@ set(TAG_DEFINITION_HEADERS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag
 set(TAG_REBASE_OFFSETS_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_rebase_offsets_function.lua)
 set(TAG_RESOLVE_DEPENDENCIES_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_resolve_dependencies_function.lua)
 set(TAG_LUA_METATABLE_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_data_lua_metatables.lua)
+set(TAG_LUA_TAG_DEFINITIONS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_data_lua_definitions.lua)
 set(TAG_COPY_DATA_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_copy_data_function.lua)
 set(TAG_LUA_ANNOTATIONS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_data_lua_annotations.lua)
 
@@ -76,6 +79,14 @@ add_custom_command(
 )
 
 add_custom_command(
+    OUTPUT ${TAG_LUA_TAG_DEFINITIONS_CPP} ${TAG_LUA_TAG_DEFINITIONS_HPP}
+    COMMAND ${LUA_COMMNAD} ${TAG_LUA_TAG_DEFINITIONS_GENERATOR_SCRIPT} ${TAG_LUA_TAG_DEFINITIONS_CPP} ${TAG_LUA_TAG_DEFINITIONS_HPP} ${TAG_DEFINITION_FILES}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Generating tag Lua definitions..."
+    DEPENDS ${TAG_DEFINITION_PARSER_SCRIPT} ${TAG_LUA_TAG_DEFINITIONS_GENERATOR_SCRIPT} ${TAG_DEFINITION_FILES}
+)
+
+add_custom_command(
     OUTPUT ${TAG_COPY_DATA_FUNCTION_CPP}
     COMMAND ${LUA_COMMNAD} ${TAG_COPY_DATA_FUNCTION_GENERATOR_SCRIPT} ${TAG_COPY_DATA_FUNCTION_CPP} ${TAG_DEFINITION_FILES}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -94,4 +105,4 @@ add_custom_command(
 set(TAG_DEFINITION_HPP_FILES ${TAG_DEFINITION_HPP_FILES} ${TAG_DEFINITIONS_HPP_COLLECTION} ${TAG_FILE_DEFINITIONS_HPP_COLLECTION})
 
 # Add definitions headers target, so we can add them as a dependency to Balltze
-add_custom_target(tag-definitions-headers ALL DEPENDS ${TAG_DEFINITION_HPP_FILES} ${TAG_LUA_ANNOTATIONS})
+add_custom_target(tag-definitions-headers ALL DEPENDS ${TAG_DEFINITION_HPP_FILES} ${TAG_LUA_ANNOTATIONS} ${TAG_LUA_TAG_DEFINITIONS_HPP})

@@ -92,9 +92,16 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 #define ENUM
 #endif
 
+#define OFFSET_OF(_type, _field) \
+	(int32_t)((uintptr_t)&((STRUCT _type *)0)->_field)
+
 #define luacs_newstruct(_L, _typename)				\
 	do {							\
 		luacs_newstruct0((_L), #_typename, NULL);	\
+	} while(0/*CONSTCOND*/)
+#define luacs_newderivedstruct(_L, _typename, _base)		\
+	do {							\
+		luacs_newstruct0((_L), #_typename, #_base);	\
 	} while(0/*CONSTCOND*/)
 #define luacs_newenum(_L, _enumname)				\
 	do {							\
@@ -117,7 +124,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
 		    sizeof(((STRUCT _type *)0)->_field),	\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_unsigned_field(_L, _type, _field, _flags)		\
 	do {							\
@@ -133,7 +140,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
 		    sizeof(((STRUCT _type *)0)->_field),	\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_float_field(_L, _type, _field, _flags)		\
 	do {							\
@@ -142,7 +149,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a float value");		\
 		luacs_declare_field((_L), LUACS_FLOAT, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_enum_field(_L, _type, _etype, _field, _flags)	\
 	do {							\
@@ -151,7 +158,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is an unsupported int type");	\
 		luacs_declare_field((_L), LUACS_TENUM, #_etype,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_bool_field(_L, _type, _field, _flags)		\
 	do {							\
@@ -160,19 +167,19 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a bool value");		\
 		luacs_declare_field((_L), LUACS_TBOOL, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_bytearray_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TBYTEARRAY, NULL,\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_string_field(_L, _type, _field, _flags)		\
 	do {							\
 		luacs_declare_field((_L), LUACS_TSTRING, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_strptr_field(_L, _type, _field, _flags)		\
 	do {							\
@@ -181,7 +188,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TSTRPTR, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_objref_field(_L, _type, _tname, _field, _flags)	\
 	do {							\
@@ -190,19 +197,19 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TOBJREF, #_tname,\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_nested_field(_L, _type, _tname, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TOBJENT, #_tname,\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_extref_field(_L, _type, _field, _flags)		\
 	do {							\
 		luacs_declare_field((_L), LUACS_TEXTREF, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field), 0, _flags);	\
+		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_pseudo_field(_L, _type, _field, _flags)		\
 	do {							\
@@ -226,7 +233,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
 		    sizeof(((STRUCT _type *)0)->_field[0]),	\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_unsigned_array_field(_L, _type, _field, _flags)	\
@@ -243,7 +250,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
 		    sizeof(((STRUCT _type *)0)->_field[0]),	\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_float_array_field(_L, _type, _field, _flags)	\
@@ -253,7 +260,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a float value");		\
 		luacs_declare_field((_L), LUACS_FLOAT, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_enum_array_field(_L, _type, _etype, _field, _flags)\
@@ -263,7 +270,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is an unsupported int type");	\
 		luacs_declare_field((_L), LUACS_TENUM, #_etype,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_bool_array_field(_L, _type, _field, _flags)	\
@@ -273,21 +280,21 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a bool value");		\
 		luacs_declare_field((_L), LUACS_TBOOL, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_bytearray_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TBYTEARRAY, NULL,\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_string_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TSTRING, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_strptr_array_field(_L, _type, _field, _flags)	\
@@ -297,7 +304,7 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TSTRPTR, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 
@@ -308,28 +315,28 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TOBJREF, #_tname,\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_nested_array_field(_L, _type, _tname, _field, _flags)\
 	do {							\
 		luacs_declare_field((_L), LUACS_TOBJENT, #_tname,\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_extref_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TEXTREF, NULL,	\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_array_array_field(_L, _type, _tname, _field, _flags)\
 	do {							\
 		luacs_declare_field((_L), LUACS_TARRAY, #_tname,\
 		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    offsetof(STRUCT _type, _field),		\
+		    OFFSET_OF(STRUCT _type, _field),		\
 		    _nitems(((STRUCT _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_newobject(_L, _typename, _ptr)				\

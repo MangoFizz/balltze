@@ -7,7 +7,7 @@ namespace Balltze::Plugins::Lua {
     using namespace Engine;
 
     void lua_define_engine_tag_class_enum(lua_State *state, int table_idx) noexcept {
-        luacs_newenum(state, TagClassInt);
+        luacs_newenum(state, EngineTagClass);
         luacs_enum_declare_value(state, "ACTOR", TAG_CLASS_ACTOR);
         luacs_enum_declare_value(state, "ACTOR_VARIANT", TAG_CLASS_ACTOR_VARIANT);
         luacs_enum_declare_value(state, "ANTENNA", TAG_CLASS_ANTENNA);
