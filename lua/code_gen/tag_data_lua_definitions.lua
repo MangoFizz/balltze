@@ -104,7 +104,6 @@ add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
 
-#include "../../../logger.hpp"
 #include "../helpers/luacstruct.hpp"
 #include "engine_tag_data.hpp"
 
@@ -162,8 +161,6 @@ for structName, struct in pairs(structs) do
 
     indent(1)
     add("static void lua_define_engine_" .. structName .. "_struct(lua_State *state) noexcept { \n")
-    indent(2)
-    add("logger.debug(\"Defining struct " .. structName .. "\"); \n")
     indent(2)
     local parentTypename = "NULL"
     if(struct.inherits) then
