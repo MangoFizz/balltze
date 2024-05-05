@@ -250,6 +250,7 @@ luacs_newstruct0(lua_State *L, const char *tname, const char *supertname)
 			return (0);	/* not reached */
 		}
 		supercs = luacs_checkstruct(L, -1);
+		lua_pop(L, 1);
 	}
 
 	snprintf(metaname, sizeof(metaname), "%s%s", METANAME_LUACTYPE, tname);
