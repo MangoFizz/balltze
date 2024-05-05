@@ -11,7 +11,6 @@
 
 namespace Balltze::Plugins::Lua {
     inline void lua_define_engine_structs(lua_State *state) noexcept {
-        auto time = std::chrono::steady_clock::now();
         lua_define_engine_resource_handle_struct(state);
         lua_define_engine_tag_class_enum(state);
         lua_define_engine_tag_base_struct(state);
@@ -34,9 +33,6 @@ namespace Balltze::Plugins::Lua {
         lua_define_engine_plane2_d_struct(state);
         lua_define_engine_matrix_struct(state);
         lua_define_engine_tag_data_structs(state);
-        auto now = std::chrono::steady_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - time);
-        logger.debug("Defined Lua engine structs in {}ms", duration.count());
     }
 }
 
