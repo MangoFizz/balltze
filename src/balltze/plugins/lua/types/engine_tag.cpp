@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <luacstruct/luacstruct.h>
+#include "../helpers/luacstruct.hpp"
 #include "engine_tag.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -102,7 +102,7 @@ namespace Balltze::Plugins::Lua {
         luacs_enum_field(state, EngineTag, EngineTagClass, tertiary_class, 0);
         luacs_objref_field(state, EngineTag, EngineResourceHandle, handle, LUACS_FREADONLY);
         luacs_strptr_field(state, EngineTag, path, LUACS_FREADONLY);
-        luacs_pseudo_field(state, EngineTag, dataAddress, 0);
+        luacs_pseudo_field(state, EngineTag, data_address, 0);
         lua_pop(state, 1);
     }
 
@@ -126,15 +126,5 @@ namespace Balltze::Plugins::Lua {
         luacs_unsigned_field(state, EngineTagDataOffset, file_offset, LUACS_FREADONLY);
         luacs_extref_field(state, EngineTagDataOffset, pointer, LUACS_FREADONLY);
         lua_pop(state, 1);
-    }
-
-    void lua_define_engine_tag_string_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, EngineTagString);
-        luacs_string_field(state, EngineTagString, string, 0);
-        lua_pop(state, 1);
-    }
-
-    void lua_push_engine_tag_string(lua_State *state, Engine::TagString *tag_string) noexcept {
-        luacs_newobject(state, EngineTagString, tag_string);
     }
 }

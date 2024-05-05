@@ -60,7 +60,6 @@ add([[
 #define BALLTZE__PLUGINS__LUA__TYPES__ENGINE_TAG_DATA_HPP
 
 #include <memory>
-#include <luacstruct/luacstruct.h>
 #include <balltze/engine/tag.hpp>
 #include <balltze/engine/tag_definitions.hpp>
 #include "engine_types.hpp"
@@ -105,8 +104,9 @@ add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
 
-#include "engine_tag_data.hpp"
 #include "../../../logger.hpp"
+#include "../helpers/luacstruct.hpp"
+#include "engine_tag_data.hpp"
 
 namespace Balltze::Plugins::Lua {
     #define lua_define_tag_block(state, parentType, type) \
@@ -174,11 +174,10 @@ for structName, struct in pairs(structs) do
         add("luacs_newstruct(state, " .. typename .. "); \n")
     end
     for _, field in ipairs(struct.fields) do
-        local sneakCaseFieldType = definitionParser.camelCaseToSnakeCase(field.type)
-        local camelCaseFieldType = definitionParser.snakeCaseToCamelCase(sneakCaseFieldType)
-        local lowerCamelCaseFieldName = definitionParser.snakeCaseToLowerCamelCase(field.name)
-
         if(field.name) then
+            local sneakCaseFieldType = definitionParser.camelCaseToSnakeCase(field.type)
+            local camelCaseFieldType = definitionParser.snakeCaseToCamelCase(sneakCaseFieldType)
+            
             -- Check if type exists
             if(definitionParser.commonStructs[sneakCaseFieldType] == nil and struct[sneakCaseFieldType] == nil) then
                 if(definitionParser.commonEnums[sneakCaseFieldType] == nil and enums[sneakCaseFieldType] == nil) then
@@ -206,7 +205,7 @@ for structName, struct in pairs(structs) do
                         add("luacs_unsigned_array_field(state, " .. typename .. ", " .. field.name .. ", 0); \n");
                     end
                 elseif(sneakCaseFieldType == "tag_string") then
-                    add("luacs_nested_field(state, " .. typename .. ", EngineTagString, " .. field.name .. ", 0); \n");
+                    add("luacs_string_field(state, " .. typename .. ", " .. field.name .. ", 0); \n")
                 elseif(sneakCaseFieldType == "tag_four_c_c") then
                     add("luacs_enum_field(state, " .. typename .. ", EngineTagClass, " .. field.name .. ", 0); \n");
                 elseif(sneakCaseFieldType == "matrix") then
@@ -303,8 +302,9 @@ for bitfieldName, bitfield in pairs(bitfields) do
 
     for _, field in pairs(bitfield.fields) do
         local sneakCaseFieldName = definitionParser.camelCaseToSnakeCase(field)
+        local lowerCamelCaseFieldName = definitionParser.snakeCaseToLowerCamelCase(sneakCaseFieldName)
         indent(2)
-        add("luacs_declare_method(state, \"" .. sneakCaseFieldName .. "\", lua_bitfield_struct_method(state, Engine" .. camelCaseName .. ", " .. field .. ")); \n")
+        add("luacs_declare_method(state, \"" .. lowerCamelCaseFieldName .. "\", lua_bitfield_struct_method(state, Engine" .. camelCaseName .. ", " .. field .. ")); \n")
     end
 
     indent(2)
@@ -377,7 +377,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
     indent(3)
     add("case Engine::TAG_CLASS_" .. classEnumName .. ": \n");
     indent(4)
-    add("luacs_newobject(state, \"Engine" .. classCamelCaseName .. "Tag\", tag); \n");
+    add("luacs_newobject0(state, \"Engine" .. classCamelCaseName .. "Tag\", tag); \n");
     indent(4)
     add("break; \n");
 end

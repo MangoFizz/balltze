@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <luacstruct/luacstruct.h>
+#include "../helpers/luacstruct.hpp"
 #include "engine_types.hpp"
 
 namespace Balltze::Plugins::Lua {

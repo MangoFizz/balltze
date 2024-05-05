@@ -16,7 +16,6 @@ namespace Balltze::Plugins::Lua {
         lua_define_engine_tag_base_struct(state);
         lua_define_engine_tag_dependency_struct(state);
         lua_define_engine_tag_data_offset_struct(state);
-        lua_define_engine_tag_string_struct(state);
         lua_define_engine_color_a_r_g_b_int_struct(state);
         lua_define_engine_color_a_r_g_b_struct(state);
         lua_define_engine_color_r_g_b_struct(state);

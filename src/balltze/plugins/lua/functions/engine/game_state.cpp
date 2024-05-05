@@ -104,11 +104,11 @@ namespace Balltze::Plugins {
     int lua_engine_get_object_specialization(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1) {
-            lua_pushstring(state, objectType.value);
+            lua_pushstring(state, objectType.data);
             return lua_engine_get_object(state);
         }
         else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.gameState.%s.", functionName.value);
+            return luaL_error(state, "Invalid number of arguments in function Engine.gameState.%s.", functionName.data);
         }
     }
 
