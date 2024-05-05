@@ -106,12 +106,6 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
-        luacs_newobject(state, EngineTag, tag);
-        lua_pushinteger(state, reinterpret_cast<std::uintptr_t>(tag->data));
-        lua_setfield(state, -2, "dataAddress");
-    }
-
     void lua_define_engine_tag_dependency_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineTagDependency);
         luacs_enum_field(state, EngineTagDependency, EngineTagClass, tag_class, 0);

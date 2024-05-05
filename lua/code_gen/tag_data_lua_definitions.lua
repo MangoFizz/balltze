@@ -341,6 +341,59 @@ for enumName, enum in pairs(enums) do
     add("} \n\n")
 end
 
+for _, class in ipairs(definitionParser.tagClasses) do
+    local sneakCaseName = class
+    if sneakCaseName == "tag_collection" then
+        sneakCaseName = "tag_collection_tag"
+    end
+    local dataStruct = sneakCaseName
+    if dataStruct == "ui_widget_collection" then
+        dataStruct = "tag_collection_tag"
+    end
+    local classCamelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
+    local dataStructName = definitionParser.snakeCaseToCamelCase(dataStruct)
+
+    indent(1)
+    add("inline void lua_define_engine_" .. sneakCaseName .. "_tag_struct(lua_State *state) noexcept { \n")
+    indent(2)
+    add("luacs_newstruct0(state, \"Engine" .. classCamelCaseName .. "Tag\", \"EngineTag\"); \n")
+    indent(2)
+    add("luacs_declare_field(state, LUACS_TOBJREF, \"Engine" .. dataStructName .. "\", \"data\", sizeof(void *), OFFSET_OF(EngineTag, data), 0, 0); \n")
+    indent(2)
+    add("lua_pop(state, 1); \n")
+    indent(1)
+    add("} \n\n")
+end
+
+add([[
+    void lua_push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
+        switch(tag->primary_class) {
+]])
+
+for _, class in ipairs(definitionParser.tagClasses) do
+    local classEnumName = class:upper()
+    local sneakCaseName = class
+    local classCamelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
+    indent(3)
+    add("case Engine::TAG_CLASS_" .. classEnumName .. ": \n");
+    indent(4)
+    add("luacs_newobject(state, \"Engine" .. classCamelCaseName .. "Tag\", tag); \n");
+    indent(4)
+    add("break; \n");
+end
+
+add([[
+            default: {
+                lua_pushnil(state);
+                break;
+            }
+        }
+        lua_pushinteger(state, reinterpret_cast<std::uintptr_t>(tag->data));
+        lua_setfield(state, -2, "dataAddress");
+    }
+
+]])
+
 indent(1)
 add("void lua_define_engine_tag_data_structs(lua_State *state) noexcept { \n")
 
@@ -391,6 +444,14 @@ end
 for enumName, _ in pairs(enums) do
     indent(2)
     add("lua_define_engine_" .. enumName .. "_enum(state); \n")
+end
+
+for _, class in ipairs(definitionParser.tagClasses) do
+    if class == "tag_collection" then
+        class = "tag_collection_tag"
+    end
+    indent(2)
+    add("lua_define_engine_" .. class .. "_tag_struct(state); \n")
 end
 
 add([[
