@@ -7,6 +7,7 @@
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
 #include "../../helpers.hpp"
+#include "../../types.hpp"
 #include "../../metatables.hpp"
 
 namespace Balltze::Plugins {
@@ -85,7 +86,7 @@ namespace Balltze::Plugins {
             }
 
             if(tag_entry) {
-                lua_push_meta_engine_tag(state, *tag_entry);
+                Lua::lua_push_engine_tag(state, tag_entry);
             }
             else {
                 lua_pushnil(state);
