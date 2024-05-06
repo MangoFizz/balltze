@@ -25,10 +25,10 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, item->ticks_until_detonation);
         }
         else if(field == "bspCollisionSurfaceId") {
-            lua_pushinteger(state, item->bsp_collision.surface_id);
+            lua_pushinteger(state, item->bsp_collision_surface_id);
         }
         else if(field == "bspCollisionReferenceId") {
-            lua_pushinteger(state, item->bsp_collision.reference_id);
+            lua_pushinteger(state, item->bsp_collision_reference_id);
         }
         else if(field == "droppedByUnit") {
             lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&item->dropped_by_unit));
@@ -37,10 +37,10 @@ namespace Balltze::Plugins {
             lua_pushinteger(state, item->last_update_tick);
         }
         else if(field == "objectCollisionObject") {
-            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&item->object_collision.object));
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&item->collision_object_handle));
         }
         else if(field == "objectCollisionObjectPosition") {
-            lua_push_meta_engine_vector3_d(state, item->object_collision.object_position);
+            lua_push_meta_engine_vector3_d(state, item->collision_object_position);
         }
         else if(field == "unknownCollisionPosition") {
             lua_push_meta_engine_vector3_d(state, item->unknown_collision_position);
@@ -70,10 +70,10 @@ namespace Balltze::Plugins {
             item->ticks_until_detonation = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "bspCollisionSurfaceId") {
-            item->bsp_collision.surface_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
+            item->bsp_collision_surface_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "bspCollisionReferenceId") {
-            item->bsp_collision.reference_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
+            item->bsp_collision_reference_id = static_cast<std::int16_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "droppedByUnit") {
             item->dropped_by_unit.handle = luaL_checkinteger(state, 3);
@@ -82,7 +82,7 @@ namespace Balltze::Plugins {
             item->last_update_tick = static_cast<std::int32_t>(luaL_checkinteger(state, 3));
         }
         else if(field == "objectCollisionObject") {
-            item->object_collision.object.handle = luaL_checkinteger(state, 3);
+            item->collision_object_handle.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "objectCollisionObjectPosition") {
             return luaL_error(state, "Invalid operation on field objectCollisionObjectPosition in EngineItemObject metaobject");

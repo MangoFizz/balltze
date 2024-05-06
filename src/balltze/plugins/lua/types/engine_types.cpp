@@ -103,6 +103,19 @@ namespace Balltze::Plugins::Lua {
         luacs_newobject(state, EngineRectangle2D, rectangle);
     }
 
+    void lua_define_engine_rectangle2_d_f_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineRectangle2DF);
+        luacs_float_field(state, EngineRectangle2DF, left, 0);
+        luacs_float_field(state, EngineRectangle2DF, top, 0);
+        luacs_float_field(state, EngineRectangle2DF, right, 0);
+        luacs_float_field(state, EngineRectangle2DF, bottom, 0);
+        lua_pop(state, 1);
+    }
+
+    void lua_push_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF *rectangle) noexcept {
+        luacs_newobject(state, EngineRectangle2DF, rectangle);
+    }
+
     void lua_define_engine_euler2_d_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineEuler2D);
         luacs_float_field(state, EngineEuler2D, yaw, 0);
@@ -124,6 +137,18 @@ namespace Balltze::Plugins::Lua {
 
     void lua_push_engine_euler3_d(lua_State *state, Engine::Euler3D *euler) noexcept {
         luacs_newobject(state, EngineEuler3D, euler);
+    }
+
+    void lua_define_engine_euler3_d_p_y_r_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineEuler3DPYR);
+        luacs_float_field(state, EngineEuler3DPYR, pitch, 0);
+        luacs_float_field(state, EngineEuler3DPYR, yaw, 0);
+        luacs_float_field(state, EngineEuler3DPYR, roll, 0);
+        lua_pop(state, 1);
+    }
+
+    void lua_push_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3DPYR *euler) noexcept {
+        luacs_newobject(state, EngineEuler3DPYR, euler);
     }
 
     void lua_define_engine_vector2_d_struct(lua_State *state) noexcept {

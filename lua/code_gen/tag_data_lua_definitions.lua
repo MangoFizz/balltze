@@ -105,6 +105,7 @@ add([[
 // This file is auto-generated. DO NOT EDIT!
 
 #include "../helpers/luacstruct.hpp"
+#include "../helpers/bitfield.hpp"
 #include "engine_tag_data.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -114,26 +115,6 @@ namespace Balltze::Plugins::Lua {
         luacs_unsigned_field(state, parentType##TagBlock##type, count, LUACS_FREADONLY); \
         luacs_declare_field(state, LUACS_TOBJREF, "Engine" #type, "elements", sizeof(((parentType##TagBlock##type *)0)->elements[0]), offsetof(parentType##TagBlock##type, elements), 65535, LUACS_FREADONLY); \
         lua_pop(state, 1);
-
-    #define lua_bitfield_struct_method(state, bitfieldType, field) \
-        [](lua_State *state) -> int { \
-            auto *self = reinterpret_cast<bitfieldType *>(lua_touserdata(state, lua_upvalueindex(1))); \
-            int args = lua_gettop(state); \
-            if(args == 1) { \
-                if(lua_isboolean(state, 1)) { \
-                    self->field = lua_toboolean(state, 1) ? 1 : 0; \
-                } else { \
-                    return luaL_error(state, "Expected boolean"); \
-                } \
-            } \
-            else if(args == 0) { \
-                lua_pushboolean(state, self->field); \
-            } \
-            else { \
-                return luaL_error(state, "Expected 0 or 1 arguments"); \
-            } \
-            return 1; \
-        }
 
 ]])
 
@@ -454,6 +435,8 @@ end
 add([[
     }
 }
+
+#undef lua_define_tag_block
 
 ]])
 

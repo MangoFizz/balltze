@@ -998,13 +998,13 @@ namespace Balltze::Plugins {
             lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->actor));
         }
         else if(field == "swarmActor") {
-            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm.actor));
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm_actor));
         }
         else if(field == "swarmNextUnit") {
-            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm.next_unit));
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm_next_unit));
         }
         else if(field == "swarmPreviousUnit") {
-            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm.previous_unit));
+            lua_push_engine_resource_handle(state, reinterpret_cast<Engine::ResourceHandle *>(&unit->swarm_previous_unit));
         }
         else if(field == "unitFlags") {
             lua_push_meta_engine_unit_flags(state, unit->unit_flags);
@@ -1287,13 +1287,13 @@ namespace Balltze::Plugins {
             unit->actor.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "swarmActor") {
-            unit->swarm.actor.handle = luaL_checkinteger(state, 3);
+            unit->swarm_actor.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "swarmNextUnir") {
-            unit->swarm.next_unit.handle = luaL_checkinteger(state, 3);
+            unit->swarm_next_unit.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "swarmPreviousUnit") {
-            unit->swarm.previous_unit.handle = luaL_checkinteger(state, 3);
+            unit->swarm_previous_unit.handle = luaL_checkinteger(state, 3);
         }
         else if(field == "unitFlags") {
             return luaL_error(state, "Invalid operation");

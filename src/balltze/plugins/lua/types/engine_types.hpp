@@ -16,8 +16,10 @@ namespace Balltze::Plugins::Lua {
     using EnginePoint2DInt = Engine::Point2DInt;
     using EnginePoint3D = Engine::Point3D;
     using EngineRectangle2D = Engine::Rectangle2D;
+    using EngineRectangle2DF = Engine::Rectangle2DF;
     using EngineEuler2D = Engine::Euler2D;
     using EngineEuler3D = Engine::Euler3D;
+    using EngineEuler3DPYR = Engine::Euler3DPYR;
     using EngineVector2D = Engine::Vector2D;
     using EngineVector3D = Engine::Vector3D;
     using EngineQuaternion = Engine::Quaternion;
@@ -59,11 +61,17 @@ namespace Balltze::Plugins::Lua {
     void lua_define_engine_rectangle2_d_struct(lua_State *state) noexcept;
     void lua_push_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D *rectangle) noexcept;
 
+    void lua_define_engine_rectangle2_d_f_struct(lua_State *state) noexcept;
+    void lua_push_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF *rectangle) noexcept;
+
     void lua_define_engine_euler2_d_struct(lua_State *state) noexcept;
     void lua_push_engine_euler2_d(lua_State *state, Engine::Euler2D *euler) noexcept;
 
     void lua_define_engine_euler3_d_struct(lua_State *state) noexcept;
     void lua_push_engine_euler3_d(lua_State *state, Engine::Euler3D *euler) noexcept;
+
+    void lua_define_engine_euler3_d_p_y_r_struct(lua_State *state) noexcept;
+    void lua_push_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3DPYR *euler) noexcept;
 
     void lua_define_engine_vector2_d_struct(lua_State *state) noexcept;
     void lua_push_engine_vector2_d(lua_State *state, Engine::Vector2D *vector) noexcept;

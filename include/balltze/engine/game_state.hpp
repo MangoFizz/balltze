@@ -416,6 +416,15 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(BaseObjectBlockReference) == 0x4);
 
+    struct ObjectValidOutGoingFunctions {
+        bool a : 1;
+        bool b : 1;
+        bool c : 1;
+        bool d : 1;
+        PADDING_BIT(bool, 4);
+    };
+    static_assert(sizeof(ObjectValidOutGoingFunctions) == 0x1);
+
     /**
      * These are objects that are present in an instance of Halo rather than in tag data and have parameters such as location and health.
      */
@@ -541,12 +550,7 @@ namespace Balltze::Engine {
         /** Force shield update */
         bool force_shield_update;
 
-        struct ObjectValidOutGoingFunctions {
-            bool a : 1;
-            bool b : 1;
-            bool c : 1;
-            bool d : 1;
-        } valid_outgoing_functions; 
+        ObjectValidOutGoingFunctions valid_outgoing_functions; 
         float incoming_function_values[4];
         float outgoing_function_values[4];
 
@@ -963,11 +967,9 @@ namespace Balltze::Engine {
 
     struct UnitObject : BaseObject {
         TagHandle actor;
-        struct {
-            TagHandle actor;
-            ObjectHandle next_unit;
-            ObjectHandle previous_unit;
-        } swarm;
+        TagHandle swarm_actor;
+        ObjectHandle swarm_next_unit;
+        ObjectHandle swarm_previous_unit;
         UnitFlags unit_flags;
         UnitControlFlags unit_control_flags;
         PADDING(0x4);
@@ -1204,17 +1206,13 @@ namespace Balltze::Engine {
     struct ItemObject : BaseObject {
         std::uint32_t flags;
         std::int16_t ticks_until_detonation;
-        struct {
-            std::int16_t surface_id;
-            std::int16_t reference_id; // bsp_reference_id
-        } bsp_collision;
+        std::int16_t bsp_collision_surface_id;
+        std::int16_t bsp_collision_reference_id; // bsp_reference_id        
         PADDING(2);
         ObjectHandle dropped_by_unit; // Set when a unit that held this item drops it.
         std::int32_t last_update_tick;
-        struct {
-            ObjectHandle object;
-            Vector3D object_position;
-        } object_collision;
+        ObjectHandle collision_object_handle;
+        Vector3D collision_object_position;
         Vector3D unknown_collision_position; // ? My guesses without checking it yet.
         Euler2D unknown_collision_angle; // ?
     };

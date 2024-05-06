@@ -152,6 +152,10 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/metatables/engine_gamestate_unit_object.cpp
     src/balltze/plugins/lua/metatables/engine_rasterizer.cpp
     src/balltze/plugins/lua/metatables/engine_user_interface.cpp
+    src/balltze/plugins/lua/types/engine_gamestate_device_object.cpp
+    src/balltze/plugins/lua/types/engine_gamestate_item_object.cpp
+    src/balltze/plugins/lua/types/engine_gamestate_object.cpp
+    src/balltze/plugins/lua/types/engine_gamestate_unit_object.cpp
     src/balltze/plugins/lua/types/engine_types.cpp
     src/balltze/plugins/lua/types/engine_tag.cpp
     src/balltze/plugins/lua/api.cpp

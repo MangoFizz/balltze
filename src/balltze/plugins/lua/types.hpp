@@ -7,6 +7,10 @@
 #include "types/engine_types.hpp"
 #include "types/engine_tag.hpp"
 #include "types/engine_tag_data.hpp"
+#include "types/engine_gamestate_object.hpp"
+#include "types/engine_gamestate_device_object.hpp"
+#include "types/engine_gamestate_item_object.hpp"
+#include "types/engine_gamestate_unit_object.hpp"
 #include "../../logger.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -23,8 +27,10 @@ namespace Balltze::Plugins::Lua {
         lua_define_engine_point2_d_int_struct(state);
         lua_define_engine_point3_d_struct(state);
         lua_define_engine_rectangle2_d_struct(state);
+        lua_define_engine_rectangle2_d_f_struct(state);
         lua_define_engine_euler2_d_struct(state);
         lua_define_engine_euler3_d_struct(state);
+        lua_define_engine_euler3_d_p_y_r_struct(state);
         lua_define_engine_vector2_d_struct(state);
         lua_define_engine_vector3_d_struct(state);
         lua_define_engine_quaternion_struct(state);
@@ -32,6 +38,11 @@ namespace Balltze::Plugins::Lua {
         lua_define_engine_plane2_d_struct(state);
         lua_define_engine_matrix_struct(state);
         lua_define_engine_tag_data_structs(state);
+
+        lua_define_engine_gamestate_object_types(state);
+        lua_define_engine_gamestate_item_object_types(state);
+        lua_define_engine_gamestate_device_object_types(state);
+        lua_define_engine_gamestate_unit_object_types(state);
     }
 }
 

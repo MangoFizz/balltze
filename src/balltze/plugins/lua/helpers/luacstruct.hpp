@@ -23,7 +23,11 @@
 #define LUACS_FENDIAN		(LUACS_FENDIANBIG | LUACS_FENDIANLITTLE)
 
 
+#ifndef DONT_FUCK_WITH_INTELLISENSE
 #define SNAKE_TO_CAMEL(s) snake_to_camel_case(s).data
+#else 
+#define SNAKE_TO_CAMEL(s) s
+#endif
 
 extern "C" {
     enum luacstruct_type {
