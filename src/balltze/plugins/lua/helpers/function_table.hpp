@@ -5,8 +5,8 @@
 
 #include <lua.hpp>
 
-namespace Balltze::Plugins {
-    inline void lua_create_functions_table(lua_State *state, const char *name, const luaL_Reg *functions) noexcept {
+namespace Balltze::Plugins::Lua {
+    inline void create_functions_table(lua_State *state, const char *name, const luaL_Reg *functions) noexcept {
         lua_pushstring(state, name);
         luaL_newlibtable(state, functions);
         luaL_setfuncs(state, functions, 0);

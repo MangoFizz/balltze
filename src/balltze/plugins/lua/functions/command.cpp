@@ -3,14 +3,14 @@
 #include <vector>
 #include "../../../logger.hpp"
 #include "../../loader.hpp"
-#include "../helpers.hpp"
+#include "../helpers/function_table.hpp"
 #include "command.hpp"
 
 namespace Balltze {
     extern std::vector<std::shared_ptr<Command>> commands;
 }
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     static int lua_get_commands_table(lua_State *state) noexcept {
         auto balltze_module = Balltze::get_current_module();
         lua_pushlightuserdata(state, balltze_module);
@@ -89,18 +89,6 @@ namespace Balltze::Plugins {
         commands.emplace_back(std::make_shared<LuaCommand>(*this));
     }
 
-    void remove_plugin_commands(LuaPlugin *plugin) noexcept {
-        logger.debug("Removing commands from plugin {}", plugin->name());
-        for(auto it = commands.begin(); it != commands.end();) {
-            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
-                it = commands.erase(it);
-            }
-            else {
-                it++;
-            }
-        }   
-    }
-
     static int lua_command_register_command(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
@@ -169,6 +157,20 @@ namespace Balltze::Plugins {
     };
 
     void lua_set_command_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "command", command_functions);
+        create_functions_table(state, "command", command_functions);
+    }
+}
+
+namespace Balltze::Plugins {
+    void remove_plugin_commands(LuaPlugin *plugin) noexcept {
+        logger.debug("Removing commands from plugin {}", plugin->name());
+        for(auto it = commands.begin(); it != commands.end();) {
+            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
+                it = commands.erase(it);
+            }
+            else {
+                it++;
+            }
+        }   
     }
 }

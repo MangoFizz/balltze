@@ -6,81 +6,17 @@
 #include "../../../plugin.hpp"
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
-#include "../../helpers.hpp"
+#include "../../types.hpp"
 
-namespace Balltze::Plugins {
-    static int lua_engine_get_current_map_header(lua_State *state) noexcept {
+namespace Balltze::Plugins::Lua {
+    static int engine_get_current_map_header(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                auto edition = Engine::get_engine_edition();
-                if(edition != Engine::ENGINE_TYPE_DEMO) {
-                    auto header = Engine::get_map_header();
-
-                    lua_newtable(state);
-                    
-                    auto cache_file_edition = cache_file_engine_to_string(header.engine_type);
-                    lua_pushstring(state, cache_file_edition.c_str());
-                    lua_setfield(state, -2, "engineType");
-
-                    lua_pushinteger(state, header.file_size);
-                    lua_setfield(state, -2, "fileSize");
-
-                    lua_pushinteger(state, header.tag_data_offset);
-                    lua_setfield(state, -2, "tagDataOffset");
-
-                    lua_pushinteger(state, header.tag_data_size);
-                    lua_setfield(state, -2, "tagDataSize");
-
-                    lua_pushstring(state, header.name);
-                    lua_setfield(state, -2, "name");
-
-                    lua_pushstring(state, header.build);
-                    lua_setfield(state, -2, "build");
-
-                    auto map_game_type = map_game_type_to_string(header.game_type);
-                    lua_pushstring(state, map_game_type.c_str());
-                    lua_setfield(state, -2, "gameType");
-
-                    lua_pushinteger(state, header.crc32);
-                    lua_setfield(state, -2, "crc32");
-
-                    return 1;
-                }
-                else {
-                    auto demo_header = Engine::get_demo_map_header();
-
-                    lua_newtable(state);
-
-                    auto map_game_type = map_game_type_to_string(demo_header.game_type);
-                    lua_pushstring(state, map_game_type.c_str());
-                    lua_setfield(state, -2, "gameType");
-
-                    lua_pushinteger(state, demo_header.tag_data_size);
-                    lua_setfield(state, -2, "tagDataSize");
-
-                    lua_pushstring(state, demo_header.build);
-                    lua_setfield(state, -2, "build");
-
-                    auto cache_file_edition = cache_file_engine_to_string(demo_header.engine_type);
-                    lua_pushstring(state, cache_file_edition.c_str());
-                    lua_setfield(state, -2, "engineType");
-
-                    lua_pushstring(state, demo_header.name);
-                    lua_setfield(state, -2, "name");
-
-                    lua_pushinteger(state, demo_header.crc32);
-                    lua_setfield(state, -2, "crc32");
-
-                    lua_pushinteger(state, demo_header.file_size);
-                    lua_setfield(state, -2, "fileSize");
-
-                    lua_pushinteger(state, demo_header.tag_data_offset);
-                    lua_setfield(state, -2, "tagDataOffset");
-
-                    return 1;
-                }
+                auto header = Engine::get_map_header();
+                push_meta_engine_map_header(state, &header);
+                return 1;
             }
             else {
                 return luaL_error(state, "Invalid number of arguments in function Engine.map.getCurrentMapHeader.");
@@ -92,7 +28,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_get_map_list(lua_State *state) noexcept {
+    static int engine_get_map_list(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -136,13 +72,13 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg engine_map_functions[] = {
-        {"getCurrentMapHeader", lua_engine_get_current_map_header},
-        {"getMapList", lua_engine_get_map_list},
+        {"getCurrentMapHeader", engine_get_current_map_header},
+        {"getMapList", engine_get_map_list},
         {nullptr, nullptr}
     };
 
     void set_engine_map_functions(lua_State *state) noexcept {
-        luaL_newlibtable(state, engine_map_functions);
+        lua_newtable(state);
         luaL_setfuncs(state, engine_map_functions, 0);
         lua_setfield(state, -2, "map");
     }

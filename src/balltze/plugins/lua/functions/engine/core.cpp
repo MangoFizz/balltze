@@ -6,26 +6,18 @@
 #include "../../../plugin.hpp"
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
-#include "../../helpers.hpp"
+#include "../../types.hpp"
+#include "../../helpers/function_table.hpp"
 
-namespace Balltze::Plugins {
-    static int lua_engine_console_print(lua_State *state) noexcept {
+namespace Balltze::Plugins::Lua {
+    static int engine_console_print(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args >= 1) {
-                bool has_color = lua_istable(state, 1);
-
-                Engine::ColorARGB color;
-                if(has_color) {
-                    try {
-                        color = lua_to_color_argb(state, 1);
-                    }
-                    catch(const std::exception &e) {
-                        return luaL_error(state, "Invalid color argument in function Engine.core.consolePrint.");
-                    }
-                }
-                else {
+                auto color = get_color_a_r_g_b(state, 1);
+                bool has_color = color.has_value();
+                if(!has_color) {
                     color = {1.0, 1.0, 1.0, 1.0};
                 }
 
@@ -42,7 +34,7 @@ namespace Balltze::Plugins {
                     message = luaL_checkstring(state, 1); 
                 }
 
-                Engine::console_print(message, color);
+                Engine::console_print(message, *color);
             }
             else {
                 return luaL_error(state, "Invalid number of arguments in function Engine.core.consolePrint.");
@@ -55,7 +47,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    static int lua_engine_get_tick_count(lua_State *state) noexcept {
+    static int engine_get_tick_count(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -73,42 +65,9 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_get_engine_edition(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 0) {
-                auto edition = Engine::get_engine_edition();
-                switch(edition) {
-                    case Engine::ENGINE_TYPE_RETAIL:
-                        lua_pushstring(state, "retail");
-                        break;
-                    case Engine::ENGINE_TYPE_DEMO:
-                        lua_pushstring(state, "demo");
-                        break;
-                    case Engine::ENGINE_TYPE_CUSTOM_EDITION:
-                        lua_pushstring(state, "custom");
-                        break;
-                    default:
-                        lua_pushstring(state, "unknown");
-                        break;
-                }
-                return 1;
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Engine.core.getEngineEdition.");
-            }
-        }
-        else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
-        }
-    }
-
     static const luaL_Reg engine_core_functions[] = {
         {"consolePrint", lua_engine_console_print},
         {"getTickCount", lua_engine_get_tick_count},
-        {"getEngineEdition", lua_engine_get_engine_edition},
         {nullptr, nullptr}
     };
 

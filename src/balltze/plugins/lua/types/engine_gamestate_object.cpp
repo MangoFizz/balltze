@@ -2,12 +2,17 @@
 
 #include <balltze/engine/game_state.hpp>
 #include "../helpers/bitfield.hpp"
+#include "../helpers/luacstruct.hpp"
 #include "engine_types.hpp"
 #include "engine_tag_data.hpp"
 #include "engine_gamestate_object.hpp"
 
 namespace Balltze::Plugins::Lua {
-    void lua_define_engine_base_object_attachment_type_enum(lua_State *state) noexcept {
+    Engine::ObjectType get_object_type(lua_State *state, int index) noexcept {
+        return static_cast<Engine::ObjectType>(luacs_checkenumvalue(state, index, EngineObjectType));
+    }
+
+    static void define_engine_base_object_attachment_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineBaseObjectAttachmentType);
         luacs_enum_declare_value(state, "INVALID", Engine::OBJECT_ATTACHMENT_TYPE_INVALID);
         luacs_enum_declare_value(state, "LIGHT", Engine::OBJECT_ATTACHMENT_TYPE_LIGHT);
@@ -18,7 +23,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_object_network_role_enum(lua_State *state) noexcept {
+    static void define_engine_object_network_role_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineObjectNetworkRole);
         luacs_enum_declare_value(state, "MASTER", Engine::OBJECT_NETWORK_ROLE_MASTER);
         luacs_enum_declare_value(state, "PUPPET", Engine::OBJECT_NETWORK_ROLE_PUPPET);
@@ -27,7 +32,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_object_flags_struct(lua_State *state) noexcept {
+    static void define_engine_object_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineGameStateObjectFlags); 
         luacs_declare_field(state, LUACS_TINT16, NULL, "flags", sizeof(std::uint32_t), 0, 0, 0); 
         luacs_declare_method(state, "noCollision", lua_bitfield_struct_method(state, EngineGameStateObjectFlags, no_collision)); 
@@ -52,11 +57,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_object_flags(lua_State *state, Engine::BaseObjectFlags *flags) noexcept {
+    void push_engine_object_flags(lua_State *state, Engine::BaseObjectFlags *flags) noexcept {
         luacs_newobject(state, EngineGameStateObjectFlags, flags); 
     }
 
-    void lua_define_engine_object_network_struct(lua_State *state) noexcept {
+    static void define_engine_object_network_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBaseObjectNetwork); 
         luacs_bool_field(state, EngineBaseObjectNetwork, valid_position, 0);
         luacs_nested_field(state, EngineBaseObjectNetwork, EngineVector3D, position, 0);
@@ -69,22 +74,22 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_object_network(lua_State *state, Engine::BaseObjectNetwork *network) noexcept {
+    void push_engine_object_network(lua_State *state, Engine::BaseObjectNetwork *network) noexcept {
         luacs_newobject(state, EngineBaseObjectNetwork, network); 
     }
 
-    void lua_define_engine_scenario_location_struct(lua_State *state) noexcept {
+    static void define_engine_scenario_location_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineScenarioLocation);
         luacs_int_field(state, EngineScenarioLocation, leaf_id, 0);
         luacs_int_field(state, EngineScenarioLocation, cluster_id, 0);
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_scenario_location(lua_State *state, EngineScenarioLocation *location) noexcept {
+    void push_engine_scenario_location(lua_State *state, EngineScenarioLocation *location) noexcept {
         luacs_newobject(state, EngineScenarioLocation, location); 
     }
 
-    void lua_define_engine_object_vitals_flags_struct(lua_State *state) noexcept {
+    static void define_engine_object_vitals_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBaseObjectVitalsFlags); 
         luacs_declare_field(state, LUACS_TINT16, NULL, "flags", sizeof(std::uint16_t), 0, 0, 0); 
         luacs_declare_method(state, "healthDamageEffectApplied", lua_bitfield_struct_method(state, EngineBaseObjectVitalsFlags, health_damage_effect_applied)); 
@@ -100,11 +105,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags *flags) noexcept {
+    void push_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags *flags) noexcept {
         luacs_newobject(state, EngineBaseObjectVitalsFlags, flags); 
     }
 
-    void lua_define_engine_object_vitals_struct(lua_State *state) noexcept {
+    static void define_engine_object_vitals_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBaseObjectVitals);
         luacs_float_field(state, EngineBaseObjectVitals, base_health, 0);
         luacs_float_field(state, EngineBaseObjectVitals, base_shield, 0);
@@ -122,11 +127,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals *vitals) noexcept {
+    void push_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals *vitals) noexcept {
         luacs_newobject(state, EngineBaseObjectVitals, vitals); 
     }
 
-    void lua_define_engine_object_attachments_data_struct(lua_State *state) noexcept {
+    static void define_engine_object_attachments_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBaseObjectAttachmentsData);
         luacs_enum_array_field(state, EngineBaseObjectAttachmentsData, EngineBaseObjectAttachmentType, types, 0);
         luacs_nested_field(state, EngineBaseObjectAttachmentsData, EngineResourceHandle, attachments, 0);
@@ -134,11 +139,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData *data) noexcept {
+    void push_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData *data) noexcept {
         luacs_newobject(state, EngineBaseObjectAttachmentsData, data); 
     }
 
-    void lua_define_engine_object_region_destroyeds_struct(lua_State *state) noexcept {
+    static void define_engine_object_region_destroyeds_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBaseObjectRegionDestroyeds); 
         luacs_declare_field(state, LUACS_TINT16, NULL, "flags", sizeof(std::uint16_t), 0, 0, 0); 
         luacs_declare_method(state, "region0", lua_bitfield_struct_method(state, EngineBaseObjectRegionDestroyeds, region_0)); 
@@ -152,22 +157,22 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds *destroyeds) noexcept {
+    void push_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds *destroyeds) noexcept {
         luacs_newobject(state, EngineBaseObjectRegionDestroyeds, destroyeds); 
     }
 
-    void lua_define_engine_object_block_reference_struct(lua_State *state) noexcept {
+    static void define_engine_object_block_reference_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBaseObjectBlockReference);
         luacs_unsigned_field(state, EngineBaseObjectBlockReference, size, 0);
         luacs_unsigned_field(state, EngineBaseObjectBlockReference, offset, 0);
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference *reference) noexcept {
+    void push_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference *reference) noexcept {
         luacs_newobject(state, EngineBaseObjectBlockReference, reference); 
     }
 
-    void lua_define_engine_object_valid_out_going_functions_struct(lua_State *state) noexcept {
+    static void define_engine_object_valid_out_going_functions_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineObjectValidOutGoingFunctions); 
         luacs_declare_field(state, LUACS_TINT8, NULL, "flags", sizeof(std::uint8_t), 0, 0, 0); 
         luacs_declare_method(state, "a", lua_bitfield_struct_method(state, EngineObjectValidOutGoingFunctions, a)); 
@@ -177,11 +182,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_object_valid_out_going_functions(lua_State *state, Engine::ObjectValidOutGoingFunctions *functions) noexcept {
+    void push_engine_object_valid_out_going_functions(lua_State *state, Engine::ObjectValidOutGoingFunctions *functions) noexcept {
         luacs_newobject(state, EngineObjectValidOutGoingFunctions, functions); 
     }
 
-    void lua_define_engine_object_struct(lua_State *state) noexcept {
+    static void define_engine_object_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBaseObject);
         luacs_nested_field(state, EngineBaseObject, EngineResourceHandle, tag_handle, 0);
         luacs_enum_field(state, EngineBaseObject, EngineObjectNetworkRole, network_role, 0);
@@ -234,7 +239,47 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_object(lua_State *state, Engine::BaseObject *object) noexcept {
+    void push_engine_object(lua_State *state, Engine::BaseObject *object) noexcept {
         luacs_newobject(state, EngineBaseObject, object); 
+    }
+
+    void define_engine_gamestate_object_types(lua_State *state) noexcept {
+        luacs_newenum(state, EngineBaseObjectAttachmentType);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineObjectNetworkRole);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineGameStateObjectFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBaseObjectNetwork); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineScenarioLocation);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBaseObjectVitalsFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBaseObjectVitals);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBaseObjectAttachmentsData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBaseObjectRegionDestroyeds); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBaseObjectBlockReference);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineObjectValidOutGoingFunctions); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBaseObject);
+        lua_pop(state, 1);
+
+        define_engine_base_object_attachment_type_enum(state);
+        define_engine_object_network_role_enum(state);
+        define_engine_object_flags_struct(state);
+        define_engine_object_network_struct(state);
+        define_engine_scenario_location_struct(state);
+        define_engine_object_vitals_flags_struct(state);
+        define_engine_object_vitals_struct(state);
+        define_engine_object_attachments_data_struct(state);
+        define_engine_object_region_destroyeds_struct(state);
+        define_engine_object_block_reference_struct(state);
+        define_engine_object_valid_out_going_functions_struct(state);
+        define_engine_object_struct(state);
     }
 }

@@ -3,7 +3,7 @@
 #include <lua.hpp>
 #include <balltze/api.hpp>
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     void set_engine_core_functions(lua_State *state) noexcept;
     void set_engine_map_functions(lua_State *state) noexcept;
     void set_engine_netgame_functions(lua_State *state) noexcept;
@@ -12,7 +12,7 @@ namespace Balltze::Plugins {
     void set_engine_game_state_functions(lua_State *state) noexcept;
     void set_engine_user_interface_functions(lua_State *state) noexcept;
 
-    void lua_set_engine_table(lua_State *state) noexcept {
+    void set_engine_table(lua_State *state) noexcept {
         lua_newtable(state);
         set_engine_core_functions(state);
         set_engine_map_functions(state);

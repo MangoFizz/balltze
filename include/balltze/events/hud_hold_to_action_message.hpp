@@ -9,7 +9,7 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    enum struct HudHoldForActionMessageSlice {
+    enum HudHoldForActionMessageSlice {
         MESSAGE,
         BUTTON_NAME_LEFT_QUOTE,
         BUTTON_NAME_RIGHT_QUOTE,

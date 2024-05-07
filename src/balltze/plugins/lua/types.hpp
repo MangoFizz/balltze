@@ -10,39 +10,26 @@
 #include "types/engine_gamestate_object.hpp"
 #include "types/engine_gamestate_device_object.hpp"
 #include "types/engine_gamestate_item_object.hpp"
+#include "types/engine_gamestate_player.hpp"
 #include "types/engine_gamestate_unit_object.hpp"
+#include "types/engine_rasterizer.hpp"
+#include "types/engine_map.hpp"
+#include "types/engine_user_interface.hpp"
 #include "../../logger.hpp"
 
 namespace Balltze::Plugins::Lua {
-    inline void lua_define_engine_structs(lua_State *state) noexcept {
-        lua_define_engine_resource_handle_struct(state);
-        lua_define_engine_tag_class_enum(state);
-        lua_define_engine_tag_base_struct(state);
-        lua_define_engine_tag_dependency_struct(state);
-        lua_define_engine_tag_data_offset_struct(state);
-        lua_define_engine_color_a_r_g_b_int_struct(state);
-        lua_define_engine_color_a_r_g_b_struct(state);
-        lua_define_engine_color_r_g_b_struct(state);
-        lua_define_engine_point2_d_struct(state);
-        lua_define_engine_point2_d_int_struct(state);
-        lua_define_engine_point3_d_struct(state);
-        lua_define_engine_rectangle2_d_struct(state);
-        lua_define_engine_rectangle2_d_f_struct(state);
-        lua_define_engine_euler2_d_struct(state);
-        lua_define_engine_euler3_d_struct(state);
-        lua_define_engine_euler3_d_p_y_r_struct(state);
-        lua_define_engine_vector2_d_struct(state);
-        lua_define_engine_vector3_d_struct(state);
-        lua_define_engine_quaternion_struct(state);
-        lua_define_engine_plane3_d_struct(state);
-        lua_define_engine_plane2_d_struct(state);
-        lua_define_engine_matrix_struct(state);
-        lua_define_engine_tag_data_structs(state);
-
-        lua_define_engine_gamestate_object_types(state);
-        lua_define_engine_gamestate_item_object_types(state);
-        lua_define_engine_gamestate_device_object_types(state);
-        lua_define_engine_gamestate_unit_object_types(state);
+    inline void define_engine_structs(lua_State *state) noexcept {
+        define_engine_types(state);
+        define_engine_tag_types(state);
+        define_engine_tag_data_types(state);
+        define_engine_gamestate_object_types(state);
+        define_engine_gamestate_item_object_types(state);
+        define_engine_gamestate_device_object_types(state);
+        define_engine_gamestate_unit_object_types(state);
+        declare_engine_gamestate_player_types(state);
+        define_engine_rasterizer_types(state);
+        define_engine_map_types(state);
+        define_engine_user_interface_types(state);
     }
 }
 

@@ -34,6 +34,11 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(WindowGlobals) == 0x18);
 
+    struct Resolution {
+        std::uint16_t height;
+        std::uint16_t width;
+    };
+
     /**
      * Pixel shader struct.
      */

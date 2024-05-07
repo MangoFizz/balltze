@@ -9,7 +9,7 @@ namespace Balltze::LuaLibrary {
     extern lua_State *balltze_chimera_script;
 }
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     static lua_CFunction get_chimera_function(const char *name) noexcept {
         if(LuaLibrary::balltze_chimera_script) {
             lua_getglobal(LuaLibrary::balltze_chimera_script, name);
@@ -69,7 +69,7 @@ namespace Balltze::Plugins {
         lua_pop(LuaLibrary::balltze_chimera_script, 1);
     }
 
-    void lua_set_chimera_table(lua_State *state) noexcept {
+    void set_chimera_table(lua_State *state) noexcept {
         if(!LuaLibrary::balltze_chimera_script) {
             return;
         }
@@ -130,13 +130,13 @@ namespace Balltze::Plugins {
         lua_settable(state, -3);
     }
 
-    int lua_populate_chimera_table(lua_State *state) noexcept {
+    int populate_chimera_table(lua_State *state) noexcept {
         if(LuaLibrary::balltze_chimera_script) {
             auto plugins = get_lua_plugins();
             for(auto *&plugin : plugins) {
                 logger.debug("Populating chimera table on Lua plugin {}...", plugin->name());
                 lua_getglobal(plugin->state(), "Balltze");
-                lua_set_chimera_table(plugin->state());
+                set_chimera_table(plugin->state());
                 lua_pop(plugin->state(), 1);
             }
         }

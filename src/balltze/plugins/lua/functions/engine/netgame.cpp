@@ -6,10 +6,23 @@
 #include "../../../plugin.hpp"
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
-#include "../../helpers.hpp"
+#include "../../types.hpp"
 
-namespace Balltze::Plugins {
-    static int lua_engine_get_server_type(lua_State *state) noexcept {
+namespace Balltze::Plugins::Lua {
+    static std::string network_game_server_type_to_string(Engine::NetworkGameServerType type) {
+        switch(type) {
+            case Engine::NETWORK_GAME_SERVER_NONE:
+                return "none";
+            case Engine::NETWORK_GAME_SERVER_DEDICATED:
+                return "dedicated";
+            case Engine::NETWORK_GAME_SERVER_LOCAL:
+                return "local";
+            default:
+                return "unknown";
+        }
+    }
+
+    static int engine_get_server_type(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -29,7 +42,24 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_get_server_gametype(lua_State *state) noexcept {
+    static std::string network_game_server_game_type_to_string(Engine::NetworkGameType gametype) {
+        switch(gametype) {
+            case Engine::NETWORK_GAMETYPE_CTF:
+                return "ctf";
+            case Engine::NETWORK_GAMETYPE_SLAYER:
+                return "slayer";
+            case Engine::NETWORK_GAMETYPE_ODDBALL:
+                return "oddball";
+            case Engine::NETWORK_GAMETYPE_KING:
+                return "king";
+            case Engine::NETWORK_GAMETYPE_RACE:
+                return "race";
+            default:
+                return "none";
+        }
+    }
+
+    static int engine_get_server_gametype(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -54,7 +84,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_current_game_is_team(lua_State *state) noexcept {
+    static int engine_current_game_is_team(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -74,14 +104,14 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg engine_netgame_functions[] = {
-        {"getServerType", lua_engine_get_server_type},
-        {"getServerGametype", lua_engine_get_server_gametype},
-        {"currentGameIsTeam", lua_engine_current_game_is_team},
+        {"getServerType", engine_get_server_type},
+        {"getServerGametype", engine_get_server_gametype},
+        {"currentGameIsTeam", engine_current_game_is_team},
         {nullptr, nullptr}
     };
 
     void set_engine_netgame_functions(lua_State *state) noexcept {
-        luaL_newlibtable(state, engine_netgame_functions);
+        lua_newtable(state);
         luaL_setfuncs(state, engine_netgame_functions, 0);
         lua_setfield(state, -2, "netgame");
     }

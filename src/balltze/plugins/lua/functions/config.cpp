@@ -4,11 +4,11 @@
 #include <balltze/config.hpp>
 #include "../../../logger.hpp"
 #include "../../loader.hpp"
-#include "../helpers.hpp"
+#include "../helpers/function_table.hpp"
 #include "command.hpp"
 
-namespace Balltze::Plugins {
-    static int lua_save_config_file(lua_State *state) {
+namespace Balltze::Plugins::Lua {
+    static int save_config_file(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -39,7 +39,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_load_config_file(lua_State *state) {
+    static int load_config_file(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -70,7 +70,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_config_key_exists(lua_State *state) {
+    static int config_key_exists(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -100,7 +100,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_config_remove_key(lua_State *state) {
+    static int config_remove_key(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -130,7 +130,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_config_get_key_integer(lua_State *state) {
+    static int config_get_key_integer(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -171,7 +171,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_config_get_key_number(lua_State *state) {
+    static int config_get_key_number(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -212,7 +212,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_config_get_key_string(lua_State *state) {
+    static int config_get_key_string(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -253,7 +253,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_config_get_key_boolean(lua_State *state) {
+    static int config_get_key_boolean(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -294,7 +294,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_config_set_key(lua_State *state) {
+    static int config_set_key(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -362,7 +362,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_open_config_file(lua_State *state) {
+    static int open_config_file(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             auto *filepath = luaL_checkstring(state, 1);
@@ -382,31 +382,31 @@ namespace Balltze::Plugins {
             }
             lua_setfield(state, -2, "_config");
 
-            lua_pushcfunction(state, lua_save_config_file);
+            lua_pushcfunction(state, save_config_file);
             lua_setfield(state, -2, "save");
 
-            lua_pushcfunction(state, lua_load_config_file);
+            lua_pushcfunction(state, load_config_file);
             lua_setfield(state, -2, "load");
 
-            lua_pushcfunction(state, lua_config_key_exists);
+            lua_pushcfunction(state, config_key_exists);
             lua_setfield(state, -2, "exists");
 
-            lua_pushcfunction(state, lua_config_remove_key);
+            lua_pushcfunction(state, config_remove_key);
             lua_setfield(state, -2, "remove");
 
-            lua_pushcfunction(state, lua_config_get_key_integer);
+            lua_pushcfunction(state, config_get_key_integer);
             lua_setfield(state, -2, "getInteger");
 
-            lua_pushcfunction(state, lua_config_get_key_number);
+            lua_pushcfunction(state, config_get_key_number);
             lua_setfield(state, -2, "getNumber");
 
-            lua_pushcfunction(state, lua_config_get_key_string);
+            lua_pushcfunction(state, config_get_key_string);
             lua_setfield(state, -2, "getString");
 
-            lua_pushcfunction(state, lua_config_get_key_boolean);
+            lua_pushcfunction(state, config_get_key_boolean);
             lua_setfield(state, -2, "getBoolean");
 
-            lua_pushcfunction(state, lua_config_set_key);
+            lua_pushcfunction(state, config_set_key);
             lua_setfield(state, -2, "set");
 
             return 1;
@@ -418,20 +418,20 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg config_functions[] = {
-        {"openConfigFile", lua_open_config_file},
-        {"saveConfigFile", lua_save_config_file},
-        {"loadConfigFile", lua_load_config_file},
-        {"keyExists", lua_config_key_exists},
-        {"removeKey", lua_config_remove_key},
-        {"getKeyInteger", lua_config_get_key_integer},
-        {"getKeyNumber", lua_config_get_key_number},
-        {"getKeyString", lua_config_get_key_string},
-        {"getKeyBoolean", lua_config_get_key_boolean},
-        {"setKey", lua_config_set_key},
+        {"openConfigFile", open_config_file},
+        {"saveConfigFile", save_config_file},
+        {"loadConfigFile", load_config_file},
+        {"keyExists", config_key_exists},
+        {"removeKey", config_remove_key},
+        {"getKeyInteger", config_get_key_integer},
+        {"getKeyNumber", config_get_key_number},
+        {"getKeyString", config_get_key_string},
+        {"getKeyBoolean", config_get_key_boolean},
+        {"setKey", config_set_key},
         {nullptr, nullptr}
     };
 
     void lua_set_config_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "config", config_functions);
+        create_functions_table(state, "config", config_functions);
     }
 }

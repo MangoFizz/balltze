@@ -75,7 +75,7 @@ namespace Balltze::Engine {
     };
 
     namespace NetworkGameMessages {
-        enum class HudChatType : std::int8_t {
+        enum HudChatType : std::int8_t {
             NONE = -1,
             ALL,
             TEAM,

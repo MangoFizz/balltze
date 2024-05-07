@@ -15,7 +15,6 @@ namespace Balltze::Engine {
     using Point = float;
 	using TickCount32 = std::uint32_t;
     using TickCount16 = std::uint16_t;
-	using Matrix = float[3][3];
 
 	struct TagString {
         char string[0x20] = {};
@@ -228,10 +227,9 @@ namespace Balltze::Engine {
         RotationMatrix &operator =(const RotationMatrix &) noexcept = default;
     };
 
-    struct Resolution {
-        std::uint16_t height;
-        std::uint16_t width;
-    };
+	struct Matrix {
+		Engine::Vector3D m[3];
+	};
 }
 
 #endif

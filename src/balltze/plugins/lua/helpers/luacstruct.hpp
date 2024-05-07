@@ -224,6 +224,10 @@ extern "C" {
     #define luacs_newobject(_L, _typename, _ptr) luacs_newobject0((_L), #_typename, _ptr); 
 
     #define luacs_ctype_exists(_L, _typename) luacs_ctype_exists0((_L), #_typename)
+
+    #define luacs_to_object(_L, _idx, _typename) ((_typename *)luacs_checkobject((_L), (_idx), #_typename))
+
+    #define luacs_checkenumvalue(_L, _idx, _typename) static_cast<_typename>(luacs_checkenumval((_L), (_idx), #_typename))
 }
 
 #endif

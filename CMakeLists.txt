@@ -138,26 +138,19 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/functions/math.cpp
     src/balltze/plugins/lua/functions/misc.cpp
     src/balltze/plugins/lua/functions/output.cpp
-    src/balltze/plugins/lua/helpers/engine_data_types.cpp
-    src/balltze/plugins/lua/helpers/enum.cpp
-    src/balltze/plugins/lua/helpers/metaobject.cpp
     src/balltze/plugins/lua/libraries/lua-fmt/lfmt.c
     src/balltze/plugins/lua/libraries/preloaded_libraries.cpp
     src/balltze/plugins/lua/libraries/preloaded_libraries.rc
-    src/balltze/plugins/lua/metatables/engine_data_types.cpp
-    src/balltze/plugins/lua/metatables/engine_gamestate_device_object.cpp
-    src/balltze/plugins/lua/metatables/engine_gamestate_item_object.cpp
-    src/balltze/plugins/lua/metatables/engine_gamestate_object.cpp
-    src/balltze/plugins/lua/metatables/engine_gamestate_player.cpp
-    src/balltze/plugins/lua/metatables/engine_gamestate_unit_object.cpp
-    src/balltze/plugins/lua/metatables/engine_rasterizer.cpp
-    src/balltze/plugins/lua/metatables/engine_user_interface.cpp
     src/balltze/plugins/lua/types/engine_gamestate_device_object.cpp
     src/balltze/plugins/lua/types/engine_gamestate_item_object.cpp
     src/balltze/plugins/lua/types/engine_gamestate_object.cpp
+    src/balltze/plugins/lua/types/engine_gamestate_player.cpp
     src/balltze/plugins/lua/types/engine_gamestate_unit_object.cpp
+    src/balltze/plugins/lua/types/engine_map.cpp
+    src/balltze/plugins/lua/types/engine_rasterizer.cpp
     src/balltze/plugins/lua/types/engine_types.cpp
     src/balltze/plugins/lua/types/engine_tag.cpp
+    src/balltze/plugins/lua/types/engine_user_interface.cpp
     src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
@@ -165,7 +158,6 @@ add_library(balltze SHARED
 
     ${TAG_REBASE_OFFSETS_FUNCTION_CPP} 
     ${TAG_RESOLVE_DEPENDENCIES_FUNCTION_CPP} 
-    ${TAG_LUA_METATABLE_FUNCTION_CPP}
     ${TAG_LUA_TAG_DEFINITIONS_CPP}
     ${TAG_COPY_DATA_FUNCTION_CPP}
 )

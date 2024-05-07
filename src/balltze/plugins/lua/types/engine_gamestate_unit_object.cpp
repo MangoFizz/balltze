@@ -2,12 +2,13 @@
 
 #include <balltze/engine/game_state.hpp>
 #include "../helpers/bitfield.hpp"
+#include "../helpers/luacstruct.hpp"
 #include "engine_types.hpp"
 #include "engine_tag_data.hpp"
 #include "engine_gamestate_unit_object.hpp"
 
 namespace Balltze::Plugins::Lua {
-    void lua_define_engine_unit_recent_damager_struct(lua_State *state) noexcept {
+    static void define_engine_unit_recent_damager_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitRecentDamager);
         luacs_unsigned_field(state, EngineUnitRecentDamager, last_damage_time, 0);
         luacs_float_field(state, EngineUnitRecentDamager, total_damage, 0);
@@ -16,11 +17,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_recent_damager(lua_State *state, EngineUnitRecentDamager *recent_damager) noexcept {
+    void push_engine_unit_recent_damager(lua_State *state, EngineUnitRecentDamager *recent_damager) noexcept {
         luacs_newobject(state, EngineUnitRecentDamager, recent_damager);
     }
 
-    void lua_define_engine_unit_flags_struct(lua_State *state) noexcept {
+    static void define_engine_unit_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitObjectFlags); 
         luacs_declare_field(state, LUACS_TINT32, NULL, "flags", sizeof(std::uint32_t), 0, 0, 0); 
         luacs_declare_method(state, "unknownBipedSpeechRelated", lua_bitfield_struct_method(state, EngineUnitObjectFlags, unknown_biped_speech_related)); 
@@ -42,11 +43,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_flags(lua_State *state, EngineUnitObjectFlags *flags) noexcept {
+    void push_engine_unit_flags(lua_State *state, EngineUnitObjectFlags *flags) noexcept {
         luacs_newobject(state, EngineUnitObjectFlags, flags);
     }
 
-    void lua_define_engine_unit_control_flags_struct(lua_State *state) noexcept {
+    static void define_engine_unit_control_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitControlFlags); 
         luacs_declare_field(state, LUACS_TINT16, NULL, "flags", sizeof(std::uint16_t), 0, 0, 0); 
         luacs_declare_method(state, "crouch", lua_bitfield_struct_method(state, EngineUnitControlFlags, crouch)); 
@@ -67,11 +68,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_control_flags(lua_State *state, EngineUnitControlFlags *flags) noexcept {
+    void push_engine_unit_control_flags(lua_State *state, EngineUnitControlFlags *flags) noexcept {
         luacs_newobject(state, EngineUnitControlFlags, flags);
     }
 
-    void lua_define_engine_unit_throwing_grenade_state_enum(lua_State *state) noexcept {
+    static void define_engine_unit_throwing_grenade_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitThrowingGrenadeState);
         luacs_enum_declare_value(state, "NONE", Engine::UNIT_THROWING_GRENADE_STATE_NONE);
         luacs_enum_declare_value(state, "BEGIN", Engine::UNIT_THROWING_GRENADE_STATE_BEGIN);
@@ -80,7 +81,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_unit_animation_state_enum(lua_State *state) noexcept {
+    static void define_engine_unit_animation_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitAnimationState);
         luacs_enum_declare_value(state, "INVALID", Engine::UNI_ANIMATION_STATE_INVALID);
         luacs_enum_declare_value(state, "IDLE", Engine::UNI_ANIMATION_STATE_IDLE);
@@ -134,7 +135,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_unit_replacement_animation_state_enum(lua_State *state) noexcept {
+    static void define_engine_unit_replacement_animation_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitReplacementAnimationState);
         luacs_enum_declare_value(state, "NONE", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_NONE);
         luacs_enum_declare_value(state, "DISARM", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_DISARM);
@@ -148,7 +149,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_unit_overlay_animation_state_enum(lua_State *state) noexcept {
+    static void define_engine_unit_overlay_animation_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitOverlayAnimationState);
         luacs_enum_declare_value(state, "NONE", Engine::UNIT_OVERLAY_ANIMATION_STATE_NONE);
         luacs_enum_declare_value(state, "FIRE1", Engine::UNIT_OVERLAY_ANIMATION_STATE_FIRE1);
@@ -160,7 +161,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_unit_base_seat_enum(lua_State *state) noexcept {
+    static void define_engine_unit_base_seat_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitBaseSeat);
         luacs_enum_declare_value(state, "ASLEEP", Engine::UNIT_BASE_SEAT_ASLEEP);
         luacs_enum_declare_value(state, "ALERT", Engine::UNIT_BASE_SEAT_ALERT);
@@ -171,18 +172,18 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_unit_animation_state_data_struct(lua_State *state) noexcept {
+    static void define_engine_unit_animation_state_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitAnimationStateData);
         luacs_int_field(state, EngineUnitAnimationStateData, animation_index, 0);
         luacs_int_field(state, EngineUnitAnimationStateData, frame_index, 0);
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_animation_state_data(lua_State *state, EngineUnitAnimationStateData *data) noexcept {
+    void push_engine_unit_animation_state_data(lua_State *state, EngineUnitAnimationStateData *data) noexcept {
         luacs_newobject(state, EngineUnitAnimationStateData, data);
     }
 
-    void lua_define_engine_unit_animation_flags_struct(lua_State *state) noexcept {
+    static void define_engine_unit_animation_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitAnimationFlags); 
         luacs_declare_field(state, LUACS_TINT8, NULL, "flags", sizeof(std::uint8_t), 0, 0, 0); 
         luacs_declare_method(state, "animationBit0Unknown", lua_bitfield_struct_method(state, EngineUnitAnimationFlags, animation_bit0_unknown)); 
@@ -192,11 +193,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_animation_flags(lua_State *state, EngineUnitAnimationFlags *flags) noexcept {
+    void push_engine_unit_animation_flags(lua_State *state, EngineUnitAnimationFlags *flags) noexcept {
         luacs_newobject(state, EngineUnitAnimationFlags, flags);
     }
 
-    void lua_define_engine_unit_animation_data_struct(lua_State *state) noexcept {
+    static void define_engine_unit_animation_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitAnimationData);
         luacs_nested_field(state, EngineUnitAnimationData, EngineUnitAnimationFlags, flags, 0);
         luacs_int_field(state, EngineUnitAnimationData, unknown_some_animation_index_maybe, 0);
@@ -220,11 +221,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_unit_animation_data(lua_State *state, EngineUnitAnimationData *data) noexcept {
+    void push_engine_unit_animation_data(lua_State *state, EngineUnitAnimationData *data) noexcept {
         luacs_newobject(state, EngineUnitAnimationData, data);
     }
 
-    void lua_define_engine_unit_speech_priority_enum(lua_State *state) noexcept {
+    static void define_engine_unit_speech_priority_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitSpeechPriority);
         luacs_enum_declare_value(state, "NONE", Engine::UNIT_SPEECH_PRIORITY_NONE);
         luacs_enum_declare_value(state, "IDLE", Engine::UNIT_SPEECH_PRIORITY_IDLE);
@@ -240,7 +241,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_unit_scream_type_enum(lua_State *state) noexcept {
+    static void define_engine_unit_scream_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitScreamType);
         luacs_enum_declare_value(state, "FEAR", Engine::UNIT_SCREAM_TYPE_FEAR);
         luacs_enum_declare_value(state, "ENEMY_GRENADE", Engine::UNIT_SCREAM_TYPE_ENEMY_GRENADE);
@@ -251,7 +252,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_ai_communication_type_enum(lua_State *state) noexcept {
+    static void define_engine_ai_communication_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineAiCommunicationType);
         luacs_enum_declare_value(state, "DEATH", Engine::AI_COMMUNICATION_TYPE_DEATH);
         luacs_enum_declare_value(state, "SPREE", Engine::AI_COMMUNICATION_TYPE_SPREE);
@@ -313,18 +314,18 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_ai_communication_packet_struct(lua_State *state) noexcept {
+    static void define_engine_ai_communication_packet_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineAiCommunicationPacket);
         luacs_enum_field(state, EngineAiCommunicationPacket, EngineAiCommunicationType, type, 0);
         luacs_bool_field(state, EngineAiCommunicationPacket, broken, 0);
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_ai_communication_packet(lua_State *state, EngineAiCommunicationPacket *packet) noexcept {
+    void push_engine_ai_communication_packet(lua_State *state, EngineAiCommunicationPacket *packet) noexcept {
         luacs_newobject(state, EngineAiCommunicationPacket, packet);
     }
 
-    void lua_define_engine_unit_speech_struct(lua_State *state) noexcept {
+    static void define_engine_unit_speech_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitSpeech);
         luacs_enum_field(state, EngineUnitSpeech, EngineUnitSpeechPriority, priority, 0);
         luacs_enum_field(state, EngineUnitSpeech, EngineUnitScreamType, scream_type, 0);
@@ -336,11 +337,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_speech(lua_State *state, EngineUnitSpeech *speech) noexcept {
+    void push_engine_unit_speech(lua_State *state, EngineUnitSpeech *speech) noexcept {
         luacs_newobject(state, EngineUnitSpeech, speech);
     }
 
-    void lua_define_engine_unit_speech_data_struct(lua_State *state) noexcept {
+    static void define_engine_unit_speech_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitSpeechData);
         luacs_nested_field(state, EngineUnitSpeechData, EngineUnitSpeech, current, 0);
         luacs_nested_field(state, EngineUnitSpeechData, EngineUnitSpeech, next, 0);
@@ -360,11 +361,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_speech_data(lua_State *state, EngineUnitSpeechData *data) noexcept {
+    void push_engine_unit_speech_data(lua_State *state, EngineUnitSpeechData *data) noexcept {
         luacs_newobject(state, EngineUnitSpeechData, data);
     }
 
-    void lua_define_engine_unit_control_data_struct(lua_State *state) noexcept {
+    static void define_engine_unit_control_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitControlData);
         luacs_int_field(state, EngineUnitControlData, animation_state, 0);
         luacs_int_field(state, EngineUnitControlData, aiming_speed, 0);
@@ -380,11 +381,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_control_data(lua_State *state, EngineUnitControlData *data) noexcept {
+    void push_engine_unit_control_data(lua_State *state, EngineUnitControlData *data) noexcept {
         luacs_newobject(state, EngineUnitControlData, data);
     }
 
-    void lua_define_engine_unit_object_struct(lua_State *state) noexcept {
+    static void define_engine_unit_object_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitObject);
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, actor, 0);
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, swarm_actor, 0);
@@ -471,11 +472,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_unit_object(lua_State *state, EngineUnitObject *object) noexcept {
+    void push_engine_unit_object(lua_State *state, EngineUnitObject *object) noexcept {
         luacs_newobject(state, EngineUnitObject, object);
     }
 
-    void lua_define_engine_biped_flags_struct(lua_State *state) noexcept {
+    static void define_engine_biped_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBipedObjectFlags); 
         luacs_declare_field(state, LUACS_TINT32, NULL, "flags", sizeof(std::uint32_t), 0, 0, 0); 
         luacs_declare_method(state, "airborne", lua_bitfield_struct_method(state, EngineBipedObjectFlags, airborne)); 
@@ -487,11 +488,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_biped_flags(lua_State *state, EngineBipedObjectFlags *flags) noexcept {
+    void push_engine_biped_flags(lua_State *state, EngineBipedObjectFlags *flags) noexcept {
         luacs_newobject(state, EngineBipedObjectFlags, flags);
     }
 
-    void lua_define_engine_biped_movement_state_enum(lua_State *state) noexcept {
+    static void define_engine_biped_movement_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineBipedMovementState);
         luacs_enum_declare_value(state, "MOVING", Engine::BIPED_MOVEMENT_STATE_MOVING);
         luacs_enum_declare_value(state, "IDLE", Engine::BIPED_MOVEMENT_STATE_IDLE);
@@ -499,7 +500,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_biped_network_delta_struct(lua_State *state) noexcept {
+    static void define_engine_biped_network_delta_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBipedNetworkDelta);
         luacs_int_array_field(state, EngineBipedNetworkDelta, grenade_counts, 0);
         luacs_float_field(state, EngineBipedNetworkDelta, body_vitality, 0);
@@ -508,11 +509,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_biped_network_delta(lua_State *state, EngineBipedNetworkDelta *delta) noexcept {
+    void push_engine_biped_network_delta(lua_State *state, EngineBipedNetworkDelta *delta) noexcept {
         luacs_newobject(state, EngineBipedNetworkDelta, delta);
     }
 
-    void lua_define_engine_biped_network_struct(lua_State *state) noexcept {
+    static void define_engine_biped_network_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineBipedNetwork);
         luacs_bool_field(state, EngineBipedNetwork, baseline_valid, 0);
         luacs_int_field(state, EngineBipedNetwork, baseline_id, 0);
@@ -523,11 +524,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_biped_network(lua_State *state, EngineBipedNetwork *network) noexcept {
+    void push_engine_biped_network(lua_State *state, EngineBipedNetwork *network) noexcept {
         luacs_newobject(state, EngineBipedNetwork, network);
     }
 
-    void lua_define_engine_biped_object_struct(lua_State *state) noexcept {
+    static void define_engine_biped_object_struct(lua_State *state) noexcept {
         luacs_newderivedstruct(state, EngineBipedObject, EngineUnitObject);
         luacs_nested_field(state, EngineBipedObject, EngineBipedFlags, biped_flags, 0);
         luacs_int_field(state, EngineBipedObject, landing_timer, 0);
@@ -554,11 +555,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_biped_object(lua_State *state, EngineBipedObject *object) noexcept {
+    void push_engine_biped_object(lua_State *state, EngineBipedObject *object) noexcept {
         luacs_newobject(state, EngineBipedObject, object);
     }
 
-    void lua_define_engine_vehicle_flags_struct(lua_State *state) noexcept {
+    static void define_engine_vehicle_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineVehicleObjectFlags); 
         luacs_declare_field(state, LUACS_TINT8, NULL, "flags", sizeof(std::uint8_t), 0, 0, 0); 
         luacs_declare_method(state, "vehicleUnknown0", lua_bitfield_struct_method(state, EngineVehicleObjectFlags, vehicle_unknown0)); 
@@ -570,11 +571,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_vehicle_flags(lua_State *state, EngineVehicleObjectFlags *flags) noexcept {
+    void push_engine_vehicle_flags(lua_State *state, EngineVehicleObjectFlags *flags) noexcept {
         luacs_newobject(state, EngineVehicleObjectFlags, flags);
     }
 
-    void lua_define_engine_vehicle_network_data_struct(lua_State *state) noexcept {
+    static void define_engine_vehicle_network_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineVehicleNetworkData);
         luacs_bool_field(state, EngineVehicleNetworkData, at_rest, 0);
         luacs_nested_field(state, EngineVehicleNetworkData, EngineVector3D, position, 0);
@@ -585,11 +586,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_vehicle_network_data(lua_State *state, EngineVehicleNetworkData *data) noexcept {
+    void push_engine_vehicle_network_data(lua_State *state, EngineVehicleNetworkData *data) noexcept {
         luacs_newobject(state, EngineVehicleNetworkData, data);
     }
 
-    void lua_define_engine_vehicle_network_struct(lua_State *state) noexcept {
+    static void define_engine_vehicle_network_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineVehicleNetwork);
         luacs_bool_field(state, EngineVehicleNetwork, time_valid, 0);
         luacs_bool_field(state, EngineVehicleNetwork, baseline_valid, 0);
@@ -604,11 +605,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_vehicle_network(lua_State *state, EngineVehicleNetwork *network) noexcept {
+    void push_engine_vehicle_network(lua_State *state, EngineVehicleNetwork *network) noexcept {
         luacs_newobject(state, EngineVehicleNetwork, network);
     }
 
-    void lua_define_engine_vehicle_object_struct(lua_State *state) noexcept {
+    static void define_engine_vehicle_object_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineVehicleObject);
         luacs_nested_field(state, EngineVehicleObject, EngineVehicleFlags, vehicle_flags, 0);
         luacs_float_field(state, EngineVehicleObject, speed, 0);
@@ -628,7 +629,95 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_vehicle_object(lua_State *state, EngineVehicleObject *object) noexcept {
+    void push_engine_vehicle_object(lua_State *state, EngineVehicleObject *object) noexcept {
         luacs_newobject(state, EngineVehicleObject, object);
+    }
+
+    void define_engine_gamestate_unit_object_types(lua_State *state) noexcept {
+        luacs_newenum(state, EngineUnitThrowingGrenadeState);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineUnitAnimationState);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineUnitReplacementAnimationState);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineUnitOverlayAnimationState);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineUnitBaseSeat);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineUnitSpeechPriority);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineUnitScreamType);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineAiCommunicationType);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineBipedMovementState);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitRecentDamager);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitObjectFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitControlFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitAnimationStateData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitAnimationFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitAnimationData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineAiCommunicationPacket);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitSpeech);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitSpeechData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitControlData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineUnitObject);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBipedObjectFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBipedNetworkDelta);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineBipedNetwork);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineVehicleObjectFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineVehicleNetworkData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineVehicleNetwork);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineVehicleObject);
+        lua_pop(state, 1);
+        luacs_newderivedstruct(state, EngineBipedObject, EngineUnitObject);
+        lua_pop(state, 1);
+
+        define_engine_unit_throwing_grenade_state_enum(state);
+        define_engine_unit_animation_state_enum(state);
+        define_engine_unit_replacement_animation_state_enum(state);
+        define_engine_unit_overlay_animation_state_enum(state);
+        define_engine_unit_base_seat_enum(state);
+        define_engine_unit_speech_priority_enum(state);
+        define_engine_unit_scream_type_enum(state);
+        define_engine_ai_communication_type_enum(state);
+        define_engine_biped_movement_state_enum(state);
+        define_engine_unit_recent_damager_struct(state);
+        define_engine_unit_flags_struct(state);
+        define_engine_unit_control_flags_struct(state);
+        define_engine_unit_animation_state_data_struct(state);
+        define_engine_unit_animation_flags_struct(state);
+        define_engine_unit_animation_data_struct(state);
+        define_engine_ai_communication_packet_struct(state);
+        define_engine_unit_speech_struct(state);
+        define_engine_unit_speech_data_struct(state);
+        define_engine_unit_control_data_struct(state);
+        define_engine_unit_object_struct(state);
+        define_engine_biped_flags_struct(state);
+        define_engine_biped_network_delta_struct(state);
+        define_engine_biped_network_struct(state);
+        define_engine_biped_object_struct(state);
+        define_engine_vehicle_flags_struct(state);
+        define_engine_vehicle_network_data_struct(state);
+        define_engine_vehicle_network_struct(state);
+        define_engine_vehicle_object_struct(state);
     }
 }

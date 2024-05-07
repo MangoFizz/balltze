@@ -12,6 +12,7 @@
 #include "../math.hpp"
 #include "../api.hpp"
 #include "core.hpp"
+#include "rasterizer.hpp"
 #include "tag_definitions/hud_globals.hpp"
 #include "tag_definitions/bitmap.hpp"
 #include "tag_definitions/ui_widget_definition.hpp"

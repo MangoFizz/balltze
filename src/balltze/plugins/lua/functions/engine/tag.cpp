@@ -6,12 +6,10 @@
 #include "../../../plugin.hpp"
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
-#include "../../helpers.hpp"
 #include "../../types.hpp"
-#include "../../metatables.hpp"
 
-namespace Balltze::Plugins {
-    static int lua_engine_get_tag_data_header(lua_State *state) noexcept {
+namespace Balltze::Plugins::Lua {
+    static int engine_get_tag_data_header(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -53,21 +51,21 @@ namespace Balltze::Plugins {
         }
     }
 
-    static int lua_engine_get_tag(lua_State *state) noexcept {
+    static int engine_get_tag(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             Engine::Tag *tag_entry = nullptr;
             if(args == 1) {
-                auto tag_handle = lua_to_engine_tag_handle(state, 1);
-                if(tag_handle.is_null()) {
+                auto tag_handle = get_engine_resource_handle(state, 1);
+                if(!tag_handle || tag_handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Engine.tag.getTag.");
                 }
-                if(tag_handle.id != 0) {
-                    tag_entry = Engine::get_tag(tag_handle);
+                if(tag_handle->id != 0) {
+                    tag_entry = Engine::get_tag(*tag_handle);
                 }
                 else {
-                    tag_entry = Engine::get_tag(tag_handle.index);
+                    tag_entry = Engine::get_tag(tag_handle->index);
                 }
             }
             else if(args == 2) {
@@ -86,7 +84,7 @@ namespace Balltze::Plugins {
             }
 
             if(tag_entry) {
-                Lua::lua_push_engine_tag(state, tag_entry);
+                push_meta_engine_tag(state, tag_entry);
             }
             else {
                 lua_pushnil(state);
@@ -102,13 +100,13 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg engine_tag_functions[] = {
-        {"getTagDataHeader", lua_engine_get_tag_data_header},
-        {"getTag", lua_engine_get_tag},
+        {"getTagDataHeader", engine_get_tag_data_header},
+        {"getTag", engine_get_tag},
         {nullptr, nullptr}
     };
 
     void set_engine_tag_functions(lua_State *state) noexcept {
-        luaL_newlibtable(state, engine_tag_functions);
+        lua_newtable(state);
         luaL_setfuncs(state, engine_tag_functions, 0);
         lua_setfield(state, -2, "tag");
     }

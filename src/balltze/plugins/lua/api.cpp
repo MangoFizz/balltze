@@ -36,6 +36,6 @@ namespace Balltze::Plugins {
         // Set up prelaoded libraries
         lua_set_preloaded_libraries(state);
 
-        Lua::lua_define_engine_structs(state);
+        Lua::define_engine_structs(state);
     }
 }

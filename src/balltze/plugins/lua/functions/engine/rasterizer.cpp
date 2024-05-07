@@ -6,20 +6,15 @@
 #include "../../../plugin.hpp"
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
-#include "../../helpers.hpp"
+#include "../../types.hpp"
 
-namespace Balltze::Plugins {
-    static int lua_engine_get_resolution(lua_State *state) noexcept {
+namespace Balltze::Plugins::Lua {
+    static int engine_get_resolution(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
-                auto resolution = Engine::get_resolution();
-                lua_newtable(state);
-                lua_pushinteger(state, resolution.width);
-                lua_setfield(state, -2, "width");
-                lua_pushinteger(state, resolution.height);
-                lua_setfield(state, -2, "height");
+                push_engine_resolution(state, &Engine::get_resolution());
                 return 1;
             }
             else {
@@ -33,12 +28,12 @@ namespace Balltze::Plugins {
     }
 
     static const luaL_Reg engine_renderer_functions[] = {
-        {"getResolution", lua_engine_get_resolution},
+        {"getResolution", engine_get_resolution},
         {nullptr, nullptr}
     };
 
     void set_engine_rasterizer_functions(lua_State *state) noexcept {
-        luaL_newlibtable(state, engine_renderer_functions);
+        lua_newtable(state);
         luaL_setfuncs(state, engine_renderer_functions, 0);
         lua_setfield(state, -2, "rasterizer");
     }

@@ -7,8 +7,8 @@
 #include "../../../logger.hpp"
 #include "../../plugin.hpp"
 #include "../../loader.hpp"
-#include "../helpers.hpp"
-#include "../metatables.hpp"
+#include "../helpers/function_table.hpp"
+#include "../types.hpp"
 
 namespace Balltze::Event {
     extern std::string ip_address_int_to_string(std::uint32_t address_int) noexcept;
@@ -232,288 +232,6 @@ namespace Balltze::Plugins {
         lua_pop(state, 2);
     };
 
-    static int lua_camera_event_args__index(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<CameraEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in CameraEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "camera") {
-            lua_push_meta_engine_camera_data(state, *data->camera, true);
-        }
-        else if(field == "type") {
-            lua_pushstring(state, camera_type_to_string(data->type).c_str());
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in CameraEventArgs metaobject.", field.c_str());
-        }
-        return 1;
-    }
-
-    static int lua_camera_event_args__newindex(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<CameraEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in CameraEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "camera") {
-            return luaL_error(state, "Field camera is read-only in CameraEventArgs metaobject.");
-        }
-        else if(field == "type") {
-            return luaL_error(state, "Field type is read-only in CameraEventArgs metaobject.");
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in CameraEventArgs metaobject.", field.c_str());
-        }
-    }
-
-    static int lua_game_input_event_args__index(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<GameInputEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in GameInputEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "device") {
-            lua_pushstring(state, input_device_to_string(data->device).c_str());
-        } 
-        else if(field == "button") {
-            switch(data->device) {
-                case Engine::INPUT_DEVICE_MOUSE:
-                    lua_pushstring(state, Engine::get_mouse_button_name(static_cast<Engine::MouseButton>(data->button.key_code)).c_str());
-                    break;
-
-                case Engine::INPUT_DEVICE_GAMEPAD:
-                    lua_pushstring(state, Engine::get_gamepad_button_name(data->button.gamepad_button).c_str());
-                    break;
-
-                default:
-                    lua_pushinteger(state, data->button.key_code);
-                    break;
-            }
-        }
-        else if(field == "mapped") {
-            lua_pushboolean(state, data->mapped);
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in GameInputEventArgs metaobject.", field.c_str());
-        }
-        return 1;
-    }
-
-    static int lua_game_input_event_args__newindex(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<GameInputEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in GameInputEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "device") {
-            return luaL_error(state, "Field device is read-only in GameInputEventArgs metaobject.");
-        }
-        else if(field == "button") {
-            return luaL_error(state, "Field button is read-only in GameInputEventArgs metaobject.");
-        }
-        else if(field == "mapped") {
-            return luaL_error(state, "Field mapped is read-only in GameInputEventArgs metaobject.");
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in GameInputEventArgs metaobject.", field.c_str());
-        }
-    }
-
-    static std::string hud_hold_for_action_message_slice_to_string(HudHoldForActionMessageSlice slice) {
-        switch(slice) {
-            case HudHoldForActionMessageSlice::MESSAGE:
-                return "message";
-            case HudHoldForActionMessageSlice::BUTTON_NAME_LEFT_QUOTE:
-                return "button_name_left_quote";
-            case HudHoldForActionMessageSlice::BUTTON_NAME_RIGHT_QUOTE:
-                return "button_name_right_quote";
-            case HudHoldForActionMessageSlice::BUTTON_NAME:
-                return "button_name";
-            case HudHoldForActionMessageSlice::WEAPON_ICON:
-                return "weapon_icon";
-            default:
-                return "unknown";
-        }
-    }
-
-    static std::string button_type_to_string(HudHoldToActionMessageButton::Type type) {
-        switch(type) {
-            case HudHoldToActionMessageButton::Type::BUTTON:
-                return "button";
-            case HudHoldToActionMessageButton::Type::AXIS:
-                return "axis";
-            default:
-                return "unknown";
-        }
-    }
-
-    static std::string button_axis_direction_to_string(HudHoldToActionMessageButton::AxisDirection direction) {
-        switch(direction) {
-            case HudHoldToActionMessageButton::AxisDirection::POSITIVE:
-                return "positive";
-            case HudHoldToActionMessageButton::AxisDirection::NEGATIVE:
-                return "negative";
-            default:
-                return "unknown";
-        }
-    }
-
-    static int lua_push_hud_hold_to_action_message_button(lua_State *state, const HudHoldToActionMessageButton &button) noexcept {
-        lua_newtable(state);
-        lua_pushstring(state, input_device_to_string(button.device).c_str());
-        lua_setfield(state, -2, "device");
-        lua_pushstring(state, button_type_to_string(button.type).c_str());
-        lua_setfield(state, -2, "type");
-        lua_pushinteger(state, button.index);
-        lua_setfield(state, -2, "index");
-        lua_pushstring(state, button_axis_direction_to_string(button.axis_direction).c_str());
-        lua_setfield(state, -2, "axisDirection");
-        return 1;
-    }
-
-    static int lua_hud_hold_for_action_message_event_args__index(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<HudHoldForActionMessageArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in HudHoldForActionMessageArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "slice") {
-            lua_pushstring(state, hud_hold_for_action_message_slice_to_string(data->slice).c_str());
-        }
-        else if(field == "offset") {
-            lua_push_meta_engine_point2_d_int(state, data->offset);
-        }
-        else if(field == "color") {
-            lua_push_meta_engine_color_a_r_g_b_int(state, const_cast<Engine::ColorARGBInt &>(data->color), true);
-        }
-        else if(field == "text") {
-            lua_pushlightuserdata(state, data->text.data());
-        }
-        else if(field == "button") {
-            if(data->button.has_value()) {
-                lua_push_hud_hold_to_action_message_button(state, data->button.value());
-            }
-            else {
-                lua_pushnil(state);
-            }
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in HudHoldForActionMessageArgs metaobject.", field.c_str());
-        }
-        return 1;
-    }
-
-    static int lua_hud_hold_for_action_message_event_args__newindex(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<HudHoldForActionMessageArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in HudHoldForActionMessageArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "slice") {
-            return luaL_error(state, "Field slice is read-only in HudHoldForActionMessageArgs metaobject.");
-        }
-        else if(field == "offset") {
-            return luaL_error(state, "Invalid operation on field offset in HudHoldForActionMessageArgs metaobject.");
-        }
-        else if(field == "color") {
-            return luaL_error(state, "Field color is read-only in HudHoldForActionMessageArgs metaobject.");
-        }
-        else if(field == "text") {
-            return luaL_error(state, "Invalid operation on field text in HudHoldForActionMessageArgs metaobject. Write the text using a write operation on the string address.");
-        }
-        else if(field == "button") {
-            return luaL_error(state, "Field button is read-only in HudHoldForActionMessageArgs metaobject.");
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in HudHoldForActionMessageArgs metaobject.", field.c_str());
-        }
-    }
-
-    static int lua_map_file_load_event_args__index(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<MapFileLoadEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in MapFileLoadEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "mapName") {
-            lua_pushstring(state, data->map_name.c_str());
-        }
-        else if(field == "mapPath") {
-            lua_pushstring(state, data->map_path.c_str());
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in MapFileLoadEventArgs metaobject.", field.c_str());
-        }
-        return 1;
-    }
-
-    static int lua_map_file_load_event_args__newindex(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<MapFileLoadEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in MapFileLoadEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "mapName") {
-            return luaL_error(state, "Field mapName is read-only in MapFileLoadEventArgs metaobject.");
-        }
-        else if(field == "mapPath") {
-            return luaL_error(state, "Field mapPath is read-only in MapFileLoadEventArgs metaobject.");
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in MapFileLoadEventArgs metaobject.", field.c_str());
-        }
-    }
-
-    static int lua_map_load_event_args__index(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<MapLoadEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in MapLoadEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "name") {
-            lua_pushstring(state, data->name.c_str());
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in MapLoadEventArgs metaobject.", field.c_str());
-        }
-        return 1;
-    }
-
-    static int lua_map_load_event_args__newindex(lua_State *state) noexcept {
-        auto *data = lua_from_meta_object<MapLoadEventArgs>(state, 1); 
-        auto *key = lua_tostring(state, 2);
-        if(key == nullptr) {  
-            return luaL_error(state, "Invalid key in MapLoadEventArgs metaobject.");
-        } 
-        
-        std::string field = key;
-        if(field == "name") {
-            return luaL_error(state, "Field name is read-only in MapLoadEventArgs metaobject.");
-        }
-        else {
-            return luaL_error(state, "Invalid field '%s' in MapLoadEventArgs metaobject.", field.c_str());
-        }
-    }
-
     static std::string chat_message_type_to_string(Engine::NetworkGameMessages::HudChatType type) {
         switch(type) {
             case Engine::NetworkGameMessages::HudChatType::NONE:
@@ -583,7 +301,7 @@ namespace Balltze::Plugins {
         
         std::string field = key;
         if(field == "object") {
-            lua_push_engine_object_handle(state, const_cast<Engine::ObjectHandle *>(&data->object));
+            Lua::lua_push_engine_object_handle(state, const_cast<Engine::ObjectHandle *>(&data->object));
         }
         else if(field == "damageEffect") {
             lua_push_engine_tag_handle(state, const_cast<Engine::ObjectHandle *>(&data->damage_effect));
@@ -595,7 +313,7 @@ namespace Balltze::Plugins {
             lua_push_engine_player_handle(state, const_cast<Engine::PlayerHandle *>(&data->causer_player));
         }
         else if(field == "causerObject") {
-            lua_push_engine_object_handle(state, const_cast<Engine::ObjectHandle *>(&data->causer_object));
+            Lua::lua_push_engine_object_handle(state, const_cast<Engine::ObjectHandle *>(&data->causer_object));
         }
         else {
             return luaL_error(state, "Invalid field '%s' in ObjectDamageEventArgs metaobject.", field.c_str());

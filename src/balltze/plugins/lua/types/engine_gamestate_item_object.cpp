@@ -2,13 +2,14 @@
 
 #include <balltze/engine/game_state.hpp>
 #include "../helpers/bitfield.hpp"
+#include "../helpers/luacstruct.hpp"
 #include "engine_types.hpp"
 #include "engine_tag_data.hpp"
 #include "engine_gamestate_object.hpp"
 #include "engine_gamestate_item_object.hpp"
 
 namespace Balltze::Plugins::Lua {
-    void lua_define_engine_item_object_struct(lua_State *state) noexcept {
+    static void define_engine_item_object_struct(lua_State *state) noexcept {
         luacs_newderivedstruct(state, EngineItemObject, EngineBaseObject);
         luacs_unsigned_field(state, EngineItemObject, flags, 0);
         luacs_int_field(state, EngineItemObject, ticks_until_detonation, 0);
@@ -23,21 +24,21 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_item_object(lua_State *state, EngineItemObject *object) noexcept {
+    void push_engine_item_object(lua_State *state, EngineItemObject *object) noexcept {
         luacs_newobject(state, EngineItemObject, object);
     }
 
-    void lua_define_engine_garbage_object_struct(lua_State *state) noexcept {
+    static void define_engine_garbage_object_struct(lua_State *state) noexcept {
         luacs_newderivedstruct(state, EngineGarbageObject, EngineItemObject);
         luacs_unsigned_field(state, EngineGarbageObject, ticks_until_garbage_collection, 0);
         lua_pop(state, 1);
     }
 
-    void lua_push_engine_garbage_object(lua_State *state, EngineGarbageObject *object) noexcept {
+    void push_engine_garbage_object(lua_State *state, EngineGarbageObject *object) noexcept {
         luacs_newobject(state, EngineGarbageObject, object);
     }
 
-    void lua_define_weapon_state_enum(lua_State *state) noexcept {
+    static void define_weapon_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineWeaponState);
         luacs_enum_declare_value(state, "IDLE", Engine::WEAPON_STATE_IDLE);
         luacs_enum_declare_value(state, "FIRE1", Engine::WEAPON_STATE_FIRE1);
@@ -53,7 +54,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_weapon_trigger_struct(lua_State *state) noexcept {
+    static void define_engine_weapon_trigger_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineGameStateWeaponTrigger);
         luacs_int_field(state, EngineGameStateWeaponTrigger, idle_time, 0);
         luacs_enum_field(state, EngineGameStateWeaponTrigger, EngineWeaponState, state, 0);
@@ -70,11 +71,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_weapon_trigger(lua_State *state, EngineGameStateWeaponTrigger *trigger) noexcept {
+    void push_engine_weapon_trigger(lua_State *state, EngineGameStateWeaponTrigger *trigger) noexcept {
         luacs_newobject(state, EngineGameStateWeaponTrigger, trigger);
     }
 
-    void lua_define_weapon_magazine_state_enum(lua_State *state) noexcept {
+    static void define_weapon_magazine_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineGameStateWeaponMagazineState);
         luacs_enum_declare_value(state, "IDLE", Engine::WEAPON_MAGAZINE_STATE_IDLE);
         luacs_enum_declare_value(state, "CHAMBERING_START", Engine::WEAPON_MAGAZINE_STATE_CHAMBERING_START);
@@ -83,7 +84,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void lua_define_engine_weapon_magazine_struct(lua_State *state) noexcept {
+    static void define_engine_weapon_magazine_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineGameStateWeaponMagazine);
         luacs_enum_field(state, EngineGameStateWeaponMagazine, EngineGameStateWeaponMagazineState, state, 0);
         luacs_unsigned_field(state, EngineGameStateWeaponMagazine, reload_ticks_remaining, 0);
@@ -96,22 +97,22 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_weapon_magazine(lua_State *state, EngineGameStateWeaponMagazine *magazine) noexcept {
+    void push_engine_weapon_magazine(lua_State *state, EngineGameStateWeaponMagazine *magazine) noexcept {
         luacs_newobject(state, EngineGameStateWeaponMagazine, magazine);
     }
 
-    void lua_define_engine_weapon_reload_start_data_struct(lua_State *state) noexcept {
+    static void define_engine_weapon_reload_start_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineWeaponReloadStartData);
         luacs_int_array_field(state, EngineWeaponReloadStartData, total_rounds, 0);
         luacs_int_array_field(state, EngineWeaponReloadStartData, loaded_rounds, 0);
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_weapon_reload_start_data(lua_State *state, EngineWeaponReloadStartData *reload_start_data) noexcept {
+    void push_engine_weapon_reload_start_data(lua_State *state, EngineWeaponReloadStartData *reload_start_data) noexcept {
         luacs_newobject(state, EngineWeaponReloadStartData, reload_start_data);
     }
 
-    void lua_define_engine_weapon_network_data_struct(lua_State *state) noexcept {
+    static void define_engine_weapon_network_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineWeaponNetworkData);
         luacs_nested_field(state, EngineWeaponNetworkData, EngineVector3D, position, 0);
         luacs_nested_field(state, EngineWeaponNetworkData, EngineVector3D, transitional_velocity, 0);
@@ -121,11 +122,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_weapon_network_data(lua_State *state, EngineWeaponNetworkData *network_data) noexcept {
+    void push_engine_weapon_network_data(lua_State *state, EngineWeaponNetworkData *network_data) noexcept {
         luacs_newobject(state, EngineWeaponNetworkData, network_data);
     }
 
-    void lua_define_engine_weapon_network_struct(lua_State *state) noexcept {
+    static void define_engine_weapon_network_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineWeaponNetwork);
         luacs_bool_field(state, EngineWeaponNetwork, baseline_valid, 0);
         luacs_int_field(state, EngineWeaponNetwork, baseline_index, 0);
@@ -136,11 +137,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_weapon_network(lua_State *state, EngineWeaponNetwork *network) noexcept {
+    void push_engine_weapon_network(lua_State *state, EngineWeaponNetwork *network) noexcept {
         luacs_newobject(state, EngineWeaponNetwork, network);
     }
 
-    void lua_define_engine_weapon_object_struct(lua_State *state) noexcept {
+    static void define_engine_weapon_object_struct(lua_State *state) noexcept {
         luacs_newderivedstruct(state, EngineWeaponObject, EngineItemObject);
         luacs_unsigned_field(state, EngineWeaponObject, flags, 0);
         luacs_unsigned_field(state, EngineWeaponObject, owner_unit_flags, 0);
@@ -161,11 +162,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_weapon_object(lua_State *state, EngineWeaponObject *object) noexcept {
+    void push_engine_weapon_object(lua_State *state, EngineWeaponObject *object) noexcept {
         luacs_newobject(state, EngineWeaponObject, object);
     }
 
-    void lua_define_engine_equipment_network_data_struct(lua_State *state) noexcept {
+    static void define_engine_equipment_network_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineEquipmentNetworkData);
         luacs_nested_field(state, EngineEquipmentNetworkData, EngineVector3D, position, 0);
         luacs_nested_field(state, EngineEquipmentNetworkData, EngineVector3D, transitional_velocity, 0);
@@ -173,11 +174,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_equipment_network_data(lua_State *state, EngineEquipmentNetworkData *network_data) noexcept {
+    void push_engine_equipment_network_data(lua_State *state, EngineEquipmentNetworkData *network_data) noexcept {
         luacs_newobject(state, EngineEquipmentNetworkData, network_data);
     }
 
-    void lua_define_engine_equipment_network_struct(lua_State *state) noexcept {
+    static void define_engine_equipment_network_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineEquipmentNetwork);
         luacs_bool_field(state, EngineEquipmentNetwork, baseline_valid, 0);
         luacs_int_field(state, EngineEquipmentNetwork, baseline_index, 0);
@@ -188,21 +189,21 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_equipment_network(lua_State *state, EngineEquipmentNetwork *network) noexcept {
+    void push_engine_equipment_network(lua_State *state, EngineEquipmentNetwork *network) noexcept {
         luacs_newobject(state, EngineEquipmentNetwork, network);
     }
 
-    void lua_define_engine_equipment_object_struct(lua_State *state) noexcept {
+    static void define_engine_equipment_object_struct(lua_State *state) noexcept {
         luacs_newderivedstruct(state, EngineEquipmentObject, EngineItemObject);
         luacs_nested_field(state, EngineEquipmentObject, EngineEquipmentNetwork, network, 0);
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_equipment_object(lua_State *state, EngineEquipmentObject *equipment_object) noexcept {
+    void push_engine_equipment_object(lua_State *state, EngineEquipmentObject *equipment_object) noexcept {
         luacs_newobject(state, EngineEquipmentObject, equipment_object);
     }
 
-    void lua_define_engine_projectile_object_flags_struct(lua_State *state) noexcept {
+    static void define_engine_projectile_object_flags_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineProjectileObjectFlags); 
         luacs_declare_field(state, LUACS_TINT8, NULL, "flags", sizeof(std::uint8_t), 0, 0, 0); 
         luacs_declare_method(state, "tracer", lua_bitfield_struct_method(state, EngineProjectileObjectFlags, tracer)); 
@@ -211,22 +212,22 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_projectile_object_flags(lua_State *state, EngineProjectileObjectFlags *projectile_object_flags) noexcept {
+    void push_engine_projectile_object_flags(lua_State *state, EngineProjectileObjectFlags *projectile_object_flags) noexcept {
         luacs_newobject(state, EngineProjectileObjectFlags, projectile_object_flags);
     }
 
-    void lua_define_engine_projectile_network_data_struct(lua_State *state) noexcept {
+    static void define_engine_projectile_network_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineProjectileNetworkData);
         luacs_nested_field(state, EngineProjectileNetworkData, EngineVector3D, position, 0);
         luacs_nested_field(state, EngineProjectileNetworkData, EngineVector3D, transitional_velocity, 0);
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_projectile_network_data(lua_State *state, EngineProjectileNetworkData *projectile_network_data) noexcept {
+    void push_engine_projectile_network_data(lua_State *state, EngineProjectileNetworkData *projectile_network_data) noexcept {
         luacs_newobject(state, EngineProjectileNetworkData, projectile_network_data);
     }
 
-    void lua_define_engine_projectile_network_struct(lua_State *state) noexcept {
+    static void define_engine_projectile_network_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineProjectileNetwork);
         luacs_bool_field(state, EngineProjectileNetwork, unknown, 0);
         luacs_bool_field(state, EngineProjectileNetwork, baseline_valid, 0);
@@ -238,11 +239,11 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_projectile_network(lua_State *state, EngineProjectileNetwork *projectile_network) noexcept {
+    void push_engine_projectile_network(lua_State *state, EngineProjectileNetwork *projectile_network) noexcept {
         luacs_newobject(state, EngineProjectileNetwork, projectile_network);
     }
 
-    void lua_define_engine_projectile_object_struct(lua_State *state) noexcept {
+    static void define_engine_projectile_object_struct(lua_State *state) noexcept {
         luacs_newderivedstruct(state, EngineProjectileObject, EngineItemObject);
         luacs_nested_field(state, EngineProjectileObject, EngineProjectileObjectFlags, projectile_flags, 0);
         luacs_int_field(state, EngineProjectileObject, action_enum, 0);
@@ -263,7 +264,63 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void lua_push_engine_projectile_object(lua_State *state, EngineProjectileObject *projectile_object) noexcept {
+    void push_engine_projectile_object(lua_State *state, EngineProjectileObject *projectile_object) noexcept {
         luacs_newobject(state, EngineProjectileObject, projectile_object);
+    }
+
+    void define_engine_gamestate_item_object_types(lua_State *state) noexcept {
+        luacs_newenum(state, EngineWeaponState);
+        lua_pop(state, 1);
+        luacs_newenum(state, EngineGameStateWeaponMagazineState);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineGameStateWeaponTrigger);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineGameStateWeaponMagazine);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineWeaponReloadStartData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineWeaponNetworkData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineWeaponNetwork);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineEquipmentNetworkData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineEquipmentNetwork);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineProjectileObjectFlags); 
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineProjectileNetworkData);
+        lua_pop(state, 1);
+        luacs_newstruct(state, EngineProjectileNetwork);
+        lua_pop(state, 1);
+        luacs_newderivedstruct(state, EngineItemObject, EngineBaseObject);
+        lua_pop(state, 1);
+        luacs_newderivedstruct(state, EngineGarbageObject, EngineItemObject);
+        lua_pop(state, 1);
+        luacs_newderivedstruct(state, EngineWeaponObject, EngineItemObject);
+        lua_pop(state, 1);
+        luacs_newderivedstruct(state, EngineEquipmentObject, EngineItemObject);
+        lua_pop(state, 1);
+        luacs_newderivedstruct(state, EngineProjectileObject, EngineItemObject);
+        lua_pop(state, 1);
+
+        define_weapon_state_enum(state);
+        define_weapon_magazine_state_enum(state);
+
+        define_engine_item_object_struct(state);
+        define_engine_garbage_object_struct(state);
+        define_engine_weapon_trigger_struct(state);
+        define_engine_weapon_magazine_struct(state);
+        define_engine_weapon_reload_start_data_struct(state);
+        define_engine_weapon_network_data_struct(state);
+        define_engine_weapon_network_struct(state);
+        define_engine_weapon_object_struct(state);
+        define_engine_equipment_network_data_struct(state);
+        define_engine_equipment_network_struct(state);
+        define_engine_equipment_object_struct(state);
+        define_engine_projectile_object_flags_struct(state);
+        define_engine_projectile_network_data_struct(state);
+        define_engine_projectile_network_struct(state);
+        define_engine_projectile_object_struct(state);
     }
 }
