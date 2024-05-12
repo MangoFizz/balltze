@@ -23,6 +23,15 @@ namespace Balltze::Plugins::Lua {
         *self = *data;
     }
 
+    static void define_camera_type_enum(lua_State *state) noexcept {
+        luacs_newenum(state, EngineCameraType);
+        luacs_enum_declare_value(state, "CAMERA_FIRST_PERSON", Engine::CAMERA_FIRST_PERSON);
+        luacs_enum_declare_value(state, "CAMERA_VEHICLE", Engine::CAMERA_VEHICLE);
+        luacs_enum_declare_value(state, "CAMERA_CINEMATIC", Engine::CAMERA_CINEMATIC);
+        luacs_enum_declare_value(state, "CAMERA_DEBUG", Engine::CAMERA_DEBUG);
+        lua_pop(state, 1);
+    }
+
     static void define_camera_data_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineCameraData);
         luacs_nested_field(state, EngineCameraData, EnginePoint3D, position, 0);
@@ -37,6 +46,7 @@ namespace Balltze::Plugins::Lua {
     }
 
     void define_engine_rasterizer_types(lua_State *state) noexcept {
+        define_camera_type_enum(state);
         define_camera_data_struct(state);
     }
 }

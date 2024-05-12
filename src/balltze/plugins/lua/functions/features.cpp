@@ -7,10 +7,10 @@
 #include "../../../features/tags_handling/map.hpp"
 #include "../../../logger.hpp"
 #include "../../loader.hpp"
-#include "../helpers.hpp"
-#include "../metatables.hpp"
+#include "../helpers/function_table.hpp"
+#include "../types.hpp"
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     static int lua_import_tag_from_map(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
@@ -122,10 +122,11 @@ namespace Balltze::Plugins {
             if(args == 1 || args == 2) {
                 Engine::TagHandle tag_handle;
                 if(args == 1 && (lua_isnumber(state, 1) || lua_istable(state, 1))) {
-                    tag_handle = lua_to_engine_tag_handle(state, 1);
-                    if(tag_handle.is_null()) {
+                    auto handle = get_engine_resource_handle(state, 1);
+                    if(!handle || handle->is_null()) {
                         return luaL_error(state, "Invalid tag handle in function Balltze.features.reloadTagData.");
                     }
+                    tag_handle = *handle;
                     auto *tag = Engine::get_tag(tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
@@ -166,18 +167,18 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 2) {
-                auto tag_handle = lua_to_engine_tag_handle(state, 1);
-                if(tag_handle.is_null()) {
+                auto tag_handle = get_engine_resource_handle(state, 1);
+                if(!tag_handle || tag_handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Balltze.features.replaceTagReferences.");
                 }
                 
-                auto new_tag_handle = lua_to_engine_tag_handle(state, 2);
-                if(new_tag_handle.is_null()) {
+                auto new_tag_handle = get_engine_resource_handle(state, 2);
+                if(!new_tag_handle || new_tag_handle->is_null()) {
                     return luaL_error(state, "Invalid new tag handle in function Balltze.features.replaceTagReferences.");
                 }
 
                 try {
-                    Features::replace_tag_references(tag_handle, new_tag_handle);
+                    Features::replace_tag_references(*tag_handle, *new_tag_handle);
                 }
                 catch(std::runtime_error &e) {
                     return luaL_error(state, e.what());
@@ -199,14 +200,14 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 2) {
-                auto tag_handle = lua_to_engine_tag_handle(state, 1);
-                if(tag_handle.is_null()) {
+                auto tag_handle = get_engine_resource_handle(state, 1);
+                if(!tag_handle || tag_handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Balltze.features.cloneTag.");
                 }
 
                 auto copy_name = luaL_checkstring(state, 2);
                 try {
-                    auto new_tag_handle = Features::clone_tag(tag_handle, copy_name);
+                    auto new_tag_handle = Features::clone_tag(*tag_handle, copy_name);
                     lua_pushinteger(state, new_tag_handle.handle);
                     return 1;
                 }
@@ -229,15 +230,15 @@ namespace Balltze::Plugins {
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 2) {
-                auto tag_handle = lua_to_engine_tag_handle(state, 1);
-                if(tag_handle.is_null()) {
+                auto tag_handle = get_engine_resource_handle(state, 1);
+                if(!tag_handle || tag_handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Balltze.features.getTagCopy.");
                 }
                 
                 auto copy_name = luaL_checkstring(state, 2);
                 try {
-                    auto *tag_copy = Features::get_tag_copy(tag_handle, copy_name);
-                    lua_push_meta_engine_tag(state, *tag_copy);
+                    auto *tag_copy = Features::get_tag_copy(*tag_handle, copy_name);
+                    push_meta_engine_tag(state, tag_copy);
                     return 1;
                 }
                 catch(std::runtime_error &e) {
@@ -265,7 +266,7 @@ namespace Balltze::Plugins {
                 auto tag_class_int = Engine::tag_class_from_string(tag_class_string);
                 try {
                     auto *tag = Features::get_imported_tag(map_path, tag_path, tag_class_int);
-                    lua_push_meta_engine_tag(state, *tag);
+                    push_meta_engine_tag(state, tag);
                     return 1;
                 }
                 catch(std::runtime_error &e) {
@@ -345,8 +346,8 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void lua_set_features_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "features", features_functions);
+    void set_features_table(lua_State *state) noexcept {
+        create_functions_table(state, "features", features_functions);
 
         static auto listener = Event::MapLoadEvent::subscribe(on_map_load, Event::EVENT_PRIORITY_LOWEST);
     }

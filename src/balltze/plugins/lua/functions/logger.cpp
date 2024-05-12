@@ -4,10 +4,10 @@
 #include "../../../logger.hpp"
 #include "../../plugin.hpp"
 #include "../../loader.hpp"
-#include "../helpers.hpp"
+#include "../helpers/function_table.hpp"
 #include "../libraries.hpp"
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     #define LUA_LOGGER_FUNCTION(name) \
         static int lua_logger_##name(lua_State *state) { \
             auto *plugin = get_lua_plugin(state); \
@@ -268,7 +268,7 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void lua_set_logger_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "logger", logger_functions);
+    void set_logger_table(lua_State *state) noexcept {
+        create_functions_table(state, "logger", logger_functions);
     }
 }

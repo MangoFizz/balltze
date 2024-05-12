@@ -5,18 +5,18 @@
 
 #include <lua.hpp>
 
-namespace Balltze::Plugins {
-    void lua_set_logger_table(lua_State *state) noexcept;
-    void lua_set_engine_table(lua_State *state) noexcept;
-    void lua_set_event_table(lua_State *state) noexcept;
-    void lua_set_features_table(lua_State *state) noexcept;
-    void lua_set_command_table(lua_State *state) noexcept;
-    void lua_set_chimera_table(lua_State *state) noexcept;
-    void lua_set_output_table(lua_State *state) noexcept;
-    void lua_set_math_table(lua_State *state) noexcept;
-    void lua_set_misc_table(lua_State *state) noexcept;
-    void lua_set_filesystem_table(lua_State *state) noexcept;
-    void lua_set_config_table(lua_State *state) noexcept;
+namespace Balltze::Plugins::Lua {
+    void set_logger_table(lua_State *state) noexcept;
+    void set_engine_table(lua_State *state) noexcept;
+    void set_event_table(lua_State *state) noexcept;
+    void set_features_table(lua_State *state) noexcept;
+    void set_command_table(lua_State *state) noexcept;
+    void set_chimera_table(lua_State *state) noexcept;
+    void set_output_table(lua_State *state) noexcept;
+    void set_math_table(lua_State *state) noexcept;
+    void set_misc_table(lua_State *state) noexcept;
+    void set_filesystem_table(lua_State *state) noexcept;
+    void set_config_table(lua_State *state) noexcept;
 }
 
 #endif

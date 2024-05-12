@@ -5,11 +5,11 @@
 #include <lua.hpp>
 #include "../../../logger.hpp"
 #include "../../loader.hpp"
-#include "../helpers.hpp"
+#include "../helpers/function_table.hpp"
 
 namespace fs = std::filesystem;
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     fs::path get_plugin_directory(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(!plugin) {
@@ -300,7 +300,7 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void lua_set_filesystem_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "features", filesystem_functions);
+    void set_filesystem_table(lua_State *state) noexcept {
+        create_functions_table(state, "features", filesystem_functions);
     }
 }

@@ -7,8 +7,8 @@
 #include "types.hpp"
 #include "api.hpp"
 
-namespace Balltze::Plugins {
-    void lua_open_balltze_api(lua_State *state) {
+namespace Balltze::Plugins::Lua {
+    void open_balltze_api(lua_State *state) {
         // Set up balltze registry table
         auto balltze_module = Balltze::get_current_module();
         lua_pushlightuserdata(state, balltze_module);
@@ -17,24 +17,24 @@ namespace Balltze::Plugins {
 
         // Set up Balltze funcion tables
         lua_newtable(state);
-        lua_set_logger_table(state);
-        lua_set_event_table(state);
-        lua_set_command_table(state);
-        lua_set_math_table(state);
-        lua_set_misc_table(state);
-        lua_set_config_table(state);
+        set_logger_table(state);
+        set_event_table(state);
+        set_command_table(state);
+        set_math_table(state);
+        set_misc_table(state);
+        set_config_table(state);
         if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
-            lua_set_output_table(state);
-            lua_set_features_table(state);
-            lua_set_chimera_table(state);
+            set_output_table(state);
+            set_features_table(state);
+            set_chimera_table(state);
         }
         lua_setglobal(state, "Balltze");
 
         // Set up engine table
-        lua_set_engine_table(state);
+        set_engine_table(state);
 
         // Set up prelaoded libraries
-        lua_set_preloaded_libraries(state);
+        set_preloaded_libraries(state);
 
         Lua::define_engine_structs(state);
     }

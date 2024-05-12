@@ -2,9 +2,9 @@
 
 #include <chrono>
 #include <lua.hpp>
-#include "../helpers.hpp"
+#include "../helpers/function_table.hpp"
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     static int lua_get_elapsed_milliseconds(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1) {
@@ -91,7 +91,7 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void lua_set_misc_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "misc", misc_functions);
+    void set_misc_table(lua_State *state) noexcept {
+        create_functions_table(state, "misc", misc_functions);
     }
 }

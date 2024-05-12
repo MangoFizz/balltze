@@ -224,7 +224,7 @@ namespace Balltze::Plugins::Lua {
         *self = point;
     }
 
-    std::optional<Engine::Point2D> get_point2_d(lua_State *state, int index) {
+    std::optional<Engine::Point2D> get_point2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Point2D point;
             
@@ -266,7 +266,7 @@ namespace Balltze::Plugins::Lua {
         *self = point;
     }
 
-    std::optional<Engine::Point2DInt> get_point2_d_int(lua_State *state, int index) {
+    std::optional<Engine::Point2DInt> get_point2_d_int(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Point2DInt point;
             
@@ -309,7 +309,7 @@ namespace Balltze::Plugins::Lua {
         *self = point;
     }
 
-    std::optional<Engine::Point3D> get_point3_d(lua_State *state, int index) {
+    std::optional<Engine::Point3D> get_point3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Point3D point;
             
@@ -354,7 +354,7 @@ namespace Balltze::Plugins::Lua {
         *self = rectangle;
     }
 
-    std::optional<Engine::Rectangle2D> get_rectangle2_d(lua_State *state, int index) {
+    std::optional<Engine::Rectangle2D> get_rectangle2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Rectangle2D rectangle;
             
@@ -400,7 +400,7 @@ namespace Balltze::Plugins::Lua {
         *self = rectangle;
     }
 
-    std::optional<Engine::Rectangle2DF> get_rectangle2_d_f(lua_State *state, int index) {
+    std::optional<Engine::Rectangle2DF> get_rectangle2_d_f(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Rectangle2DF rectangle;
             
@@ -444,7 +444,7 @@ namespace Balltze::Plugins::Lua {
         *self = euler;
     }
 
-    std::optional<Engine::Euler2D> get_euler2_d(lua_State *state, int index) {
+    std::optional<Engine::Euler2D> get_euler2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Euler2D euler;
             
@@ -487,7 +487,7 @@ namespace Balltze::Plugins::Lua {
         *self = euler;
     }
 
-    std::optional<Engine::Euler3D> get_euler3_d(lua_State *state, int index) {
+    std::optional<Engine::Euler3D> get_euler3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Euler3D euler;
             
@@ -531,7 +531,7 @@ namespace Balltze::Plugins::Lua {
         *self = euler;
     }
 
-    std::optional<Engine::Euler3DPYR> get_euler3_d_p_y_r(lua_State *state, int index) {
+    std::optional<Engine::Euler3DPYR> get_euler3_d_p_y_r(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Euler3DPYR euler;
             
@@ -574,7 +574,7 @@ namespace Balltze::Plugins::Lua {
         *self = vector;
     }
 
-    std::optional<Engine::Vector2D> get_vector2_d(lua_State *state, int index) {
+    std::optional<Engine::Vector2D> get_vector2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Vector2D vector;
             
@@ -617,7 +617,7 @@ namespace Balltze::Plugins::Lua {
         *self = vector;
     }
 
-    std::optional<Engine::Vector3D> get_vector3_d(lua_State *state, int index) {
+    std::optional<Engine::Vector3D> get_vector3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Vector3D vector;
             
@@ -662,7 +662,7 @@ namespace Balltze::Plugins::Lua {
         *self = quaternion;
     }
 
-    std::optional<Engine::Quaternion> get_quaternion(lua_State *state, int index) {
+    std::optional<Engine::Quaternion> get_quaternion(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Quaternion quaternion;
             
@@ -706,7 +706,7 @@ namespace Balltze::Plugins::Lua {
         *self = plane;
     }
 
-    std::optional<Engine::Plane3D> get_plane3_d(lua_State *state, int index) {
+    std::optional<Engine::Plane3D> get_plane3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Plane3D plane;
             
@@ -724,7 +724,7 @@ namespace Balltze::Plugins::Lua {
             bool success = true;
             
             lua_getfield(state, index, "vector");
-            auto vector = lua_to_vector3_d(state, -1);
+            auto vector = get_vector3_d(state, -1);
             if(vector.has_value()) {
                 plane.vector = vector.value();
             }
@@ -756,7 +756,7 @@ namespace Balltze::Plugins::Lua {
         *self = plane;
     }
 
-    std::optional<Engine::Plane2D> get_plane2_d(lua_State *state, int index) {
+    std::optional<Engine::Plane2D> get_plane2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             Engine::Plane2D plane;
             
@@ -774,7 +774,7 @@ namespace Balltze::Plugins::Lua {
             bool success = true;
             
             lua_getfield(state, index, "vector");
-            auto vector = lua_to_vector2_d(state, -1);
+            auto vector = get_vector2_d(state, -1);
             if(vector.has_value()) {
                 plane.vector = vector.value();
             }
@@ -805,13 +805,13 @@ namespace Balltze::Plugins::Lua {
         *self = matrix;
     }
 
-    std::optional<EngineMatrix> get_matrix(lua_State *state, int index) {
+    std::optional<EngineMatrix> get_matrix(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             EngineMatrix matrix;
             
             auto get_field = [state](std::size_t index, Engine::Vector3D &field) -> bool {
                 lua_geti(state, -1, index);
-                auto vector = lua_to_vector3_d(state, -1);
+                auto vector = get_vector3_d(state, -1);
                 if(vector.has_value()) {
                     field = vector.value();
                 }

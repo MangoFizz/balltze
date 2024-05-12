@@ -6,7 +6,7 @@
 #include <lua.hpp>
 
 namespace Balltze::Plugins {
-    void lua_set_preloaded_libraries(lua_State *state) noexcept;
+    void set_preloaded_libraries(lua_State *state) noexcept;
 }
 
 #endif

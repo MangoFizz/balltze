@@ -350,15 +350,13 @@ namespace Balltze::Plugins::Lua {
         }   
     }
 
-    extern void lua_push_meta_engine_hud_globals(lua_State *state, Engine::TagDefinitions::HudGlobals &data) noexcept; 
-
     static int engine_get_hud_globals(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0) {
                 auto &hud_globals = Engine::get_hud_globals();
-                lua_push_meta_engine_hud_globals(state, hud_globals);
+                luacs_newobject(state, EngineHudGlobals, &hud_globals);
                 return 1;
             }
             else {

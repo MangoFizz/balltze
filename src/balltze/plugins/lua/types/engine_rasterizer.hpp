@@ -10,6 +10,7 @@
 namespace Balltze::Plugins::Lua {
     using EngineCameraData = Engine::CameraData;
     using EngineResolution = Engine::Resolution;
+    using EngineCameraType = Engine::CameraType;
 
     void push_meta_engine_resolution(lua_State *state, Engine::Resolution *data) noexcept;
     void push_engine_resolution(lua_State *state, Engine::Resolution const *data) noexcept;

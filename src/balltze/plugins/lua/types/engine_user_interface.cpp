@@ -6,6 +6,15 @@
 #include "engine_types.hpp"
 
 namespace Balltze::Plugins::Lua {
+    void define_engine_widget_navigation_sound_enum(lua_State *state) noexcept {
+        luacs_newenum(state, EngineWidgetNavigationSound);
+        luacs_enum_declare_value(state, "CURSOR", Engine::WIDGET_NAVIGATION_SOUND_CURSOR);
+        luacs_enum_declare_value(state, "BACK", Engine::WIDGET_NAVIGATION_SOUND_BACK);
+        luacs_enum_declare_value(state, "FORWARD", Engine::WIDGET_NAVIGATION_SOUND_FORWARD);
+        luacs_enum_declare_value(state, "FLAG_FAILURE", Engine::WIDGET_NAVIGATION_SOUND_FLAG_FAILURE);
+        lua_pop(state, 1);
+    }
+
     static void define_engine_input_device_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineInputDevice);
         luacs_enum_declare_value(state, "KEYBOARD", Engine::INPUT_DEVICE_KEYBOARD);
@@ -52,6 +61,7 @@ namespace Balltze::Plugins::Lua {
     }
 
     void define_engine_user_interface_types(lua_State *state) noexcept {
+        define_engine_widget_navigation_sound_enum(state);
         define_engine_input_device_enum(state);
         define_engine_widget_struct(state);
     }

@@ -3,11 +3,12 @@
 #include <string>
 #include <lua.hpp>
 #include <balltze/output.hpp>
-#include "../helpers.hpp"
+#include "../helpers/function_table.hpp"
+#include "../types.hpp"
 #include "../../loader.hpp"
 #include "../../../logger.hpp"
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     static int lua_get_generic_font(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
@@ -42,18 +43,18 @@ namespace Balltze::Plugins {
                     font = get_generic_font(font_str);
                 }
                 else if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
-                    auto tag_handle = lua_to_engine_tag_handle(state, 1);
-                    if(tag_handle.is_null()) {
+                    auto tag_handle = get_engine_resource_handle(state, 1);
+                    if(!tag_handle || tag_handle->is_null()) {
                         return luaL_error(state, "Invalid tag handle in function Balltze.output.textPixelLength.");
                     }
-                    auto *tag = Engine::get_tag(tag_handle);
+                    auto *tag = Engine::get_tag(*tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag in function Balltze.output.textPixelLength.");
                     }
                     if(tag->primary_class != Engine::TAG_CLASS_FONT) {
                         return luaL_error(state, "Tag is not a font in function Balltze.output.textPixelLength.");
                     }
-                    font = tag_handle;
+                    font = *tag_handle;
                 }
                 else {
                     return luaL_error(state, "Invalid argument type in function Balltze.output.textPixelLength.");
@@ -85,18 +86,18 @@ namespace Balltze::Plugins {
                     font = get_generic_font(font_str);
                 }
                 else if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
-                    auto tag_handle = lua_to_engine_tag_handle(state, 1);
-                    if(tag_handle.is_null()) {
+                    auto tag_handle = get_engine_resource_handle(state, 1);
+                    if(!tag_handle || tag_handle->is_null()) {
                         return luaL_error(state, "Invalid tag handle in function Balltze.output.textPixelLength.");
                     }
-                    auto *tag = Engine::get_tag(tag_handle);
+                    auto *tag = Engine::get_tag(*tag_handle);
                     if(!tag) {
                         return luaL_error(state, "Could not find tag in function Balltze.output.textPixelLength.");
                     }
                     if(tag->primary_class != Engine::TAG_CLASS_FONT) {
                         return luaL_error(state, "Tag is not a font in function Balltze.output.textPixelLength.");
                     }
-                    font = tag_handle;
+                    font = *tag_handle;
                 }
                 else {
                     return luaL_error(state, "Invalid argument type in function Balltze.output.fontPixelHeight.");
@@ -124,9 +125,12 @@ namespace Balltze::Plugins {
             if(args == 3) {
                 auto text = luaL_checkstring(state, 1);
                 auto duration = luaL_checkinteger(state, 2);
-                auto color = lua_to_color_argb(state, 3);
+                auto color = get_color_a_r_g_b(state, 3);
+                if(!color) {
+                    return luaL_error(state, "Invalid color in function Balltze.output.addSubtitle.");
+                }
                 std::chrono::milliseconds duration_ms(duration);
-                add_subtitle(text, color, duration_ms);
+                add_subtitle(text, *color, duration_ms);
                 return 0;
             }
             else {
@@ -169,7 +173,7 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void lua_set_output_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "output", output_functions);
+    void set_output_table(lua_State *state) noexcept {
+        create_functions_table(state, "output", output_functions);
     }
 }

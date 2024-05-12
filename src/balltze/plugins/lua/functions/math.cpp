@@ -2,9 +2,9 @@
 
 #include <lua.hpp>
 #include <balltze/math.hpp>
-#include "../helpers.hpp"
+#include "../helpers/function_table.hpp"
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     static int lua_get_bezier_curve_point(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 4 || args == 5) {
@@ -98,7 +98,7 @@ namespace Balltze::Plugins {
         {nullptr, nullptr}
     };
 
-    void lua_set_math_table(lua_State *state) noexcept {
-        lua_create_functions_table(state, "math", math_functions);
+    void set_math_table(lua_State *state) noexcept {
+        create_functions_table(state, "math", math_functions);
     }
 }

@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include <balltze/engine.hpp>
 
-namespace Balltze::Plugins {
+namespace Balltze::Plugins::Lua {
     using EnginePlayerMultiplayerStatistics = Engine::PlayerMultiplayerStatistics;
     using EngineNetworkPlayerColor = Engine::NetworkPlayerColor;
     using EnginePlayerObjectiveMode = Engine::PlayerObjectiveMode;

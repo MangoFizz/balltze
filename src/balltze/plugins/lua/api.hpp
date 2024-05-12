@@ -5,8 +5,8 @@
 
 #include <lua.hpp>
 
-namespace Balltze::Plugins {
-    void lua_open_balltze_api(lua_State *state);
+namespace Balltze::Plugins::Lua {
+    void open_balltze_api(lua_State *state);
 }
 
 #endif

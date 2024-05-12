@@ -34,7 +34,7 @@ namespace Balltze::Plugins::Lua {
         return 1;
     }
 
-    CommandResult LuaCommand::call(std::size_t arg_count, const char **args) const noexcept {
+    CommandResult Command::call(std::size_t arg_count, const char **args) const noexcept {
         LuaPlugin *plugin = static_cast<LuaPlugin *>(m_plugin.value());
         lua_State *state = plugin->state();
         if(lua_get_commands_table(state) == 0) {
@@ -71,7 +71,7 @@ namespace Balltze::Plugins::Lua {
         return COMMAND_RESULT_FAILED_ERROR;
     }
 
-    void LuaCommand::register_command(LuaPlugin *plugin) {
+    void Command::register_command(LuaPlugin *plugin) {
         lua_State *state = plugin->state();
         if(lua_get_commands_table(state) == 0) {
             throw std::runtime_error("Could not find Lua commands table");
@@ -86,7 +86,7 @@ namespace Balltze::Plugins::Lua {
         }
         m_plugin = reinterpret_cast<PluginHandle>(plugin);
         m_full_name = get_full_name();
-        commands.emplace_back(std::make_shared<LuaCommand>(*this));
+        commands.emplace_back(std::make_shared<Command>(*this));
     }
 
     static int lua_command_register_command(lua_State *state) noexcept {
@@ -131,7 +131,7 @@ namespace Balltze::Plugins::Lua {
                     return luaL_error(state, "Argument 10 of Balltze.command.registerCommand must be a function.");
                 }
 
-                LuaCommand command(name, category, help, params_help, autosave, min_args, max_args, can_call_from_console, is_public);
+                Command command(name, category, help, params_help, autosave, min_args, max_args, can_call_from_console, is_public);
                 try {
                     command.register_command(plugin);
                     lua_pop(state, 1);
@@ -156,12 +156,10 @@ namespace Balltze::Plugins::Lua {
         {nullptr, nullptr}
     };
 
-    void lua_set_command_table(lua_State *state) noexcept {
+    void set_command_table(lua_State *state) noexcept {
         create_functions_table(state, "command", command_functions);
     }
-}
 
-namespace Balltze::Plugins {
     void remove_plugin_commands(LuaPlugin *plugin) noexcept {
         logger.debug("Removing commands from plugin {}", plugin->name());
         for(auto it = commands.begin(); it != commands.end();) {

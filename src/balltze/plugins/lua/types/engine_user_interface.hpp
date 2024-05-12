@@ -9,6 +9,9 @@
 namespace Balltze::Plugins::Lua {
     using EngineInputDevice = Engine::InputDevice;
     using EngineUIWidget = Engine::Widget;
+    using EngineWidgetNavigationSound = Engine::WidgetNavigationSound;
+
+    void define_engine_widget_navigation_sound_enum(lua_State *state) noexcept;
 
     void push_meta_engine_widget(lua_State *state, Engine::Widget *widget) noexcept;
     Engine::Widget *from_meta_engine_widget(lua_State *state, int index) noexcept;

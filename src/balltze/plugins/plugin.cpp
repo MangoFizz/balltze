@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "lua/api.hpp"
-#include "lua/helpers.hpp"
 #include "../config/config.hpp"
 #include "../logger.hpp"
 #include "../version.hpp"
@@ -384,7 +383,7 @@ namespace Balltze::Plugins {
             logger.warning("Could not find PluginUnload function in plugin '{}'.", m_filename);
         }
 
-        remove_plugin_commands(this);
+        Lua::remove_plugin_commands(this);
         
         if(reloadable()) {
             lua_close(m_state);
@@ -397,7 +396,7 @@ namespace Balltze::Plugins {
         m_state = luaL_newstate();
         if(m_state) {
             luaL_openlibs(m_state);
-            lua_open_balltze_api(m_state);
+            Lua::open_balltze_api(m_state);
             get_directory();
 
             // Set package.path and package.cpath

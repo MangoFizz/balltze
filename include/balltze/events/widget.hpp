@@ -83,7 +83,7 @@ namespace Balltze::Event {
         UIWidgetSoundEvent(EventTime time, UIWidgetSoundEventArgs args) : EventData(time), args(args) {}
     };
 
-    enum struct UIWidgetListTabType {
+    enum UIWidgetListTabType {
         TAB_THRU_ITEM_LIST_ITEMS_NEXT_VERTICAL,
         TAB_THRU_ITEM_LIST_ITEMS_NEXT_HORIZONTAL,
         TAB_THRU_ITEM_LIST_ITEMS_PREV_VERTICAL,

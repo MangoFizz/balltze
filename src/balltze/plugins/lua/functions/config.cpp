@@ -431,7 +431,7 @@ namespace Balltze::Plugins::Lua {
         {nullptr, nullptr}
     };
 
-    void lua_set_config_table(lua_State *state) noexcept {
+    void set_config_table(lua_State *state) noexcept {
         create_functions_table(state, "config", config_functions);
     }
 }

@@ -141,6 +141,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/libraries/lua-fmt/lfmt.c
     src/balltze/plugins/lua/libraries/preloaded_libraries.cpp
     src/balltze/plugins/lua/libraries/preloaded_libraries.rc
+    src/balltze/plugins/lua/types/balltze_event.cpp
     src/balltze/plugins/lua/types/engine_gamestate_device_object.cpp
     src/balltze/plugins/lua/types/engine_gamestate_item_object.cpp
     src/balltze/plugins/lua/types/engine_gamestate_object.cpp
@@ -148,8 +149,8 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/types/engine_gamestate_unit_object.cpp
     src/balltze/plugins/lua/types/engine_map.cpp
     src/balltze/plugins/lua/types/engine_rasterizer.cpp
-    src/balltze/plugins/lua/types/engine_types.cpp
     src/balltze/plugins/lua/types/engine_tag.cpp
+    src/balltze/plugins/lua/types/engine_types.cpp
     src/balltze/plugins/lua/types/engine_user_interface.cpp
     src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/loader.cpp

@@ -4,6 +4,7 @@
 #define BALLTZE__PLUGINS__LUA__TYPES_HPP
 
 #include <chrono>
+#include "types/balltze_event.hpp"
 #include "types/engine_types.hpp"
 #include "types/engine_tag.hpp"
 #include "types/engine_tag_data.hpp"
@@ -30,6 +31,7 @@ namespace Balltze::Plugins::Lua {
         define_engine_rasterizer_types(state);
         define_engine_map_types(state);
         define_engine_user_interface_types(state);
+        define_balltze_event_types(state);
     }
 }
 

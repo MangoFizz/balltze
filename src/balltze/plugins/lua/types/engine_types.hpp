@@ -58,7 +58,7 @@ namespace Balltze::Plugins::Lua {
 
     void push_engine_point2_d(lua_State *state, Engine::Point2D const &point) noexcept;
     void push_meta_engine_point2_d(lua_State *state, Engine::Point2D *point) noexcept;
-    std::optional<Engine::Point2D> get_point2_d(lua_State *state, int index);
+    std::optional<Engine::Point2D> get_point2_d(lua_State *state, int index) noexcept;
 
     void push_engine_point2_d_int(lua_State *state, Engine::Point2DInt const &point) noexcept;
     void push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt *point) noexcept;

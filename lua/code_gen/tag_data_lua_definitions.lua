@@ -344,7 +344,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
 end
 
 add([[
-    void push_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
+    void push_meta_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
         switch(tag->primary_class) {
 ]])
 

@@ -5,7 +5,7 @@
 
 #define lua_bitfield_struct_method(state, bitfieldType, field) \
     [](lua_State *state) -> int { \
-        auto *self = reinterpret_cast<bitfieldType *>(lua_touserdata(state, lua_upvalueindex(1))); \
+        auto *self = luacs_to_object(state, 1, bitfieldType); \
         int args = lua_gettop(state); \
         if(args == 1) { \
             if(lua_isboolean(state, 1)) { \

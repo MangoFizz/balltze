@@ -51,7 +51,7 @@ namespace Balltze::Plugins {
         return 0;
     }
 
-    void lua_set_preloaded_libraries(lua_State *state) noexcept {
+    void set_preloaded_libraries(lua_State *state) noexcept {
         lua_getglobal(state, "package");
         lua_getfield(state, -1, "preload");
         int preload_table_index = lua_gettop(state);

@@ -66,8 +66,8 @@ namespace Balltze::Plugins::Lua {
     }
 
     static const luaL_Reg engine_core_functions[] = {
-        {"consolePrint", lua_engine_console_print},
-        {"getTickCount", lua_engine_get_tick_count},
+        {"consolePrint", engine_console_print},
+        {"getTickCount", engine_get_tick_count},
         {nullptr, nullptr}
     };
 
