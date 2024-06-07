@@ -38,7 +38,7 @@ namespace Balltze::Event {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
                     auto tag = Engine::get_tag(arguments.damage_effect);
-                    logger.debug("Object damage event ({}): object: {}, damage tag: {}, multiplier: {}, causer player: {}, causer object: {}", time, arguments.object.handle, tag->path, arguments.multiplier, arguments.causer_player.handle, arguments.causer_object.handle);
+                    logger.debug("Object damage event ({}): object: {}, damage tag: {}, multiplier: {}, causer player: {}, causer object: {}", time, arguments.object.value, tag->path, arguments.multiplier, arguments.causer_player.value, arguments.causer_object.value);
                 });
             }
             else {

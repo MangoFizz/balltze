@@ -68,7 +68,7 @@ namespace Balltze {
         else {
             TagHandle tag_handle = std::get<TagHandle>(font);
             for(auto &font : map_custom_overrides) {
-                if(font.tag_handle.handle == tag_handle.handle) {
+                if(font.tag_handle.value == tag_handle.value) {
                     return font.override;
                 }
             }
@@ -645,7 +645,7 @@ namespace Balltze {
 
         // Check if font override exists
         for(std::size_t i = 0; i < map_custom_overrides.size(); i++) {
-            if(map_custom_overrides[i].tag_handle.handle == font_tag.handle) {
+            if(map_custom_overrides[i].tag_handle.value == font_tag.value) {
                 throw std::runtime_error("font already overrode");
             }
         }

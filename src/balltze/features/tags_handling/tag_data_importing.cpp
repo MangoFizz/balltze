@@ -363,7 +363,7 @@ namespace Balltze::Features {
                 }
                 else {
                     if(tag_handle != TagHandle::null()) {
-                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.handle, m_name);
+                        logger.debug("Cannot resolve tag {} in map {}", tag_handle.value, m_name);
                     }
                     return tag_handle;
                 }

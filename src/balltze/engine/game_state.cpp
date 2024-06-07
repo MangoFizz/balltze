@@ -90,7 +90,7 @@ namespace Balltze::Engine {
         s.causer_player = causer_player;
         s.causer_object = causer_object;
         s.multiplier = multiplier;
-        apply_damage_asm(&s, object.handle);
+        apply_damage_asm(&s, object.value);
     }
 
     PlayerHandle Player::get_handle() const noexcept {

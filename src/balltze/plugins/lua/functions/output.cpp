@@ -16,7 +16,7 @@ namespace Balltze::Plugins::Lua {
             if(args == 1) {
                 auto font_str = generic_font_from_string(luaL_checkstring(state, 1));
                 auto font = get_generic_font(font_str);
-                lua_pushinteger(state, font.handle);
+                lua_pushinteger(state, font.value);
                 return 1;
             }
             else {

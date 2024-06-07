@@ -208,7 +208,7 @@ namespace Balltze::Plugins::Lua {
                 auto copy_name = luaL_checkstring(state, 2);
                 try {
                     auto new_tag_handle = Features::clone_tag(*tag_handle, copy_name);
-                    lua_pushinteger(state, new_tag_handle.handle);
+                    lua_pushinteger(state, new_tag_handle.value);
                     return 1;
                 }
                 catch(std::runtime_error &e) {

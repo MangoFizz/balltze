@@ -592,12 +592,12 @@ namespace Balltze::Engine {
             auto& table = get_object_table();
 
             ObjectHandle returned_id;
-            returned_id.handle = 0xFFFFFFFF;
+            returned_id.value = 0xFFFFFFFF;
 
             for (std::size_t i = 0; i < table.current_size; i++) {
                 auto& object = table.first_element[i];
                 if (object.object == this) {
-                    returned_id.handle = i + 0x10000 * object.id;
+                    returned_id.value = i + 0x10000 * object.id;
                     return returned_id;
                 }
             }

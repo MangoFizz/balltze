@@ -23,14 +23,14 @@ namespace Balltze::Engine {
     };
 
     union ResourceHandle {
-        std::uint32_t handle;
+        std::uint32_t value;
         struct {
             std::uint16_t index;
             std::uint16_t id;
         };
 
         ResourceHandle(std::uint32_t handle) {
-            this->handle = handle;
+            this->value = handle;
         }
 
         ResourceHandle() = default;
@@ -44,11 +44,11 @@ namespace Balltze::Engine {
         }
 
         bool operator==(const ResourceHandle &other) const noexcept {
-            return this->handle == other.handle;
+            return this->value == other.value;
         }
 
         bool operator!=(const ResourceHandle &other) const noexcept {
-            return this->handle != other.handle;
+            return this->value != other.value;
         }
 
         bool operator<(const ResourceHandle& other) const noexcept {

@@ -21,7 +21,7 @@ namespace Balltze::Plugins::Lua {
                 lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag_data_header.tag_array));
                 lua_setfield(state, -2, "tagArrayAddress");
 
-                lua_pushinteger(state, tag_data_header.scenario_tag.handle);
+                lua_pushinteger(state, tag_data_header.scenario_tag.value);
                 lua_setfield(state, -2, "scenarioTagHandle");
 
                 lua_pushinteger(state, tag_data_header.tag_count);

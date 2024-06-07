@@ -9,7 +9,7 @@ namespace Balltze::Plugins::Lua {
 
     static void define_engine_resource_handle_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineResourceHandle);
-        luacs_unsigned_field(state, EngineResourceHandle, handle, 0);
+        luacs_unsigned_field(state, EngineResourceHandle, value, 0);
         luacs_unsigned_field(state, EngineResourceHandle, id, 0);
         luacs_unsigned_field(state, EngineResourceHandle, index, 0);
         lua_pop(state, 1);
@@ -61,13 +61,13 @@ namespace Balltze::Plugins::Lua {
             lua_getfield(state, index, "handle");
             if(lua_isinteger(state, -1)) {
                 handle = Engine::ResourceHandle();
-                handle->handle = luaL_checkinteger(state, -1);
+                handle->value = luaL_checkinteger(state, -1);
             }
             lua_pop(state, 1);
         }
         else if(lua_isinteger(state, index)) {
             handle = Engine::ResourceHandle();
-            handle->handle = luaL_checkinteger(state, index);
+            handle->value = luaL_checkinteger(state, index);
         }
         return handle;
     }
