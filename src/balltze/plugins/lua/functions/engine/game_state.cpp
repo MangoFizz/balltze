@@ -30,14 +30,16 @@ namespace Balltze::Plugins::Lua {
                 }
 
                 if(object) {
-                    try {
-                        auto object_type = get_object_type(state, 2);
-                        if(object->type != object_type) {
-                            return luaL_error(state, "Requested object type does not match object type in function Engine.getObject.");
+                    if(args == 2) {
+                        try {
+                            auto object_type = get_object_type(state, 2);
+                            if(object->type != object_type) {
+                                return luaL_error(state, "Requested object type does not match object type in function Engine.getObject.");
+                            }
                         }
-                    }
-                    catch(std::runtime_error &e) {
-                        return luaL_error(state, e.what());
+                        catch(std::runtime_error &e) {
+                            return luaL_error(state, e.what());
+                        }
                     }
 
                     switch(object->type) {

@@ -105,6 +105,7 @@ add([[
 // This file is auto-generated. DO NOT EDIT!
 
 #include "../helpers/luacstruct.hpp"
+#include "../helpers/enum.hpp"
 #include "../helpers/bitfield.hpp"
 #include "engine_tag_data.hpp"
 
@@ -294,6 +295,7 @@ end
 for enumName, enum in pairs(enums) do
     local sneakCaseName = definitionParser.camelCaseToSnakeCase(enumName)
     local camelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
+    local lowerCamelCaseName = definitionParser.snakeCaseToLowerCamelCase(sneakCaseName)
 
     indent(1)
     add("inline void create_engine_" .. enumName .. "_enum(lua_State *state) noexcept { \n")
@@ -310,9 +312,12 @@ for enumName, enum in pairs(enums) do
     add("luacs_newenum(state, Engine" .. camelCaseName .. "); \n")
     for _, value in ipairs(enum.values) do
         local valueName = value:upper()
+        local lowerCamelCase = definitionParser.snakeCaseToLowerCamelCase(value:match(sneakCaseName .. "_(.+)"))
         indent(2)
-        add("luacs_enum_declare_value(state, \"" .. valueName .. "\", Engine::TagDefinitions::" .. valueName .. "); \n")
+        add("luacs_enum_declare_value(state, \"" .. lowerCamelCase .. "\", Engine::TagDefinitions::" .. valueName .. "); \n")
     end
+    indent(2)
+    add("publish_enum(state, \"Engine\", \"tag\", \"" .. lowerCamelCaseName .. "\", -1); \n")
     indent(2)
     add("lua_pop(state, 1); \n")
     indent(1)

@@ -112,7 +112,7 @@ extern "C" {
 
     #define luacs_enum_field(_L, _type, _etype, _field, _flags)	{ \
         static_assert(validintwidth(sizeof((_type *)0)->_field), "`"#_field"' is an unsupported int type"); \
-        luacs_declare_field((_L), LUACS_TENUM, #_etype,	#_field, sizeof(((_type *)0)->_field), OFFSET_OF(_type, _field), 0, _flags); \
+        luacs_declare_field((_L), LUACS_TENUM, #_etype,	SNAKE_TO_CAMEL(#_field), sizeof(((_type *)0)->_field), OFFSET_OF(_type, _field), 0, _flags); \
     }
 
     #define luacs_bool_field(_L, _type, _field, _flags)	{ \

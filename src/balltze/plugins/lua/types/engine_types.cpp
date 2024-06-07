@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include "../../../logger.hpp"
 #include "../helpers/luacstruct.hpp"
 #include "engine_types.hpp"
 
@@ -56,7 +57,7 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::ResourceHandle> get_engine_resource_handle(lua_State *state, int index) noexcept {
         std::optional<Engine::ResourceHandle> handle;
-        if(lua_istable(state, index)) {
+        if(lua_isuserdata(state, index)) {
             lua_getfield(state, index, "handle");
             if(lua_isinteger(state, -1)) {
                 handle = Engine::ResourceHandle();

@@ -5,6 +5,7 @@
 #include "../helpers/luacstruct.hpp"
 #include "engine_types.hpp"
 #include "engine_tag_data.hpp"
+#include "engine_gamestate_object.hpp"
 #include "engine_gamestate_unit_object.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -386,7 +387,7 @@ namespace Balltze::Plugins::Lua {
     }
 
     static void define_engine_unit_object_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, EngineUnitObject);
+        luacs_newderivedstruct(state, EngineUnitObject, EngineBaseObject);
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, actor, 0);
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, swarm_actor, 0);
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, swarm_next_unit, 0);
@@ -610,7 +611,7 @@ namespace Balltze::Plugins::Lua {
     }
 
     static void define_engine_vehicle_object_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, EngineVehicleObject);
+        luacs_newderivedstruct(state, EngineVehicleObject, EngineUnitObject);
         luacs_nested_field(state, EngineVehicleObject, EngineVehicleFlags, vehicle_flags, 0);
         luacs_float_field(state, EngineVehicleObject, speed, 0);
         luacs_float_field(state, EngineVehicleObject, slide, 0);
@@ -672,7 +673,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
         luacs_newstruct(state, EngineUnitControlData);
         lua_pop(state, 1);
-        luacs_newstruct(state, EngineUnitObject);
+        luacs_newderivedstruct(state, EngineUnitObject, EngineBaseObject);
         lua_pop(state, 1);
         luacs_newstruct(state, EngineBipedObjectFlags); 
         lua_pop(state, 1);
@@ -686,7 +687,7 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
         luacs_newstruct(state, EngineVehicleNetwork);
         lua_pop(state, 1);
-        luacs_newstruct(state, EngineVehicleObject);
+        luacs_newderivedstruct(state, EngineVehicleObject, EngineUnitObject);
         lua_pop(state, 1);
         luacs_newderivedstruct(state, EngineBipedObject, EngineUnitObject);
         lua_pop(state, 1);

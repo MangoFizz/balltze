@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "../helpers/luacstruct.hpp"
+#include "../helpers/enum.hpp"
 #include "engine_tag.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -92,6 +93,7 @@ namespace Balltze::Plugins::Lua {
         luacs_enum_declare_value(state, "WEAPON", TAG_CLASS_WEAPON);
         luacs_enum_declare_value(state, "WIND", TAG_CLASS_WIND);
         luacs_enum_declare_value(state, "WEAPON_HUD_INTERFACE", TAG_CLASS_WEAPON_HUD_INTERFACE);
+        publish_enum(state, "Engine", "tag", "tagClasses", -1);
         lua_pop(state, 1);
     }
 
