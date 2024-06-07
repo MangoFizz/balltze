@@ -326,7 +326,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
     end
     local dataStruct = sneakCaseName
     if dataStruct == "ui_widget_collection" then
-        dataStruct = "tag_collection_tag"
+        dataStruct = "tag_collection"
     end
     local classCamelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
     local dataStructName = definitionParser.snakeCaseToCamelCase(dataStruct)
@@ -336,7 +336,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
     indent(2)
     add("luacs_newstruct0(state, \"Engine" .. classCamelCaseName .. "Tag\", \"EngineTag\"); \n")
     indent(2)
-    add("luacs_declare_field(state, LUACS_TOBJREF, \"Engine" .. dataStructName .. "\", \"data\", sizeof(void *), OFFSET_OF(EngineTag, data), 0, 0); \n")
+    add("luacs_declare_field(state, LUACS_TOBJREF, \"Engine" .. dataStructName .. "Tag\", \"data\", sizeof(void *), OFFSET_OF(EngineTag, data), 0, 0); \n")
     indent(2)
     add("lua_pop(state, 1); \n")
     indent(1)
@@ -352,6 +352,9 @@ for _, class in ipairs(definitionParser.tagClasses) do
     local classEnumName = class:upper()
     local sneakCaseName = class
     local classCamelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
+    if classCamelCaseName == "TagCollection" then
+        classCamelCaseName = "TagCollectionTag"
+    end
     indent(3)
     add("case Engine::TAG_CLASS_" .. classEnumName .. ": \n");
     indent(4)
@@ -366,8 +369,6 @@ add([[
                 break;
             }
         }
-        lua_pushinteger(state, reinterpret_cast<std::uintptr_t>(tag->data));
-        lua_setfield(state, -2, "dataAddress");
     }
 
 ]])

@@ -106,7 +106,6 @@ namespace Balltze::Plugins::Lua {
         luacs_enum_field(state, EngineTag, EngineTagClass, tertiary_class, 0);
         luacs_nested_field(state, EngineTag, EngineResourceHandle, handle, LUACS_FREADONLY);
         luacs_strptr_field(state, EngineTag, path, LUACS_FREADONLY);
-        luacs_pseudo_field(state, EngineTag, data_address, 0);
         lua_pop(state, 1);
     }
 
