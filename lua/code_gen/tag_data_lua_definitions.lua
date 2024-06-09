@@ -341,7 +341,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
     indent(2)
     add("luacs_newstruct0(state, \"Engine" .. classCamelCaseName .. "Tag\", \"EngineTag\"); \n")
     indent(2)
-    add("luacs_declare_field(state, LUACS_TOBJREF, \"Engine" .. dataStructName .. "Tag\", \"data\", sizeof(void *), OFFSET_OF(EngineTag, data), 0, 0); \n")
+    add("luacs_declare_field(state, LUACS_TOBJREF, \"Engine" .. dataStructName .. "\", \"data\", sizeof(void *), OFFSET_OF(EngineTag, data), 0, 0); \n")
     indent(2)
     add("lua_pop(state, 1); \n")
     indent(1)

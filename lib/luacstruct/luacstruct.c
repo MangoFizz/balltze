@@ -712,7 +712,7 @@ luacs_array__index(lua_State *L)
 		if (obj->type == LUACS_TOBJENT)
 			ptr = obj->ptr + regeon.off;
 		else
-			ptr = *(void **)(obj->ptr + regeon.off);
+			ptr = *(void **)(obj->ptr) + regeon.off;
 		if (ptr == NULL)
 			lua_pushnil(L);
 		else {
