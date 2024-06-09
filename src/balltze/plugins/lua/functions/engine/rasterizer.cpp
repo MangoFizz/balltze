@@ -10,20 +10,13 @@
 
 namespace Balltze::Plugins::Lua {
     static int engine_get_resolution(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 0) {
-                push_engine_resolution(state, &Engine::get_resolution());
-                return 1;
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Engine.rasterizer.getResolution.");
-            }
+        int args = lua_gettop(state);
+        if(args == 0) {
+            push_engine_resolution(state, &Engine::get_resolution());
+            return 1;
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.rasterizer.getResolution.");
         }
     }
 

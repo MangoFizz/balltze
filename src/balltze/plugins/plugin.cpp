@@ -395,10 +395,22 @@ namespace Balltze::Plugins {
         m_filepath = lua_file;
         m_state = luaL_newstate();
         if(m_state) {
+            // Open standard libraries and Balltze API
             luaL_openlibs(m_state);
             Lua::open_balltze_api(m_state);
-            get_directory();
 
+            // Remove os.exit, os.getenv and os.execute functions
+            lua_getglobal(m_state, "os");
+            lua_pushnil(m_state);
+            lua_setfield(m_state, -2, "exit");
+            lua_pushnil(m_state);
+            lua_setfield(m_state, -2, "getenv");
+            lua_pushnil(m_state);
+            lua_setfield(m_state, -2, "execute");
+            
+            // Get plugin directory
+            get_directory();
+                 
             // Set package.path and package.cpath
             lua_getglobal(m_state, "package");
             auto new_lua_path = m_directory.string() + "\\modules\\?.lua";

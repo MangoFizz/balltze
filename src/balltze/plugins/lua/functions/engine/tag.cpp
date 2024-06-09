@@ -10,93 +10,78 @@
 
 namespace Balltze::Plugins::Lua {
     static int engine_get_tag_data_header(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 0) {
-                auto tag_data_header = Engine::get_tag_data_header();
-                
-                lua_newtable(state);
+        int args = lua_gettop(state);
+        if(args == 0) {
+            auto tag_data_header = Engine::get_tag_data_header();
+            
+            lua_newtable(state);
 
-                lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag_data_header.tag_array));
-                lua_setfield(state, -2, "tagArrayAddress");
+            lua_pushinteger(state, reinterpret_cast<std::uint32_t>(tag_data_header.tag_array));
+            lua_setfield(state, -2, "tagArrayAddress");
 
-                lua_pushinteger(state, tag_data_header.scenario_tag.value);
-                lua_setfield(state, -2, "scenarioTagHandle");
+            lua_pushinteger(state, tag_data_header.scenario_tag.value);
+            lua_setfield(state, -2, "scenarioTagHandle");
 
-                lua_pushinteger(state, tag_data_header.tag_count);
-                lua_setfield(state, -2, "tagCount");
+            lua_pushinteger(state, tag_data_header.tag_count);
+            lua_setfield(state, -2, "tagCount");
 
-                lua_pushinteger(state, tag_data_header.model_part_count);
-                lua_setfield(state, -2, "modelPartCount");
+            lua_pushinteger(state, tag_data_header.model_part_count);
+            lua_setfield(state, -2, "modelPartCount");
 
-                lua_pushinteger(state, tag_data_header.model_data_file_offset);
-                lua_setfield(state, -2, "modelDataFileOffset");
+            lua_pushinteger(state, tag_data_header.model_data_file_offset);
+            lua_setfield(state, -2, "modelDataFileOffset");
 
-                lua_pushinteger(state, tag_data_header.vertex_size);
-                lua_setfield(state, -2, "vertexSize");
+            lua_pushinteger(state, tag_data_header.vertex_size);
+            lua_setfield(state, -2, "vertexSize");
 
-                lua_pushinteger(state, tag_data_header.model_data_size);
-                lua_setfield(state, -2, "modelDataSize");
+            lua_pushinteger(state, tag_data_header.model_data_size);
+            lua_setfield(state, -2, "modelDataSize");
 
-                return 1;
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTagDataHeader.");
-            }
+            return 1;
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTagDataHeader.");
         }
     }
 
     static int engine_get_tag(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            Engine::Tag *tag_entry = nullptr;
-            if(args == 1) {
-                auto tag_handle = get_engine_resource_handle(state, 1);
-                if(!tag_handle || tag_handle->is_null()) {
-                    return luaL_error(state, "Invalid tag handle in function Engine.tag.getTag.");
-                }
-                if(tag_handle->id != 0) {
-                    tag_entry = Engine::get_tag(*tag_handle);
-                }
-                else {
-                    tag_entry = Engine::get_tag(tag_handle->index);
-                }
+        int args = lua_gettop(state);
+        Engine::Tag *tag_entry = nullptr;
+        if(args == 1) {
+            auto tag_handle = get_engine_resource_handle(state, 1);
+            if(!tag_handle || tag_handle->is_null()) {
+                return luaL_error(state, "Invalid tag handle in function Engine.tag.getTag.");
             }
-            else if(args == 2) {
-                const char *tag_path = luaL_checkstring(state, 1);
-                const char *tag_class_str = luaL_checkstring(state, 2);
-                auto tag_class = Engine::tag_class_from_string(tag_class_str);
-                if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
-                    tag_entry = Engine::get_tag(tag_path, tag_class);
-                }
-                else {
-                    return luaL_error(state, "Invalid tag class.");
-                }
+            if(tag_handle->id != 0) {
+                tag_entry = Engine::get_tag(*tag_handle);
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTag.");
+                tag_entry = Engine::get_tag(tag_handle->index);
             }
-
-            if(tag_entry) {
-                push_meta_engine_tag(state, tag_entry);
+        }
+        else if(args == 2) {
+            const char *tag_path = luaL_checkstring(state, 1);
+            const char *tag_class_str = luaL_checkstring(state, 2);
+            auto tag_class = Engine::tag_class_from_string(tag_class_str);
+            if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
+                tag_entry = Engine::get_tag(tag_path, tag_class);
             }
             else {
-                lua_pushnil(state);
+                return luaL_error(state, "Invalid tag class.");
             }
-
-            return 1;
-            
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTag.");
         }
+
+        if(tag_entry) {
+            push_meta_engine_tag(state, tag_entry);
+        }
+        else {
+            lua_pushnil(state);
+        }
+
+        return 1;
     }
 
     static const luaL_Reg engine_tag_functions[] = {
