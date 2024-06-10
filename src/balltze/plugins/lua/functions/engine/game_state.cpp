@@ -140,17 +140,15 @@ namespace Balltze::Plugins::Lua {
 
         if(args == 1) {
             auto &object_table = Engine::get_object_table();
-            if(lua_istable(state, 1)) {
-                auto object_handle = get_engine_resource_handle(state, 1);
-                if(!object_handle || object_handle->is_null()) {
-                    return luaL_error(state, "Invalid object handle in function Engine.gameState.deleteObject.");
-                }
-                if(object_handle->id != 0) {
-                    object_table.delete_object(*object_handle);
-                }
-                else {
-                    object_table.delete_object(object_handle->index);
-                }
+            auto object_handle = get_engine_resource_handle(state, 1);
+            if(!object_handle || object_handle->is_null()) {
+                return luaL_error(state, "Invalid object handle in function Engine.gameState.deleteObject.");
+            }
+            if(object_handle->id != 0) {
+                object_table.delete_object(*object_handle);
+            }
+            else {
+                object_table.delete_object(object_handle->index);
             }
             return 0;
         }
