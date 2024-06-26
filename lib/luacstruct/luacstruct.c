@@ -33,7 +33,7 @@
 
 #define LUACS_VERSION		"1"
 
-#define	METANAMELEN		80
+#define	METANAMELEN		130
 #define	METANAME_LUACSTRUCT	"luacstruct" LUACS_VERSION
 #define	METANAME_LUACSENUM	"luacenum" LUACS_VERSION
 #define	METANAME_LUACTYPE	"luactype" LUACS_VERSION "."
