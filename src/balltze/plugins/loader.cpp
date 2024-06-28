@@ -106,9 +106,8 @@ namespace Balltze::Plugins {
             load_plugins_on_next_tick = false;
         }
 
-        // Collect garbage every second
+        // Collect garbage every tick
         auto lua_plugins = get_lua_plugins();
-        const std::size_t tick_rate = round(Engine::get_tick_rate());
         for(auto &plugin : lua_plugins) {
             auto *state = plugin->state();
             lua_gc(state, LUA_GCCOLLECT, 0);
