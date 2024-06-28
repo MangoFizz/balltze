@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <functional>
 #include <lua.hpp>
 #include <balltze/event.hpp>
 #include <balltze/engine/tag_definitions.hpp>
@@ -182,9 +183,16 @@ namespace Balltze::Plugins::Lua {
         lua_setfield(state, -2, "cancel");
         lua_pushstring(state, event_time_to_string(context.time).c_str());
         lua_setfield(state, -2, "time");
+
+        // Mark table as weak 
+        lua_newtable(state);
+        lua_pushstring(state, "__mode");
+        lua_pushstring(state, "v");
+        lua_settable(state, -3);
+        lua_setmetatable(state, -2);
     }
 
-    void call_events_by_priority(lua_State *state, std::string name, EventPriority priority, int event_table_index) noexcept {
+    void call_events_by_priority(lua_State *state, std::string name, EventPriority priority, std::function<void(lua_State *)> create_event_object) noexcept {
         lua_get_events_registry_table(state);
         lua_getfield(state, -1, name.c_str());
         lua_remove(state, -2);
@@ -211,19 +219,23 @@ namespace Balltze::Plugins::Lua {
                 }
             }
 
+            create_event_object(state);
+
             // Call all event listeners
             bool cancelled = false;
-            int size = lua_rawlen(state, -1);
+            int size = lua_rawlen(state, -2);
             for(int i = 1; i <= size; i++) {
-                lua_rawgeti(state, -1, i);
-                lua_pushvalue(state, event_table_index - 4);
+                
+                lua_rawgeti(state, -2, i);
+                lua_pushvalue(state, -2);
                 int res = lua_pcall(state, 1, 0, 0);
                 if(res != LUA_OK) {
                     logger.error("Error in event listener in Balltze.events.{}: {}.", name, lua_tostring(state, -1));
                     lua_pop(state, 1);
                 }
             }
-            lua_pop(state, 1);
+
+            lua_pop(state, 2);
         }
         else {
             logger.debug("Invalid event listener in Balltze.events.{}: expected table, got {}.", name, lua_typename(state, lua_type(state, -1)));
@@ -301,11 +313,11 @@ namespace Balltze::Plugins::Lua {
             auto plugins = get_lua_plugins(); \
             for(auto *&plugin : plugins) { \
                 auto *state = plugin->state(); \
-                create_event_data_table(state, context); \
-                push_meta_balltze_##eventName##_event_args(state, &context.args); \
-                lua_setfield(state, -2, "args"); \
-                call_events_by_priority(state, eventTable, priority, -1); \
-                lua_pop(state, 1); \
+                call_events_by_priority(state, eventTable, priority, [&](lua_State *state) { \
+                    create_event_data_table(state, context); \
+                    push_meta_balltze_##eventName##_event_args(state, &context.args); \
+                    lua_setfield(state, -2, "args"); \
+                }); \
             } \
         }
 
@@ -314,9 +326,9 @@ namespace Balltze::Plugins::Lua {
             auto plugins = get_lua_plugins(); \
             for(auto *&plugin : plugins) { \
                 auto *state = plugin->state(); \
-                create_event_data_table(state, context); \
-                call_events_by_priority(state, eventTable, priority, -1); \
-                lua_pop(state, 1); \
+                call_events_by_priority(state, eventTable, priority, [&](lua_State *state) { \
+                    create_event_data_table(state, context); \
+                }); \
             } \
         }
 
