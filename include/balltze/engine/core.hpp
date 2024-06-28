@@ -59,6 +59,11 @@ namespace Balltze::Engine {
     BALLTZE_API std::size_t get_tick_count() noexcept;
 
     /**
+     * Returns the tick rate of the engine.
+     */
+    BALLTZE_API float get_tick_rate() noexcept;
+
+    /**
      * Get the game engine used
      */
     BALLTZE_API EngineEdition get_engine_edition();

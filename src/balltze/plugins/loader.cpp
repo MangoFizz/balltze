@@ -13,7 +13,8 @@ namespace Balltze::Plugins {
     using namespace Event;
 
     static std::vector<std::unique_ptr<Plugin>> plugins;
-    static std::optional<EventListenerHandle<TickEvent>> nextTickListener;
+    static std::optional<EventListenerHandle<TickEvent>> tickEventListener;
+    static bool load_plugins_on_next_tick;
 
     static bool plugin_loaded(std::filesystem::path path) noexcept {
         for(auto &plugin : plugins) {
@@ -90,14 +91,28 @@ namespace Balltze::Plugins {
         }
     }
 
-    static void load_plugins_next_tick(TickEvent const &context) noexcept {
-        for(auto &plugin : plugins) {
-            if(plugin->loaded()) {
-                continue;
-            }
-            plugin->load();
+    static void plugins_tick(TickEvent const &context) noexcept {
+        if(context.time == EVENT_TIME_AFTER) {
+            return;
         }
-        nextTickListener->remove();
+
+        if(load_plugins_on_next_tick) {
+            for(auto &plugin : plugins) {
+                if(plugin->loaded()) {
+                    continue;
+                }
+                plugin->load();
+            }
+            load_plugins_on_next_tick = false;
+        }
+
+        // Collect garbage every second
+        auto lua_plugins = get_lua_plugins();
+        const std::size_t tick_rate = round(Engine::get_tick_rate());
+        for(auto &plugin : lua_plugins) {
+            auto *state = plugin->state();
+            lua_gc(state, LUA_GCCOLLECT, 0);
+        }
     }
 
     void init_plugins() noexcept {
@@ -158,17 +173,13 @@ namespace Balltze::Plugins {
 
     void set_up_plugins() noexcept {
         init_plugins();
-        nextTickListener = TickEvent::subscribe_const(load_plugins_next_tick, EVENT_PRIORITY_HIGHEST);
+        load_plugins_on_next_tick = true;
+        tickEventListener = TickEvent::subscribe_const(plugins_tick, EVENT_PRIORITY_HIGHEST);
 
         register_command("reload_plugins", "plugins", "Reloads all loaded plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
             unload_plugins();
             init_plugins();
-
-            // Load plugins on next tick
-            if(!plugin_load_tick_event_listener) {
-                nextTickListener = TickEvent::subscribe_const(load_plugins_next_tick, EVENT_PRIORITY_HIGHEST);
-            }
-
+            load_plugins_on_next_tick = true;
             return true;
         }, false, 0, 0);
     }

@@ -67,6 +67,15 @@ namespace Balltze::Engine {
         return *tick_count;
     }
 
+    float get_tick_rate() noexcept {
+        static float *tick_ptr = nullptr;
+        static auto *tick_rate_sig = Memory::get_signature("tick_rate");
+        if(tick_rate_sig) {
+            tick_ptr = *reinterpret_cast<float **>(tick_rate_sig->data());
+        }
+        return *tick_ptr;
+    }
+
     EngineEdition get_engine_edition() {
         static std::optional<EngineEdition> engine_type;
         if(!engine_type.has_value()) {
