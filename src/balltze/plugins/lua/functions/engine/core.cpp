@@ -15,15 +15,16 @@ namespace Balltze::Plugins::Lua {
         if(args >= 1) {
             auto color = get_color_a_r_g_b(state, 1);
             bool has_color = color.has_value();
-            if(!has_color) {
+            if(has_color) {
+                lua_remove(state, 1);
+                args = lua_gettop(state);
+            }
+            else {
                 color = {1.0, 1.0, 1.0, 1.0};
             }
 
             std::string message; 
             if(args > 1) { 
-                if(has_color) {
-                    lua_remove(state, 1); 
-                }
                 Lformat(state); 
                 message = luaL_checkstring(state, -1); 
                 lua_pop(state, 1); 
