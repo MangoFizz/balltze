@@ -52,6 +52,35 @@ namespace Balltze::Engine {
         return nullptr;
     }
 
+    std::vector<Tag *> find_tags(std::optional<std::string> path_keyword, std::optional<TagClassInt> tag_class) noexcept {
+        std::vector<Tag *> tags;
+        auto &tag_data_header = get_tag_data_header();
+        auto tag_count = tag_data_header.tag_count;
+
+        for(std::size_t i = 0; i < tag_count; i++) {
+            auto *tag = get_tag(i);
+            if(tag == nullptr) {
+                continue;
+            }
+
+            if(path_keyword.has_value()) {
+                if(std::string(tag->path).find(path_keyword.value()) == std::string::npos) {
+                    continue;
+                }
+            }
+
+            if(tag_class.has_value()) {
+                if(tag->primary_class != tag_class.value()) {
+                    continue;
+                }
+            }
+
+            tags.push_back(tag);
+        }
+
+        return std::move(tags);
+    }
+
     extern "C" Tag *get_tag_address_from_id(TagHandle tag_handle) noexcept {
         return get_tag(tag_handle);
     }

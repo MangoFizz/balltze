@@ -84,6 +84,43 @@ namespace Balltze::Plugins::Lua {
         return 1;
     }
 
+    static int engine_find_tags(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 0 || args == 1 || args == 2) {
+            std::optional<std::string> path_keyword;
+            std::optional<Engine::TagClassInt> tag_class;
+            if(args >= 1) {
+                if(lua_isstring(state, 1)) {
+                    path_keyword = luaL_checkstring(state, 1); 
+                }
+                else {
+                    return luaL_error(state, "Invalid path keyword in function Engine.tag.findTags.");
+                }
+            }
+            if(args == 2) {
+                if(lua_isstring(state, 2)) {
+                    tag_class = Engine::tag_class_from_string(std::string(lua_tostring(state, 2)));
+                    if(tag_class == Engine::TagClassInt::TAG_CLASS_NULL) {
+                        return luaL_error(state, "Invalid tag class in function Engine.tag.findTags.");
+                    }
+                }
+                else {
+                    return luaL_error(state, "Invalid tag class in function Engine.tag.findTags.");
+                }
+            }
+            auto tags = Engine::find_tags(path_keyword, tag_class);
+            lua_newtable(state);
+            for(std::size_t i = 0; i < tags.size(); i++) {
+                push_meta_engine_tag(state, tags[i]);
+                lua_rawseti(state, -2, i + 1);
+            }
+            return 1;
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.findTags.");
+        }
+    }
+
     static const luaL_Reg engine_tag_functions[] = {
         {"getTagDataHeader", engine_get_tag_data_header},
         {"getTag", engine_get_tag},

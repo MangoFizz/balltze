@@ -150,6 +150,14 @@ namespace Balltze::Engine {
     BALLTZE_API Tag *get_tag(std::string path, std::uint32_t tag_class) noexcept;
 
     /**
+     * Find tags
+     * @param  path      path keyword
+     * @param  tag_class class of the tag
+     * @return           vector of tags
+     */
+    BALLTZE_API std::vector<Tag *> find_tags(std::optional<std::string> path_keyword, std::optional<TagClassInt> tag_class) noexcept;
+
+    /**
      * Get tag class from a given string
      * @return  A tag class int
     */
