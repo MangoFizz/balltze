@@ -800,64 +800,47 @@ Engine.gameState = {}
 
 ---@class MetaEngineSoundSceneryObject: MetaEngineBaseObject
 
+---@class MetaEngineUnitObjectType : EngineTagClassesEnum
+---@class MetaEngineBipedObjectType : EngineTagClassesEnum
+---@class MetaEngineVehicleObjectType : EngineTagClassesEnum
+---@class MetaEngineGarbageObjectType : EngineTagClassesEnum
+---@class MetaEngineWeaponObjectType : EngineTagClassesEnum
+---@class MetaEngineEquipmentObjectType : EngineTagClassesEnum
+---@class MetaEngineProjectileObjectType : EngineTagClassesEnum
+---@class MetaEngineDeviceMachineObjectType : EngineTagClassesEnum
+---@class MetaEngineDeviceControlObjectType : EngineTagClassesEnum
+---@class MetaEngineDeviceLightFixtureObjectType : EngineTagClassesEnum
+
+---@class MetaEngineObjectType
+---@field unit MetaEngineUnitObjectType
+---@field biped MetaEngineBipedObjectType
+---@field vehicle MetaEngineVehicleObjectType
+---@field garbage MetaEngineGarbageObjectType
+---@field weapon MetaEngineWeaponObjectType
+---@field equipment MetaEngineEquipmentObjectType
+---@field projectile MetaEngineProjectileObjectType
+---@field deviceMachine MetaEngineDeviceMachineObjectType
+---@field deviceControl MetaEngineDeviceControlObjectType
+---@field deviceLightFixture MetaEngineDeviceLightFixtureObjectType
+
+---@diagnostic disable-next-line: missing-fields
+Engine.tag.objectType = {} --[[@as MetaEngineObjectType]]
+
 -- Get an object of the current game
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineBaseObject
-function Engine.gameState.getObject(handle)
-end
-
--- Get a biped object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineBipedObject
-function Engine.gameState.getBipedObject(handle)
-end
-
--- Get a vehicle object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineVehicleObject
-function Engine.gameState.getVehicleObject(handle)
-end
-
--- Get a garbage object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineGarbageObject
-function Engine.gameState.getGarbageObject(handle)
-end
-
--- Get a weapon object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineWeaponObject
-function Engine.gameState.getWeaponObject(handle)
-end
-
--- Get an equipment object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineEquipmentObject
-function Engine.gameState.getEquipmentObject(handle)
-end
-
--- Get a projectile object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineProjectileObject
-function Engine.gameState.getProjectileObject(handle)
-end
-
--- Get a device machine object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineDeviceMachineObject
-function Engine.gameState.getDeviceMachineObject(handle)
-end
-
--- Get a device control object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineDeviceControlObject
-function Engine.gameState.getDeviceControlObject(handle)
-end
-
--- Get a device light fixture object
----@param handle EngineObjectHandle|integer @The handle of the object
----@return MetaEngineDeviceLightFixtureObject
-function Engine.gameState.getDeviceLightFixtureObject(handle)
+---@param handle EngineObjectHandle|integer Handle of the object
+---@param type MetaEngineObjectType Type of the object
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineUnitObjectType): MetaEngineUnitObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineBipedObjectType): MetaEngineBipedObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineVehicleObjectType): MetaEngineVehicleObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineGarbageObjectType): MetaEngineGarbageObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineWeaponObjectType): MetaEngineWeaponObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineEquipmentObjectType): MetaEngineEquipmentObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineProjectileObjectType): MetaEngineProjectileObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineDeviceMachineObjectType): MetaEngineDeviceMachineObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineDeviceControlObjectType): MetaEngineDeviceControlObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: MetaEngineDeviceLightFixtureObjectType): MetaEngineDeviceLightFixtureObject?
+---@return MetaEngineBaseObject?
+function Engine.gameState.getObject(handle, type)
 end
 
 -- Spawn an object
@@ -1740,7 +1723,7 @@ end
 ---
 ---Leave the keyword empty to get all tags, if tag class is nil, it will return all tags
 ---@param keyword string @Keyword to search for
----@param tagClass? EngineTagClasses Class of the tag
+---@param tagClass? EngineTagClass Class of the tag
 function Engine.tag.findTags(keyword, tagClass)
 end
 -------------------------------------------------------
