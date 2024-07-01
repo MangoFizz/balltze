@@ -93,7 +93,7 @@ namespace Balltze::Plugins::Lua {
         luacs_enum_declare_value(state, "weapon", TAG_CLASS_WEAPON);
         luacs_enum_declare_value(state, "wind", TAG_CLASS_WIND);
         luacs_enum_declare_value(state, "weaponHudInterface", TAG_CLASS_WEAPON_HUD_INTERFACE);
-        publish_enum(state, "Engine", "tag", "tagClasses", -1);
+        publish_enum(state, "Engine", "tag", "classes", -1);
         lua_pop(state, 1);
     }
 

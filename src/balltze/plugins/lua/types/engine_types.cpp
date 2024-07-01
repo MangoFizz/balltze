@@ -138,7 +138,7 @@ namespace Balltze::Plugins::Lua {
     }
 
     std::optional<Engine::ColorARGB> get_color_a_r_g_b(lua_State *state, int index) noexcept {
-        if(lua_istable(state, index)) {
+        if(lua_istable(state, index) || lua_isuserdata(state, index)) {
             Engine::ColorARGB color;
             
             auto get_field = [state](float &field, const char *name) -> bool {
