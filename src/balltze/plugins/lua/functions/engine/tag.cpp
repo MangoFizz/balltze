@@ -61,8 +61,7 @@ namespace Balltze::Plugins::Lua {
         }
         else if(args == 2) {
             const char *tag_path = luaL_checkstring(state, 1);
-            const char *tag_class_str = luaL_checkstring(state, 2);
-            auto tag_class = Engine::tag_class_from_string(tag_class_str);
+            auto tag_class = get_tag_class(state, 2);
             if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
                 tag_entry = Engine::get_tag(tag_path, tag_class);
             }
@@ -86,10 +85,10 @@ namespace Balltze::Plugins::Lua {
 
     static int engine_find_tags(lua_State *state) noexcept {
         int args = lua_gettop(state);
-        if(args == 0 || args == 1 || args == 2) {
+        if(args == 1 || args == 2) {
             std::optional<std::string> path_keyword;
             std::optional<Engine::TagClassInt> tag_class;
-            if(args >= 1) {
+            if(args >= 1 && !lua_isnil(state, 1)) {
                 if(lua_isstring(state, 1)) {
                     path_keyword = luaL_checkstring(state, 1); 
                 }
@@ -97,16 +96,8 @@ namespace Balltze::Plugins::Lua {
                     return luaL_error(state, "Invalid path keyword in function Engine.tag.findTags.");
                 }
             }
-            if(args == 2) {
-                if(lua_isstring(state, 2)) {
-                    tag_class = Engine::tag_class_from_string(std::string(lua_tostring(state, 2)));
-                    if(tag_class == Engine::TagClassInt::TAG_CLASS_NULL) {
-                        return luaL_error(state, "Invalid tag class in function Engine.tag.findTags.");
-                    }
-                }
-                else {
-                    return luaL_error(state, "Invalid tag class in function Engine.tag.findTags.");
-                }
+            if(args == 2 && !lua_isnil(state, 2)) {
+                tag_class = get_tag_class(state, 2);
             }
             auto tags = Engine::find_tags(path_keyword, tag_class);
             lua_newtable(state);
