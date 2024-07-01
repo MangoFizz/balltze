@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <lua.hpp>
+#include <clipboardxx/clipboardxx.hpp>
 #include "../helpers/function_table.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -83,11 +84,38 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    static int get_clipboard(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 0) {
+            clipboardxx::clipboard clipboard;
+            lua_pushstring(state, clipboard.paste().c_str());
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in balltze get_clipboard");
+        }
+        return 1;
+    }
+
+    static int set_clipboard(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            std::string text = luaL_checkstring(state, 1);
+            clipboardxx::clipboard clipboard;
+            clipboard.copy(text);
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in balltze set_clipboard");
+        }
+        return 0;
+    }
+
     static const luaL_Reg misc_functions[] = {
         {"setTimestamp", lua_set_timestamp},
         {"getTimestampElapsedMilliseconds", lua_get_elapsed_milliseconds},
         {"getTimestampElapsedSeconds", lua_get_elapsed_seconds},
         {"resetTimestamp", lua_reset_timestamp},
+        {"getClipboard", get_clipboard},
+        {"setClipboard", set_clipboard},
         {nullptr, nullptr}
     };
 
