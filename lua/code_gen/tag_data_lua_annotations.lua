@@ -76,11 +76,28 @@ for definitionName, definition in pairs(definitions) do
     end
 
     for _, enum in ipairs(definition.enums) do
-        local camelCase = parser.snakeCaseToCamelCase(enum.name)
-        add("---@alias EngineTagData" .. camelCase .. " \n")
+        local enumName = parser.snakeCaseToCamelCase(enum.name)
+
+        add("---@class EngineTagData" .. enumName .. "Enum : Enum \n\n")
+
         for _, value in ipairs(enum.values) do
-            add("---| '" .. value .. "'\n")
+            add("---@class EngineTagData"  .. parser.snakeCaseToCamelCase(value) .. " : EngineTagData" .. enumName .. "Enum \n")
         end
+        add("\n")
+
+        add("---@alias EngineTagData" .. enumName .. " \n")
+        for _, value in ipairs(enum.values) do
+            add("---| EngineTagData"  .. parser.snakeCaseToCamelCase(value) .. "\n")
+        end
+        add("\n")
+
+        add("---@class EngineTagData" .. enumName .. "Table \n")
+        for _, value in ipairs(enum.values) do
+            -- substract the enum name prefix from the value
+            local fieldName = parser.snakeCaseToLowerCamelCase(value:sub(enum.name:len() + 2))
+            add("---@field " .. fieldName .. " EngineTagData"  .. parser.snakeCaseToCamelCase(value) .. "\n")
+        end
+        add("Engine.tag." .. parser.snakeCaseToLowerCamelCase(enumName) .. " = {} \n")
         add("\n")
     end
 

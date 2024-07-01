@@ -11,6 +11,14 @@ Balltze = {}
 Balltze.apiVersion = "1.1.0"
 
 -------------------------------------------------------
+-- Basic types
+-------------------------------------------------------
+
+---@class Enum
+---@field tostring fun(enum: EngineTagClassesEnum): string
+---@field tointeger fun(enum: EngineTagClassesEnum): integer
+
+-------------------------------------------------------
 -- Balltze.command
 -------------------------------------------------------
 

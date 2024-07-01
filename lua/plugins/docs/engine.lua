@@ -1453,9 +1453,7 @@ end
 ---@class MetaEngineWeaponHudInterfaceTag: MetaEngineTag
 ---@field data MetaEngineTagDataWeaponHudInterface
 
----@class EngineTagClassesEnum
----@field tostring fun(enum: EngineTagClassesEnum): string
----@field tointeger fun(enum: EngineTagClassesEnum): integer
+---@class EngineTagClassesEnum : Enum
 
 ---@class EngineTagClassesActor : EngineTagClassesEnum
 ---@class EngineTagClassesActorVariant : EngineTagClassesEnum
@@ -1542,7 +1540,7 @@ end
 ---@class EngineTagClassesWind : EngineTagClassesEnum
 ---@class EngineTagClassesWeaponHudInterface : EngineTagClassesEnum
 
----@class EngineTagClasses
+---@class EngineTagClassesTable
 ---@field actor EngineTagClassesActor
 ---@field actorVariant EngineTagClassesActorVariant
 ---@field antenna EngineTagClassesAntenna
@@ -1627,13 +1625,11 @@ end
 ---@field weapon EngineTagClassesWeapon
 ---@field wind EngineTagClassesWind
 ---@field weaponHudInterface EngineTagClassesWeaponHudInterface
-
----@diagnostic disable-next-line: missing-fields
-Engine.tag.classes = {} --[[@as EngineTagClasses]]
+Engine.tag.classes = {} 
 
 -- Get a tag
 ---@param tagHandleOrPath EngineTagHandle|integer @The handle or path of the tag
----@param tagClass? EngineTagClasses @The class of the tag; If first argument is a handle, this argument can be skipped
+---@param tagClass? EngineTagClass @The class of the tag; If first argument is a handle, this argument can be skipped
 ---@return MetaEngineTag|nil @The tag; nil if not found
 ---@overload fun(tagHandleOrPath: string|integer|EngineTagHandle, tagClass: EngineTagClassesActor): MetaEngineActorTag|nil
 ---@overload fun(tagHandleOrPath: string|integer|EngineTagHandle, tagClass: EngineTagClassesActorVariant): MetaEngineActorVariantTag|nil
