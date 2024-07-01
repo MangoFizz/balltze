@@ -124,6 +124,7 @@ namespace Balltze::Plugins::Lua {
     static const luaL_Reg engine_tag_functions[] = {
         {"getTagDataHeader", engine_get_tag_data_header},
         {"getTag", engine_get_tag},
+        {"findTags", engine_find_tags},
         {nullptr, nullptr}
     };
 

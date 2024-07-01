@@ -5,6 +5,7 @@
 
 #include <string>
 #include <cstddef>
+#include <optional>
 #include "../memory.hpp"
 #include "data_types.hpp"
 #include "tag_classes.hpp"
