@@ -849,6 +849,14 @@ function Balltze.misc.getElapsedSeconds(timestamp) end
 ---@param timestamp BalltzeMiscTimestamp @The timestamp
 function Balltze.misc.resetTimestamp(timestamp) end
 
+---Set content to the clipboard
+---@param content string Content to copy
+function Balltze.misc.setClipboard(content) end
+
+---Get content from the clipboard
+---@return string Content from the clipboard
+function Balltze.misc.getClipboard() end
+
 -------------------------------------------------------
 -- Balltze.output
 -------------------------------------------------------
