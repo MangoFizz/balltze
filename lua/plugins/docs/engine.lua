@@ -66,7 +66,7 @@ Engine = {}
 ---@class MetaEngineVector3D: EngineVector3D 
 
 ---@class EngineResourceHandle
----@field handle integer
+---@field value integer
 ---@field index integer
 ---@field id integer
 

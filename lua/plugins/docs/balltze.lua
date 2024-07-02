@@ -221,7 +221,7 @@ function Balltze.event.mapFileLoad.removeAllListeners() end
 Balltze.event.mapLoad = {}
 
 ---@class BalltzeMapLoadEventArgs
----@field name string @The name of the map that was loaded
+---@field mapName string Name of the map that was loaded
 
 ---@class MetaBalltzeMapLoadEventArgs: BalltzeMapLoadEventArgs
 
