@@ -17,6 +17,7 @@ namespace Balltze::Plugins::Lua {
     void set_misc_table(lua_State *state) noexcept;
     void set_filesystem_table(lua_State *state) noexcept;
     void set_config_table(lua_State *state) noexcept;
+    void set_memory_function(lua_State *state) noexcept;
 }
 
 #endif

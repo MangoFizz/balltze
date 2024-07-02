@@ -15,6 +15,11 @@ namespace Balltze::Engine {
         void unit_scripting_enter_vehicle_asm(ObjectHandle unit_handle, ObjectHandle vehicle_handle, const char *seat_name);
         void unit_scripting_exit_vehicle_asm(ObjectHandle unit_handle);
         std::uint16_t script_get_numeric_countdown_timer(std::uint16_t units);
+        void execute_script_asm(const char *script) noexcept;
+    }
+
+    void execute_script(const char *script) noexcept {
+        execute_script_asm(script);
     }
 
     void unit_scripting_enter_vehicle(ObjectHandle unit_handle, ObjectHandle vehicle_handle, std::string seat_label) {

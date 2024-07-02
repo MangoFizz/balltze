@@ -91,29 +91,6 @@ namespace Balltze::Plugins {
         }
     }
 
-    static void plugins_tick(TickEvent const &context) noexcept {
-        if(context.time == EVENT_TIME_AFTER) {
-            return;
-        }
-
-        if(load_plugins_on_next_tick) {
-            for(auto &plugin : plugins) {
-                if(plugin->loaded()) {
-                    continue;
-                }
-                plugin->load();
-            }
-            load_plugins_on_next_tick = false;
-        }
-
-        // Collect garbage every tick
-        auto lua_plugins = get_lua_plugins();
-        for(auto &plugin : lua_plugins) {
-            auto *state = plugin->state();
-            lua_gc(state, LUA_GCCOLLECT, 0);
-        }
-    }
-
     void init_plugins() noexcept {
         init_plugins_path();
         logger.info("Initializing plugins...");
@@ -133,6 +110,32 @@ namespace Balltze::Plugins {
             else {
                 it++;
             }
+        }
+    }
+
+    static void plugins_tick(TickEvent const &context) noexcept {
+        if(context.time == EVENT_TIME_AFTER) {
+            return;
+        }
+
+        unload_plugins();
+        init_plugins();
+
+        if(load_plugins_on_next_tick) {
+            for(auto &plugin : plugins) {
+                if(plugin->loaded()) {
+                    continue;
+                }
+                plugin->load();
+            }
+            load_plugins_on_next_tick = false;
+        }
+
+        // Collect garbage every tick
+        auto lua_plugins = get_lua_plugins();
+        for(auto &plugin : lua_plugins) {
+            auto *state = plugin->state();
+            lua_gc(state, LUA_GCCOLLECT, 0);
         }
     }
 
@@ -176,8 +179,6 @@ namespace Balltze::Plugins {
         tickEventListener = TickEvent::subscribe_const(plugins_tick, EVENT_PRIORITY_HIGHEST);
 
         register_command("reload_plugins", "plugins", "Reloads all loaded plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
-            unload_plugins();
-            init_plugins();
             load_plugins_on_next_tick = true;
             return true;
         }, false, 0, 0);

@@ -30,6 +30,23 @@ namespace Balltze::Event {
 
         GameInputEvent(EventTime time, GameInputEventArgs args) : EventData(time), args(args) {}
     };
+    
+    struct KeyboardInputEventArgs {
+        const Engine::InputGlobals::BufferedKey key;
+
+        KeyboardInputEventArgs(Engine::InputGlobals::BufferedKey key) : key(key) { }
+    };
+
+    class KeyboardInputEvent : public EventData<KeyboardInputEvent> {
+    public:
+        KeyboardInputEventArgs args;
+
+        bool cancellable() const {
+            return false;
+        }
+
+        KeyboardInputEvent(EventTime time, KeyboardInputEventArgs args) : EventData(time), args(args) {}
+    };
 }
 
 #endif

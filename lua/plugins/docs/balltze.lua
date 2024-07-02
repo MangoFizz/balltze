@@ -37,6 +37,10 @@ Balltze.command = {}
 ---@param commandFunction fun(args: table<integer, string>): boolean
 function Balltze.command.registerCommand(name, category, help, paramsHelp, autosave, minArgs, maxArgs, canCallFromConsole, public, commandFunction) end
 
+-- Execute a registered command
+---@param command string @The command to call
+function Balltze.command.executeCommand(command) end
+
 -------------------------------------------------------
 -- Balltze.event
 -------------------------------------------------------
@@ -749,6 +753,49 @@ function Balltze.features.setUIAspectRatio(x, y) end
 function Balltze.features.resetUIAspectRatio() end
 
 -------------------------------------------------------
+-- Balltze.filesystem
+-------------------------------------------------------
+
+Balltze.filesystem = {}
+
+-- Create a directory
+---@param path string @The path of the directory to create
+function Balltze.filesystem.createDirectory(path) end
+
+-- Remove a directory
+---@param path string @The path of the directory to remove
+function Balltze.filesystem.removeDirectory(path) end
+
+-- List the files in a directory
+---@param path string @The path of the directory to list
+---@return table<string> @The list of files in the directory
+function Balltze.filesystem.listDirectory(path) end
+
+-- Check if a directory exists
+---@param path string @The path of the directory to check
+---@return boolean @Whether the directory exists
+function Balltze.filesystem.directoryExists(path) end
+
+-- Write a file
+---@param path string @The path of the file to write
+---@param data string @The data to write
+function Balltze.filesystem.writeFile(path, data) end
+
+-- Read a file
+---@param path string @The path of the file to read
+---@return string @The data read
+function Balltze.filesystem.readFile(path) end
+
+-- Delete a file
+---@param path string @The path of the file to delete
+function Balltze.filesystem.deleteFile(path) end
+
+-- Check if a file exists
+---@param path string @The path of the file to check
+---@return boolean @Whether the file exists
+function Balltze.filesystem.fileExists(path) end
+
+-------------------------------------------------------
 -- Balltze.logger
 -------------------------------------------------------
 
@@ -827,6 +874,92 @@ function Balltze.math.createBezierCurve(x1, y1, x2, y2) end
 ---@param reverse? boolean @Whether to reverse the curve
 ---@return number @The interpolated value 
 function Balltze.math.getBezierCurvePoint(bezier, initialValue, finalValue, t, reverse) end
+
+-------------------------------------------------------
+-- Balltze.memory
+-------------------------------------------------------
+
+Balltze.memory = {}
+
+-- Read a 8-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt8(address) end
+
+-- Read a 16-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt16(address) end
+
+-- Read a 32-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt32(address) end
+
+-- Read a 64-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt64(address) end
+
+-- Write a 8-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt8(address, value) end
+
+-- Write a 16-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt16(address, value) end
+
+-- Write a 32-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt32(address, value) end
+
+-- Write a 64-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt64(address, value) end
+
+-- Read a float from memory
+---@param address integer @The address to read from
+---@return number @The value read
+function Balltze.memory.readFloat(address) end
+
+-- Read a double from memory
+---@param address integer @The address to read from
+---@return number @The value read
+function Balltze.memory.readDouble(address) end
+
+-- Write a float to memory
+---@param address integer @The address to write to
+---@param value number @The value to write
+function Balltze.memory.writeFloat(address, value) end
+
+-- Write a double to memory
+---@param address integer @The address to write to
+---@param value number @The value to write
+function Balltze.memory.writeDouble(address, value) end
+
+-- Read an ASCII string from memory
+---@param address integer @The address to read from
+---@return string @The string read
+function Balltze.memory.readString(address) end
+
+-- Write an ASCII string to memory
+---@param address integer @The address to write to
+---@param value string @The string to write
+function Balltze.memory.writeString(address, value) end
+
+-- Read a byte from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readByte(address) end
+
+-- Write a byte to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeByte(address, value) end
 
 -------------------------------------------------------
 -- Balltze.misc

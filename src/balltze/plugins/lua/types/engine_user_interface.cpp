@@ -1,25 +1,28 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "../helpers/luacstruct.hpp"
+#include "../helpers/enum.hpp"
 #include "engine_user_interface.hpp"
 #include "engine_tag_data.hpp"
 #include "engine_types.hpp"
 
 namespace Balltze::Plugins::Lua {
-    void define_engine_widget_navigation_sound_enum(lua_State *state) noexcept {
+    static void define_engine_widget_navigation_sound_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineWidgetNavigationSound);
-        luacs_enum_declare_value(state, "CURSOR", Engine::WIDGET_NAVIGATION_SOUND_CURSOR);
-        luacs_enum_declare_value(state, "BACK", Engine::WIDGET_NAVIGATION_SOUND_BACK);
-        luacs_enum_declare_value(state, "FORWARD", Engine::WIDGET_NAVIGATION_SOUND_FORWARD);
-        luacs_enum_declare_value(state, "FLAG_FAILURE", Engine::WIDGET_NAVIGATION_SOUND_FLAG_FAILURE);
+        luacs_enum_declare_value(state, "cursor", Engine::WIDGET_NAVIGATION_SOUND_CURSOR);
+        luacs_enum_declare_value(state, "back", Engine::WIDGET_NAVIGATION_SOUND_BACK);
+        luacs_enum_declare_value(state, "forward", Engine::WIDGET_NAVIGATION_SOUND_FORWARD);
+        luacs_enum_declare_value(state, "flagFailure", Engine::WIDGET_NAVIGATION_SOUND_FLAG_FAILURE);
+        publish_enum(state, "Engine", "userInterface", "navigationSound", -1); 
         lua_pop(state, 1);
     }
 
     static void define_engine_input_device_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineInputDevice);
-        luacs_enum_declare_value(state, "KEYBOARD", Engine::INPUT_DEVICE_KEYBOARD);
-        luacs_enum_declare_value(state, "MOUSE", Engine::INPUT_DEVICE_MOUSE);
-        luacs_enum_declare_value(state, "GAMEPAD", Engine::INPUT_DEVICE_GAMEPAD);
+        luacs_enum_declare_value(state, "keyboard", Engine::INPUT_DEVICE_KEYBOARD);
+        luacs_enum_declare_value(state, "mouse", Engine::INPUT_DEVICE_MOUSE);
+        luacs_enum_declare_value(state, "gamepad", Engine::INPUT_DEVICE_GAMEPAD);
+        publish_enum(state, "Engine", "userInterface", "inputDevice", -1); 
         lua_pop(state, 1);
     }
 
@@ -60,9 +63,36 @@ namespace Balltze::Plugins::Lua {
         return reinterpret_cast<Engine::Widget *>(luacs_object_pointer(state, index, "EngineWidget"));
     }
 
+    static void define_engine_input_buffered_key_modifier_enum(lua_State *state) noexcept {
+        luacs_newenum(state, EngineInputBufferedKeyModifier);
+        luacs_enum_declare_value(state, "shift", EngineInputBufferedKeyModifier::MODIFIER_SHIFT);
+        luacs_enum_declare_value(state, "ctrl", EngineInputBufferedKeyModifier::MODIFIER_CTRL);
+        luacs_enum_declare_value(state, "alt", EngineInputBufferedKeyModifier::MODIFIER_ALT);
+        publish_enum(state, "Engine", "userInterface", "inputBufferedKeyModifier", -1); 
+        lua_pop(state, 1);
+    }
+
+    static void define_engine_input_buffered_key(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineInputBufferedKey);
+        luacs_enum_field(state, EngineInputBufferedKey, EngineInputBufferedKeyModifier, modifiers, 0);
+        luacs_unsigned_field(state, EngineInputBufferedKey, character, 0);
+        luacs_unsigned_field(state, EngineInputBufferedKey, keycode, 0);
+        lua_pop(state, 1);
+    }
+
+    void push_meta_engine_input_buffered_key(lua_State *state, Engine::InputGlobals::BufferedKey *key) noexcept {
+        luacs_newobject(state, EngineInputBufferedKey, key);
+    }
+    
+    Engine::InputGlobals::BufferedKey *from_meta_engine_input_buffered_key(lua_State *state, int index) noexcept {
+        return reinterpret_cast<Engine::InputGlobals::BufferedKey *>(luacs_object_pointer(state, index, "EngineInputBufferedKey"));
+    }
+
     void define_engine_user_interface_types(lua_State *state) noexcept {
         define_engine_widget_navigation_sound_enum(state);
         define_engine_input_device_enum(state);
+        define_engine_input_buffered_key_modifier_enum(state);
         define_engine_widget_struct(state);
+        define_engine_input_buffered_key(state);
     }
 }

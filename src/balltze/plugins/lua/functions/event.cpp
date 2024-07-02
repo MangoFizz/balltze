@@ -343,6 +343,7 @@ namespace Balltze::Plugins::Lua {
     SET_EVENT_FUNCTIONS(CameraEvent, camera, "camera");
     SET_EVENT_FUNCTIONS_NO_ARGS(FrameEvent, frame, "frame");
     SET_EVENT_FUNCTIONS(GameInputEvent, game_input, "gameInput");
+    SET_EVENT_FUNCTIONS(KeyboardInputEvent, keyboard_input, "keyboardInput");
     SET_EVENT_FUNCTIONS(HudHoldForActionMessageEvent, hud_hold_for_action_message, "hudHoldForActionMessage");
     SET_EVENT_FUNCTIONS(MapFileLoadEvent, map_file_load, "mapFileLoad");
     SET_EVENT_FUNCTIONS(MapLoadEvent, map_load, "mapLoad");
@@ -378,6 +379,7 @@ namespace Balltze::Plugins::Lua {
         set_up_event_table(state, "camera", lua_event_camera_subscribe, lua_event_camera_remove_listener, lua_event_camera_remove_all_listeners);
         set_up_event_table(state, "frame", lua_event_frame_subscribe, lua_event_frame_remove_listener, lua_event_frame_remove_all_listeners);
         set_up_event_table(state, "gameInput", lua_event_game_input_subscribe, lua_event_game_input_remove_listener, lua_event_game_input_remove_all_listeners);
+        set_up_event_table(state, "keyboardInput", lua_event_keyboard_input_subscribe, lua_event_keyboard_input_remove_listener, lua_event_keyboard_input_remove_all_listeners);
         set_up_event_table(state, "hudHoldForActionMessage", lua_event_hud_hold_for_action_message_subscribe, lua_event_hud_hold_for_action_message_remove_listener, lua_event_hud_hold_for_action_message_remove_all_listeners);
         set_up_event_table(state, "mapFileLoad", lua_event_map_file_load_subscribe, lua_event_map_file_load_remove_listener, lua_event_map_file_load_remove_all_listeners);
         set_up_event_table(state, "mapLoad", lua_event_map_load_subscribe, lua_event_map_load_remove_listener, lua_event_map_load_remove_all_listeners);

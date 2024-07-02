@@ -41,6 +41,16 @@ namespace Balltze::Plugins::Lua {
         luacs_newobject(state, BalltzeGameInputEventArgs, args);
     }
 
+    static void define_balltze_keyboard_input_event_args_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeKeyboardEventArgs);
+        luacs_objref_field(state, BalltzeKeyboardEventArgs, EngineInputBufferedKey, key, LUACS_FREADONLY);
+        lua_pop(state, 1);
+    }
+
+    void push_meta_balltze_keyboard_input_event_args(lua_State *state, BalltzeKeyboardEventArgs *args) noexcept {
+        luacs_newobject(state, BalltzeKeyboardEventArgs, args);
+    }
+
     static void define_hud_hold_for_action_message_slice_enum(lua_State *state) noexcept {
         luacs_newenum(state, BalltzeHudHoldForActionMessageSlice);
         luacs_enum_declare_value(state, "MESSAGE", BalltzeHudHoldForActionMessageSlice::MESSAGE);
@@ -311,13 +321,13 @@ namespace Balltze::Plugins::Lua {
 
     static void define_balltze_ui_widget_list_tab_event_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, BalltzeUIWidgetListTabType);
-        luacs_enum_declare_value(state, "TAB_THRU_CHILDREN_NEXT_HORIZONTAL", BalltzeUIWidgetListTabType::TAB_THRU_CHILDREN_NEXT_HORIZONTAL);
-        luacs_enum_declare_value(state, "TAB_THRU_CHILDREN_NEXT_VERTICAL", BalltzeUIWidgetListTabType::TAB_THRU_CHILDREN_NEXT_VERTICAL);
-        luacs_enum_declare_value(state, "TAB_THRU_CHILDREN_PREV", BalltzeUIWidgetListTabType::TAB_THRU_CHILDREN_PREV);
-        luacs_enum_declare_value(state, "TAB_THRU_ITEM_LIST_ITEMS_NEXT_HORIZONTAL", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_NEXT_HORIZONTAL);
-        luacs_enum_declare_value(state, "TAB_THRU_ITEM_LIST_ITEMS_NEXT_VERTICAL", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_NEXT_VERTICAL);
-        luacs_enum_declare_value(state, "TAB_THRU_ITEM_LIST_ITEMS_PREV_HORIZONTAL", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_HORIZONTAL);
-        luacs_enum_declare_value(state, "TAB_THRU_ITEM_LIST_ITEMS_PREV_VERTICAL", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_VERTICAL);
+        luacs_enum_declare_value(state, "tabThruChildrenNextHorizontal", BalltzeUIWidgetListTabType::TAB_THRU_CHILDREN_NEXT_HORIZONTAL);
+        luacs_enum_declare_value(state, "tabThruChildrenNextVertical", BalltzeUIWidgetListTabType::TAB_THRU_CHILDREN_NEXT_VERTICAL);
+        luacs_enum_declare_value(state, "tabThruChildrenPrev", BalltzeUIWidgetListTabType::TAB_THRU_CHILDREN_PREV);
+        luacs_enum_declare_value(state, "tabThruItemListItemsNextHorizontal", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_NEXT_HORIZONTAL);
+        luacs_enum_declare_value(state, "tabThruItemListItemsNextVertical", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_NEXT_VERTICAL);
+        luacs_enum_declare_value(state, "tabThruItemListItemsPrevHorizontal", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_HORIZONTAL);
+        luacs_enum_declare_value(state, "tabThruItemListItemsPrevVertical", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_VERTICAL);
         lua_pop(state, 1);
     }
 

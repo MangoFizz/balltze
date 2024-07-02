@@ -11,23 +11,24 @@
 namespace Balltze::Plugins::Lua {
     static int execute_script(lua_State *state) noexcept {
         int args = lua_gettop(state);
-        if(args == 0) {
-            push_engine_resolution(state, &Engine::get_resolution());
-            return 1;
+        if(args == 1 || args == 4 || args == 5) {
+            const char *script = luaL_checkstring(state, 1);
+            Engine::execute_script(script);
+            return 0;
         }
         else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.rasterizer.getResolution.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.script.executeScript");
         }
     }
 
     static const luaL_Reg engine_renderer_functions[] = {
-        {"getResolution", execute_script},
+        {"executeScript", execute_script},
         {nullptr, nullptr}
     };
 
-    void set_engine_rasterizer_functions(lua_State *state) noexcept {
+    void set_engine_hsc_functions(lua_State *state) noexcept {
         lua_newtable(state);
         luaL_setfuncs(state, engine_renderer_functions, 0);
-        lua_setfield(state, -2, "rasterizer");
+        lua_setfield(state, -2, "hsc");
     }
 }

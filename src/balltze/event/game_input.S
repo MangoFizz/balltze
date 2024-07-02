@@ -93,3 +93,14 @@ _gamepad_input_event:
     pop ebp
     mov eax, 0
     ret
+
+.globl _keypress_event
+_keypress_event:
+    pushad
+    pushfd
+    push ecx ;# pressed key data
+    call _dispatch_keypress_event
+    add esp, 4
+    popfd
+    popad
+    ret

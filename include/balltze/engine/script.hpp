@@ -143,6 +143,12 @@ namespace Balltze::Engine {
 	static_assert(sizeof(ScenarioScriptNodeValue) == 0x4);
 
     /**
+     * Execute the script
+     * @param script script to execute
+     */
+    void execute_script(const char *script) noexcept;
+
+    /**
      * Makes the unit enter a vehicle
      * @param unit_handle       Handle of the unit to enter the vehicle
      * @param vehicle_handle    Handle of the vehicle to enter

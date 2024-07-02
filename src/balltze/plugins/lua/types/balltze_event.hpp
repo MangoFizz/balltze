@@ -10,6 +10,7 @@
 namespace Balltze::Plugins::Lua {
     using BalltzeCameraEventArgs = Event::CameraEventArgs;
     using BalltzeGameInputEventArgs = Event::GameInputEventArgs;
+    using BalltzeKeyboardEventArgs = Event::KeyboardInputEventArgs;
     using BalltzeHudHoldForActionMessageSlice = Event::HudHoldForActionMessageSlice;
     using BalltzeHudHoldToActionMessageButtonType = Event::HudHoldToActionMessageButton::Type;
     using BalltzeHudHoldToActionMessageAxisDirection = Event::HudHoldToActionMessageButton::AxisDirection;
@@ -36,6 +37,7 @@ namespace Balltze::Plugins::Lua {
 
     void push_meta_balltze_camera_event_args(lua_State *state, Event::CameraEventArgs *args) noexcept;
     void push_meta_balltze_game_input_event_args(lua_State *state, Event::GameInputEventArgs *args) noexcept;
+    void push_meta_balltze_keyboard_input_event_args(lua_State *state, BalltzeKeyboardEventArgs *args) noexcept;
     void push_meta_balltze_hud_hold_to_action_message_button(lua_State *state, Event::HudHoldToActionMessageButton *button) noexcept;
     void push_meta_balltze_hud_hold_for_action_message_event_args(lua_State *state, Event::HudHoldForActionMessageArgs *args) noexcept;
     void push_meta_balltze_map_file_load_event_args(lua_State *state, Event::MapFileLoadEventArgs *args) noexcept;
@@ -54,7 +56,6 @@ namespace Balltze::Plugins::Lua {
     void push_meta_balltze_ui_widget_accept_event_args(lua_State *state, BalltzeUIWidgetEventArgs *args) noexcept;
     void push_meta_balltze_ui_widget_sound_event_args(lua_State *state, Event::UIWidgetSoundEventArgs *args) noexcept;
     void push_meta_balltze_ui_widget_list_tab_event_args(lua_State *state, Event::UIWidgetListTabEventArgs *args) noexcept;
-
     void define_balltze_event_types(lua_State *state) noexcept;
 }
 

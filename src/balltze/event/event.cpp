@@ -91,6 +91,7 @@ namespace Balltze::Event {
 
     template class EventHandler<TickEvent>;
     template class EventHandler<HudHoldForActionMessageEvent>;
+    template class EventHandler<KeyboardInputEvent>;
     template class EventHandler<GameInputEvent>;
     template class EventHandler<MapFileLoadEvent>;
     template class EventHandler<SoundPlaybackEvent>;
@@ -154,6 +155,7 @@ namespace Balltze::Event {
                 EventHandler<D3D9EndSceneEvent>::init();
                 EventHandler<D3D9DeviceResetEvent>::init();
                 EventHandler<NetworkGameChatMessageEvent>::init();
+                EventHandler<KeyboardInputEvent>::init();
                 first_tick_listener.remove();
             });
         }

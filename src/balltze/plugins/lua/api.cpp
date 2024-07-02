@@ -21,6 +21,7 @@ namespace Balltze::Plugins::Lua {
         set_event_table(state);
         set_command_table(state);
         set_math_table(state);
+        set_memory_function(state);
         set_misc_table(state);
         set_config_table(state);
         set_filesystem_table(state);

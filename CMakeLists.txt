@@ -125,6 +125,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/functions/engine/map.cpp
     src/balltze/plugins/lua/functions/engine/netgame.cpp
     src/balltze/plugins/lua/functions/engine/rasterizer.cpp
+    src/balltze/plugins/lua/functions/engine/hsc.cpp
     src/balltze/plugins/lua/functions/engine/tag.cpp
     src/balltze/plugins/lua/functions/engine/user_interface.cpp
     src/balltze/plugins/lua/functions/chimera.cpp
@@ -136,6 +137,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/functions/event.cpp
     src/balltze/plugins/lua/functions/logger.cpp
     src/balltze/plugins/lua/functions/math.cpp
+    src/balltze/plugins/lua/functions/memory.cpp
     src/balltze/plugins/lua/functions/misc.cpp
     src/balltze/plugins/lua/functions/output.cpp
     src/balltze/plugins/lua/libraries/lua-fmt/lfmt.c

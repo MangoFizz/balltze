@@ -981,6 +981,16 @@ function Engine.core.getCameraData()
 end
 
 -------------------------------------------------------
+-- Engine.hsc
+-------------------------------------------------------
+
+Engine.hsc = {}
+
+-- Execute a script
+---@param script string @The script to execute
+function Engine.hsc.executeScript(script) end
+
+-------------------------------------------------------
 -- Engine.map
 -------------------------------------------------------
 

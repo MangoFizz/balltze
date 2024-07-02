@@ -3,6 +3,7 @@
 #include <vector>
 #include "../../../logger.hpp"
 #include "../../loader.hpp"
+#include "../../../config/config.hpp"
 #include "../helpers/function_table.hpp"
 #include "command.hpp"
 
@@ -154,27 +155,56 @@ namespace Balltze::Plugins::Lua {
     static int execute_command(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
-            auto *name = luaL_checkstring(state, 1);
-            std::size_t arg_count = lua_gettop(state) - 1;
-            const char **args = new const char *[arg_count];
-            for(std::size_t i = 0; i < arg_count; i++) {
-                args[i] = luaL_checkstring(state, i + 2);
+            int args = lua_gettop(state);
+            if(args != 1) {
+                return luaL_error(state, "Invalid number of arguments in function Balltze.command.executeCommand.");
             }
-            for(const auto &command : commands) {
-                if(std::strcmp(command->name(), name) == 0 && command->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
-                    CommandResult result = command->call(arg_count, args);
-                    delete[] args;
-                    if(result == COMMAND_RESULT_SUCCESS) {
-                        lua_pushboolean(state, 1);
+
+            auto *command = luaL_checkstring(state, 1);
+            std::vector<std::string> arguments = split_arguments(command);
+            std::size_t arg_count = arguments.size() - 1;
+            std::string command_name = arguments[0];
+            arguments.erase(arguments.begin());
+
+            auto arguments_alloc(std::make_unique<const char *[]>(arg_count));
+            for(std::size_t i = 0; i < arg_count; i++) {
+                arguments_alloc[i] = arguments[i].data();
+            }
+            
+            CommandResult res = COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
+            for(const auto command : commands) {
+                if(command->full_name() == command_name) {
+                    if(!command->plugin()) {
+                        return luaL_error(state, "Could not get plugin for module handle %s", plugin->name().c_str());
+                    }
+
+                    Plugins::Plugin *command_plugin = reinterpret_cast<Plugins::Plugin *>(*command->plugin());
+                    Plugins::Plugin *module_plugin = Plugins::get_lua_plugin(state);
+                    if(command->is_public() || module_plugin == command_plugin || plugin->name() == "devkit") {
+                        res = command->call(arg_count, arguments_alloc.get());
+
+                        // Save if autosave is enabled
+                        if(command->autosave() && res == COMMAND_RESULT_SUCCESS) {
+                            bool is_balltze_command = command_plugin == nullptr;
+                            if(is_balltze_command) {
+                                auto &config = Config::get_config();
+                                config.set(std::string("commands.") + command->name(), unsplit_arguments(arguments));
+                                config.save();
+                            }
+                            else {
+                                auto directory = command_plugin->directory();
+                                auto config = Config::Config(directory / "settings.json");
+                                config.set(std::string("commands.") + command->name(), unsplit_arguments(arguments));
+                                config.save();
+                            }
+                        }
                     }
                     else {
-                        lua_pushboolean(state, 0);
-                    }
-                    return 1;
+                        return luaL_error(state, "Plugin %s tried to call command %s from plugin %s", module_plugin->name().c_str(), command->name(), command_plugin->name().c_str());
+                    }              
+                    break;
                 }
             }
-            delete[] args;
-            return luaL_error(state, "Command not found.");
         }
         else {
             logger.warning("Could not get plugin for lua state.");
@@ -184,6 +214,7 @@ namespace Balltze::Plugins::Lua {
 
     static const luaL_Reg command_functions[] = {
         {"registerCommand", register_command},
+        {"executeCommand", execute_command},
         {nullptr, nullptr}
     };
 
