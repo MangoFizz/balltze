@@ -140,6 +140,31 @@ function Balltze.event.gameInput.removeListener(handle) end
 -- Remove all listeners from the gameInput event
 function Balltze.event.gameInput.removeAllListeners() end
 
+Balltze.event.keyboardInput = {}
+
+---@class BalltzeKeyboardInputEventArgs
+---@field key EngineInputBufferedKey
+
+---@class MetaBalltzeKeyboardInputEventArgs: BalltzeKeyboardInputEventArgs
+
+---@class BalltzeKeyboardInputEvent: BalltzeEvent
+---@field args BalltzeKeyboardInputEventArgs @The arguments of the event
+
+---@alias BalltzeKeyboardInputEventCallback fun(event: BalltzeKeyboardInputEvent)
+
+-- Subscribe a listener to the keyboardInput event
+---@param callbackFunction BalltzeKeyboardInputEventCallback @The function to call when the event is triggered
+---@param priority? BalltzeEventListenerPriority @The priority of the callback function
+---@return BalltzeEventListener @The handle of the event listener
+function Balltze.event.keyboardInput.subscribe(callbackFunction, priority) end
+
+-- Remove a listener from the keyboardInput event
+---@param handle integer @The handle of the event listener
+function Balltze.event.keyboardInput.removeListener(handle) end
+
+-- Remove all listeners from the keyboardInput event
+function Balltze.event.keyboardInput.removeAllListeners() end
+
 Balltze.event.hudHoldForActionMessage = {}
 
 ---@alias BalltzeHudHoldForActionMessageSlice

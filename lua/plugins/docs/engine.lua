@@ -1739,6 +1739,26 @@ Engine.userInterface = {}
 
 ---@class MetaEngineWidget: EngineWidget
 
+---@class EngineInputBufferedKeyModifierEnum : Enum
+---@class EngineInputBufferedKeyModifierAlt : EngineInputBufferedKeyModifierEnum
+---@class EngineInputBufferedKeyModifierCtrl : EngineInputBufferedKeyModifierEnum
+---@class EngineInputBufferedKeyModifierShift : EngineInputBufferedKeyModifierEnum
+
+---@alias EngineInputBufferedModifier
+---| EngineInputBufferedKeyModifierAlt
+---| EngineInputBufferedKeyModifierCtrl
+---| EngineInputBufferedKeyModifierShift
+
+---@class EngineInputBufferedKeyEnumTable
+---@field alt EngineInputBufferedKeyModifierAlt
+---@field ctrl EngineInputBufferedKeyModifierCtrl
+---@field shift EngineInputBufferedKeyModifierShift
+
+---@class EngineInputBufferedKey 
+---@field modifier EngineInputBufferedModifier
+---@field character integer
+---@field keycode integer
+
 ---@alias EngineWidgetNavigationSound
 ---| 'cursor'
 ---| 'forward'
