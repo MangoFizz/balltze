@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "../helpers/luacstruct.hpp"
+#include "../helpers/enum.hpp"
 #include "engine_types.hpp"
 #include "engine_rasterizer.hpp"
 #include "engine_user_interface.hpp"
@@ -328,6 +329,7 @@ namespace Balltze::Plugins::Lua {
         luacs_enum_declare_value(state, "tabThruItemListItemsNextVertical", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_NEXT_VERTICAL);
         luacs_enum_declare_value(state, "tabThruItemListItemsPrevHorizontal", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_HORIZONTAL);
         luacs_enum_declare_value(state, "tabThruItemListItemsPrevVertical", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_VERTICAL);
+        publish_enum(state, "Balltze", "event", "uiWidgetListTabTypes", -1);
         lua_pop(state, 1);
     }
 
@@ -340,6 +342,17 @@ namespace Balltze::Plugins::Lua {
 
     void push_meta_balltze_ui_widget_list_tab_event_args(lua_State *state, BalltzeUIWidgetListTabEventArgs *args) noexcept {
         luacs_newobject(state, BalltzeUIWidgetListTabEventArgs, args);
+    }
+
+    static void define_balltze_ui_widget_mouse_button_press_event_args_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeUIWidgetMouseButtonPressEventArgs);
+        luacs_objref_field(state, BalltzeUIWidgetMouseButtonPressEventArgs, EngineUIWidget, widget, LUACS_FREADONLY);
+        luacs_enum_field(state, BalltzeUIWidgetMouseButtonPressEventArgs, EngineInputMouseButton, button, LUACS_FREADONLY);
+        lua_pop(state, 1);
+    }
+
+    void push_meta_balltze_ui_widget_mouse_button_press_event_args(lua_State *state, BalltzeUIWidgetMouseButtonPressEventArgs *args) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetMouseButtonPressEventArgs, args);
     }
 
     void define_balltze_event_types(lua_State *state) noexcept {
@@ -368,5 +381,6 @@ namespace Balltze::Plugins::Lua {
         define_balltze_ui_widget_sound_event_args(state);
         define_balltze_ui_widget_list_tab_event_type_enum(state);
         define_balltze_ui_widget_list_tab_event_args_struct(state);
+        define_balltze_ui_widget_mouse_button_press_event_args_struct(state);
     }
 }

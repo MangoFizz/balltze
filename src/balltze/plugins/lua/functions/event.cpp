@@ -365,6 +365,7 @@ namespace Balltze::Plugins::Lua {
     SET_EVENT_FUNCTIONS(UIWidgetAcceptEvent, ui_widget_accept, "uiWidgetAccept");
     SET_EVENT_FUNCTIONS(UIWidgetSoundEvent, ui_widget_sound, "uiWidgetSound");
     SET_EVENT_FUNCTIONS(UIWidgetListTabEvent, ui_widget_list_tab, "uiWidgetListTab");
+    SET_EVENT_FUNCTIONS(UIWidgetMouseButtonPressEvent, ui_widget_mouse_button_press, "uiWidgetMouseButtonPress");
 
     #undef SET_EVENT_FUNCTIONS
     #undef SET_EVENT_FUNCTIONS_NO_ARGS
@@ -401,6 +402,7 @@ namespace Balltze::Plugins::Lua {
         set_up_event_table(state, "uiWidgetAccept", lua_event_ui_widget_accept_subscribe, lua_event_ui_widget_accept_remove_listener, lua_event_ui_widget_accept_remove_all_listeners);
         set_up_event_table(state, "uiWidgetSound", lua_event_ui_widget_sound_subscribe, lua_event_ui_widget_sound_remove_listener, lua_event_ui_widget_sound_remove_all_listeners);
         set_up_event_table(state, "uiWidgetListTab", lua_event_ui_widget_list_tab_subscribe, lua_event_ui_widget_list_tab_remove_listener, lua_event_ui_widget_list_tab_remove_all_listeners);
+        set_up_event_table(state, "uiWidgetMouseButtonPress", lua_event_ui_widget_mouse_button_press_subscribe, lua_event_ui_widget_mouse_button_press_remove_listener, lua_event_ui_widget_mouse_button_press_remove_all_listeners);
         lua_setfield(state, -2, "event");
 
         #define SET_UP_EVENT_LISTENERS(event, populate) \

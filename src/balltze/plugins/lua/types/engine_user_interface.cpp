@@ -60,7 +60,7 @@ namespace Balltze::Plugins::Lua {
     }
 
     Engine::Widget *from_meta_engine_widget(lua_State *state, int index) noexcept {
-        return reinterpret_cast<Engine::Widget *>(luacs_object_pointer(state, index, "EngineWidget"));
+        return reinterpret_cast<Engine::Widget *>(luacs_checkobject(state, index, "EngineUIWidget"));
     }
 
     static void define_engine_input_buffered_key_modifier_enum(lua_State *state) noexcept {
@@ -85,13 +85,24 @@ namespace Balltze::Plugins::Lua {
     }
     
     Engine::InputGlobals::BufferedKey *from_meta_engine_input_buffered_key(lua_State *state, int index) noexcept {
-        return reinterpret_cast<Engine::InputGlobals::BufferedKey *>(luacs_object_pointer(state, index, "EngineInputBufferedKey"));
+        return reinterpret_cast<Engine::InputGlobals::BufferedKey *>(luacs_checkobject(state, index, "EngineInputBufferedKey"));
+    }
+
+    static void define_engine_input_mouse_button_enum(lua_State *state) noexcept {
+        luacs_newenum(state, EngineInputMouseButton);
+        luacs_enum_declare_value(state, "left", EngineInputMouseButton::MOUSE_BUTTON_LEFT);
+        luacs_enum_declare_value(state, "middle", EngineInputMouseButton::MOUSE_BUTTON_MIDDLE);
+        luacs_enum_declare_value(state, "right", EngineInputMouseButton::MOUSE_BUTTON_RIGHT);
+        luacs_enum_declare_value(state, "doubleLeft", EngineInputMouseButton::MOUSE_BUTTON_DOUBLE_LEFT);
+        publish_enum(state, "Engine", "userInterface", "inputMouseButton", -1); 
+        lua_pop(state, 1);
     }
 
     void define_engine_user_interface_types(lua_State *state) noexcept {
         define_engine_widget_navigation_sound_enum(state);
         define_engine_input_device_enum(state);
         define_engine_input_buffered_key_modifier_enum(state);
+        define_engine_input_mouse_button_enum(state);
         define_engine_widget_struct(state);
         define_engine_input_buffered_key(state);
     }

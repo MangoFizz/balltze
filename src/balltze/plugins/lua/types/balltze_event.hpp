@@ -34,6 +34,7 @@ namespace Balltze::Plugins::Lua {
     using BalltzeUIWidgetSoundEventArgs = Event::UIWidgetSoundEventArgs;
     using BalltzeUIWidgetListTabType = Event::UIWidgetListTabType;
     using BalltzeUIWidgetListTabEventArgs = Event::UIWidgetListTabEventArgs;
+    using BalltzeUIWidgetMouseButtonPressEventArgs = Event::UIWidgetMouseButtonPressEventArgs;
 
     void push_meta_balltze_camera_event_args(lua_State *state, Event::CameraEventArgs *args) noexcept;
     void push_meta_balltze_game_input_event_args(lua_State *state, Event::GameInputEventArgs *args) noexcept;
@@ -56,6 +57,7 @@ namespace Balltze::Plugins::Lua {
     void push_meta_balltze_ui_widget_accept_event_args(lua_State *state, BalltzeUIWidgetEventArgs *args) noexcept;
     void push_meta_balltze_ui_widget_sound_event_args(lua_State *state, Event::UIWidgetSoundEventArgs *args) noexcept;
     void push_meta_balltze_ui_widget_list_tab_event_args(lua_State *state, Event::UIWidgetListTabEventArgs *args) noexcept;
+    void push_meta_balltze_ui_widget_mouse_button_press_event_args(lua_State *state, BalltzeUIWidgetMouseButtonPressEventArgs *args) noexcept;
     void define_balltze_event_types(lua_State *state) noexcept;
 }
 

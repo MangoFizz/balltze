@@ -119,6 +119,7 @@ namespace Balltze::Event {
     template class EventHandler<UIWidgetAcceptEvent>;
     template class EventHandler<UIWidgetSoundEvent>;
     template class EventHandler<UIWidgetListTabEvent>;
+    template class EventHandler<UIWidgetMouseButtonPressEvent>;
 
     static EventListenerHandle<TickEvent> first_tick_listener;
 
@@ -149,6 +150,7 @@ namespace Balltze::Event {
             EventHandler<UIWidgetAcceptEvent>::init();
             EventHandler<UIWidgetSoundEvent>::init();
             EventHandler<UIWidgetListTabEvent>::init();
+            EventHandler<UIWidgetMouseButtonPressEvent>::init();
             
             first_tick_listener = TickEvent::subscribe_const(+[](const TickEvent &event) {
                 EventHandler<D3D9BeginSceneEvent>::init();

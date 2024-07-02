@@ -493,4 +493,71 @@ namespace Balltze::Event {
         // Register debug command
         register_command("debug_widget_list_tab_event", "debug", "Sets whenever to log widget list tab event.", "[enable: boolean]", debug_widget_list_tab_event, true, 0, 1);
     }
+
+    extern "C" {
+        void handle_widget_mouse_button_press_asm();
+
+        bool call_widget_mouse_button_press_events(Engine::Widget *pressed_widget, Engine::MouseButton button) {
+            UIWidgetMouseButtonPressEventArgs args{pressed_widget, button};
+            UIWidgetMouseButtonPressEvent event(EVENT_TIME_BEFORE, args);
+            event.dispatch();
+            return !event.cancelled();
+        }
+    }
+
+    static bool debug_widget_mouse_button_press_event(int arg_count, const char **args) {
+        static std::optional<Event::EventListenerHandle<UIWidgetMouseButtonPressEvent>> handle;
+        if(arg_count == 1) {
+            bool new_setting = STR_TO_BOOL(args[0]);
+            if(new_setting) {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+                handle = Event::UIWidgetMouseButtonPressEvent::subscribe_const([](UIWidgetMouseButtonPressEvent const &event) {
+                    auto &arguments = event.args;
+                    auto time = event_time_to_string(event.time);
+                    auto *tag = Engine::get_tag(arguments.widget->definition_tag_handle);
+                    logger.debug("Widget mouse button event ({}): widget: {}. button: {}", time, tag->path, static_cast<std::uint32_t>(arguments.button));
+                });
+            }
+            else {
+                if(handle) {
+                    handle->remove();
+                    handle = std::nullopt;
+                }
+            }
+        }
+        logger.info("debug_widget_mouse_button_click_event: {}", handle.has_value());
+        return true;
+    }
+
+    template<>
+    void EventHandler<UIWidgetMouseButtonPressEvent>::init() {
+        static bool enabled = false;
+        if(enabled) {
+            return;
+        }
+        enabled = true;
+
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
+            return;
+        }
+
+        auto *widget_mbc_function_sig = Memory::get_signature("widget_mouse_pressed_button_check");
+        if(!widget_mbc_function_sig) {
+            throw std::runtime_error("Could not find signatures for widget mouse button click event.");
+        }
+
+        try {
+            Memory::fill_with_nops(reinterpret_cast<void *>(widget_mbc_function_sig->data()), 0x1E);
+            Memory::replace_function_call(widget_mbc_function_sig->data(), handle_widget_mouse_button_press_asm);
+        }
+        catch(const std::runtime_error &e) {
+            throw std::runtime_error("failed to initialize widget sound event: " + std::string(e.what()));
+        }
+
+        // Register debug command
+        register_command("debug_widget_mouse_button_click_event", "debug", "Sets whenever to log widget mouse button click event.", "[enable: boolean]", debug_widget_mouse_button_press_event, true, 0, 1);
+    }
 }

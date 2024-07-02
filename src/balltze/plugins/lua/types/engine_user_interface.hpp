@@ -12,6 +12,7 @@ namespace Balltze::Plugins::Lua {
     using EngineWidgetNavigationSound = Engine::WidgetNavigationSound;
     using EngineInputBufferedKey = Engine::InputGlobals::BufferedKey;
     using EngineInputBufferedKeyModifier = Engine::InputGlobals::BufferedKey::Modifier;
+    using EngineInputMouseButton = Engine::MouseButton;
 
     void push_meta_engine_widget(lua_State *state, Engine::Widget *widget) noexcept;
     Engine::Widget *from_meta_engine_widget(lua_State *state, int index) noexcept;

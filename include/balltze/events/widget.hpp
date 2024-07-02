@@ -110,6 +110,24 @@ namespace Balltze::Event {
 
         UIWidgetListTabEvent(EventTime time, UIWidgetListTabEventArgs args) : EventData(time), args(args) {}
     };
+
+    struct UIWidgetMouseButtonPressEventArgs {
+        Engine::Widget *const widget;
+        const Engine::MouseButton button;
+
+        UIWidgetMouseButtonPressEventArgs(Engine::Widget *const widget, const Engine::MouseButton button) : widget(widget), button(button) {}
+    };
+
+    class UIWidgetMouseButtonPressEvent : public EventData<UIWidgetMouseButtonPressEvent> {
+    public:
+        UIWidgetMouseButtonPressEventArgs args;
+
+        bool cancellable() const {
+            return true;
+        }
+
+        UIWidgetMouseButtonPressEvent(EventTime time, UIWidgetMouseButtonPressEventArgs args) : EventData(time), args(args) {}
+    };
 }
 
 #endif
