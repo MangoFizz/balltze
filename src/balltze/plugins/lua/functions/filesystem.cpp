@@ -301,6 +301,6 @@ namespace Balltze::Plugins::Lua {
     };
 
     void set_filesystem_table(lua_State *state) noexcept {
-        create_functions_table(state, "features", filesystem_functions);
+        create_functions_table(state, "filesystem", filesystem_functions);
     }
 }
