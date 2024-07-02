@@ -83,7 +83,7 @@ namespace Balltze {
                 logger.info("console_debug: {}", logger.mute_ingame());
             }
             return true;
-        }, true, 0, 0);
+        }, true, 0, 1);
     }
 
     BalltzeSide get_balltze_side() noexcept {

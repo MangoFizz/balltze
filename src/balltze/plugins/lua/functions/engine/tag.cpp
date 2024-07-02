@@ -46,20 +46,12 @@ namespace Balltze::Plugins::Lua {
 
     static int engine_get_tag(lua_State *state) noexcept {
         int args = lua_gettop(state);
-        Engine::Tag *tag_entry = nullptr;
-        if(args == 1) {
-            auto tag_handle = get_engine_resource_handle(state, 1);
-            if(!tag_handle || tag_handle->is_null()) {
-                return luaL_error(state, "Invalid tag handle in function Engine.tag.getTag.");
-            }
-            if(tag_handle->id != 0) {
-                tag_entry = Engine::get_tag(*tag_handle);
-            }
-            else {
-                tag_entry = Engine::get_tag(tag_handle->index);
-            }
+        if(args != 1 && args != 2) {
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTag.");
         }
-        else if(args == 2) {
+
+        Engine::Tag *tag_entry = nullptr;
+        if(lua_type(state, 1) == LUA_TSTRING) {
             const char *tag_path = luaL_checkstring(state, 1);
             auto tag_class = get_tag_class(state, 2);
             if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
@@ -70,7 +62,16 @@ namespace Balltze::Plugins::Lua {
             }
         }
         else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTag.");
+            auto tag_handle = get_engine_resource_handle(state, 1);
+            if(!tag_handle || tag_handle->is_null()) {
+                return luaL_error(state, "Invalid tag handle in function Engine.tag.getTag.");
+            }
+            if(tag_handle->id != 0) {
+                tag_entry = Engine::get_tag(*tag_handle);
+            }
+            else {
+                tag_entry = Engine::get_tag(tag_handle->index);
+            }
         }
 
         if(tag_entry) {

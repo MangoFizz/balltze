@@ -118,10 +118,10 @@ namespace Balltze::Plugins {
             return;
         }
 
-        unload_plugins();
-        init_plugins();
-
         if(load_plugins_on_next_tick) {
+            unload_plugins();
+            init_plugins();
+
             for(auto &plugin : plugins) {
                 if(plugin->loaded()) {
                     continue;

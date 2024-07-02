@@ -17,7 +17,7 @@ play_sound_function_address: .long 0
 .text
 create_widget_function_sig: .string "widget_create_function"
 open_widget_function_sig: .string "widget_open_function"
-close_widget_function_sig: .string "widget_close_function"
+close_widget_function_sig: .string "widget_back_function"
 find_widget_function_sig: .string "widget_find_function"
 focus_widget_function_sig: .string "widget_focus_function"
 get_widget_list_item_index_function_sig: .string "widget_list_item_index_function"

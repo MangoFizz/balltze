@@ -105,6 +105,7 @@ namespace Balltze::Plugins::Lua {
         push_chimera_function("tick_rate");
         push_chimera_function("ticks");
         push_chimera_function("create_font_override");
+        push_chimera_function("execute_chimera_command");
 
         push_chimera_function("read_bit");
         push_chimera_function("write_bit");

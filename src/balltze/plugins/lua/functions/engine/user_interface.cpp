@@ -184,8 +184,8 @@ namespace Balltze::Plugins::Lua {
             }
 
             Engine::TagHandle tag_handle;
-            if(lua_isinteger(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1)) {
-                auto handle = get_engine_resource_handle(state, 1);
+            if(lua_isinteger(state, 2) || lua_istable(state, 2) || lua_isuserdata(state, 2)) {
+                auto handle = get_engine_resource_handle(state, 2);
                 if(!handle || handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Engine.userInterface.replaceWidget.");
                 }
@@ -303,7 +303,7 @@ namespace Balltze::Plugins::Lua {
         int args = lua_gettop(state);
 
         if(args == 3) {
-            auto *bitmap = reinterpret_cast<Engine::TagDefinitions::Bitmap *>(luacs_object_pointer(state, 1, "EngineBitmap"));
+            auto *bitmap = reinterpret_cast<Engine::TagDefinitions::Bitmap *>(luacs_checkobject(state, 1, "EngineBitmap"));
             if(!bitmap) {
                 return luaL_error(state, "Invalid bitmap in function Engine.userInterface.getBitmapSpriteResolution.");
             }
@@ -329,7 +329,7 @@ namespace Balltze::Plugins::Lua {
         int args = lua_gettop(state);
 
         if(args == 4 || args == 5) {
-            auto *bitmap = reinterpret_cast<Engine::TagDefinitions::Bitmap *>(luacs_object_pointer(state, 1, "EngineBitmap"));
+            auto *bitmap = reinterpret_cast<Engine::TagDefinitions::Bitmap *>(luacs_checkobject(state, 1, "EngineBitmap"));
             if(!bitmap) {
                 return luaL_error(state, "Invalid bitmap in function Engine.userInterface.drawHudMessageSprite.");
             }
@@ -409,7 +409,7 @@ namespace Balltze::Plugins::Lua {
         int args = lua_gettop(state);
 
         if(args == 1) {
-            auto *permutation = reinterpret_cast<Engine::TagDefinitions::SoundPermutation *>(luacs_object_pointer(state, 1, "EngineSoundPermutation"));
+            auto *permutation = reinterpret_cast<Engine::TagDefinitions::SoundPermutation *>(luacs_checkobject(state, 1, "EngineSoundPermutation"));
             if(!permutation) {
                 return luaL_error(state, "Invalid sound permutation in function Engine.userInterface.getSoundPermutationSamplesDuration.");
             }
