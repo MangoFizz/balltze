@@ -42,7 +42,7 @@ namespace Balltze::Plugins::Lua {
                     auto font_str = generic_font_from_string(luaL_checkstring(state, 2));
                     font = get_generic_font(font_str);
                 }
-                else if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+                else if(lua_isinteger(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1)) {
                     auto tag_handle = get_engine_resource_handle(state, 1);
                     if(!tag_handle || tag_handle->is_null()) {
                         return luaL_error(state, "Invalid tag handle in function Balltze.output.textPixelLength.");

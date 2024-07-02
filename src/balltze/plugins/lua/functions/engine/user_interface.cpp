@@ -15,7 +15,7 @@ namespace Balltze::Plugins::Lua {
         if(args == 1 || args == 2) {
             Engine::TagHandle tag_handle;
 
-            if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+            if(lua_isinteger(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1)) {
                 auto handle = get_engine_resource_handle(state, 1);
                 if(!!handle || handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Engine.userInterface.findWidget.");
@@ -67,7 +67,7 @@ namespace Balltze::Plugins::Lua {
         if(args == 1 || args == 2) {
             Engine::TagHandle tag_handle;
 
-            if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+            if(lua_isinteger(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1)) {
                 auto handle = get_engine_resource_handle(state, 1);
                 if(!!handle || handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Engine.userInterface.findWidgets.");
@@ -117,7 +117,7 @@ namespace Balltze::Plugins::Lua {
         if(args == 1 || args == 2) {
             Engine::TagHandle tag_handle;
 
-            if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+            if(lua_isinteger(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1)) {
                 auto handle = get_engine_resource_handle(state, 1);
                 if(!!handle || handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Engine.userInterface.openWidget.");
@@ -184,7 +184,7 @@ namespace Balltze::Plugins::Lua {
             }
 
             Engine::TagHandle tag_handle;
-            if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+            if(lua_isinteger(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1)) {
                 auto handle = get_engine_resource_handle(state, 1);
                 if(!!handle || handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Engine.userInterface.replaceWidget.");
@@ -368,7 +368,7 @@ namespace Balltze::Plugins::Lua {
 
         if(args == 1) {
             Engine::TagHandle tag_handle;
-            if(lua_isinteger(state, 1) || lua_istable(state, 1)) {
+            if(lua_isinteger(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1)) {
                 auto handle = get_engine_resource_handle(state, 1);
                 if(!handle || handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Engine.userInterface.playSound.");

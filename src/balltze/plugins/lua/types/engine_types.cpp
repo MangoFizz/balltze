@@ -57,7 +57,7 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::ResourceHandle> get_engine_resource_handle(lua_State *state, int index) noexcept {
         std::optional<Engine::ResourceHandle> handle;
-        if(lua_isuserdata(state, index)) {
+        if(lua_istable(state, index) || lua_isuserdata(state, index)) {
             lua_getfield(state, index, "value");
             if(lua_isinteger(state, -1)) {
                 handle = Engine::ResourceHandle();

@@ -121,7 +121,7 @@ namespace Balltze::Plugins::Lua {
             int args = lua_gettop(state);
             if(args == 1 || args == 2) {
                 Engine::TagHandle tag_handle;
-                if(args == 1 && (lua_isnumber(state, 1) || lua_istable(state, 1))) {
+                if(args == 1 && (lua_isnumber(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1))) {
                     auto handle = get_engine_resource_handle(state, 1);
                     if(!handle || handle->is_null()) {
                         return luaL_error(state, "Invalid tag handle in function Balltze.features.reloadTagData.");

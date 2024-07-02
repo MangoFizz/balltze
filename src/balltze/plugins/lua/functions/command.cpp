@@ -89,7 +89,7 @@ namespace Balltze::Plugins::Lua {
         commands.emplace_back(std::make_shared<Command>(*this));
     }
 
-    static int lua_command_register_command(lua_State *state) noexcept {
+    static int register_command(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -151,8 +151,39 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    static int execute_command(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            auto *name = luaL_checkstring(state, 1);
+            std::size_t arg_count = lua_gettop(state) - 1;
+            const char **args = new const char *[arg_count];
+            for(std::size_t i = 0; i < arg_count; i++) {
+                args[i] = luaL_checkstring(state, i + 2);
+            }
+            for(const auto &command : commands) {
+                if(std::strcmp(command->name(), name) == 0 && command->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
+                    CommandResult result = command->call(arg_count, args);
+                    delete[] args;
+                    if(result == COMMAND_RESULT_SUCCESS) {
+                        lua_pushboolean(state, 1);
+                    }
+                    else {
+                        lua_pushboolean(state, 0);
+                    }
+                    return 1;
+                }
+            }
+            delete[] args;
+            return luaL_error(state, "Command not found.");
+        }
+        else {
+            logger.warning("Could not get plugin for lua state.");
+            return luaL_error(state, "Unknown plugin.");
+        }
+    }
+
     static const luaL_Reg command_functions[] = {
-        {"registerCommand", lua_command_register_command},
+        {"registerCommand", register_command},
         {nullptr, nullptr}
     };
 
