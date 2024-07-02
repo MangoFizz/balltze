@@ -23,6 +23,7 @@ namespace Balltze::Plugins::Lua {
         set_math_table(state);
         set_misc_table(state);
         set_config_table(state);
+        set_filesystem_table(state);
         if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
             set_output_table(state);
             set_features_table(state);
