@@ -702,48 +702,61 @@ namespace Balltze::Engine {
         PADDING(0x3);
     };
 
-    struct KeyboardKeys {
-        char
-
-        // 0x0
-        escape, f1, f2, f3,
-        f4, f5, f6, f7,
-        f8, f9, f10, f11,
-        f12, print_screen, scroll_lock, pause_break,
-
-        // 0x10
-        tilde, top_1, top_2, top_3,
-        top_4, top_5, top_6, top_7,
-        top_8, top_9, top_0, top_minus,
-        top_equals, backspace, tab, q,
-
-        // 0x20
-        w, e, r, t,
-        y, u, i, o,
-        p, left_bracket, right_bracket, back_slash,
-        caps_lock, a, s, d,
-
-        // 0x30
-        f, g, h, j,
-        k, l, semicolon, apostrophe,
-        enter, left_shift, z, x,
-        c, v, b, n,
-
-        // 0x40
-        m, comma, period, forward_slash,
-        right_shift, left_control, windows, left_alt,
-        space, right_alt, unknown, menu,
-        right_control, up_arrow, down_arrow, left_arrow,
-
-        // 0x50
-        right_arrow, ins, home, page_up,
-        del, end, page_down, num_lock,
-        num_star, num_forward_slash, num_0, num_1,
-        num_2, num_3, num_4, num_5,
-
-        // 0x60
-        num_6, num_7, num_8, num_9,
-        num_minus, num_plus, num_enter, num_decimal;
+    enum struct KeyboardKey : std::uint8_t {
+        ESCAPE, F1, F2, F3, F4, F5, 
+        F6, F7, F8, F9, F10, F11, F12,
+        PRINT_SCREEN,
+        SCROLL_LOCK,
+        PAUSE_BREAK,
+        TILDE,
+        TOP_1, TOP_2, TOP_3, TOP_4, TOP_5,
+        TOP_6, TOP_7, TOP_8, TOP_9, TOP_0,
+        TOP_MINUS,
+        TOP_EQUALS,
+        BACKSPACE,
+        TAB,
+        Q, W, E, R, T, Y, U, I, O, P,
+        LEFT_BRACKET,
+        RIGHT_BRACKET,
+        BACK_SLASH,
+        CAPS_LOCK, 
+        A, S, D, F, G, H, J, K, L,
+        SEMICOLON,
+        APOSTROPHE,
+        ENTER,
+        LEFT_SHIFT, 
+        Z, X, C, V, B, N, M,
+        COMMA,
+        PERIOD,
+        FORWARD_SLASH,
+        RIGHT_SHIFT,
+        LEFT_CONTROL,
+        WINDOWS,
+        LEFT_ALT,
+        SPACE,
+        RIGHT_ALT,
+        UNKNOWN,
+        MENU,
+        RIGHT_CONTROL,
+        UP_ARROW,
+        DOWN_ARROW,
+        LEFT_ARROW,
+        RIGHT_ARROW,
+        INS,
+        HOME,
+        PAGE_UP,
+        DEL,
+        END,
+        PAGE_DOWN,
+        NUM_LOCK,
+        NUM_STAR,
+        NUM_FORWARD_SLASH,
+        NUM_0, NUM_1, NUM_2, NUM_3, NUM_4, 
+        NUM_5, NUM_6, NUM_7, NUM_8, NUM_9,
+        NUM_MINUS,
+        NUM_PLUS,
+        NUM_ENTER,
+        NUM_DECIMAL
     };
 
     /**
@@ -927,9 +940,14 @@ namespace Balltze::Engine {
 
     /**
      * Get the keyboard keys
-     * @return keyboard keys struct
+     * @return Pointer to keyboard keys array
      */
-    BALLTZE_API KeyboardKeys &get_keyboard_keys() noexcept;
+    BALLTZE_API bool *get_keyboard_keys() noexcept;
+
+    /**
+     * Set the console key binding
+     */
+    BALLTZE_API void set_console_key_binding(KeyboardKey key);
 }
 
 #endif

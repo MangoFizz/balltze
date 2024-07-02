@@ -95,6 +95,7 @@ add_library(balltze SHARED
     src/balltze/features/tags_handling/map.cpp
     src/balltze/features/tags_handling/tag_data_importing.cpp
     src/balltze/features/tags_handling/tag_data_importing.S
+    src/balltze/features/console_key_binding.cpp
     src/balltze/features/map_data_read_warden.cpp
     src/balltze/features/map_textures_preloading.cpp
     src/balltze/features/user_interface_widescreen.cpp

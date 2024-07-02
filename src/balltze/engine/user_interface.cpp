@@ -449,12 +449,24 @@ namespace Balltze::Engine {
         return **controls_table;
     }
 
-    KeyboardKeys &get_keyboard_keys() noexcept {
-        static KeyboardKeys *buffer = nullptr;
+    bool *get_keyboard_keys() noexcept {
+        static bool *buffer = nullptr;
         if(!buffer) {
-            buffer = *reinterpret_cast<KeyboardKeys **>(Memory::get_signature("keyboard_keys_struct_address")->data());
+            buffer = *reinterpret_cast<bool **>(Memory::get_signature("keyboard_keys_struct_address")->data());
         }
-        return *buffer;
+        return buffer;
+    }
+
+    void set_console_key_binding(KeyboardKey key) {
+        static KeyboardKey *console_key_binding = nullptr;
+        static auto *sig = Memory::get_signature("input_control_keys");
+        if(!sig) {
+            throw std::runtime_error("Could not find signature for input control keys");
+        }
+        if(!console_key_binding) {
+            console_key_binding = *reinterpret_cast<KeyboardKey **>(sig->data());
+        }
+        *console_key_binding = key;
     }
 
     std::string get_input_device_name(InputDevice device) noexcept {

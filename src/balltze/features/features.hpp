@@ -19,6 +19,7 @@ namespace Balltze::Features {
     void set_up_ui_widescreen_override() noexcept;
     void set_up_shader_transparent_chicago_impl();
     void set_up_extended_decriptions_fix();
+    void set_up_set_console_key_binding_command() noexcept;
 
     inline void set_up_features() {
         try {
@@ -37,6 +38,7 @@ namespace Balltze::Features {
                     set_up_map_textures_preloading();
                     set_up_shader_transparent_chicago_impl();
                     set_up_extended_decriptions_fix();
+                    set_up_set_console_key_binding_command();
                     break;
                 }
             }
