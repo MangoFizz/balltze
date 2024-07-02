@@ -8,6 +8,7 @@
 #include "../../helpers/luacstruct.hpp"
 #include "../../libraries.hpp"
 #include "../../types.hpp"
+#include "../../helpers/function_table.hpp"
 
 namespace Balltze::Plugins::Lua {
     static int engine_find_widget(lua_State *state) noexcept {
@@ -446,8 +447,6 @@ namespace Balltze::Plugins::Lua {
     };
 
     void set_engine_user_interface_functions(lua_State *state) noexcept {
-        luaL_newlibtable(state, engine_user_interface_functions);
-        luaL_setfuncs(state, engine_user_interface_functions, 0);
-        lua_setfield(state, -2, "userInterface");
+        create_functions_table(state, "userInterface", engine_user_interface_functions);
     }
 }

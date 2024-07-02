@@ -13,22 +13,35 @@
 namespace Balltze::Plugins::Lua {
     static int lua_import_tag_from_map(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 3) {
-                auto map_path = luaL_checkstring(state, 1);
-                auto *tag_path = luaL_checkstring(state, 2);
-                auto *tag_class_string = luaL_checkstring(state, 3);
-                Engine::TagClassInt tag_class_int;
+        if(!plugin) {
+            return luaL_error(state, "Plugin upvalue not found in function Balltze.features.importTagFromMap.");
+        }
 
+        int args = lua_gettop(state);
+        if(args == 3) {
+            auto map_path = luaL_checkstring(state, 1);
+            auto *tag_path = luaL_checkstring(state, 2);
+            auto *tag_class_string = luaL_checkstring(state, 3);
+            Engine::TagClassInt tag_class_int;
+
+            try {
+                tag_class_int = Engine::tag_class_from_string(tag_class_string);
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, e.what());
+            }
+
+            if(plugin->path_is_valid(map_path)) {
                 try {
-                    tag_class_int = Engine::tag_class_from_string(tag_class_string);
+                    plugin->add_tag_import(map_path, tag_path, tag_class_int);
                 }
                 catch(std::runtime_error &e) {
                     return luaL_error(state, e.what());
                 }
-
-                if(plugin->path_is_valid(map_path)) {
+            }
+            else {
+                auto map_entry = Features::get_map_entry(map_path);
+                if(map_entry) {
                     try {
                         plugin->add_tag_import(map_path, tag_path, tag_class_int);
                     }
@@ -37,39 +50,37 @@ namespace Balltze::Plugins::Lua {
                     }
                 }
                 else {
-                    auto map_entry = Features::get_map_entry(map_path);
-                    if(map_entry) {
-                        try {
-                            plugin->add_tag_import(map_path, tag_path, tag_class_int);
-                        }
-                        catch(std::runtime_error &e) {
-                            return luaL_error(state, e.what());
-                        }
-                    }
-                    else {
-                        return luaL_error(state, "Map not found.");
-                    }
+                    return luaL_error(state, "Map not found.");
                 }
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.features.importTagFromMap.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.features.importTagFromMap.");
         }
         return 0;
     }
 
     static int lua_import_tags_from_map(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                auto map_path = luaL_checkstring(state, 1);
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.features.importTagsFromMap.");
+        }
 
-                if(plugin->path_is_valid(map_path)) {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            auto map_path = luaL_checkstring(state, 1);
+
+            if(plugin->path_is_valid(map_path)) {
+                try {
+                    plugin->import_all_tags(map_path);
+                }
+                catch(std::runtime_error &e) {
+                    return luaL_error(state, e.what());
+                }
+            }
+            else {
+                auto map_entry = Features::get_map_entry(map_path);
+                if(map_entry) {
                     try {
                         plugin->import_all_tags(map_path);
                     }
@@ -78,27 +89,12 @@ namespace Balltze::Plugins::Lua {
                     }
                 }
                 else {
-                    auto map_entry = Features::get_map_entry(map_path);
-                    if(map_entry) {
-                        try {
-                            plugin->import_all_tags(map_path);
-                        }
-                        catch(std::runtime_error &e) {
-                            return luaL_error(state, e.what());
-                        }
-                    }
-                    else {
-                        return luaL_error(state, "Map not found.");
-                    }
+                    return luaL_error(state, "Map not found.");
                 }
-            }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.features.importTagsFromMap.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.features.importTagsFromMap.");
         }
         return 0;
     }
@@ -109,177 +105,146 @@ namespace Balltze::Plugins::Lua {
             plugin->clear_tag_imports();
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.features.clearTagImports.");
         }
         return 0;
     }
 
     static int lua_reload_tag_data(lua_State *state) {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1 || args == 2) {
-                Engine::TagHandle tag_handle;
-                if(args == 1 && (lua_isnumber(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1))) {
-                    auto handle = get_engine_resource_handle(state, 1);
-                    if(!handle || handle->is_null()) {
-                        return luaL_error(state, "Invalid tag handle in function Balltze.features.reloadTagData.");
-                    }
-                    tag_handle = *handle;
-                    auto *tag = Engine::get_tag(tag_handle);
-                    if(!tag) {
-                        return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
-                    }
-                } 
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.features.reloadTagData.");
+        }
+
+        int args = lua_gettop(state);
+        if(args == 1 || args == 2) {
+            Engine::TagHandle tag_handle;
+            if(args == 1 && (lua_isnumber(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1))) {
+                auto handle = get_engine_resource_handle(state, 1);
+                if(!handle || handle->is_null()) {
+                    return luaL_error(state, "Invalid tag handle in function Balltze.features.reloadTagData.");
+                }
+                tag_handle = *handle;
+                auto *tag = Engine::get_tag(tag_handle);
+                if(!tag) {
+                    return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
+                }
+            } 
+            else {
+                const char *tag_path = luaL_checkstring(state, 1);
+                auto *tag_class_string = luaL_checkstring(state, 2);
+                Engine::TagClassInt tag_class_int = Engine::tag_class_from_string(tag_class_string);
+                auto *tag = Engine::get_tag(tag_path, tag_class_int);
+                if(tag) {
+                    tag_handle = tag->handle;
+                }
                 else {
-                    const char *tag_path = luaL_checkstring(state, 1);
-                    auto *tag_class_string = luaL_checkstring(state, 2);
-                    Engine::TagClassInt tag_class_int = Engine::tag_class_from_string(tag_class_string);
-                    auto *tag = Engine::get_tag(tag_path, tag_class_int);
-                    if(tag) {
-                        tag_handle = tag->handle;
-                    }
-                    else {
-                        return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
-                    }
-                }
-                try {
-                    Features::reload_tag_data(tag_handle);
-                }
-                catch(std::runtime_error &e) {
-                    return luaL_error(state, e.what());
+                    return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
                 }
             }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.features.reloadTagData.");
+            try {
+                Features::reload_tag_data(tag_handle);
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, e.what());
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.features.reloadTagData.");
         }
         return 0;
     }
 
     static int lua_replace_tag_references(lua_State *state) {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 2) {
-                auto tag_handle = get_engine_resource_handle(state, 1);
-                if(!tag_handle || tag_handle->is_null()) {
-                    return luaL_error(state, "Invalid tag handle in function Balltze.features.replaceTagReferences.");
-                }
-                
-                auto new_tag_handle = get_engine_resource_handle(state, 2);
-                if(!new_tag_handle || new_tag_handle->is_null()) {
-                    return luaL_error(state, "Invalid new tag handle in function Balltze.features.replaceTagReferences.");
-                }
-
-                try {
-                    Features::replace_tag_references(*tag_handle, *new_tag_handle);
-                }
-                catch(std::runtime_error &e) {
-                    return luaL_error(state, e.what());
-                }
+        int args = lua_gettop(state);
+        if(args == 2) {
+            auto tag_handle = get_engine_resource_handle(state, 1);
+            if(!tag_handle || tag_handle->is_null()) {
+                return luaL_error(state, "Invalid tag handle in function Balltze.features.replaceTagReferences.");
             }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.features.replaceTagReferences.");
+            
+            auto new_tag_handle = get_engine_resource_handle(state, 2);
+            if(!new_tag_handle || new_tag_handle->is_null()) {
+                return luaL_error(state, "Invalid new tag handle in function Balltze.features.replaceTagReferences.");
+            }
+
+            try {
+                Features::replace_tag_references(*tag_handle, *new_tag_handle);
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, e.what());
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.features.replaceTagReferences.");
         }
         return 0;
     }
 
     static int lua_clone_tag(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 2) {
-                auto tag_handle = get_engine_resource_handle(state, 1);
-                if(!tag_handle || tag_handle->is_null()) {
-                    return luaL_error(state, "Invalid tag handle in function Balltze.features.cloneTag.");
-                }
-
-                auto copy_name = luaL_checkstring(state, 2);
-                try {
-                    auto new_tag_handle = Features::clone_tag(*tag_handle, copy_name);
-                    lua_pushinteger(state, new_tag_handle.value);
-                    return 1;
-                }
-                catch(std::runtime_error &e) {
-                    return luaL_error(state, e.what());
-                }
+        int args = lua_gettop(state);
+        if(args == 2) {
+            auto tag_handle = get_engine_resource_handle(state, 1);
+            if(!tag_handle || tag_handle->is_null()) {
+                return luaL_error(state, "Invalid tag handle in function Balltze.features.cloneTag.");
             }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.features.cloneTag.");
+
+            auto copy_name = luaL_checkstring(state, 2);
+            try {
+                auto new_tag_handle = Features::clone_tag(*tag_handle, copy_name);
+                lua_pushinteger(state, new_tag_handle.value);
+                return 1;
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, e.what());
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.features.cloneTag.");
         }
     }
 
     static int lua_get_tag_copy(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 2) {
-                auto tag_handle = get_engine_resource_handle(state, 1);
-                if(!tag_handle || tag_handle->is_null()) {
-                    return luaL_error(state, "Invalid tag handle in function Balltze.features.getTagCopy.");
-                }
-                
-                auto copy_name = luaL_checkstring(state, 2);
-                try {
-                    auto *tag_copy = Features::get_tag_copy(*tag_handle, copy_name);
-                    push_meta_engine_tag(state, tag_copy);
-                    return 1;
-                }
-                catch(std::runtime_error &e) {
-                    return luaL_error(state, e.what());
-                }
+        int args = lua_gettop(state);
+        if(args == 2) {
+            auto tag_handle = get_engine_resource_handle(state, 1);
+            if(!tag_handle || tag_handle->is_null()) {
+                return luaL_error(state, "Invalid tag handle in function Balltze.features.getTagCopy.");
             }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.features.getTagCopy.");
+            
+            auto copy_name = luaL_checkstring(state, 2);
+            try {
+                auto *tag_copy = Features::get_tag_copy(*tag_handle, copy_name);
+                push_meta_engine_tag(state, tag_copy);
+                return 1;
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, e.what());
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.features.getTagCopy.");
         }
     }
 
     static int lua_get_imported_tag(lua_State *state) noexcept {
-        auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 3) {
-                auto map_path = luaL_checkstring(state, 1);
-                auto tag_path = luaL_checkstring(state, 2);
-                auto tag_class_string = luaL_checkstring(state, 3);
-                auto tag_class_int = Engine::tag_class_from_string(tag_class_string);
-                try {
-                    auto *tag = Features::get_imported_tag(map_path, tag_path, tag_class_int);
-                    push_meta_engine_tag(state, tag);
-                    return 1;
-                }
-                catch(std::runtime_error &e) {
-                    return luaL_error(state, e.what());
-                }
+        int args = lua_gettop(state);
+        if(args == 3) {
+            auto map_path = luaL_checkstring(state, 1);
+            auto tag_path = luaL_checkstring(state, 2);
+            auto tag_class_string = luaL_checkstring(state, 3);
+            auto tag_class_int = Engine::tag_class_from_string(tag_class_string);
+            try {
+                auto *tag = Features::get_imported_tag(map_path, tag_path, tag_class_int);
+                push_meta_engine_tag(state, tag);
+                return 1;
             }
-            else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.features.getImportedTag.");
+            catch(std::runtime_error &e) {
+                return luaL_error(state, e.what());
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.features.getImportedTag.");
         }
     }
 

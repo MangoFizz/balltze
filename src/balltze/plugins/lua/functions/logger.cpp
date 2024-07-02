@@ -221,33 +221,33 @@ namespace Balltze::Plugins::Lua {
                 lua_pushstring(state, logger_name);
                 lua_setfield(state, -2, "_name");
 
-                lua_pushcfunction(state, lua_logger_debug);
+                push_plugin_function(state, lua_logger_debug);
                 lua_setfield(state, -2, "debug");
 
-                lua_pushcfunction(state, lua_logger_info);
+                push_plugin_function(state, lua_logger_info);
                 lua_setfield(state, -2, "info");
 
-                lua_pushcfunction(state, lua_logger_warning);
+                push_plugin_function(state, lua_logger_warning);
                 lua_setfield(state, -2, "warning");
 
-                lua_pushcfunction(state, lua_logger_error);
+                push_plugin_function(state, lua_logger_error);
                 lua_setfield(state, -2, "error");
 
-                lua_pushcfunction(state, lua_logger_fatal);
+                push_plugin_function(state, lua_logger_fatal);
                 lua_setfield(state, -2, "fatal");
 
-                lua_pushcfunction(state, lua_logger_set_file);
+                push_plugin_function(state, lua_logger_set_file);
                 lua_setfield(state, -2, "setFile");
 
-                lua_pushcfunction(state, lua_logger_mute_ingame);
+                push_plugin_function(state, lua_logger_mute_ingame);
                 lua_setfield(state, -2, "muteIngame");
 
-                lua_pushcfunction(state, lua_logger_mute_debug);
+                push_plugin_function(state, lua_logger_mute_debug);
                 lua_setfield(state, -2, "muteDebug");
 
                 // Set the garbage collector metatable
                 lua_createtable(state, 0, 1);
-                lua_pushcfunction(state, lua_logger__gc);
+                push_plugin_function(state, lua_logger__gc);
                 lua_setfield(state, -2, "__gc");
                 lua_setmetatable(state, -2);
 

@@ -7,6 +7,7 @@
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
 #include "../../types.hpp"
+#include "../../helpers/function_table.hpp"
 
 namespace Balltze::Plugins::Lua {
     static int engine_get_current_map_header(lua_State *state) noexcept {
@@ -64,8 +65,6 @@ namespace Balltze::Plugins::Lua {
     };
 
     void set_engine_map_functions(lua_State *state) noexcept {
-        lua_newtable(state);
-        luaL_setfuncs(state, engine_map_functions, 0);
-        lua_setfield(state, -2, "map");
+        create_functions_table(state, "map", engine_map_functions);
     }
 }

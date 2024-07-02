@@ -99,7 +99,7 @@ namespace Balltze::Plugins::Lua {
             lua_setfield(state, -2, "_priority");
             lua_pushstring(state, name);
             lua_setfield(state, -2, "_event");
-            lua_pushcfunction(state, remove_function);
+            push_plugin_function(state, remove_function);
             lua_setfield(state, -2, "remove");
 
             return 1;
@@ -246,65 +246,44 @@ namespace Balltze::Plugins::Lua {
 
     #define SET_BASIC_EVENT_FUNCTIONS(eventName, eventTable) \
         static int lua_event_##eventName##_remove_listener(lua_State *state) noexcept { \
-            auto *plugin = get_lua_plugin(state); \
-            if(plugin) { \
-                int args = lua_gettop(state); \
-                if(args == 1) { \
-                    remove_event_listener(state, eventTable, 1); \
-                    return 0; \
-                } \
-                else { \
-                    return luaL_error(state, "Invalid number of arguments in function events." eventTable ".remove_listener."); \
-                } \
+            int args = lua_gettop(state); \
+            if(args == 1) { \
+                remove_event_listener(state, eventTable, 1); \
+                return 0; \
             } \
             else { \
-                logger.warning("Could not get plugin for lua state."); \
-                return luaL_error(state, "Unknown plugin."); \
+                return luaL_error(state, "Invalid number of arguments in function events." eventTable ".remove_listener."); \
             } \
         } \
         \
         static int lua_event_##eventName##_subscribe(lua_State *state) noexcept { \
-            auto *plugin = get_lua_plugin(state); \
-            if(plugin) { \
-                int args = lua_gettop(state); \
-                if(args == 1 || args == 2) { \
-                    auto priority = EVENT_PRIORITY_DEFAULT; \
-                    if(args == 2) { \
-                        auto priority_str = luaL_checkstring(state, 2); \
-                        try { \
-                            priority = event_priority_from_string(priority_str); \
-                        } \
-                        catch(const std::invalid_argument &e) { \
-                            return luaL_error(state, "Invalid priority argument in function events." eventTable ".subscribe: %s.", priority_str); \
-                        } \
+            int args = lua_gettop(state); \
+            if(args == 1 || args == 2) { \
+                auto priority = EVENT_PRIORITY_DEFAULT; \
+                if(args == 2) { \
+                    auto priority_str = luaL_checkstring(state, 2); \
+                    try { \
+                        priority = event_priority_from_string(priority_str); \
                     } \
-                    return add_event_listener(state, eventTable, 1, priority, lua_event_##eventName##_remove_listener); \
+                    catch(const std::invalid_argument &e) { \
+                        return luaL_error(state, "Invalid priority argument in function events." eventTable ".subscribe: %s.", priority_str); \
+                    } \
                 } \
-                else { \
-                    return luaL_error(state, "Invalid number of arguments in function events." eventTable ".subscribe."); \
-                } \
+                return add_event_listener(state, eventTable, 1, priority, lua_event_##eventName##_remove_listener); \
             } \
             else { \
-                logger.warning("Could not get plugin for lua state."); \
-                return luaL_error(state, "Unknown plugin."); \
+                return luaL_error(state, "Invalid number of arguments in function events." eventTable ".subscribe."); \
             } \
         } \
         \
         static int lua_event_##eventName##_remove_all_listeners(lua_State *state) noexcept { \
-            auto *plugin = get_lua_plugin(state); \
-            if(plugin) { \
-                int args = lua_gettop(state); \
-                if(args == 0) { \
-                    remove_all_event_listeners(state, eventTable); \
-                    return 0; \
-                } \
-                else { \
-                    return luaL_error(state, "Invalid number of arguments in function events." eventTable ".remove_all_listeners."); \
-                } \
+            int args = lua_gettop(state); \
+            if(args == 0) { \
+                remove_all_event_listeners(state, eventTable); \
+                return 0; \
             } \
             else { \
-                logger.warning("Could not get plugin for lua state."); \
-                return luaL_error(state, "Unknown plugin."); \
+                return luaL_error(state, "Invalid number of arguments in function events." eventTable ".remove_all_listeners."); \
             } \
         } \
 

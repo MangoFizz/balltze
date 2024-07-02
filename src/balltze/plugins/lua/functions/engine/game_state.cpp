@@ -8,6 +8,7 @@
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
 #include "../../types.hpp"
+#include "../../helpers/function_table.hpp"
 
 namespace Balltze::Plugins::Lua {
     static int engine_get_object(lua_State *state) noexcept {
@@ -295,8 +296,6 @@ namespace Balltze::Plugins::Lua {
     };
 
     void set_engine_game_state_functions(lua_State *state) noexcept {
-        lua_newtable(state);
-        luaL_setfuncs(state, engine_game_state_functions, 0);
-        lua_setfield(state, -2, "gameState");
+        create_functions_table(state, "gameState", engine_game_state_functions);
     }
 }

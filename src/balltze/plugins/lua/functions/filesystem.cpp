@@ -29,262 +29,238 @@ namespace Balltze::Plugins::Lua {
 
     static int lua_create_directory(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    lua_pushboolean(state, fs::create_directories(get_plugin_directory(state) / path));
-                    return 1;
-                }
-                else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.createDirectory.");
-                }
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.createDirectory.");
+        }
+        int args = lua_gettop(state);
+        if(args == 1) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                lua_pushboolean(state, fs::create_directories(get_plugin_directory(state) / path));
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.createDirectory.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.createDirectory.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.createDirectory.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.createDirectory.");
         }
     }
 
     static int lua_remove_directory(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    auto data_directory = get_plugin_directory(state);
-                    if(fs::is_directory(data_directory / path)) {
-                        lua_pushboolean(state, fs::remove_all(data_directory / path));
-                    }
-                    else {
-                        lua_pushboolean(state, false);
-                    }
-                    return 1;
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.removeDirectory.");
+        }
+        int args = lua_gettop(state);
+        if(args == 1) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                auto data_directory = get_plugin_directory(state);
+                if(fs::is_directory(data_directory / path)) {
+                    lua_pushboolean(state, fs::remove_all(data_directory / path));
                 }
                 else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.removeDirectory.");
+                    lua_pushboolean(state, false);
                 }
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.removeDirectory.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.removeDirectory.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.removeDirectory.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.removeDirectory.");
         }
     }
 
     static int lua_list_directory(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    auto data_directory = get_plugin_directory(state);
-                    if(fs::is_directory(data_directory / path)) {
-                        lua_newtable(state);
-                        std::size_t table_index = 1;
-                        for(auto &entry : fs::directory_iterator(data_directory / path)) {
-                            auto filename = entry.path().filename().string();
-                            if(fs::is_directory(entry.path())) {
-                                filename += "\\";
-                            }
-                            lua_pushstring(state, filename.c_str());
-                            lua_rawseti(state, -2, table_index++);
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.listDirectory.");
+        }
+        int args = lua_gettop(state);
+        if(args == 1) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                auto data_directory = get_plugin_directory(state);
+                if(fs::is_directory(data_directory / path)) {
+                    lua_newtable(state);
+                    std::size_t table_index = 1;
+                    for(auto &entry : fs::directory_iterator(data_directory / path)) {
+                        auto filename = entry.path().filename().string();
+                        if(fs::is_directory(entry.path())) {
+                            filename += "\\";
                         }
+                        lua_pushstring(state, filename.c_str());
+                        lua_rawseti(state, -2, table_index++);
                     }
-                    else {
-                        lua_pushboolean(state, false);
-                    }
-                    return 1;
                 }
                 else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.listDirectory.");
+                    lua_pushboolean(state, false);
                 }
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.listDirectory.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.listDirectory.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.listDirectory.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.listDirectory.");
         }
     }
 
     static int lua_directory_exists(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    auto data_directory = get_plugin_directory(state);
-                    if(fs::exists(data_directory / path)) {
-                        lua_pushboolean(state, fs::is_directory(data_directory / path));
-                    }
-                    else {
-                        lua_pushboolean(state, false);
-                    }
-                    return 1;
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.directoryExists.");
+        }
+        int args = lua_gettop(state);
+        if(args == 1) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                auto data_directory = get_plugin_directory(state);
+                if(fs::exists(data_directory / path)) {
+                    lua_pushboolean(state, fs::is_directory(data_directory / path));
                 }
                 else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.directoryExists.");
+                    lua_pushboolean(state, false);
                 }
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.directoryExists.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.directoryExists.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.directoryExists.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.directoryExists.");
         }
     }
 
     static int lua_write_file(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 2 || args == 3) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    std::string content = luaL_checkstring(state, 2);
-                    bool append_content = (args == 3 && (lua_isboolean(state, 3) && lua_toboolean(state, 3)));
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.writeFile.");
+        }
+        int args = lua_gettop(state);
+        if(args == 2 || args == 3) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                std::string content = luaL_checkstring(state, 2);
+                bool append_content = (args == 3 && (lua_isboolean(state, 3) && lua_toboolean(state, 3)));
 
-                    std::ofstream file;
-                    file.open(get_plugin_directory(state) / path, (append_content ? std::ios::app : std::ios::trunc));
-                    if(file.is_open()) {
-                        file << content;
-                        lua_pushboolean(state, file.good());
-                        file.close();
-                    }
-                    else {
-                        lua_pushboolean(state, false);
-                    }
-                    return 1;
+                std::ofstream file;
+                file.open(get_plugin_directory(state) / path, (append_content ? std::ios::app : std::ios::trunc));
+                if(file.is_open()) {
+                    file << content;
+                    lua_pushboolean(state, file.good());
+                    file.close();
                 }
                 else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.writeFile.");
+                    lua_pushboolean(state, false);
                 }
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.writeFile.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.writeFile.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.writeFile.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.writeFile.");
         }
     }
 
     static int lua_read_file(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    std::ifstream file;
-                    file.open(get_plugin_directory(state) / path);
-                    if(file.is_open()) {
-                        std::stringstream file_content_stream;
-                        std::string line_buffer;
-                        while(file.good() && std::getline(file, line_buffer)) {
-                            file_content_stream << line_buffer << std::endl;
-                        }
-                        auto file_content = file_content_stream.str();
-                        if(!line_buffer.empty()) {
-                            // Remove last newline character
-                            file_content.pop_back();
-                        }
-                        lua_pushstring(state, file_content.c_str());
-                        file.close();
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.readFile.");
+        }
+        int args = lua_gettop(state);
+        if(args == 1) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                std::ifstream file;
+                file.open(get_plugin_directory(state) / path);
+                if(file.is_open()) {
+                    std::stringstream file_content_stream;
+                    std::string line_buffer;
+                    while(file.good() && std::getline(file, line_buffer)) {
+                        file_content_stream << line_buffer << std::endl;
                     }
-                    else {
-                        lua_pushnil(state);
+                    auto file_content = file_content_stream.str();
+                    if(!line_buffer.empty()) {
+                        // Remove last newline character
+                        file_content.pop_back();
                     }
-                    return 1;
+                    lua_pushstring(state, file_content.c_str());
+                    file.close();
                 }
                 else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.readFile.");
+                    lua_pushnil(state);
                 }
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.readFile.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.readFile.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.readFile.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.readFile.");
         }
     }
 
     static int lua_delete_file(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    auto data_directory = get_plugin_directory(state);
-                    if(fs::is_regular_file(data_directory / path)) {
-                        lua_pushboolean(state, fs::remove(data_directory / path));
-                    }
-                    else {
-                        lua_pushboolean(state, false);
-                    }
-                    return 1;
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.deleteFile.");
+        }
+        int args = lua_gettop(state);
+        if(args == 1) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                auto data_directory = get_plugin_directory(state);
+                if(fs::is_regular_file(data_directory / path)) {
+                    lua_pushboolean(state, fs::remove(data_directory / path));
                 }
                 else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.deleteFile.");
+                    lua_pushboolean(state, false);
                 }
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.deleteFile.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.deleteFile.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.deleteFile.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.deleteFile.");
         }
     }
 
     static int lua_file_exists(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
-        if(plugin) {
-            int args = lua_gettop(state);
-            if(args == 1) {
-                const char *path = luaL_checkstring(state, 1);
-                if(check_path(state, path)) {
-                    auto data_directory = get_plugin_directory(state);
-                    if(fs::is_regular_file(data_directory / path)) {
-                        lua_pushboolean(state, fs::exists(data_directory / path));
-                    }
-                    else {
-                        lua_pushboolean(state, false);
-                    }
-                    return 1;
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.fileExists.");
+        }
+        int args = lua_gettop(state);
+        if(args == 1) {
+            const char *path = luaL_checkstring(state, 1);
+            if(check_path(state, path)) {
+                auto data_directory = get_plugin_directory(state);
+                if(fs::is_regular_file(data_directory / path)) {
+                    lua_pushboolean(state, fs::exists(data_directory / path));
                 }
                 else {
-                    return luaL_error(state, "Invalid path in function Balltze.filesystem.fileExists.");
+                    lua_pushboolean(state, false);
                 }
+                return 1;
             }
             else {
-                return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.fileExists.");
+                return luaL_error(state, "Invalid path in function Balltze.filesystem.fileExists.");
             }
         }
         else {
-            logger.warning("Could not get plugin for lua state.");
-            return luaL_error(state, "Unknown plugin in function Balltze.filesystem.fileExists.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.filesystem.fileExists.");
         }
     }
 

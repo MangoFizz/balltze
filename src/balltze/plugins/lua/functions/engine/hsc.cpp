@@ -7,6 +7,7 @@
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
 #include "../../types.hpp"
+#include "../../helpers/function_table.hpp"
 
 namespace Balltze::Plugins::Lua {
     static int execute_script(lua_State *state) noexcept {
@@ -27,8 +28,6 @@ namespace Balltze::Plugins::Lua {
     };
 
     void set_engine_hsc_functions(lua_State *state) noexcept {
-        lua_newtable(state);
-        luaL_setfuncs(state, engine_renderer_functions, 0);
-        lua_setfield(state, -2, "hsc");
+        create_functions_table(state, "hsc", engine_renderer_functions);
     }
 }

@@ -150,9 +150,10 @@ namespace Balltze::Plugins {
     }
 
     LuaPlugin *get_lua_plugin(lua_State *state) noexcept {
+        void *upvalue_state = reinterpret_cast<lua_State *>(lua_touserdata(state, lua_upvalueindex(1)));
         for(auto &plugin : plugins) {
             if(auto lua_plugin = dynamic_cast<LuaPlugin *>(plugin.get())) {
-                if(lua_plugin->state() == state) {
+                if(lua_plugin->state() == upvalue_state) {
                     return lua_plugin;
                 }
             }

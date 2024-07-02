@@ -7,6 +7,7 @@
 #include "../../../loader.hpp"
 #include "../../libraries.hpp"
 #include "../../types.hpp"
+#include "../../helpers/function_table.hpp"
 
 namespace Balltze::Plugins::Lua {
     static std::string network_game_server_type_to_string(Engine::NetworkGameServerType type) {
@@ -90,8 +91,6 @@ namespace Balltze::Plugins::Lua {
     };
 
     void set_engine_netgame_functions(lua_State *state) noexcept {
-        lua_newtable(state);
-        luaL_setfuncs(state, engine_netgame_functions, 0);
-        lua_setfield(state, -2, "netgame");
+        create_functions_table(state, "netgame", engine_netgame_functions);
     }
 }
