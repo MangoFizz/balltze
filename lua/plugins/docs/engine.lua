@@ -126,8 +126,8 @@ Engine = {}
 ---@class MetaEngineTagString : string
 
 ---@class EngineTagDependency
----@field handle integer
----@field class string
+---@field tagHandle EngineTagHandle
+---@field tagClass string
 ---@field path string
 
 ---@class MetaEngineTagDependency: EngineTagDependency
