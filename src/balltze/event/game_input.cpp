@@ -73,7 +73,7 @@ namespace Balltze::Event {
                 handle = Event::KeyboardInputEvent::subscribe_const([](KeyboardInputEvent const &event) {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Keypress event ({}): key: {}", time, arguments.key.keycode);
+                    logger.debug("Keypress event ({}): key: {}", time, arguments.key.character);
                 });
             }
             else {

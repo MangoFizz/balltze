@@ -129,7 +129,7 @@ for definitionName, definition in pairs(definitions) do
                 elseif field.type == "float" then
                     add("number")
                 elseif field.type == "TagBlock" then
-                    add("table<MetaEngineTagData" .. parser.snakeCaseToCamelCase(field.struct) .. ">")
+                    add("TagBlock<MetaEngineTagData" .. parser.snakeCaseToCamelCase(field.struct) .. ">")
                 else
                     if isMeta(field.type) then
                         add("Meta")

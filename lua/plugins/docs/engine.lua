@@ -1189,6 +1189,8 @@ end
 ---@field dataAddress integer
 ---@field indexed boolean
 
+---@class TagBlock<T>: { count: integer, elements: T[] }
+
 ---@class MetaEngineTag: EngineTag
 
 ---@class MetaEngineActorTag: MetaEngineTag
