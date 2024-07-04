@@ -731,7 +731,7 @@ namespace Balltze::Engine {
         FORWARD_SLASH,
         RIGHT_SHIFT,
         LEFT_CONTROL,
-        WINDOWS,
+        WINDOWS_KEY,
         LEFT_ALT,
         SPACE,
         RIGHT_ALT,

@@ -3,7 +3,13 @@
 #include <chrono>
 #include <lua.hpp>
 #include <clipboardxx/clipboardxx.hpp>
+#include <balltze/events/render.hpp>
+#include <balltze/events/tick.hpp>
+#include <balltze/utils.hpp>
 #include "../helpers/function_table.hpp"
+#include "../helpers/table.hpp"
+#include "../../loader.hpp"
+#include "../../../logger.hpp"
 
 namespace Balltze::Plugins::Lua {
     static int lua_get_elapsed_milliseconds(lua_State *state) noexcept {
@@ -91,7 +97,7 @@ namespace Balltze::Plugins::Lua {
             lua_pushstring(state, clipboard.paste().c_str());
         }
         else {
-            return luaL_error(state, "invalid number of arguments in balltze get_clipboard");
+            return luaL_error(state, "invalid number of arguments in Balltze.misc.getClipboard");
         }
         return 1;
     }
@@ -104,9 +110,121 @@ namespace Balltze::Plugins::Lua {
             clipboard.copy(text);
         }
         else {
-            return luaL_error(state, "invalid number of arguments in balltze set_clipboard");
+            return luaL_error(state, "invalid number of arguments in Balltze.misc.setClipboard");
         }
         return 0;
+    }
+
+    static int get_timers_registry_table(lua_State *state) noexcept {
+        auto balltze_module = Balltze::get_current_module();
+        lua_pushlightuserdata(state, balltze_module);
+        lua_gettable(state, LUA_REGISTRYINDEX);
+        if(lua_isnil(state, -1)) {
+            logger.error("Could not find balltze Lua registry table");
+            return 0;
+        }
+        lua_getfield(state, -1, "timers");
+        if(lua_isnil(state, -1)) {
+            lua_pop(state, 1);
+            lua_newtable(state);
+            lua_pushvalue(state, -1);
+            lua_setfield(state, -3, "timers");
+        }
+        lua_remove(state, -2);
+        return 1;
+    }
+
+    static int stop_timer(lua_State *state) noexcept {
+        if(lua_isnil(state, lua_upvalueindex(1))) {
+            return luaL_error(state, "timer has already been stopped");
+        }
+
+        get_timers_registry_table(state);
+        lua_pushvalue(state, lua_upvalueindex(1));
+        table_remove_if_equals(state, -2, -1);
+
+        // Remove the upvalue
+        lua_pushnil(state);
+        lua_replace(state, lua_upvalueindex(1));
+
+        return 0;
+    }
+
+    static int set_timer(lua_State *state) noexcept {
+        using time_point_t = std::chrono::steady_clock::time_point;
+
+        auto *plugin = get_lua_plugin(state);
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.misc.setTimer");
+        }
+
+        int args = lua_gettop(state);
+        if(args >= 2) {
+            auto interval = luaL_checknumber(state, 1);
+            if(interval < 100) {
+                logger.warning("Interval is less than 100 milliseconds in Balltze.misc.setTimer function at plugin {}. This could impact performance.", plugin->name());
+            }
+
+            if(!lua_isfunction(state, 2)) {
+                return luaL_error(state, "Invalid function in Balltze.misc.setTimer function");
+            }
+
+            lua_newtable(state);
+            lua_pushvalue(state, 2);
+            lua_setfield(state, -2, "function");
+            lua_pushvalue(state, 1);
+            lua_setfield(state, -2, "interval");
+            auto *timestamp = reinterpret_cast<time_point_t *>(lua_newuserdata(state, sizeof(time_point_t)));
+            *timestamp = std::chrono::steady_clock::now();
+            lua_setfield(state, -2, "timestamp");
+
+            // append table to the timers array
+            get_timers_registry_table(state);
+            table_insert(state, -1, -2);
+            lua_pop(state, 1);
+
+            lua_newtable(state);
+            lua_pushvalue(state, -2);
+            lua_pushcclosure(state, stop_timer, 1);
+            lua_setfield(state, -2, "stop");
+
+            lua_remove(state, -2);
+
+            return 1;
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in Balltze.misc.setTimer function");
+        }
+    }
+
+    static void check_timers(LuaPlugin *plugin) {
+        auto *state = plugin->state();
+        get_timers_registry_table(state);
+        lua_pushnil(state);
+        while(lua_next(state, -2) != 0) {
+            lua_getfield(state, -1, "timestamp");
+            auto *timestamp = reinterpret_cast<std::chrono::steady_clock::time_point *>(lua_touserdata(state, -1));
+            lua_pop(state, 1);
+
+            lua_getfield(state, -1, "interval");
+            auto interval = lua_tonumber(state, -1);
+            lua_pop(state, 1);
+
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed_time = now - *timestamp;
+            auto elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_time);
+            if(elapsed_seconds.count() >= interval) {
+                lua_getfield(state, -1, "function");
+                if(lua_pcall(state, 0, 0, 0) != 0) {
+                    logger.error("Error in timer function at plugin {}: ", plugin->name(), plugin->get_error_message());
+                    plugin->print_traceback();
+                    lua_pop(state, 1);
+                }
+                *timestamp = now;
+            }
+            lua_pop(state, 1);
+        }
+        lua_pop(state, 1);
     }
 
     static const luaL_Reg misc_functions[] = {
@@ -116,10 +234,29 @@ namespace Balltze::Plugins::Lua {
         {"resetTimestamp", lua_reset_timestamp},
         {"getClipboard", get_clipboard},
         {"setClipboard", set_clipboard},
+        {"setTimer", set_timer},
         {nullptr, nullptr}
     };
 
     void set_misc_table(lua_State *state) noexcept {
         create_functions_table(state, "misc", misc_functions);
+
+        static auto tickHandler = Event::TickEvent::subscribe_const([](const Event::TickEvent &event) {
+            if(event.time == Event::EVENT_TIME_BEFORE) {
+                auto plugins = get_lua_plugins();
+                for(auto *plugin : plugins) {
+                    check_timers(plugin);
+                }
+            }
+        });
+
+        static auto frameHandler = Event::FrameEvent::subscribe_const([](const Event::FrameEvent &event) {
+            if(event.time == Event::EVENT_TIME_AFTER) {
+                auto plugins = get_lua_plugins();
+                for(auto *plugin : plugins) {
+                    check_timers(plugin);
+                }
+            }
+        });
     }
 }
