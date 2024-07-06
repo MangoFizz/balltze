@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <lanes.h>
 #include <balltze/helpers/resources.hpp>
 #include <balltze/utils.hpp>
 #include "../../../resources.hpp"
 #include "../libraries.hpp"
+#include "lanes.hpp"
 
 namespace Balltze::Plugins {
     static const luaL_Reg fmt_functions[] = {

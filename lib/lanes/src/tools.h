@@ -1,37 +1,65 @@
-#pragma once
+#ifndef __LANES_TOOLS_H__
+#define __LANES_TOOLS_H__
 
-#include "uniquekey.h"
+//#include "lauxlib.h"
+#include "threading.h"
+#include "deep.h"
 
-class Universe;
+#include "macros_and_utils.h"
 
-enum class LookupMode
+// forwards
+struct s_Universe;
+typedef struct s_Universe Universe;
+
+// ################################################################################################
+
+#define luaG_optunsigned(L,i,d) ((uint_t) luaL_optinteger(L,i,d))
+#define luaG_tounsigned(L,i) ((uint_t) lua_tointeger(L,i))
+
+#ifdef _DEBUG
+void luaG_dump( lua_State* L);
+#endif // _DEBUG
+
+// ################################################################################################
+
+void push_registry_subtable_mode( lua_State* L, UniqueKey key_, const char* mode_);
+void push_registry_subtable( lua_State* L, UniqueKey key_);
+
+enum e_vt
 {
-    LaneBody, // send the lane body directly from the source to the destination lane. keep this one first so that it's the value we get when we default-construct
-    ToKeeper, // send a function from a lane to a keeper state
-    FromKeeper // send a function from a keeper state to a lane
+    VT_NORMAL,
+    VT_KEY,
+    VT_METATABLE
 };
 
-enum class FuncSubType
+enum eInterCopyResult
 {
-    Bytecode,
-    Native,
-    FastJIT
+    eICR_Success,
+    eICR_NotEnoughValues,
+    eICR_Error
 };
+typedef enum eInterCopyResult InterCopyResult;
 
-[[nodiscard]] FuncSubType luaG_getfuncsubtype(lua_State* L_, int i_);
+bool_t inter_copy_one( Universe* U, lua_State* L2, uint_t L2_cache_i, lua_State* L, uint_t i, enum e_vt vt, LookupMode mode_, char const* upName_);
 
-// #################################################################################################
+// ################################################################################################
 
-// xxh64 of string "kConfigRegKey" generated at https://www.pelock.com/products/hash-calculator
-static constexpr RegistryUniqueKey kConfigRegKey{ 0x608379D20A398046ull }; // registry key to access the configuration
+InterCopyResult luaG_inter_copy_package( Universe* U, lua_State* L, lua_State* L2, int package_idx_, LookupMode mode_);
+InterCopyResult luaG_inter_copy( Universe* U, lua_State* L, lua_State* L2, uint_t n, LookupMode mode_);
+InterCopyResult luaG_inter_move( Universe* U, lua_State* L, lua_State* L2, uint_t n, LookupMode mode_);
 
-// xxh64 of string "kLookupRegKey" generated at https://www.pelock.com/products/hash-calculator
-static constexpr RegistryUniqueKey kLookupRegKey{ 0xBF1FC5CF3C6DD47Bull }; // registry key to access the lookup database
+int luaG_nameof( lua_State* L);
 
-// #################################################################################################
+void populate_func_lookup_table( lua_State* L, int _i, char const* _name);
+void initialize_allocator_function( Universe* U, lua_State* L);
+void cleanup_allocator_function( Universe* U, lua_State* L);
 
-namespace tools {
-    void PopulateFuncLookupTable(lua_State* const L_, int const i_, std::string_view const& name_);
-    [[nodiscard]] std::string_view PushFQN(lua_State* L_, int t_, int last_);
-    void SerializeRequire(lua_State* L_);
-} // namespace tools
+// ################################################################################################
+
+// crc64/we of string "CONFIG_REGKEY" generated at http://www.nitrxgen.net/hashgen/
+static DECLARE_CONST_UNIQUE_KEY( CONFIG_REGKEY, 0x31cd24894eae8624); // 'cancel_error' sentinel
+
+// crc64/we of string "LOOKUP_REGKEY" generated at http://www.nitrxgen.net/hashgen/
+static DECLARE_CONST_UNIQUE_KEY( LOOKUP_REGKEY, 0x5051ed67ee7b51a1); // 'cancel_error' sentinel
+
+#endif // __LANES_TOOLS_H__

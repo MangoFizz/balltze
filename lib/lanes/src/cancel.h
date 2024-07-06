@@ -1,55 +1,63 @@
-#pragma once
+#if !defined( __LANES_CANCEL_H__)
+#define __LANES_CANCEL_H__ 1
 
-#include "macros_and_utils.h"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+
 #include "uniquekey.h"
+#include "macros_and_utils.h"
 
-// #################################################################################################
+// ################################################################################################
 
-// Lane cancellation request modes
-enum class CancelRequest
+typedef struct s_Lane Lane; // forward
+
+/*
+ * Lane cancellation request modes
+ */
+enum e_cancel_request
 {
-    None, // no pending cancel request
-    // TODO: add a Wake mode: user wants to wake the waiting lindas (in effect resulting in a timeout before the initial operation duration)
-    Soft, // user wants the lane to cancel itself manually on cancel_test()
-    Hard // user wants the lane to be interrupted (meaning code won't return from those functions) from inside linda:send/receive calls
+    CANCEL_NONE, // no pending cancel request
+    CANCEL_SOFT, // user wants the lane to cancel itself manually on cancel_test()
+    CANCEL_HARD  // user wants the lane to be interrupted (meaning code won't return from those functions) from inside linda:send/receive calls
 };
 
-enum class CancelResult
+typedef enum
 {
-    Timeout,
-    Cancelled
-};
+    CR_Timeout,
+    CR_Cancelled,
+    CR_Killed
+} cancel_result;
 
-enum class CancelOp
+typedef enum
 {
-    Invalid = -2,
-    Hard = -1,
-    Soft = 0,
-    MaskCall = LUA_MASKCALL,
-    MaskRet = LUA_MASKRET,
-    MaskLine = LUA_MASKLINE,
-    MaskCount = LUA_MASKCOUNT,
-    MaskAll = LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE | LUA_MASKCOUNT
-};
+    CO_Invalid = -2,
+    CO_Hard = -1,
+    CO_Soft = 0,
+    CO_Count = LUA_MASKCOUNT,
+    CO_Line = LUA_MASKLINE,
+    CO_Call = LUA_MASKCALL,
+    CO_Ret = LUA_MASKRET,
+} CancelOp;
 
-// xxh64 of string "kCancelError" generated at https://www.pelock.com/products/hash-calculator
-static constexpr UniqueKey kCancelError{ 0x0630345FEF912746ull, "lanes.cancel_error" }; // 'raise_cancel_error' sentinel
+// crc64/we of string "CANCEL_ERROR" generated at http://www.nitrxgen.net/hashgen/
+static DECLARE_CONST_UNIQUE_KEY(CANCEL_ERROR, 0xe97d41626cc97577); // 'cancel_error' sentinel
 
-// #################################################################################################
+cancel_result thread_cancel( lua_State* L, Lane* s, CancelOp op_, double secs_, bool_t force_, double waitkill_timeout_);
 
-[[nodiscard]] CancelRequest CheckCancelRequest(lua_State* L_);
-[[nodiscard]] CancelOp WhichCancelOp(std::string_view const& opString_);
-
-// #################################################################################################
-
-[[noreturn]] static inline void raise_cancel_error(lua_State* const L_)
+static inline int cancel_error( lua_State* L)
 {
-    STACK_GROW(L_, 1);
-    kCancelError.pushKey(L_); // special error value
-    raise_lua_error(L_);
+    STACK_GROW( L, 1);
+    push_unique_key( L, CANCEL_ERROR); // special error value
+    return lua_error( L); // doesn't return
 }
 
-// #################################################################################################
+// ################################################################################################
+// ################################################################################################
 
-LUAG_FUNC(cancel_test);
-LUAG_FUNC(thread_cancel);
+LUAG_FUNC( cancel_test);
+LUAG_FUNC( thread_cancel);
+
+// ################################################################################################
+
+#endif // __LANES_CANCEL_H__

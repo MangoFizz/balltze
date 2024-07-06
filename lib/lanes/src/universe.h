@@ -1,168 +1,105 @@
-#pragma once
+/*
+* UNIVERSE.H
+*/
+#ifndef UNIVERSE_H
+#define UNIVERSE_H
 
-#include "allocator.h"
-#include "keeper.h"
-#include "lanesconf.h"
-#include "tracker.h"
-#include "uniquekey.h"
-
-// #################################################################################################
+#include "lua.h"
+#include "threading.h"
+#include "macros_and_utils.h"
 
 // forwards
-enum class CancelOp;
-struct DeepPrelude;
-class Lane;
+struct s_DeepPrelude;
+typedef struct s_DeepPrelude DeepPrelude;
+struct s_Keepers;
+typedef struct s_Keepers Keepers;
+struct s_Lane;
+typedef struct s_Lane Lane;
 
-// #################################################################################################
+// ################################################################################################
+
+/*
+* Do we want to activate full lane tracking feature? (EXPERIMENTAL)
+*/
+#define HAVE_LANE_TRACKING() 1
+
+// ################################################################################################
+
+// everything we need to provide to lua_newstate()
+struct AllocatorDefinition_s
+{
+    lua_Alloc allocF;
+    void* allocUD;
+};
+typedef struct AllocatorDefinition_s AllocatorDefinition;
 
 // mutex-protected allocator for use with Lua states that share a non-threadsafe allocator
-class ProtectedAllocator
-: public lanes::AllocatorDefinition
+struct ProtectedAllocator_s
 {
-    private:
-    std::mutex mutex;
-
-    [[nodiscard]] static void* protected_lua_Alloc(void* ud_, void* ptr_, size_t osize_, size_t nsize_)
-    {
-        ProtectedAllocator* const allocator{ static_cast<ProtectedAllocator*>(ud_) };
-        std::lock_guard<std::mutex> guard{ allocator->mutex };
-        return allocator->allocF(allocator->allocUD, ptr_, osize_, nsize_);
-    }
-
-    public:
-    // we are not like our base class: we can't be created inside a full userdata (or we would have to install a metatable and __gc handler to destroy ourselves properly)
-    [[nodiscard]] static void* operator new(size_t size_, lua_State* L_) noexcept = delete;
-    static void operator delete(void* p_, lua_State* L_) = delete;
-
-    AllocatorDefinition makeDefinition()
-    {
-        return AllocatorDefinition{ version, protected_lua_Alloc, this };
-    }
-
-    void installIn(lua_State* L_)
-    {
-        lua_setallocf(L_, protected_lua_Alloc, this);
-    }
-
-    void removeFrom(lua_State* L_)
-    {
-        // remove the protected allocator, if any
-        if (allocF != nullptr) {
-            // install the non-protected allocator
-            lua_setallocf(L_, allocF, allocUD);
-        }
-    }
+    AllocatorDefinition definition;
+    MUTEX_T lock;
 };
+typedef struct ProtectedAllocator_s ProtectedAllocator;
 
-// #################################################################################################
-
-// xxh64 of string "kUniverseLightRegKey" generated at https://www.pelock.com/products/hash-calculator
-static constexpr RegistryUniqueKey kUniverseLightRegKey{ 0x48BBE9CEAB0BA04Full };
-
-// #################################################################################################
+// ################################################################################################
 
 // everything regarding the Lanes universe is stored in that global structure
 // held as a full userdata in the master Lua state that required it for the first time
-class Universe
+// don't forget to initialize all members in LG_configure()
+struct s_Universe
 {
-    public:
-    static constexpr char const* kFinally{ "finally" }; // update lanes.lua if the name changes!
-
-#ifdef PLATFORM_LINUX
-    // Linux needs to check, whether it's been run as root
-    bool const sudo{ geteuid() == 0 };
-#else
-    bool const sudo{ false };
-#endif // PLATFORM_LINUX
-
     // for verbose errors
-    bool verboseErrors{ false };
+    bool_t verboseErrors;
 
-    bool stripFunctions{ true };
+    bool_t demoteFullUserdata;
 
     // before a state is created, this function will be called to obtain the allocator
-    lua_CFunction provideAllocator{ nullptr };
+    lua_CFunction provide_allocator;
 
     // after a state is created, this function will be called right after the bases libraries are loaded
-    std::variant<std::nullptr_t, uintptr_t, lua_CFunction> onStateCreateFunc;
+    lua_CFunction on_state_create_func;
 
     // if allocator="protected" is found in the configuration settings, a wrapper allocator will protect all allocator calls with a mutex
     // contains a mutex and the original allocator definition
-    ProtectedAllocator protectedAllocator;
+    ProtectedAllocator protected_allocator;
 
-    lanes::AllocatorDefinition internalAllocator;
+    AllocatorDefinition internal_allocator;
 
-    Keepers keepers;
+    Keepers* keepers;
 
     // Initialized by 'init_once_LOCKED()': the deep userdata Linda object
     // used for timers (each lane will get a proxy to this)
-    DeepPrelude* timerLinda{ nullptr };
+    volatile DeepPrelude* timer_deep;  // = NULL
 
-    LaneTracker tracker;
+#if HAVE_LANE_TRACKING()
+    MUTEX_T tracking_cs;
+    Lane* volatile tracking_first; // will change to TRACKING_END if we want to activate tracking
+#endif // HAVE_LANE_TRACKING()
 
-    // Protects modifying the selfdestruct chain
-    std::mutex selfdestructMutex;
+    MUTEX_T selfdestruct_cs;
 
     // require() serialization
-    std::recursive_mutex requireMutex;
+    MUTEX_T require_cs;
 
-    // metatable unique identifiers
-    std::atomic<lua_Integer> nextMetatableId{ 1 };
+    // Lock for reference counter inc/dec locks (to be initialized by outside code) TODO: get rid of this and use atomics instead!
+    MUTEX_T deep_lock;
+    MUTEX_T mtid_lock;
+
+    lua_Integer last_mt_id;
 
 #if USE_DEBUG_SPEW()
-    std::atomic<int> debugspewIndentDepth{ 0 };
+    int debugspew_indent_depth;
 #endif // USE_DEBUG_SPEW()
 
-    Lane* volatile selfdestructFirst{ nullptr };
+    Lane* volatile selfdestruct_first;
     // After a lane has removed itself from the chain, it still performs some processing.
     // The terminal desinit sequence should wait for all such processing to terminate before force-killing threads
-    std::atomic<int> selfdestructingCount{ 0 };
-
-    public:
-    [[nodiscard]] static void* operator new([[maybe_unused]] size_t size_, lua_State* L_) noexcept { return luaG_newuserdatauv<Universe>(L_, 0); };
-    // can't actually delete the operator because the compiler generates stack unwinding code that could call it in case of exception
-    static void operator delete([[maybe_unused]] void* p_, [[maybe_unused]] lua_State* L_) {} // nothing to do, as nothing is allocated independently
-
-    Universe();
-    ~Universe() = default;
-    // non-copyable, non-movable
-    Universe(Universe const&) = delete;
-    Universe(Universe&&) = delete;
-    Universe& operator=(Universe const&) = delete;
-    Universe& operator=(Universe&&) = delete;
-
-    void callOnStateCreate(lua_State* const L_, lua_State* const from_, LookupMode const mode_);
-    [[nodiscard]] static Universe* Create(lua_State* L_);
-    [[nodiscard]] static inline Universe* Get(lua_State* L_);
-    void initializeAllocatorFunction(lua_State* L_);
-    static int InitializeFinalizer(lua_State* L_);
-    void initializeOnStateCreate(lua_State* const L_);
-    lanes::AllocatorDefinition resolveAllocator(lua_State* const L_, std::string_view const& hint_) const;
-    static inline void Store(lua_State* L_, Universe* U_);
-    [[nodiscard]] bool terminateFreeRunningLanes(lua_Duration shutdownTimeout_, CancelOp op_);
+    int volatile selfdestructing_count;
 };
+typedef struct s_Universe Universe;
 
-// #################################################################################################
+Universe* universe_get( lua_State* L);
+Universe* universe_create( lua_State* L);
+void universe_store( lua_State* L, Universe* U);
 
-inline Universe* Universe::Get(lua_State* L_)
-{
-    STACK_CHECK_START_REL(L_, 0);
-    Universe* const _universe{ kUniverseLightRegKey.readLightUserDataValue<Universe>(L_) };
-    STACK_CHECK(L_, 0);
-    return _universe;
-}
-
-// #################################################################################################
-
-inline void Universe::Store(lua_State* L_, Universe* U_)
-{
-    // TODO: check if we actually ever call Store with a null universe
-    LUA_ASSERT(L_, !U_ || Universe::Get(L_) == nullptr);
-    STACK_CHECK_START_REL(L_, 0);
-    kUniverseLightRegKey.setValue(L_, [U = U_](lua_State* L_) { U ? lua_pushlightuserdata(L_, U) : lua_pushnil(L_); });
-    STACK_CHECK(L_, 0);
-}
-
-// #################################################################################################
-
-LUAG_FUNC(universe_gc);
+#endif // UNIVERSE_H

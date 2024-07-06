@@ -1,76 +1,66 @@
-#pragma once
+#ifndef __LANES_DEEP_H__
+#define __LANES_DEEP_H__ 1
 
 /*
  * public 'deep' API to be used by external modules if they want to implement Lanes-aware userdata
- * said modules can either link against lanes, or embed compat.cpp/h deep.cpp/h tools.cpp/h universe.cpp/h
+ * said modules will have to link against lanes (it is not really possible to separate the 'deep userdata' implementation from the rest of Lanes)
  */
 
-#include "lanesconf.h"
+#include "lua.h"
+#include "platform.h"
 #include "uniquekey.h"
 
 // forwards
-enum class LookupMode;
-class DeepFactory;
-class Universe;
+struct s_Universe;
+typedef struct s_Universe Universe;
 
-// #################################################################################################
+#if !defined LANES_API // when deep is compiled standalone outside Lanes
+#if (defined PLATFORM_WIN32) || (defined PLATFORM_POCKETPC)
+#define LANES_API __declspec(dllexport)
+#else
+#define LANES_API
+#endif // (defined PLATFORM_WIN32) || (defined PLATFORM_POCKETPC)
+#endif // LANES_API
 
-// xxh64 of string "kDeepVersion_1" generated at https://www.pelock.com/products/hash-calculator
-static constexpr UniqueKey kDeepVersion{ 0x91171AEC6641E9DBull, "kDeepVersion" };
-
-// should be used as header for deep userdata
-// a deep userdata is a full userdata that stores a single pointer to the actual DeepPrelude-derived object
-struct DeepPrelude
+enum eLookupMode
 {
-    UniqueKey const magic{ kDeepVersion };
-    // when stored in a keeper state, the full userdata doesn't have a metatable, so we need direct access to the factory
-    DeepFactory& factory;
+    eLM_LaneBody, // send the lane body directly from the source to the destination lane
+    eLM_ToKeeper, // send a function from a lane to a keeper state
+    eLM_FromKeeper // send a function from a keeper state to a lane
+};
+typedef enum eLookupMode LookupMode;
+
+enum eDeepOp
+{
+    eDO_new,
+    eDO_delete,
+    eDO_metatable,
+    eDO_module,
+};
+typedef enum eDeepOp DeepOp;
+
+typedef void* (*luaG_IdFunction)( lua_State* L, DeepOp op_);
+
+// ################################################################################################
+
+// fnv164 of string "DEEP_VERSION_2" generated at https://www.pelock.com/products/hash-calculator
+static DECLARE_CONST_UNIQUE_KEY( DEEP_VERSION, 0xB4B0119C10642B29);
+
+// should be used as header for full userdata
+struct s_DeepPrelude
+{
+    DECLARE_UNIQUE_KEY( magic); // must be filled by the Deep userdata idfunc that allocates it on eDO_new operation
+    // when stored in a keeper state, the full userdata doesn't have a metatable, so we need direct access to the idfunc
+    luaG_IdFunction idfunc;
     // data is destroyed when refcount is 0
-    std::atomic<int> refcount{ 0 };
-
-    DeepPrelude(DeepFactory& factory_)
-    : factory{ factory_ }
-    {
-    }
-
-    void push(lua_State* L_) const;
+    volatile int refcount;
 };
+typedef struct s_DeepPrelude DeepPrelude;
 
-// #################################################################################################
+char const* push_deep_proxy( Universe* U, lua_State* L, DeepPrelude* prelude, int nuv_, LookupMode mode_);
+void free_deep_prelude( lua_State* L, DeepPrelude* prelude_);
 
-// external C modules should create a single object implementing that interface for each Deep userdata class they want to expose
-class DeepFactory
-{
-    protected:
-    // protected non-virtual destructor: Lanes won't manage the Factory's lifetime
-    DeepFactory() = default;
-    ~DeepFactory() = default;
+extern LANES_API int luaG_newdeepuserdata( lua_State* L, luaG_IdFunction idfunc, int nuv_);
+extern LANES_API void* luaG_todeep( lua_State* L, luaG_IdFunction idfunc, int index);
 
-    public:
-    // non-copyable, non-movable
-    DeepFactory(DeepFactory const&) = delete;
-    DeepFactory(DeepFactory const&&) = delete;
-    DeepFactory& operator=(DeepFactory const&) = delete;
-    DeepFactory& operator=(DeepFactory const&&) = delete;
-
-    private:
-    // NVI: private overrides
-    virtual void createMetatable(lua_State* L_) const = 0;
-    virtual void deleteDeepObjectInternal(lua_State* L_, DeepPrelude* o_) const = 0;
-    [[nodiscard]] virtual DeepPrelude* newDeepObjectInternal(lua_State* L_) const = 0;
-    [[nodiscard]] virtual std::string_view moduleName() const = 0;
-
-    private:
-    void storeDeepLookup(lua_State* L_) const;
-
-    public:
-    // NVI: public interface
-    static void DeleteDeepObject(lua_State* L_, DeepPrelude* o_);
-    [[nodiscard]] static bool IsDeepUserdata(lua_State* const L_, int const idx_);
-    [[nodiscard]] static DeepFactory* LookupFactory(lua_State* L_, int index_, LookupMode mode_);
-    static void PushDeepProxy(DestState L_, DeepPrelude* o_, int nuv_, LookupMode mode_, lua_State* errL_);
-    void pushDeepUserdata(DestState L_, int nuv_) const;
-    [[nodiscard]] DeepPrelude* toDeep(lua_State* L_, int index_) const;
-};
-
-// #################################################################################################
+#endif // __LANES_DEEP_H__

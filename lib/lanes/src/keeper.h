@@ -1,89 +1,58 @@
-#pragma once
+#if !defined( __keeper_h__)
+#define __keeper_h__ 1
 
+#include "lua.h"
+#include "threading.h"
 #include "uniquekey.h"
 
 // forwards
-class Linda;
-enum class LookupMode;
-class Universe;
+struct s_Universe;
+typedef struct s_Universe Universe;
+enum eLookupMode;
+typedef enum eLookupMode LookupMode;
 
-using KeeperState = Unique<lua_State*>;
-using LindaLimit = Unique<int>;
-
-// #################################################################################################
-
-struct Keeper
+struct s_Keeper
 {
-    std::mutex mutex;
-    KeeperState K{ nullptr };
-
-    [[nodiscard]] static void* operator new[](size_t size_, Universe* U_) noexcept;
-    // can't actually delete the operator because the compiler generates stack unwinding code that could call it in case of exception
-    static void operator delete[](void* p_, Universe* U_);
-
-
-    ~Keeper() = default;
-    Keeper() = default;
-    // non-copyable, non-movable
-    Keeper(Keeper const&) = delete;
-    Keeper(Keeper const&&) = delete;
-    Keeper& operator=(Keeper const&) = delete;
-    Keeper& operator=(Keeper const&&) = delete;
-
-    [[nodiscard]] static int PushLindaStorage(Linda& linda_, DestState L_);
+    MUTEX_T keeper_cs;
+    lua_State* L;
+    //int count;
 };
+typedef struct s_Keeper Keeper;
 
-// #################################################################################################
-
-struct Keepers
+struct s_Keepers
 {
-    private:
-    struct DeleteKV
-    {
-        Universe* U{};
-        int count{};
-        void operator()(Keeper* k_) const;
-    };
-    // can't use std::vector<Keeper> because Keeper contains a mutex, so we need a raw memory buffer
-    struct KV
-    {
-        std::unique_ptr<Keeper[], DeleteKV> keepers;
-        size_t nbKeepers{};
-    };
-    std::variant<std::monostate, Keeper, KV> keeper_array;
-    std::atomic_flag isClosing;
-
-    public:
-    int gc_threshold{ 0 };
-
-    public:
-    // can only be instanced as a data member
-    static void* operator new(size_t size_) = delete;
-
-    Keepers() = default;
-    void close();
-    [[nodiscard]] Keeper* getKeeper(int idx_);
-    [[nodiscard]] int getNbKeepers() const;
-    void initialize(Universe& U_, lua_State* L_, int nbKeepers_, int gc_threshold_);
+    int gc_threshold;
+    int nb_keepers;
+    Keeper keeper_array[1];
 };
+typedef struct s_Keepers Keepers;
 
-// #################################################################################################
+void init_keepers( Universe* U, lua_State* L);
+void close_keepers( Universe* U);
 
-// xxh64 of string "kNilSentinel" generated at https://www.pelock.com/products/hash-calculator
-static constexpr UniqueKey kNilSentinel{ 0xC457D4EDDB05B5E4ull, "lanes.null" };
+Keeper* which_keeper(Keepers* keepers_, uint_t magic_);
+Keeper* keeper_acquire(Keepers* keepers_, uint_t magic_);
+#define KEEPER_MAGIC_SHIFT 3
+void keeper_release( Keeper* K_);
+void keeper_toggle_nil_sentinels( lua_State* L, int val_i_, LookupMode const mode_);
+int keeper_push_linda_storage(Universe* U, lua_State* L, void* ptr_, uint_t magic_);
 
-using keeper_api_t = lua_CFunction;
-#define KEEPER_API(_op) keepercall_##_op
+// crc64/we of string "NIL_SENTINEL" generated at http://www.nitrxgen.net/hashgen/
+static DECLARE_CONST_UNIQUE_KEY( NIL_SENTINEL, 0x7eaafa003a1d11a1);
 
-// lua_Cfunctions to run inside a keeper state
-[[nodiscard]] int keepercall_count(lua_State* L_);
-[[nodiscard]] int keepercall_destruct(lua_State* L_);
-[[nodiscard]] int keepercall_get(lua_State* L_);
-[[nodiscard]] int keepercall_limit(lua_State* L_);
-[[nodiscard]] int keepercall_receive(lua_State* L_);
-[[nodiscard]] int keepercall_receive_batched(lua_State* L_);
-[[nodiscard]] int keepercall_send(lua_State* L_);
-[[nodiscard]] int keepercall_set(lua_State* L_);
+typedef lua_CFunction keeper_api_t;
+#define KEEPER_API( _op) keepercall_ ## _op
+#define PUSH_KEEPER_FUNC lua_pushcfunction
+// lua_Cfunctions to run inside a keeper state (formerly implemented in Lua)
+int keepercall_clear( lua_State* L);
+int keepercall_send( lua_State* L);
+int keepercall_receive( lua_State* L);
+int keepercall_receive_batched( lua_State* L);
+int keepercall_limit( lua_State* L);
+int keepercall_get( lua_State* L);
+int keepercall_set( lua_State* L);
+int keepercall_count( lua_State* L);
 
-using KeeperCallResult = Unique<std::optional<int>>;
-[[nodiscard]] KeeperCallResult keeper_call(KeeperState K_, keeper_api_t func_, lua_State* L_, Linda* linda_, int starting_index_);
+int keeper_call( Universe* U, lua_State* K, keeper_api_t _func, lua_State* L, void* linda, uint_t starting_index);
+
+#endif // __keeper_h__
