@@ -9,6 +9,7 @@
 #include "../../plugin.hpp"
 #include "../../loader.hpp"
 #include "../helpers/function_table.hpp"
+#include "../helpers/registry.hpp"
 #include "../types.hpp"
 
 namespace Balltze::Event {
@@ -21,31 +22,8 @@ namespace Balltze::Plugins::Lua {
 
     static std::size_t tick_event_count = 0;
 
-    static void set_up_events_registry_table(lua_State *state) noexcept {
-        auto balltze_module = Balltze::get_current_module();
-        lua_pushlightuserdata(state, balltze_module);
-        lua_gettable(state, LUA_REGISTRYINDEX);
-        if(lua_isnil(state, -1)) {
-            lua_pop(state, 1);
-            logger.error("Could not find balltze Lua registry table");
-        }
-
-        lua_newtable(state);
-        lua_setfield(state, -2, "events");
-
-        lua_pop(state, 1);
-    }
-
-    static int lua_get_events_registry_table(lua_State *state) noexcept {
-        auto balltze_module = Balltze::get_current_module();
-        lua_pushlightuserdata(state, balltze_module);
-        lua_gettable(state, LUA_REGISTRYINDEX);
-        if(lua_isnil(state, -1)) {
-            return 0;
-        }
-        lua_getfield(state, -1, "events");
-        lua_remove(state, -2);
-        return 1;
+    static void lua_get_events_registry_table(lua_State *state) noexcept {
+        get_or_create_registry_table(state, "events");
     }
 
     static void set_up_event_table(lua_State *state, const char *name, lua_CFunction add, lua_CFunction remove, lua_CFunction remove_all) noexcept {
@@ -352,9 +330,6 @@ namespace Balltze::Plugins::Lua {
     #undef SET_POPULATE_EVENT_FUNCTION
 
     void set_event_table(lua_State *state) noexcept {
-        set_up_events_registry_table(state);
-
-        // Events functions table
         lua_newtable(state);
         set_up_event_table(state, "camera", lua_event_camera_subscribe, lua_event_camera_remove_listener, lua_event_camera_remove_all_listeners);
         set_up_event_table(state, "frame", lua_event_frame_subscribe, lua_event_frame_remove_listener, lua_event_frame_remove_all_listeners);

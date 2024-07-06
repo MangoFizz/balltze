@@ -19,10 +19,11 @@ include(lib/lua/lua.cmake)
 include(lib/fmt/fmt.cmake)
 include(lib/luacstruct/luacstruct.cmake)
 include(lib/invader/invader.cmake)
+include(lib/lanes/lanes.cmake)
 include(src/sound-subtitles-stapler/sss.cmake)
 
 # Set include path
-include_directories(include include/lua lib/)
+include_directories(include include/lua lib/ lib/lanes/src)
 
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
@@ -141,6 +142,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/functions/memory.cpp
     src/balltze/plugins/lua/functions/misc.cpp
     src/balltze/plugins/lua/functions/output.cpp
+    src/balltze/plugins/lua/helpers/registry.cpp
     src/balltze/plugins/lua/helpers/table.cpp
     src/balltze/plugins/lua/libraries/lua-fmt/lfmt.c
     src/balltze/plugins/lua/libraries/preloaded_libraries.cpp
@@ -172,7 +174,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze lua53 fmt invader luacstruct d3d9 gdiplus ws2_32)
+target_link_libraries(balltze lua53 fmt invader luacstruct lanes d3d9 gdiplus ws2_32)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")

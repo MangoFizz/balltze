@@ -7,6 +7,7 @@
 
 namespace Balltze::Plugins {
     void set_preloaded_libraries(lua_State *state) noexcept;
+    int lua_open_lanes(lua_State *state) noexcept;
 }
 
 #endif

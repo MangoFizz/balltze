@@ -5,9 +5,10 @@
 #include <clipboardxx/clipboardxx.hpp>
 #include <balltze/events/render.hpp>
 #include <balltze/events/tick.hpp>
-#include <balltze/utils.hpp>
 #include "../helpers/function_table.hpp"
+#include "../helpers/registry.hpp"
 #include "../helpers/table.hpp"
+#include "../libraries/preloaded_libraries.hpp"
 #include "../../loader.hpp"
 #include "../../../logger.hpp"
 
@@ -115,23 +116,8 @@ namespace Balltze::Plugins::Lua {
         return 0;
     }
 
-    static int get_timers_registry_table(lua_State *state) noexcept {
-        auto balltze_module = Balltze::get_current_module();
-        lua_pushlightuserdata(state, balltze_module);
-        lua_gettable(state, LUA_REGISTRYINDEX);
-        if(lua_isnil(state, -1)) {
-            logger.error("Could not find balltze Lua registry table");
-            return 0;
-        }
-        lua_getfield(state, -1, "timers");
-        if(lua_isnil(state, -1)) {
-            lua_pop(state, 1);
-            lua_newtable(state);
-            lua_pushvalue(state, -1);
-            lua_setfield(state, -3, "timers");
-        }
-        lua_remove(state, -2);
-        return 1;
+    static void get_timers_registry_table(lua_State *state) noexcept {
+        get_or_create_registry_table(state, "timers");
     }
 
     static int stop_timer(lua_State *state) noexcept {

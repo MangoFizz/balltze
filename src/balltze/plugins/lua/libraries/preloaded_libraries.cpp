@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
+#include <lanes.h>
 #include <balltze/helpers/resources.hpp>
 #include <balltze/utils.hpp>
 #include "../../../resources.hpp"
@@ -51,6 +52,17 @@ namespace Balltze::Plugins {
         return 0;
     }
 
+    int lua_open_lanes(lua_State *state) noexcept {
+        auto lanes_module_data = load_resource_data(get_current_module(), MAKEINTRESOURCEW(ID_LUA_LANES_MODULE), L"LUA");
+        if(lanes_module_data) {
+            if(luaL_loadbufferx(state, reinterpret_cast<const char *>(lanes_module_data->data()), lanes_module_data->size(), "lanes", "t") == LUA_OK) {
+                lua_call(state, 0, 1);
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     void set_preloaded_libraries(lua_State *state) noexcept {
         lua_getglobal(state, "package");
         lua_getfield(state, -1, "preload");
@@ -67,6 +79,12 @@ namespace Balltze::Plugins {
 
         lua_pushcfunction(state, lua_open_inspect);
         lua_setfield(state, preload_table_index, "inspect");
+
+        // Preload and configure lanes 
+        luaopen_lanes_embedded(state, lua_open_lanes);
+        lua_getfield(state, -1, "configure");
+        lua_call(state, 0, 0);
+        lua_pop(state, 1);
 
         lua_pop(state, 2);
     }
