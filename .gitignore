@@ -5,7 +5,7 @@ include/balltze/engine/tag_definitions/
 include/balltze/engine/tag_definitions.hpp
 include/balltze/hek/tag_definitions/
 include/balltze/hek/tag_definitions.hpp
-lua/plugins/docs/engine_tag_data.lua
+lua/plugins/docs/types/engine/tag_data/
 package/game-mods/balltze.dll
 src/balltze/plugins/lua/types/engine_tag_data.cpp
 src/balltze/plugins/lua/types/engine_tag_data.hpp

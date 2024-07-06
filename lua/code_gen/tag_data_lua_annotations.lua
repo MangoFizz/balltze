@@ -11,7 +11,7 @@ argsParser:argument("files", "Tag definitions files"):args("*")
 
 local args = argsParser:parse()
 local files = args.files
-local outputFile = args.output
+local outputPath = args.output
 
 local definitions = {}
 
@@ -154,9 +154,11 @@ for definitionName, definition in pairs(definitions) do
         end
         add("\n")
     end
+
+    add("\n")
+
+    -- Write the file
+    glue.writefile(outputPath .. "//" .. parser.snakeCaseToLowerCamelCase(definitionName) .. ".lua", file, "t")
+
+    file = ""
 end
-
-add("\n")
-
--- Write the file
-glue.writefile(outputFile, file, "t")
