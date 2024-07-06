@@ -20,10 +20,27 @@ set(TAG_REBASE_OFFSETS_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_rebase_offsets.cpp"
 set(TAG_LUA_TAG_DEFINITIONS_CPP "${CMAKE_SOURCE_DIR}/src/balltze/plugins/lua/types/engine_tag_data.cpp")
 set(TAG_LUA_TAG_DEFINITIONS_HPP "${CMAKE_SOURCE_DIR}/src/balltze/plugins/lua/types/engine_tag_data.hpp")
 set(TAG_COPY_DATA_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_copy_data.cpp")
-set(TAG_LUA_ANNOTATIONS_PATH "${CMAKE_SOURCE_DIR}/lua/plugins/docs/types/engine/tag_data")
+set(TAG_LUA_ANNOTATIONS_PATH "${CMAKE_SOURCE_DIR}/lua/plugins/docs/types/tag_data")
 set(TAG_LUA_ANNOTATIONS_FILES)
 set(TAG_DEFINITION_HPP_FILES)
 set(TAG_DEFINITION_CPP_FILES)
+
+function(to_upper initial_string output_string)
+    string(TOUPPER "${initial_string}" ${output_string})
+    set(${output_string} "${${output_string}}" PARENT_SCOPE)
+endfunction()
+
+function(to_lower_camelcase input_string output_variable)
+    set(camel_case "")
+    string(REGEX MATCHALL "_." matches "${input_string}")
+    foreach(match IN LISTS matches)
+        string(SUBSTRING "${match}" 1 1 char)
+        to_upper("${char}" upper_char)
+        string(REPLACE "${match}" "${upper_char}" input_string "${input_string}")
+    endforeach()
+    string(REGEX REPLACE "_" "" camel_case "${input_string}")
+    set(${output_variable} "${camel_case}" PARENT_SCOPE)
+endfunction()
 
 # Create output directory for tag structures and get output file paths
 file(MAKE_DIRECTORY ${TAG_DEFINITIONS_HPP_PATH})
@@ -33,7 +50,8 @@ foreach(TAG_DEFINITION_FILE ${TAG_DEFINITION_FILES})
     get_filename_component(TAG_DEFINITION_NAME ${TAG_DEFINITION_FILE} NAME_WE)
     set(TAG_DEFINITION_HPP_FILES ${TAG_DEFINITION_HPP_FILES} "${TAG_DEFINITIONS_HPP_PATH}/${TAG_DEFINITION_NAME}.hpp")
     set(TAG_DEFINITION_HPP_FILES ${TAG_DEFINITION_HPP_FILES} "${TAG_FILE_DEFINITIONS_HPP_PATH}/${TAG_DEFINITION_NAME}.hpp")
-    set(TAG_LUA_ANNOTATIONS_FILES ${TAG_LUA_ANNOTATIONS_FILES} "${TAG_LUA_ANNOTATIONS_PATH}/${TAG_DEFINITION_NAME}.lua")
+    to_lower_camelcase("engine_tag_data_${TAG_DEFINITION_NAME}" CAMEL_CASE_DEF_NAME)
+    set(TAG_LUA_ANNOTATIONS_FILES ${TAG_LUA_ANNOTATIONS_FILES} "${TAG_LUA_ANNOTATIONS_PATH}/${CAMEL_CASE_DEF_NAME}.lua")
 endforeach()
 
 # Tell CMake how to generate the tag struct headers

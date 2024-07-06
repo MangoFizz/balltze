@@ -158,7 +158,7 @@ for definitionName, definition in pairs(definitions) do
     add("\n")
 
     -- Write the file
-    glue.writefile(outputPath .. "//" .. parser.snakeCaseToLowerCamelCase(definitionName) .. ".lua", file, "t")
+    glue.writefile(outputPath .. "//engineTagData" .. parser.snakeCaseToCamelCase(definitionName) .. ".lua", file, "t")
 
     file = ""
 end
