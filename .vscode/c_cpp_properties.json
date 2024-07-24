@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "i686-w64-mingw",
+            "includePath": [
+                "/usr/i686-w64-mingw32/include/",
+                "${workspaceFolder}/**",
+            ],
+            "compilerPath": "/usr/sbin/i686-w64-mingw32-gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "windows-gcc-x86"
+        }
+    ],
+    "version": 4
+}
