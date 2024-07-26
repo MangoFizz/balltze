@@ -127,8 +127,8 @@
 -------------------------------------------------------
 
 ---@class BalltzeMapFileLoadEventContext
----@field mapPath string @The path of the map that was loaded
----@field mapName string @The name of the map that was loaded
+---@field mapPath fun(ctx: BalltzeMapFileLoadEventContext): string @Returns the path of the map that was loaded
+---@field mapName fun(ctx: BalltzeMapFileLoadEventContext): string @Returns the name of the map that was loaded
 
 ---@class MetaBalltzeMapFileLoadEventContext: BalltzeMapFileLoadEventContext
 
@@ -142,7 +142,7 @@
 -------------------------------------------------------
 
 ---@class BalltzeMapLoadEventContext
----@field mapName string Name of the map that was loaded
+---@field mapName fun(ctx: BalltzeMapLoadEventContext): string @Returns the name of the map that was loaded
 
 ---@class MetaBalltzeMapLoadEventContext: BalltzeMapLoadEventContext
 
