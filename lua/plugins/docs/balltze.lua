@@ -106,7 +106,7 @@ function Balltze.event.keyboardInput.removeAllListeners() end
 Balltze.event.hudHoldForActionMessage = {}
 
 -- Subscribe a listener to the hudHoldForActionMessage event
----@param callbackFunction BalltzeHudHoldForActionMessageEventArgsCallback @The function to call when the event is triggered
+---@param callbackFunction BalltzeHudHoldForActionMessageEventCallback @The function to call when the event is triggered
 ---@param priority? BalltzeEventListenerPriority @The priority of the callback function
 ---@return BalltzeEventListener @The handle of the event listener
 function Balltze.event.hudHoldForActionMessage.subscribe(callbackFunction, priority) end

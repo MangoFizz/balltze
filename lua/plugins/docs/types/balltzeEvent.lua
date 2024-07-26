@@ -120,7 +120,7 @@
 ---@class BalltzeHudHoldForActionMessageEvent: BalltzeEvent
 ---@field context MetaBalltzeHudHoldForActionMessageEventContext @The context of the event
 
----@alias BalltzeHudHoldForActionMessageEventContextCallback fun(event: BalltzeHudHoldForActionMessageEvent)
+---@alias BalltzeHudHoldForActionMessageEventCallback fun(event: BalltzeHudHoldForActionMessageEvent)
 
 -------------------------------------------------------
 -- Balltze Map file load event types
