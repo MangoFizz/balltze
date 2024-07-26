@@ -16,20 +16,20 @@ namespace Balltze::Event {
         void keypress_event();
     
         bool dispatch_input_event_before(Engine::InputDevice device, std::size_t key_code, bool mapped) {
-            GameInputEventArgs args(device, key_code, mapped);
+            GameInputEventContext args(device, key_code, mapped);
             GameInputEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_input_event_after(Engine::InputDevice device, std::size_t key_code, bool mapped) {
-            GameInputEventArgs args(device, key_code, mapped);
+            GameInputEventContext args(device, key_code, mapped);
             GameInputEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
 
         void dispatch_keypress_event(Engine::InputGlobals::BufferedKey key) {
-            KeyboardInputEventArgs args(key);
+            KeyboardInputEventContext args(key);
             KeyboardInputEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
@@ -45,9 +45,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::GameInputEvent::subscribe_const([](GameInputEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Game input event ({}): device: {}, key code: {}, mapped: {}", time, static_cast<int>(arguments.device), arguments.button.key_code, arguments.mapped);
+                    logger.debug("Game input event ({}): device: {}, key code: {}, mapped: {}", time, static_cast<int>(context.device), context.button.key_code, context.mapped);
                 });
             }
             else {
@@ -71,9 +71,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::KeyboardInputEvent::subscribe_const([](KeyboardInputEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Keypress event ({}): key: {}", time, arguments.key.character);
+                    logger.debug("Keypress event ({}): key: {}", time, context.key.character);
                 });
             }
             else {

@@ -8,25 +8,25 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct ObjectDamageEventArgs {
+    struct ObjectDamageEventContext {
         const Engine::ObjectHandle object;
         const Engine::TagHandle damage_effect;
         const float multiplier;
         const Engine::PlayerHandle causer_player;
         const Engine::ObjectHandle causer_object;
 
-        ObjectDamageEventArgs(Engine::ObjectHandle object, Engine::TagHandle damage_effect, float multiplier, Engine::PlayerHandle causer_player, Engine::ObjectHandle causer_object) : object(object), damage_effect(damage_effect), multiplier(multiplier), causer_player(causer_player), causer_object(causer_object) {}
+        ObjectDamageEventContext(Engine::ObjectHandle object, Engine::TagHandle damage_effect, float multiplier, Engine::PlayerHandle causer_player, Engine::ObjectHandle causer_object) : object(object), damage_effect(damage_effect), multiplier(multiplier), causer_player(causer_player), causer_object(causer_object) {}
     };
 
     class ObjectDamageEvent : public EventData<ObjectDamageEvent> {
     public:
-        ObjectDamageEventArgs args;
+        ObjectDamageEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        ObjectDamageEvent(EventTime time, const ObjectDamageEventArgs &args) : EventData(time), args(args) {}
+        ObjectDamageEvent(EventTime time, const ObjectDamageEventContext &context) : EventData(time), context(context) {}
     };
 }
 

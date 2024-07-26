@@ -28,14 +28,14 @@
 -- Balltze camera event types
 -------------------------------------------------------
 
----@class BalltzeCameraEventArgs
+---@class BalltzeCameraEventContext
 ---@field position EngineCameraData @The position of the camera
 ---@field type EngineCameraType @The type of the camera
 
----@class MetaBalltzeCameraEventArgs: BalltzeCameraEventArgs
+---@class MetaBalltzeCameraEventContext: BalltzeCameraEventContext
 
 ---@class BalltzeCameraEvent: BalltzeEvent
----@field args MetaBalltzeCameraEventArgs @The arguments of the event
+---@field context MetaBalltzeCameraEventContext @The context of the event
 
 ---@alias BalltzeCameraEventCallback fun(event: BalltzeCameraEvent)
 
@@ -51,15 +51,15 @@
 -- Balltze game input event types
 -------------------------------------------------------
 
----@class BalltzeGameInputEventArgs
+---@class BalltzeGameInputEventContext
 ---@field device EngineInputDevice @The device that triggered the event
 ---@field mapped boolean @Whether the input is mapped to a game action
 ---@field button string @The button that was pressed
 
----@class MetaBalltzeGameInputEventArgs: BalltzeGameInputEventArgs
+---@class MetaBalltzeGameInputEventContext: BalltzeGameInputEventContext
 
 ---@class BalltzeGameInputEvent: BalltzeEvent
----@field args MetaBalltzeGameInputEventArgs @The arguments of the event
+---@field context MetaBalltzeGameInputEventContext @The context of the event
 
 ---@alias BalltzeGameInputEventCallback fun(event: BalltzeGameInputEvent)
 
@@ -67,13 +67,13 @@
 -- Balltze keyboard input event types
 -------------------------------------------------------
 
----@class BalltzeKeyboardInputEventArgs
+---@class BalltzeKeyboardInputEventContext
 ---@field key EngineInputBufferedKey
 
----@class MetaBalltzeKeyboardInputEventArgs: BalltzeKeyboardInputEventArgs
+---@class MetaBalltzeKeyboardInputEventContext: BalltzeKeyboardInputEventContext
 
 ---@class BalltzeKeyboardInputEvent: BalltzeEvent
----@field args BalltzeKeyboardInputEventArgs @The arguments of the event
+---@field context BalltzeKeyboardInputEventContext @The context of the event
 
 ---@alias BalltzeKeyboardInputEventCallback fun(event: BalltzeKeyboardInputEvent)
 
@@ -108,32 +108,32 @@
 
 ---@class MetaBalltzeHudHoldForActionMessageButton: BalltzeHudHoldForActionMessageButton
 
----@class BalltzeHudHoldForActionMessageEventArgs
+---@class BalltzeHudHoldForActionMessageEventContext
 ---@field slice BalltzeHudHoldForActionMessageSlice
 ---@field offset BalltzeHudHoldForActionMessageOffset
 ---@field color EngineColorARGBInt
 ---@field text lightuserdata
 ---@field button MetaBalltzeHudHoldForActionMessageButton?
 
----@class MetaBalltzeHudHoldForActionMessageEventArgs: BalltzeHudHoldForActionMessageEventArgs
+---@class MetaBalltzeHudHoldForActionMessageEventContext: BalltzeHudHoldForActionMessageEventContext
 
 ---@class BalltzeHudHoldForActionMessageEvent: BalltzeEvent
----@field args MetaBalltzeHudHoldForActionMessageEventArgs @The arguments of the event
+---@field context MetaBalltzeHudHoldForActionMessageEventContext @The context of the event
 
----@alias BalltzeHudHoldForActionMessageEventArgsCallback fun(event: BalltzeHudHoldForActionMessageEvent)
+---@alias BalltzeHudHoldForActionMessageEventContextCallback fun(event: BalltzeHudHoldForActionMessageEvent)
 
 -------------------------------------------------------
 -- Balltze Map file load event types
 -------------------------------------------------------
 
----@class BalltzeMapFileLoadEventArgs
+---@class BalltzeMapFileLoadEventContext
 ---@field mapPath string @The path of the map that was loaded
 ---@field mapName string @The name of the map that was loaded
 
----@class MetaBalltzeMapFileLoadEventArgs: BalltzeMapFileLoadEventArgs
+---@class MetaBalltzeMapFileLoadEventContext: BalltzeMapFileLoadEventContext
 
 ---@class BalltzeMapFileLoadEvent: BalltzeEvent
----@field args MetaBalltzeMapFileLoadEventArgs @The arguments of the event
+---@field context MetaBalltzeMapFileLoadEventContext @The context of the event
 
 ---@alias BalltzeMapFileLoadEventCallback fun(event: BalltzeMapFileLoadEvent)
 
@@ -141,13 +141,13 @@
 -- Balltze Map load event types
 -------------------------------------------------------
 
----@class BalltzeMapLoadEventArgs
+---@class BalltzeMapLoadEventContext
 ---@field mapName string Name of the map that was loaded
 
----@class MetaBalltzeMapLoadEventArgs: BalltzeMapLoadEventArgs
+---@class MetaBalltzeMapLoadEventContext: BalltzeMapLoadEventContext
 
 ---@class BalltzeMapLoadEvent: BalltzeEvent
----@field args MetaBalltzeMapLoadEventArgs @The arguments of the event
+---@field context MetaBalltzeMapLoadEventContext @The context of the event
 
 ---@alias BalltzeMapLoadEventCallback fun(event: BalltzeMapLoadEvent)
 
@@ -155,15 +155,15 @@
 -- Balltze Network game chat event types
 -------------------------------------------------------
 
----@class BalltzeNetworkGameChatMessageEventArgs
+---@class BalltzeNetworkGameChatMessageEventContext
 ---@field message lightuserdata @The message that was sent
 ---@field playerId integer @The player that sent the message
 ---@field type EngineNetworkGameMessageHudChatType @The type of the message
 
----@class MetaBalltzeNetworkGameChatMessageEventArgs: BalltzeNetworkGameChatMessageEventArgs
+---@class MetaBalltzeNetworkGameChatMessageEventContext: BalltzeNetworkGameChatMessageEventContext
 
 ---@class BalltzeNetworkGameChatMessageEvent: BalltzeEvent
----@field args MetaBalltzeNetworkGameChatMessageEventArgs @The arguments of the event
+---@field context MetaBalltzeNetworkGameChatMessageEventContext @The context of the event
 
 ---@alias BalltzeNetworkGameChatMessageEventCallback fun(event: BalltzeNetworkGameChatMessageEvent)
 
@@ -171,17 +171,17 @@
 -- Balltze Object damage event types
 -------------------------------------------------------
 
----@class BalltzeObjectDamageEventArgs
+---@class BalltzeObjectDamageEventContext
 ---@field object EngineObjectHandle @The object that was damaged
 ---@field damageEffect EngineTagHandle @The damage effect that was applied
 ---@field multiplier number @The damage multiplier that was applied
 ---@field causerPlayer EnginePlayerHandle @The player that caused the damage
 ---@field causerObject EngineObjectHandle @The object that caused the damage
 
----@class MetaBalltzeObjectDamageEventArgs: BalltzeObjectDamageEventArgs
+---@class MetaBalltzeObjectDamageEventContext: BalltzeObjectDamageEventContext
 
 ---@class BalltzeObjectDamageEvent: BalltzeEvent
----@field args MetaBalltzeObjectDamageEventArgs @The arguments of the event
+---@field context MetaBalltzeObjectDamageEventContext @The context of the event
 
 ---@alias BalltzeObjectDamageEventCallback fun(event: BalltzeObjectDamageEvent)
 
@@ -189,13 +189,13 @@
 -- Balltze RCON message event types
 -------------------------------------------------------
 
----@class BalltzeRconMessageEventArgs
+---@class BalltzeRconMessageEventContext
 ---@field message string @The message that was sent
 
----@class MetaBalltzeRconMessageEventArgs: BalltzeRconMessageEventArgs
+---@class MetaBalltzeRconMessageEventContext: BalltzeRconMessageEventContext
 
 ---@class BalltzeRconMessageEvent: BalltzeEvent
----@field args MetaBalltzeRconMessageEventArgs @The arguments of the event
+---@field context MetaBalltzeRconMessageEventContext @The context of the event
 
 ---@alias BalltzeRconMessageEventCallback fun(event: BalltzeRconMessageEvent)
 
@@ -203,11 +203,11 @@
 -- Balltze User interface render event types
 -------------------------------------------------------
 
----@class BalltzeUiRenderEventArgs
+---@class BalltzeUiRenderEventContext
 ---@field playerIndex integer @The index of the player of the UI that was rendered
 
 ---@class BalltzeUiRenderEvent: BalltzeEvent
----@field args BalltzeUiRenderEventArgs @The arguments of the event
+---@field context BalltzeUiRenderEventContext @The context of the event
 
 ---@alias BalltzeUiRenderEventCallback fun(event: BalltzeUiRenderEvent)
 
@@ -231,14 +231,14 @@
 -- Balltze HUD element bitmap render event types
 -------------------------------------------------------
 
----@class BalltzeHudElementBitmapRenderEventArgs
+---@class BalltzeHudElementBitmapRenderEventContext
 ---@field vertices EngineUIWidgetRenderVertices @The vertices of the bitmap
 ---@field bitmapData MetaEngineTagDataBitmapData @The bitmap data of the bitmap
 
----@class MetaBalltzeHudElementBitmapRenderEventArgs: BalltzeHudElementBitmapRenderEventArgs
+---@class MetaBalltzeHudElementBitmapRenderEventContext: BalltzeHudElementBitmapRenderEventContext
 
 ---@class BalltzeHudElementBitmapRenderEvent: BalltzeEvent
----@field args MetaBalltzeHudElementBitmapRenderEventArgs @The arguments of the event
+---@field context MetaBalltzeHudElementBitmapRenderEventContext @The context of the event
 
 ---@alias BalltzeHudElementBitmapRenderEventCallback fun(event: BalltzeHudElementBitmapRenderEvent)
 
@@ -246,14 +246,14 @@
 -- Balltze UI widget background render event types
 -------------------------------------------------------
 
----@class BalltzeUIWidgetBackgroundRenderEventArgs
+---@class BalltzeUIWidgetBackgroundRenderEventContext
 ---@field vertices EngineUIWidgetRenderVertices @The vertices of the background
 ---@field widget MetaEngineWidget @The widget of the background
 
----@class MetaBalltzeUIWidgetBackgroundRenderEventArgs: BalltzeUIWidgetBackgroundRenderEventArgs
+---@class MetaBalltzeUIWidgetBackgroundRenderEventContext: BalltzeUIWidgetBackgroundRenderEventContext
 
 ---@class BalltzeUIWidgetBackgroundRenderEvent: BalltzeEvent
----@field args MetaBalltzeUIWidgetBackgroundRenderEventArgs @The arguments of the event
+---@field context MetaBalltzeUIWidgetBackgroundRenderEventContext @The context of the event
 
 ---@alias BalltzeUIWidgetBackgroundRenderEventCallback fun(event: BalltzeUIWidgetBackgroundRenderEvent)
 
@@ -269,15 +269,15 @@
 -- Balltze Server connect event types
 -------------------------------------------------------
 
----@class BalltzeServerConnectEventArgs
+---@class BalltzeServerConnectEventContext
 ---@field address string @The address of the server that was connected to
 ---@field port integer @The port of the server that was connected to
 ---@field password string @The password used to connect to the server
 
----@class MetaBalltzeServerConnectEventArgs: BalltzeServerConnectEventArgs
+---@class MetaBalltzeServerConnectEventContext: BalltzeServerConnectEventContext
 
 ---@class BalltzeServerConnectEvent: BalltzeEvent
----@field args MetaBalltzeServerConnectEventArgs @The arguments of the event
+---@field context MetaBalltzeServerConnectEventContext @The context of the event
 
 ---@alias BalltzeServerConnectEventCallback fun(event: BalltzeServerConnectEvent)
 
@@ -285,14 +285,14 @@
 -- Balltze Sound playback event types
 -------------------------------------------------------
 
----@class BalltzeSoundPlaybackEventArgs
+---@class BalltzeSoundPlaybackEventContext
 ---@field sound MetaEngineTagDataSound @The sound that was played
 ---@field permutation MetaEngineTagDataSoundPermutation @The permutation of the sound that was played
 
----@class MetaBalltzeSoundPlaybackEventArgs: BalltzeSoundPlaybackEventArgs
+---@class MetaBalltzeSoundPlaybackEventContext: BalltzeSoundPlaybackEventContext
 
 ---@class BalltzeSoundPlaybackEvent: BalltzeEvent
----@field args MetaBalltzeSoundPlaybackEventArgs @The arguments of the event
+---@field context MetaBalltzeSoundPlaybackEventContext @The context of the event
 
 ---@alias BalltzeSoundPlaybackEventCallback fun(event: BalltzeSoundPlaybackEvent)
 
@@ -300,14 +300,14 @@
 -- Balltze Tick event types
 -------------------------------------------------------
 
----@class BalltzeTickEventArgs
+---@class BalltzeTickEventContext
 ---@field tickCount integer @The current tick count
 ---@field deltaTimeMS integer @The number of ticks since the last tick event
 
----@class MetaBalltzeTickEventArgs: BalltzeTickEventArgs
+---@class MetaBalltzeTickEventContext: BalltzeTickEventContext
 
 ---@class BalltzeTickEvent : BalltzeEvent
----@field args MetaBalltzeTickEventArgs @The arguments of the event
+---@field context MetaBalltzeTickEventContext @The context of the event
 
 ---@alias BalltzeTickEventCallback fun(event: BalltzeTickEvent)
 
@@ -315,15 +315,15 @@
 -- Balltze UI widget create event types
 -------------------------------------------------------
 
----@class BalltzeUIWidgetCreateEventArgs
+---@class BalltzeUIWidgetCreateEventContext
 ---@field widget MetaEngineWidget @The widget that is being created
 ---@field definitionTagHandle EngineTagHandle @The tag handle of the widget definition
 ---@field isRootWidget boolean @Whether the widget is a root widget
 
----@class MetaBalltzeUIWidgetCreateEventArgs: BalltzeUIWidgetCreateEventArgs
+---@class MetaBalltzeUIWidgetCreateEventContext: BalltzeUIWidgetCreateEventContext
 
 ---@class BalltzeUIWidgetCreateEvent : BalltzeEvent
----@field args MetaBalltzeUIWidgetCreateEventArgs @The arguments of the event
+---@field context MetaBalltzeUIWidgetCreateEventContext @The context of the event
 
 ---@alias BalltzeUIWidgetCreateEventCallback fun(event: BalltzeUIWidgetCreateEvent)
 
@@ -331,13 +331,13 @@
 -- Balltze UI widget back event types
 -------------------------------------------------------
 
----@class BalltzeUIWidgetBackEventArgs
+---@class BalltzeUIWidgetBackEventContext
 ---@field widget MetaEngineWidget @The widget that is being created
 
----@class MetaBalltzeUIWidgetBackEventArgs: BalltzeUIWidgetBackEventArgs
+---@class MetaBalltzeUIWidgetBackEventContext: BalltzeUIWidgetBackEventContext
 
 ---@class BalltzeUIWidgetBackEvent : BalltzeEvent
----@field args MetaBalltzeUIWidgetBackEventArgs @The arguments of the event
+---@field context MetaBalltzeUIWidgetBackEventContext @The context of the event
 
 ---@alias BalltzeUIWidgetBackEventCallback fun(event: BalltzeUIWidgetBackEvent)
 
@@ -345,13 +345,13 @@
 -- Balltze UI widget focus event types
 -------------------------------------------------------
 
----@class BalltzeUIWidgetFocusEventArgs
+---@class BalltzeUIWidgetFocusEventContext
 ---@field widget MetaEngineWidget @The widget that is being created
 
----@class MetaBalltzeUIWidgetFocusEventArgs: BalltzeUIWidgetFocusEventArgs
+---@class MetaBalltzeUIWidgetFocusEventContext: BalltzeUIWidgetFocusEventContext
 
 ---@class BalltzeUIWidgetFocusEvent : BalltzeEvent
----@field args MetaBalltzeUIWidgetFocusEventArgs @The arguments of the event
+---@field context MetaBalltzeUIWidgetFocusEventContext @The context of the event
 
 ---@alias BalltzeUIWidgetFocusEventCallback fun(event: BalltzeUIWidgetFocusEvent)
 
@@ -359,13 +359,13 @@
 -- Balltze UI widget accept event types
 -------------------------------------------------------
 
----@class BalltzeUIWidgetAcceptEventArgs
+---@class BalltzeUIWidgetAcceptEventContext
 ---@field widget MetaEngineWidget @The widget that is being created
 
----@class MetaBalltzeUIWidgetAcceptEventArgs: BalltzeUIWidgetAcceptEventArgs
+---@class MetaBalltzeUIWidgetAcceptEventContext: BalltzeUIWidgetAcceptEventContext
 
 ---@class BalltzeUIWidgetAcceptEvent : BalltzeEvent
----@field args MetaBalltzeUIWidgetAcceptEventArgs @The arguments of the event
+---@field context MetaBalltzeUIWidgetAcceptEventContext @The context of the event
 
 ---@alias BalltzeUIWidgetAcceptEventCallback fun(event: BalltzeUIWidgetAcceptEvent)
 
@@ -373,13 +373,13 @@
 -- Balltze UI widget sound event types
 -------------------------------------------------------
 
----@class BalltzeUIWidgetSoundEventArgs
+---@class BalltzeUIWidgetSoundEventContext
 ---@field sound EngineWidgetNavigationSound @The sound that was played
 
----@class MetaBalltzeUIWidgetSoundEventArgs: BalltzeUIWidgetSoundEventArgs
+---@class MetaBalltzeUIWidgetSoundEventContext: BalltzeUIWidgetSoundEventContext
 
 ---@class BalltzeUIWidgetSoundEvent : BalltzeEvent
----@field args MetaBalltzeUIWidgetSoundEventArgs @The arguments of the event
+---@field context MetaBalltzeUIWidgetSoundEventContext @The context of the event
 
 ---@alias BalltzeUIWidgetSoundEventCallback fun(event: BalltzeUIWidgetSoundEvent)
 
@@ -397,13 +397,13 @@
 ---| "tab_thru_children_prev"
 ---| "unknown"
 
----@class BalltzeUIWidgetListTabEventArgs
+---@class BalltzeUIWidgetListTabEventContext
 ---@field widgetList MetaEngineWidget @The widget list that is being navigated
 ---@field tabType BalltzeUIWidgetListTabEventTabType @The type of the tab
 
----@class MetaBalltzeUIWidgetListTabEventArgs: BalltzeUIWidgetListTabEventArgs
+---@class MetaBalltzeUIWidgetListTabEventContext: BalltzeUIWidgetListTabEventContext
 
 ---@class BalltzeUIWidgetListTabEvent : BalltzeEvent
----@field args MetaBalltzeUIWidgetListTabEventArgs @The arguments of the event
+---@field context MetaBalltzeUIWidgetListTabEventContext @The context of the event
 
 ---@alias BalltzeUIWidgetListTabEventCallback fun(event: BalltzeUIWidgetListTabEvent)

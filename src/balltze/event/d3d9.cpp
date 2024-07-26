@@ -19,38 +19,38 @@ namespace Balltze::Event {
         void d3d9_device_reset_after_event();
 
         void dispatch_d3d9_begin_scene_before_event(IDirect3DDevice9 *device) {
-            D3D9BeginSceneEventArguments args(device);
-            D3D9BeginSceneEvent event(EVENT_TIME_BEFORE, args);
+            D3D9BeginSceneEventContext context(device);
+            D3D9BeginSceneEvent event(EVENT_TIME_BEFORE, context);
             event.dispatch();
         }
 
         void dispatch_d3d9_begin_scene_after_event(IDirect3DDevice9 *device) {
-            D3D9BeginSceneEventArguments args(device);
-            D3D9BeginSceneEvent event(EVENT_TIME_AFTER, args);
+            D3D9BeginSceneEventContext context(device);
+            D3D9BeginSceneEvent event(EVENT_TIME_AFTER, context);
             event.dispatch();
         }
 
         void dispatch_d3d9_end_scene_before_event(IDirect3DDevice9 *device) {
-            D3D9EndSceneEventArguments args(device);
-            D3D9EndSceneEvent event(EVENT_TIME_BEFORE, args);
+            D3D9EndSceneEventContext context(device);
+            D3D9EndSceneEvent event(EVENT_TIME_BEFORE, context);
             event.dispatch();
         }
 
         void dispatch_d3d9_end_scene_after_event(IDirect3DDevice9 *device) {
-            D3D9EndSceneEventArguments args(device);
-            D3D9EndSceneEvent event(EVENT_TIME_AFTER, args);
+            D3D9EndSceneEventContext context(device);
+            D3D9EndSceneEvent event(EVENT_TIME_AFTER, context);
             event.dispatch();
         }
 
         void dispatch_d3d9_device_reset_before_event(IDirect3DDevice9 *device, D3DPRESENT_PARAMETERS *params) {
-            D3D9DeviceResetEventArguments args(device, params);
-            D3D9DeviceResetEvent event(EVENT_TIME_BEFORE, args);
+            D3D9DeviceResetEventContext context(device, params);
+            D3D9DeviceResetEvent event(EVENT_TIME_BEFORE, context);
             event.dispatch();
         }
 
         void dispatch_d3d9_device_reset_after_event(IDirect3DDevice9 *device, D3DPRESENT_PARAMETERS *params) {
-            D3D9DeviceResetEventArguments args(device, params);
-            D3D9DeviceResetEvent event(EVENT_TIME_AFTER, args);
+            D3D9DeviceResetEventContext context(device, params);
+            D3D9DeviceResetEvent event(EVENT_TIME_AFTER, context);
             event.dispatch();
         }
     }

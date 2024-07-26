@@ -20,39 +20,39 @@ namespace Balltze::Event {
         void hold_for_action_hud_message_after_event_button_name_right_quote();
     
         bool dispatch_hold_for_action_hud_message_before_event(const wchar_t **text, HudHoldForActionMessageSliceOffset *offset, Engine::ColorARGBInt color, HudHoldForActionMessageSlice slice) {
-            HudHoldForActionMessageArgs args(slice, {offset->x, offset->y}, color, *text, std::nullopt);
+            HudHoldForActionMessageContext args(slice, {offset->x, offset->y}, color, *text, std::nullopt);
             HudHoldForActionMessageEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
-            offset->x = event.args.offset.x;
-            offset->y = event.args.offset.y;
-            if(event.args.text != *text) {
-                new_text = event.args.text;
+            offset->x = event.context.offset.x;
+            offset->y = event.context.offset.y;
+            if(event.context.text != *text) {
+                new_text = event.context.text;
                 *text = new_text.c_str();
             }
             return event.cancelled();
         }
 
         void dispatch_hold_for_action_hud_message_after_event(const wchar_t **text, Engine::Point2DInt *offset, Engine::ColorARGBInt color, HudHoldForActionMessageSlice slice) {
-            HudHoldForActionMessageArgs args(slice, {offset->x, offset->y}, color, *text, std::nullopt);
+            HudHoldForActionMessageContext args(slice, {offset->x, offset->y}, color, *text, std::nullopt);
             HudHoldForActionMessageEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
 
         bool dispatch_hold_for_action_hud_message_before_event_button_slice(const wchar_t **button_name, HudHoldForActionMessageSliceOffset *offset, Engine::ColorARGBInt color, HudHoldToActionMessageButton *button) {
-            HudHoldForActionMessageArgs args(HudHoldForActionMessageSlice::BUTTON_NAME, {offset->x, offset->y}, color, *button_name, *button);
+            HudHoldForActionMessageContext args(HudHoldForActionMessageSlice::BUTTON_NAME, {offset->x, offset->y}, color, *button_name, *button);
             HudHoldForActionMessageEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
-            offset->x = event.args.offset.x;
-            offset->y = event.args.offset.y;
-            if(event.args.text != *button_name) {
-                new_text = event.args.text;
+            offset->x = event.context.offset.x;
+            offset->y = event.context.offset.y;
+            if(event.context.text != *button_name) {
+                new_text = event.context.text;
                 *button_name = new_text.c_str();
             }
             return event.cancelled();
         }
 
         void dispatch_hold_for_action_hud_message_after_event_button_slice(const wchar_t **button_name, Engine::Point2DInt *offset, Engine::ColorARGBInt color, HudHoldToActionMessageButton *button) {
-            HudHoldForActionMessageArgs args(HudHoldForActionMessageSlice::BUTTON_NAME, {offset->x, offset->y}, color, *button_name, *button);
+            HudHoldForActionMessageContext args(HudHoldForActionMessageSlice::BUTTON_NAME, {offset->x, offset->y}, color, *button_name, *button);
             HudHoldForActionMessageEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }

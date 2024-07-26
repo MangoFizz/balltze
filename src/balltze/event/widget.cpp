@@ -19,7 +19,7 @@ namespace Balltze::Event {
                 auto widget_definition = Engine::get_tag(definition_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
                 definition = widget_definition->handle;
             }
-            UIWidgetCreateEventArgs args{nullptr, definition, is_root_widget, parent};
+            UIWidgetCreateEventContext args{nullptr, definition, is_root_widget, parent};
             UIWidgetCreateEvent widget_create_event_before(EVENT_TIME_BEFORE, args);
             widget_create_event_before.dispatch();
             if(is_root_widget) {
@@ -33,7 +33,7 @@ namespace Balltze::Event {
                 logger.debug("dispatch_widget_create_after_event: widget is null");
                 return;
             }
-            UIWidgetCreateEventArgs args{widget, widget->definition_tag_handle, is_root_widget, parent};
+            UIWidgetCreateEventContext args{widget, widget->definition_tag_handle, is_root_widget, parent};
             UIWidgetCreateEvent widget_create_event_after(EVENT_TIME_AFTER, args);
             widget_create_event_after.dispatch();
         }
@@ -49,10 +49,10 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetCreateEvent::subscribe_const([](UIWidgetCreateEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto *tag = Engine::get_tag(arguments.definition_tag_handle);
-                    logger.debug("Widget create event ({}): widget: {}. is root: {}", time, tag->path, arguments.is_root_widget);
+                    auto *tag = Engine::get_tag(context.definition_tag_handle);
+                    logger.debug("Widget create event ({}): widget: {}. is root: {}", time, tag->path, context.is_root_widget);
                 });
             }
             else {
@@ -67,7 +67,7 @@ namespace Balltze::Event {
     }
 
     void UIWidgetCreateEvent::cancel() {
-        if(!args.is_root_widget) {
+        if(!context.is_root_widget) {
             logger.warning("UIWidgetCreateEvent::cancel: cannot cancel non-root widget create event");
             return;
         }
@@ -109,14 +109,14 @@ namespace Balltze::Event {
         void *widget_back_function_override_return;
 
         bool dispatch_widget_back_before_event(Engine::Widget *widget) {
-            UIWidgetEventArgs args{widget};
+            UIWidgetEventContext args{widget};
             UIWidgetBackEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_back_after_event(Engine::Widget *widget) {
-            UIWidgetEventArgs args{widget};
+            UIWidgetEventContext args{widget};
             UIWidgetBackEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -132,9 +132,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetBackEvent::subscribe_const([](UIWidgetBackEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto *tag = Engine::get_tag(arguments.widget->definition_tag_handle);
+                    auto *tag = Engine::get_tag(context.widget->definition_tag_handle);
                     logger.debug("Widget close event ({}): widget: {}", time, tag->path);
                 });
             }
@@ -184,14 +184,14 @@ namespace Balltze::Event {
         void *widget_focus_function_override_return;
 
         bool dispatch_widget_focus_before_event(Engine::Widget *widget) {
-            UIWidgetEventArgs args{widget};
+            UIWidgetEventContext args{widget};
             UIWidgetFocusEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_focus_after_event(Engine::Widget *widget) {
-            UIWidgetEventArgs args{widget};
+            UIWidgetEventContext args{widget};
             UIWidgetFocusEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -207,9 +207,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetFocusEvent::subscribe_const([](UIWidgetFocusEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto *tag = Engine::get_tag(arguments.widget->definition_tag_handle);
+                    auto *tag = Engine::get_tag(context.widget->definition_tag_handle);
                     logger.debug("Widget focus event ({}): widget: {}", time, tag->path);
                 });
             }
@@ -259,14 +259,14 @@ namespace Balltze::Event {
         void widget_accept_event_asm();
 
         bool dispatch_widget_accept_before_event(Engine::Widget *widget) {
-            UIWidgetEventArgs args{widget};
+            UIWidgetEventContext args{widget};
             UIWidgetAcceptEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_accept_after_event(Engine::Widget *widget) {
-            UIWidgetEventArgs args{widget};
+            UIWidgetEventContext args{widget};
             UIWidgetAcceptEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -282,9 +282,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetAcceptEvent::subscribe_const([](UIWidgetAcceptEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto *tag = Engine::get_tag(arguments.widget->definition_tag_handle);
+                    auto *tag = Engine::get_tag(context.widget->definition_tag_handle);
                     logger.debug("Widget accept event ({}): widget: {}", time, tag->path);
                 });
             }
@@ -332,14 +332,14 @@ namespace Balltze::Event {
         void *widget_sound_function_override_return;
 
         bool dispatch_widget_sound_before_event(Engine::WidgetNavigationSound sound) {
-            UIWidgetSoundEventArgs args{sound};
+            UIWidgetSoundEventContext args{sound};
             UIWidgetSoundEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_sound_after_event(Engine::WidgetNavigationSound sound) {
-            UIWidgetSoundEventArgs args{sound};
+            UIWidgetSoundEventContext args{sound};
             UIWidgetSoundEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -355,9 +355,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetSoundEvent::subscribe_const([](UIWidgetSoundEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Widget sound event ({}): sound: {}", time, static_cast<std::uint32_t>(arguments.sound));
+                    logger.debug("Widget sound event ({}): sound: {}", time, static_cast<std::uint32_t>(context.sound));
                 });
             }
             else {
@@ -416,14 +416,14 @@ namespace Balltze::Event {
         void widget_tab_children_previous_event_after_asm();
 
         bool dispatch_widget_list_tab_before_event(Engine::Widget *widget_list, UIWidgetListTabType tab_type) {
-            UIWidgetListTabEventArgs args{widget_list, tab_type};
+            UIWidgetListTabEventContext args{widget_list, tab_type};
             UIWidgetListTabEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_widget_list_tab_after_event(Engine::Widget *widget_list, UIWidgetListTabType tab_type) {
-            UIWidgetListTabEventArgs args{widget_list, tab_type};
+            UIWidgetListTabEventContext args{widget_list, tab_type};
             UIWidgetListTabEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -439,10 +439,10 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetListTabEvent::subscribe_const([](UIWidgetListTabEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto *tag = Engine::get_tag(arguments.widget_list->definition_tag_handle);
-                    logger.debug("Widget list tab event ({}): widget: {}. tab type: {}", time, tag->path, static_cast<std::uint32_t>(arguments.tab));
+                    auto *tag = Engine::get_tag(context.widget_list->definition_tag_handle);
+                    logger.debug("Widget list tab event ({}): widget: {}. tab type: {}", time, tag->path, static_cast<std::uint32_t>(context.tab));
                 });
             }
             else {
@@ -498,7 +498,7 @@ namespace Balltze::Event {
         void handle_widget_mouse_button_press_asm();
 
         bool call_widget_mouse_button_press_events(Engine::Widget *pressed_widget, Engine::MouseButton button) {
-            UIWidgetMouseButtonPressEventArgs args{pressed_widget, button};
+            UIWidgetMouseButtonPressEventContext args{pressed_widget, button};
             UIWidgetMouseButtonPressEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return !event.cancelled();
@@ -515,10 +515,10 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetMouseButtonPressEvent::subscribe_const([](UIWidgetMouseButtonPressEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto *tag = Engine::get_tag(arguments.widget->definition_tag_handle);
-                    logger.debug("Widget mouse button event ({}): widget: {}. button: {}", time, tag->path, static_cast<std::uint32_t>(arguments.button));
+                    auto *tag = Engine::get_tag(context.widget->definition_tag_handle);
+                    logger.debug("Widget mouse button event ({}): widget: {}. button: {}", time, tag->path, static_cast<std::uint32_t>(context.button));
                 });
             }
             else {

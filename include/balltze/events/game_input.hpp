@@ -7,7 +7,7 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct GameInputEventArgs {
+    struct GameInputEventContext {
         const Engine::InputDevice device;
         union {
             std::size_t key_code;
@@ -15,37 +15,37 @@ namespace Balltze::Event {
         } button;
         const bool mapped;
 
-        GameInputEventArgs(Engine::InputDevice device, std::size_t key_code, bool mapped) : device(device), mapped(mapped) {
+        GameInputEventContext(Engine::InputDevice device, std::size_t key_code, bool mapped) : device(device), mapped(mapped) {
             button.key_code = key_code;
         }
     };
 
     class GameInputEvent : public EventData<GameInputEvent> {
     public:
-        GameInputEventArgs args;
+        GameInputEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        GameInputEvent(EventTime time, GameInputEventArgs args) : EventData(time), args(args) {}
+        GameInputEvent(EventTime time, GameInputEventContext context) : EventData(time), context(context) {}
     };
     
-    struct KeyboardInputEventArgs {
+    struct KeyboardInputEventContext {
         const Engine::InputGlobals::BufferedKey key;
 
-        KeyboardInputEventArgs(Engine::InputGlobals::BufferedKey key) : key(key) { }
+        KeyboardInputEventContext(Engine::InputGlobals::BufferedKey key) : key(key) { }
     };
 
     class KeyboardInputEvent : public EventData<KeyboardInputEvent> {
     public:
-        KeyboardInputEventArgs args;
+        KeyboardInputEventContext context;
 
         bool cancellable() const {
             return false;
         }
 
-        KeyboardInputEvent(EventTime time, KeyboardInputEventArgs args) : EventData(time), args(args) {}
+        KeyboardInputEvent(EventTime time, KeyboardInputEventContext context) : EventData(time), context(context) {}
     };
 }
 

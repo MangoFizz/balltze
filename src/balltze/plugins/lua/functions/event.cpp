@@ -266,25 +266,25 @@ namespace Balltze::Plugins::Lua {
         } \
 
     #define SET_POPULATE_EVENT_FUNCTION(eventClass, eventName, eventTable) \
-        static void populate_##eventName##_events(eventClass &context, EventPriority priority) noexcept { \
+        static void populate_##eventName##_events(eventClass &event, EventPriority priority) noexcept { \
             auto plugins = get_lua_plugins(); \
             for(auto *&plugin : plugins) { \
                 auto *state = plugin->state(); \
                 call_events_by_priority(state, eventTable, priority, [&](lua_State *state) { \
-                    create_event_data_table(state, context); \
-                    push_meta_balltze_##eventName##_event_args(state, &context.args); \
-                    lua_setfield(state, -2, "args"); \
+                    create_event_data_table(state, event); \
+                    push_meta_balltze_##eventName##_event_context(state, &event.context); \
+                    lua_setfield(state, -2, "context"); \
                 }); \
             } \
         }
 
     #define SET_POPULATE_EVENT_NO_ARGS_FUNCTION(eventClass, eventName, eventTable) \
-        static void populate_##eventName##_events(eventClass &context, EventPriority priority) noexcept { \
+        static void populate_##eventName##_events(eventClass &event, EventPriority priority) noexcept { \
             auto plugins = get_lua_plugins(); \
             for(auto *&plugin : plugins) { \
                 auto *state = plugin->state(); \
                 call_events_by_priority(state, eventTable, priority, [&](lua_State *state) { \
-                    create_event_data_table(state, context); \
+                    create_event_data_table(state, event); \
                 }); \
             } \
         }

@@ -22,7 +22,7 @@ namespace Balltze::Event {
                 return false;
             }
             auto *sound = reinterpret_cast<Engine::TagDefinitions::Sound *>(tag->data);
-            SoundPlaybackEventArgs args(sound, permutation);
+            SoundPlaybackEventContext args(sound, permutation);
             SoundPlaybackEvent sound_playback_event(EVENT_TIME_BEFORE, args);
             sound_playback_event.dispatch();
             return sound_playback_event.cancelled();
@@ -35,7 +35,7 @@ namespace Balltze::Event {
                 return;
             }
             auto *sound = reinterpret_cast<Engine::TagDefinitions::Sound *>(tag->data);
-            SoundPlaybackEventArgs args(sound, permutation);
+            SoundPlaybackEventContext args(sound, permutation);
             SoundPlaybackEvent sound_playback_event(EVENT_TIME_AFTER, args);
             sound_playback_event.dispatch();
         }
@@ -51,10 +51,10 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::SoundPlaybackEvent::subscribe_const([](SoundPlaybackEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto tag = Engine::get_tag(arguments.permutation->sound_tag_handle_0);
-                    logger.debug("Sound playback event ({}): sound name: {}, permutation name: {}", time, tag->path, arguments.permutation->name.string);
+                    auto tag = Engine::get_tag(context.permutation->sound_tag_handle_0);
+                    logger.debug("Sound playback event ({}): sound name: {}, permutation name: {}", time, tag->path, context.permutation->name.string);
                 });
             }
             else {

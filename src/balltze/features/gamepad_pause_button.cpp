@@ -23,9 +23,9 @@ namespace Balltze::Features {
     }
 
     static void on_game_input(Event::GameInputEvent &event) {
-        if(event.args.device == Engine::INPUT_DEVICE_GAMEPAD) {
+        if(event.context.device == Engine::INPUT_DEVICE_GAMEPAD) {
             auto pause_button = get_pause_button();
-            if(pause_button && pause_button == event.args.button.gamepad_button && !event.args.mapped) {
+            if(pause_button && pause_button == event.context.button.gamepad_button && !event.context.mapped) {
                 Engine::open_pause_menu();
             }
         }

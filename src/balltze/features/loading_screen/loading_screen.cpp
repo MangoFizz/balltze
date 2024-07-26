@@ -119,7 +119,7 @@ namespace Balltze::Features {
 
     static void update_d3d9_device(Event::D3D9EndSceneEvent &event) {
         if(!device) {
-            device = event.args.device;
+            device = event.context.device;
         }
         if(event.time == Event::EVENT_TIME_BEFORE && loading_screen_demo) {
             draw_loading_screen_background();
@@ -261,7 +261,7 @@ namespace Balltze::Features {
             return;
         }
 
-        auto args = split_arguments(event.args.command);
+        auto args = split_arguments(event.context.command);
         auto command = args[0];
         args.erase(args.begin());
 

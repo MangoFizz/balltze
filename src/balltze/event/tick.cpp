@@ -15,7 +15,7 @@ namespace Balltze::Event {
 
     static void tick_event_before_dispatcher() {
         auto tick_count = Engine::get_tick_count();
-        TickEventArgs args(tick_duration.count(), tick_count);
+        TickEventContext args(tick_duration.count(), tick_count);
         TickEvent tick_event(EVENT_TIME_BEFORE, args);
         tick_event.dispatch();
     }
@@ -30,7 +30,7 @@ namespace Balltze::Event {
             first_tick = false;
         }
         last_tick = current_tick;
-        TickEventArgs args(tick_duration.count(), tick_count);
+        TickEventContext args(tick_duration.count(), tick_count);
         TickEvent tick_event(EVENT_TIME_AFTER, args);
         tick_event.dispatch();
     }
@@ -45,9 +45,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::TickEvent::subscribe_const([](TickEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Tick event ({}): delta time: {}, tick count: {}", time, arguments.delta_time_ms, arguments.tick_count);
+                    logger.debug("Tick event ({}): delta time: {}, tick count: {}", time, context.delta_time_ms, context.tick_count);
                 });
             }
             else {

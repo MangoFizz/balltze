@@ -8,21 +8,21 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct RconMessageEventArgs {
+    struct RconMessageEventContext {
         const std::string message;
 
-        RconMessageEventArgs(const char *const message) : message(message) {}
+        RconMessageEventContext(const char *const message) : message(message) {}
     };
 
     class RconMessageEvent : public EventData<RconMessageEvent> {
     public:
-        RconMessageEventArgs args;
+        RconMessageEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        RconMessageEvent(EventTime time, const RconMessageEventArgs &args) : EventData(time), args(args) {}
+        RconMessageEvent(EventTime time, const RconMessageEventContext &context) : EventData(time), context(context) {}
     };
 }
 

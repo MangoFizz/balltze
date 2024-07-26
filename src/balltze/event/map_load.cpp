@@ -15,14 +15,14 @@ namespace Balltze::Event {
         void map_load_after_event();
 
         void dispatch_map_load_event_before(const char *map_name) {
-            MapLoadEventArgs args(map_name);
+            MapLoadEventContext args(map_name);
             last_map_name = map_name;
             MapLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
 
         void dispatch_map_load_event_after() {
-            MapLoadEventArgs args(last_map_name);
+            MapLoadEventContext args(last_map_name);
             MapLoadEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -38,9 +38,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::MapLoadEvent::subscribe_const([](MapLoadEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Map load event ({}): map name: {}", time, arguments.name);
+                    logger.debug("Map load event ({}): map name: {}", time, context.name);
                 });
             }
             else {
@@ -93,7 +93,7 @@ namespace Balltze::Event {
                 logger.debug("dispatch_map_file_load_event_before: map_path or map_name is null");
             }
 
-            MapFileLoadEventArgs args(map_name, map_path);
+            MapFileLoadEventContext args(map_name, map_path);
             MapFileLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
@@ -109,9 +109,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::MapFileLoadEvent::subscribe_const([](MapFileLoadEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Map file load event ({}): map name: {}, map path: {}", time, arguments.map_name, arguments.map_path);
+                    logger.debug("Map file load event ({}): map name: {}, map path: {}", time, context.map_name, context.map_path);
                 });
             }
             else {
@@ -162,18 +162,18 @@ namespace Balltze::Event {
         void map_file_data_read_event_after();
 
         void dispatch_map_file_data_read_event_before(HANDLE file_descriptor, std::byte *output, std::size_t *size, LPOVERLAPPED overlapped) {
-            MapFileDataReadEventArgs args;
+            MapFileDataReadEventContext args;
             args.file_handle = file_descriptor;
             args.output_buffer = output;
             args.size = *size;
             args.overlapped = overlapped;
             MapFileDataReadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
-            *size = event.args.size;
+            *size = event.context.size;
         }
 
         void dispatch_map_file_data_read_event_after(HANDLE file_descriptor, std::byte *output, std::size_t size, LPOVERLAPPED overlapped) {
-            MapFileDataReadEventArgs args;
+            MapFileDataReadEventContext args;
             args.file_handle = file_descriptor;
             args.output_buffer = output;
             args.size = size;
@@ -193,9 +193,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::MapFileDataReadEvent::subscribe_const([](MapFileDataReadEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Map file data read event ({}): file handle: {}, output buffer: {}, size: {}, overlapped: {}", time, reinterpret_cast<std::uint32_t>(arguments.file_handle), reinterpret_cast<std::uint32_t>(arguments.output_buffer), arguments.size, arguments.overlapped->Offset);
+                    logger.debug("Map file data read event ({}): file handle: {}, output buffer: {}, size: {}, overlapped: {}", time, reinterpret_cast<std::uint32_t>(context.file_handle), reinterpret_cast<std::uint32_t>(context.output_buffer), context.size, context.overlapped->Offset);
                 }, EVENT_PRIORITY_HIGHEST);
             }
             else {

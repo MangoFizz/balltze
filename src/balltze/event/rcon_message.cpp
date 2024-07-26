@@ -9,14 +9,14 @@
 
 namespace Balltze::Event {
     static bool dispatch_rcon_message_event_before(const char *message) {
-        RconMessageEventArgs args(message);
+        RconMessageEventContext args(message);
         RconMessageEvent event(EVENT_TIME_BEFORE, args);
         event.dispatch();
         return event.cancelled();
     }
 
     static void dispatch_rcon_message_event_after(const char *message) {
-        RconMessageEventArgs args(message);
+        RconMessageEventContext args(message);
         RconMessageEvent event(EVENT_TIME_AFTER, args);
         event.dispatch();
     }
@@ -31,9 +31,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::RconMessageEvent::subscribe_const([](RconMessageEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Rcon message event ({}): message: {}", time, arguments.message);
+                    logger.debug("Rcon message event ({}): message: {}", time, context.message);
                 });
             }
             else {

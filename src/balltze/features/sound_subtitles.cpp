@@ -16,15 +16,15 @@ namespace Balltze::Features {
 
     static void show_subtitles(Event::SoundPlaybackEvent const &event) noexcept {
         if(event.time == Event::EVENT_TIME_AFTER && !event.cancelled()) {
-            auto &args = event.args;
-            auto *subtitles = get_sound_subtitles(args.permutation);
+            auto &context = event.context;
+            auto *subtitles = get_sound_subtitles(context.permutation);
             if(subtitles) {
                 std::wstring wstr = subtitles;
-                if(!args.permutation->samples_pointer) {
-                    logger.debug("Null samples pointer for sound {}", args.permutation->name.string);
+                if(!context.permutation->samples_pointer) {
+                    logger.debug("Null samples pointer for sound {}", context.permutation->name.string);
                 }
                 else {
-                    auto duration = Engine::get_sound_permutation_samples_duration(args.permutation);
+                    auto duration = Engine::get_sound_permutation_samples_duration(context.permutation);
                     add_subtitle(wstr, {1.0f, 1.0f, 1.0f, 1.0f}, duration);
                 }
             }

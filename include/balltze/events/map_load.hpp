@@ -6,42 +6,42 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct MapLoadEventArgs {
+    struct MapLoadEventContext {
         const std::string name;
 
-        MapLoadEventArgs(const std::string name) : name(name) {}
+        MapLoadEventContext(const std::string name) : name(name) {}
     };
 
     class MapLoadEvent : public EventData<MapLoadEvent> {
     public:
-        MapLoadEventArgs args;
+        MapLoadEventContext context;
 
         bool cancellable() const {
             return false;
         }
 
-        MapLoadEvent(EventTime time, MapLoadEventArgs args) : EventData(time), args(args) {}
+        MapLoadEvent(EventTime time, MapLoadEventContext context) : EventData(time), context(context) {}
     };
 
-    struct MapFileLoadEventArgs {
+    struct MapFileLoadEventContext {
         const std::string map_name;
         const std::string map_path;
 
-        MapFileLoadEventArgs(const std::string map_name, const std::string map_path) : map_name(map_name), map_path(map_path) {}
+        MapFileLoadEventContext(const std::string map_name, const std::string map_path) : map_name(map_name), map_path(map_path) {}
     };
 
     class MapFileLoadEvent : public EventData<MapFileLoadEvent> {
     public:
-        MapFileLoadEventArgs args;
+        MapFileLoadEventContext context;
 
         bool cancellable() const {
             return false;
         }
 
-        MapFileLoadEvent(EventTime time, MapFileLoadEventArgs args) : EventData(time), args(args) {}
+        MapFileLoadEvent(EventTime time, MapFileLoadEventContext context) : EventData(time), context(context) {}
     };
 
-    struct MapFileDataReadEventArgs {
+    struct MapFileDataReadEventContext {
         HANDLE file_handle; 
         std::byte *output_buffer;
         std::size_t size;
@@ -50,13 +50,13 @@ namespace Balltze::Event {
 
     class MapFileDataReadEvent : public EventData<MapFileDataReadEvent> {
     public:
-        MapFileDataReadEventArgs args;
+        MapFileDataReadEventContext context;
 
         bool cancellable() const {
             return false;
         }
 
-        MapFileDataReadEvent(EventTime time, MapFileDataReadEventArgs args) : EventData(time), args(args) {}
+        MapFileDataReadEvent(EventTime time, MapFileDataReadEventContext context) : EventData(time), context(context) {}
     };
 }
 

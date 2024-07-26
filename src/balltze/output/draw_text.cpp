@@ -825,13 +825,13 @@ namespace Balltze {
 
                 Event::D3D9EndSceneEvent::subscribe(+[](Event::D3D9EndSceneEvent &event) -> void {
                     if(event.time == Event::EVENT_TIME_BEFORE) {
-                        on_add_scene(event.args.device);
+                        on_add_scene(event.context.device);
                     }
                 });
 
                 Event::D3D9DeviceResetEvent::subscribe(+[](Event::D3D9DeviceResetEvent &event) -> void {
                     if(event.time == Event::EVENT_TIME_BEFORE) {
-                        on_reset(event.args.device, event.args.present_parameters);
+                        on_reset(event.context.device, event.context.present_parameters);
                     }
                 });
             }

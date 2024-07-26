@@ -15,41 +15,41 @@ namespace Balltze::Event {
 namespace Balltze::Plugins::Lua {
     using namespace Event;
 
-    static void define_balltze_camera_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeCameraEventArgs);
-        luacs_objref_field(state, BalltzeCameraEventArgs, EngineCameraData, camera, LUACS_FREADONLY);
-        luacs_enum_field(state, BalltzeCameraEventArgs, EngineCameraType, type, LUACS_FREADONLY);
+    static void define_balltze_camera_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeCameraEventContext);
+        luacs_objref_field(state, BalltzeCameraEventContext, EngineCameraData, camera, LUACS_FREADONLY);
+        luacs_enum_field(state, BalltzeCameraEventContext, EngineCameraType, type, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_camera_event_args(lua_State *state, BalltzeCameraEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeCameraEventArgs, args);
+    void push_meta_balltze_camera_event_context(lua_State *state, BalltzeCameraEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeCameraEventContext, context);
     }
 
     /**
      * @todo Add gamepad button enum to game input event arguments
      */
 
-    static void define_balltze_game_input_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeGameInputEventArgs);
-        luacs_enum_field(state, BalltzeGameInputEventArgs, EngineInputDevice, device, LUACS_FREADONLY);
-        luacs_bool_field(state, BalltzeGameInputEventArgs, mapped, LUACS_FREADONLY);
-        luacs_declare_field(state, LUACS_TUINT32, NULL, "keyCode", sizeof(((BalltzeGameInputEventArgs *)0)->button.key_code), OFFSET_OF(BalltzeGameInputEventArgs, button.key_code), 0, 0);
+    static void define_balltze_game_input_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeGameInputEventContext);
+        luacs_enum_field(state, BalltzeGameInputEventContext, EngineInputDevice, device, LUACS_FREADONLY);
+        luacs_bool_field(state, BalltzeGameInputEventContext, mapped, LUACS_FREADONLY);
+        luacs_declare_field(state, LUACS_TUINT32, NULL, "keyCode", sizeof(((BalltzeGameInputEventContext *)0)->button.key_code), OFFSET_OF(BalltzeGameInputEventContext, button.key_code), 0, 0);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_game_input_event_args(lua_State *state, BalltzeGameInputEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeGameInputEventArgs, args);
+    void push_meta_balltze_game_input_event_context(lua_State *state, BalltzeGameInputEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeGameInputEventContext, context);
     }
 
-    static void define_balltze_keyboard_input_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeKeyboardEventArgs);
-        luacs_objref_field(state, BalltzeKeyboardEventArgs, EngineInputBufferedKey, key, LUACS_FREADONLY);
+    static void define_balltze_keyboard_input_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeKeyboardEventContext);
+        luacs_objref_field(state, BalltzeKeyboardEventContext, EngineInputBufferedKey, key, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_keyboard_input_event_args(lua_State *state, BalltzeKeyboardEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeKeyboardEventArgs, args);
+    void push_meta_balltze_keyboard_input_event_context(lua_State *state, BalltzeKeyboardEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeKeyboardEventContext, context);
     }
 
     static void define_hud_hold_for_action_message_slice_enum(lua_State *state) noexcept {
@@ -89,14 +89,14 @@ namespace Balltze::Plugins::Lua {
         luacs_newobject(state, BalltzeHudHoldToActionMessageButton, button);
     }
 
-    static void define_balltze_hud_hold_for_action_message_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeHudHoldForActionMessageArgs);
-        luacs_enum_field(state, BalltzeHudHoldForActionMessageArgs, BalltzeHudHoldForActionMessageSlice, slice, LUACS_FREADONLY);
-        luacs_nested_field(state, BalltzeHudHoldForActionMessageArgs, EnginePoint2DInt, offset, 0);
-        luacs_nested_field(state, BalltzeHudHoldForActionMessageArgs, EngineColorARGBInt, color, LUACS_FREADONLY);
-        luacs_string_field(state, BalltzeHudHoldForActionMessageArgs, text, 0);
+    static void define_balltze_hud_hold_for_action_message_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeHudHoldForActionMessageContext);
+        luacs_enum_field(state, BalltzeHudHoldForActionMessageContext, BalltzeHudHoldForActionMessageSlice, slice, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeHudHoldForActionMessageContext, EnginePoint2DInt, offset, 0);
+        luacs_nested_field(state, BalltzeHudHoldForActionMessageContext, EngineColorARGBInt, color, LUACS_FREADONLY);
+        luacs_string_field(state, BalltzeHudHoldForActionMessageContext, text, 0);
         luacs_declare_method(state, "button", +[](lua_State *state) -> int {
-            auto *self = luacs_to_object(state, 1, BalltzeHudHoldForActionMessageArgs);
+            auto *self = luacs_to_object(state, 1, BalltzeHudHoldForActionMessageContext);
             if(self->button.has_value()) {
                 push_meta_balltze_hud_hold_to_action_message_button(state, const_cast<BalltzeHudHoldToActionMessageButton *>(&self->button.value()));
             } 
@@ -108,33 +108,33 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1); 
     }
 
-    void push_meta_balltze_hud_hold_for_action_message_event_args(lua_State *state, BalltzeHudHoldForActionMessageArgs *args) noexcept {
-        luacs_newobject(state, BalltzeHudHoldForActionMessageArgs, args);
+    void push_meta_balltze_hud_hold_for_action_message_event_context(lua_State *state, BalltzeHudHoldForActionMessageContext *context) noexcept {
+        luacs_newobject(state, BalltzeHudHoldForActionMessageContext, context);
     }
 
-    static void define_balltze_map_file_load_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeMapFileLoadEventArgs);
+    static void define_balltze_map_file_load_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeMapFileLoadEventContext);
         luacs_declare_method(state, "mapName", +[](lua_State *state) -> int {
-            auto *self = luacs_to_object(state, 1, BalltzeMapFileLoadEventArgs);
+            auto *self = luacs_to_object(state, 1, BalltzeMapFileLoadEventContext);
             lua_pushstring(state, self->map_name.c_str());
             return 1;
         });
         luacs_declare_method(state, "mapPath", +[](lua_State *state) -> int {
-            auto *self = luacs_to_object(state, 1, BalltzeMapFileLoadEventArgs);
+            auto *self = luacs_to_object(state, 1, BalltzeMapFileLoadEventContext);
             lua_pushstring(state, self->map_path.c_str());
             return 1;
         });
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_map_file_load_event_args(lua_State *state, BalltzeMapFileLoadEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeMapFileLoadEventArgs, args);
+    void push_meta_balltze_map_file_load_event_context(lua_State *state, BalltzeMapFileLoadEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeMapFileLoadEventContext, context);
     }
 
-    static void define_balltze_map_load_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeMapLoadEventArgs);
+    static void define_balltze_map_load_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeMapLoadEventContext);
         luacs_declare_method(state, "mapName", [](lua_State *state) -> int {
-            auto *self = luacs_to_object(state, 1, BalltzeMapLoadEventArgs);
+            auto *self = luacs_to_object(state, 1, BalltzeMapLoadEventContext);
             if(!self) {
                 return luaL_error(state, "self is null");
             }
@@ -144,8 +144,8 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_map_load_event_args(lua_State *state, BalltzeMapLoadEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeMapLoadEventArgs, args);
+    void push_meta_balltze_map_load_event_context(lua_State *state, BalltzeMapLoadEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeMapLoadEventContext, context);
     }
 
     void define_balltze_hud_chat_type_enum(lua_State *state) noexcept {
@@ -167,137 +167,137 @@ namespace Balltze::Plugins::Lua {
     }
 
 
-    static void define_balltze_network_game_chat_message_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeNetworkGameChatMessageEventArgs);
-        luacs_objref_field(state, BalltzeNetworkGameChatMessageEventArgs, BalltzeHudChatMessage, chat_message, LUACS_FREADONLY);
+    static void define_balltze_network_game_chat_message_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeNetworkGameChatMessageEventContext);
+        luacs_objref_field(state, BalltzeNetworkGameChatMessageEventContext, BalltzeHudChatMessage, chat_message, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_network_game_chat_message_event_args(lua_State *state, BalltzeNetworkGameChatMessageEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeNetworkGameChatMessageEventArgs, args);
+    void push_meta_balltze_network_game_chat_message_event_context(lua_State *state, BalltzeNetworkGameChatMessageEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeNetworkGameChatMessageEventContext, context);
     }
 
-    static void define_balltze_object_damage_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeObjectDamageEventArgs);
-        luacs_nested_field(state, BalltzeObjectDamageEventArgs, EngineResourceHandle, object, LUACS_FREADONLY);
-        luacs_nested_field(state, BalltzeObjectDamageEventArgs, EngineResourceHandle, damage_effect, LUACS_FREADONLY);
-        luacs_float_field(state, BalltzeObjectDamageEventArgs, multiplier, LUACS_FREADONLY);
-        luacs_nested_field(state, BalltzeObjectDamageEventArgs, EngineResourceHandle, causer_player, LUACS_FREADONLY);
-        luacs_nested_field(state, BalltzeObjectDamageEventArgs, EngineResourceHandle, causer_object, LUACS_FREADONLY);
+    static void define_balltze_object_damage_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeObjectDamageEventContext);
+        luacs_nested_field(state, BalltzeObjectDamageEventContext, EngineResourceHandle, object, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeObjectDamageEventContext, EngineResourceHandle, damage_effect, LUACS_FREADONLY);
+        luacs_float_field(state, BalltzeObjectDamageEventContext, multiplier, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeObjectDamageEventContext, EngineResourceHandle, causer_player, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeObjectDamageEventContext, EngineResourceHandle, causer_object, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_object_damage_event_args(lua_State *state, BalltzeObjectDamageEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeObjectDamageEventArgs, args);
+    void push_meta_balltze_object_damage_event_context(lua_State *state, BalltzeObjectDamageEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeObjectDamageEventContext, context);
     }
 
-    static void define_balltze_rcon_message_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeRconMessageEventArgs);
+    static void define_balltze_rcon_message_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeRconMessageEventContext);
         luacs_declare_method(state, "message", +[](lua_State *state) -> int {
-            auto *self = luacs_to_object(state, 1, BalltzeRconMessageEventArgs);
+            auto *self = luacs_to_object(state, 1, BalltzeRconMessageEventContext);
             lua_pushstring(state, self->message.c_str());
             return 1;
         });
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_rcon_message_event_args(lua_State *state, BalltzeRconMessageEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeRconMessageEventArgs, args);
+    void push_meta_balltze_rcon_message_event_context(lua_State *state, BalltzeRconMessageEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeRconMessageEventContext, context);
     }
 
-    static void define_balltze_hud_element_render_event_args(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeHudElementRenderEventArgs);
-        luacs_objref_field(state, BalltzeHudElementRenderEventArgs, EngineBitmapData, bitmap_data, 0);
-        luacs_nested_field(state, BalltzeHudElementRenderEventArgs, EngineRasterizerQuad, quad, LUACS_FREADONLY);
+    static void define_balltze_hud_element_render_event_context(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeHudElementRenderEventContext);
+        luacs_objref_field(state, BalltzeHudElementRenderEventContext, EngineBitmapData, bitmap_data, 0);
+        luacs_nested_field(state, BalltzeHudElementRenderEventContext, EngineRasterizerQuad, quad, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_hud_element_bitmap_render_event_args(lua_State *state, BalltzeHudElementRenderEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeHudElementRenderEventArgs, args);
+    void push_meta_balltze_hud_element_bitmap_render_event_context(lua_State *state, BalltzeHudElementRenderEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeHudElementRenderEventContext, context);
     }
 
-    static void define_balltze_ui_widget_background_render_event_args(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetBackgroundRenderEventArgs);
-        luacs_objref_field(state, BalltzeUIWidgetBackgroundRenderEventArgs, EngineUIWidget, widget, LUACS_FREADONLY);
-        luacs_nested_field(state, BalltzeUIWidgetBackgroundRenderEventArgs, EngineRasterizerQuad, quad, LUACS_FREADONLY);
+    static void define_balltze_ui_widget_background_render_event_context(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeUIWidgetBackgroundRenderEventContext);
+        luacs_objref_field(state, BalltzeUIWidgetBackgroundRenderEventContext, EngineUIWidget, widget, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeUIWidgetBackgroundRenderEventContext, EngineRasterizerQuad, quad, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_ui_widget_background_render_event_args(lua_State *state, BalltzeUIWidgetBackgroundRenderEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetBackgroundRenderEventArgs, args);
+    void push_meta_balltze_ui_widget_background_render_event_context(lua_State *state, BalltzeUIWidgetBackgroundRenderEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetBackgroundRenderEventContext, context);
     }
 
-    static void define_balltze_server_connect_event_args(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeServerConnectEventArgs);
-        luacs_unsigned_field(state, BalltzeServerConnectEventArgs, address, 0);
-        luacs_unsigned_field(state, BalltzeServerConnectEventArgs, port, 0);
-        luacs_extref_field(state, BalltzeServerConnectEventArgs, password, 0);
+    static void define_balltze_server_connect_event_context(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeServerConnectEventContext);
+        luacs_unsigned_field(state, BalltzeServerConnectEventContext, address, 0);
+        luacs_unsigned_field(state, BalltzeServerConnectEventContext, port, 0);
+        luacs_extref_field(state, BalltzeServerConnectEventContext, password, 0);
         luacs_declare_method(state, "formattedAddress", +[](lua_State *state) -> int {
-            auto *self = luacs_to_object(state, 1, BalltzeServerConnectEventArgs);
+            auto *self = luacs_to_object(state, 1, BalltzeServerConnectEventContext);
             lua_pushstring(state, Event::ip_address_int_to_string(self->address).c_str());
             return 1;
         });
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_server_connect_event_args(lua_State *state, BalltzeServerConnectEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeServerConnectEventArgs, args);
+    void push_meta_balltze_server_connect_event_context(lua_State *state, BalltzeServerConnectEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeServerConnectEventContext, context);
     }
 
-    static void define_balltze_sound_playback_event_args(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeSoundPlaybackEventArgs);
-        luacs_objref_field(state, BalltzeSoundPlaybackEventArgs, EngineSound, sound, LUACS_FREADONLY);
-        luacs_objref_field(state, BalltzeSoundPlaybackEventArgs, EngineSoundPermutation, permutation, LUACS_FREADONLY);
+    static void define_balltze_sound_playback_event_context(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeSoundPlaybackEventContext);
+        luacs_objref_field(state, BalltzeSoundPlaybackEventContext, EngineSound, sound, LUACS_FREADONLY);
+        luacs_objref_field(state, BalltzeSoundPlaybackEventContext, EngineSoundPermutation, permutation, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_sound_playback_event_args(lua_State *state, BalltzeSoundPlaybackEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeSoundPlaybackEventArgs, args);
+    void push_meta_balltze_sound_playback_event_context(lua_State *state, BalltzeSoundPlaybackEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeSoundPlaybackEventContext, context);
     }
 
-    static void define_balltze_ui_widget_create_event_args(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetCreateEventArgs);
-        luacs_objref_field(state, BalltzeUIWidgetCreateEventArgs, EngineUIWidget, widget, LUACS_FREADONLY);
-        luacs_nested_field(state, BalltzeUIWidgetCreateEventArgs, EngineResourceHandle, definition_tag_handle, LUACS_FREADONLY);
-        luacs_bool_field(state, BalltzeUIWidgetCreateEventArgs, is_root_widget, LUACS_FREADONLY);
-        luacs_objref_field(state, BalltzeUIWidgetCreateEventArgs, EngineUIWidget, parent_widget, LUACS_FREADONLY);
+    static void define_balltze_ui_widget_create_event_context(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeUIWidgetCreateEventContext);
+        luacs_objref_field(state, BalltzeUIWidgetCreateEventContext, EngineUIWidget, widget, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeUIWidgetCreateEventContext, EngineResourceHandle, definition_tag_handle, LUACS_FREADONLY);
+        luacs_bool_field(state, BalltzeUIWidgetCreateEventContext, is_root_widget, LUACS_FREADONLY);
+        luacs_objref_field(state, BalltzeUIWidgetCreateEventContext, EngineUIWidget, parent_widget, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_ui_widget_create_event_args(lua_State *state, BalltzeUIWidgetCreateEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetCreateEventArgs, args);
+    void push_meta_balltze_ui_widget_create_event_context(lua_State *state, BalltzeUIWidgetCreateEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetCreateEventContext, context);
     }
 
-    static void define_balltze_ui_widget_event_args(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetEventArgs);
-        luacs_objref_field(state, BalltzeUIWidgetEventArgs, EngineUIWidget, widget, LUACS_FREADONLY);
+    static void define_balltze_ui_widget_event_context(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeUIWidgetEventContext);
+        luacs_objref_field(state, BalltzeUIWidgetEventContext, EngineUIWidget, widget, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_ui_widget_event_args(lua_State *state, BalltzeUIWidgetEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetEventArgs, args);
+    void push_meta_balltze_ui_widget_event_context(lua_State *state, BalltzeUIWidgetEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetEventContext, context);
     }
 
-    void push_meta_balltze_ui_widget_back_event_args(lua_State *state, BalltzeUIWidgetEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetEventArgs, args);
+    void push_meta_balltze_ui_widget_back_event_context(lua_State *state, BalltzeUIWidgetEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetEventContext, context);
     }
 
-    void push_meta_balltze_ui_widget_focus_event_args(lua_State *state, BalltzeUIWidgetEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetEventArgs, args);
+    void push_meta_balltze_ui_widget_focus_event_context(lua_State *state, BalltzeUIWidgetEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetEventContext, context);
     }
 
-    void push_meta_balltze_ui_widget_accept_event_args(lua_State *state, BalltzeUIWidgetEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetEventArgs, args);
+    void push_meta_balltze_ui_widget_accept_event_context(lua_State *state, BalltzeUIWidgetEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetEventContext, context);
     }
 
-    static void define_balltze_ui_widget_sound_event_args(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetSoundEventArgs);
-        luacs_enum_field(state, BalltzeUIWidgetSoundEventArgs, EngineWidgetNavigationSound, sound, LUACS_FREADONLY);
+    static void define_balltze_ui_widget_sound_event_context(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeUIWidgetSoundEventContext);
+        luacs_enum_field(state, BalltzeUIWidgetSoundEventContext, EngineWidgetNavigationSound, sound, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_ui_widget_sound_event_args(lua_State *state, BalltzeUIWidgetSoundEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetSoundEventArgs, args);
+    void push_meta_balltze_ui_widget_sound_event_context(lua_State *state, BalltzeUIWidgetSoundEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetSoundEventContext, context);
     }
 
     static void define_balltze_ui_widget_list_tab_event_type_enum(lua_State *state) noexcept {
@@ -313,52 +313,52 @@ namespace Balltze::Plugins::Lua {
         lua_pop(state, 1);
     }
 
-    static void define_balltze_ui_widget_list_tab_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetListTabEventArgs);
-        luacs_objref_field(state, BalltzeUIWidgetListTabEventArgs, EngineUIWidget, widget_list, LUACS_FREADONLY);
-        luacs_enum_field(state, BalltzeUIWidgetListTabEventArgs, BalltzeUIWidgetListTabType, tab, LUACS_FREADONLY);
+    static void define_balltze_ui_widget_list_tab_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeUIWidgetListTabEventContext);
+        luacs_objref_field(state, BalltzeUIWidgetListTabEventContext, EngineUIWidget, widget_list, LUACS_FREADONLY);
+        luacs_enum_field(state, BalltzeUIWidgetListTabEventContext, BalltzeUIWidgetListTabType, tab, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_ui_widget_list_tab_event_args(lua_State *state, BalltzeUIWidgetListTabEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetListTabEventArgs, args);
+    void push_meta_balltze_ui_widget_list_tab_event_context(lua_State *state, BalltzeUIWidgetListTabEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetListTabEventContext, context);
     }
 
-    static void define_balltze_ui_widget_mouse_button_press_event_args_struct(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetMouseButtonPressEventArgs);
-        luacs_objref_field(state, BalltzeUIWidgetMouseButtonPressEventArgs, EngineUIWidget, widget, LUACS_FREADONLY);
-        luacs_enum_field(state, BalltzeUIWidgetMouseButtonPressEventArgs, EngineInputMouseButton, button, LUACS_FREADONLY);
+    static void define_balltze_ui_widget_mouse_button_press_event_context_struct(lua_State *state) noexcept {
+        luacs_newstruct(state, BalltzeUIWidgetMouseButtonPressEventContext);
+        luacs_objref_field(state, BalltzeUIWidgetMouseButtonPressEventContext, EngineUIWidget, widget, LUACS_FREADONLY);
+        luacs_enum_field(state, BalltzeUIWidgetMouseButtonPressEventContext, EngineInputMouseButton, button, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
-    void push_meta_balltze_ui_widget_mouse_button_press_event_args(lua_State *state, BalltzeUIWidgetMouseButtonPressEventArgs *args) noexcept {
-        luacs_newobject(state, BalltzeUIWidgetMouseButtonPressEventArgs, args);
+    void push_meta_balltze_ui_widget_mouse_button_press_event_context(lua_State *state, BalltzeUIWidgetMouseButtonPressEventContext *context) noexcept {
+        luacs_newobject(state, BalltzeUIWidgetMouseButtonPressEventContext, context);
     }
 
     void define_balltze_event_types(lua_State *state) noexcept {
-        define_balltze_camera_event_args_struct(state);
-        define_balltze_game_input_event_args_struct(state);
+        define_balltze_camera_event_context_struct(state);
+        define_balltze_game_input_event_context_struct(state);
         define_hud_hold_for_action_message_slice_enum(state);
         define_balltze_event_hud_message_button_type_enum(state);
         define_balltze_event_hud_message_axis_direction_enum(state);
         define_balltze_hud_hold_to_action_message_button_struct(state);
-        define_balltze_hud_hold_for_action_message_args_struct(state);
-        define_balltze_map_file_load_event_args_struct(state);
-        define_balltze_map_load_event_args_struct(state);
+        define_balltze_hud_hold_for_action_message_context_struct(state);
+        define_balltze_map_file_load_event_context_struct(state);
+        define_balltze_map_load_event_context_struct(state);
         define_balltze_hud_chat_type_enum(state);
         define_balltze_hud_chat_struct(state);
-        define_balltze_network_game_chat_message_event_args_struct(state);
-        define_balltze_object_damage_event_args_struct(state);
-        define_balltze_rcon_message_event_args_struct(state);
-        define_balltze_hud_element_render_event_args(state);
-        define_balltze_ui_widget_background_render_event_args(state);
-        define_balltze_server_connect_event_args(state);
-        define_balltze_sound_playback_event_args(state);
-        define_balltze_ui_widget_create_event_args(state);
-        define_balltze_ui_widget_event_args(state);
-        define_balltze_ui_widget_sound_event_args(state);
+        define_balltze_network_game_chat_message_event_context_struct(state);
+        define_balltze_object_damage_event_context_struct(state);
+        define_balltze_rcon_message_event_context_struct(state);
+        define_balltze_hud_element_render_event_context(state);
+        define_balltze_ui_widget_background_render_event_context(state);
+        define_balltze_server_connect_event_context(state);
+        define_balltze_sound_playback_event_context(state);
+        define_balltze_ui_widget_create_event_context(state);
+        define_balltze_ui_widget_event_context(state);
+        define_balltze_ui_widget_sound_event_context(state);
         define_balltze_ui_widget_list_tab_event_type_enum(state);
-        define_balltze_ui_widget_list_tab_event_args_struct(state);
-        define_balltze_ui_widget_mouse_button_press_event_args_struct(state);
+        define_balltze_ui_widget_list_tab_event_context_struct(state);
+        define_balltze_ui_widget_mouse_button_press_event_context_struct(state);
     }
 }

@@ -8,23 +8,23 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct ServerConnectEventArgs {
+    struct ServerConnectEventContext {
         const std::uint32_t address;
         const std::uint16_t port;
         const std::wstring password;
 
-        ServerConnectEventArgs(const std::uint32_t &address, const std::uint16_t port, wchar_t *password) : address(address), port(port), password(password) {}
+        ServerConnectEventContext(const std::uint32_t &address, const std::uint16_t port, wchar_t *password) : address(address), port(port), password(password) {}
     };
 
     class ServerConnectEvent : public EventData<ServerConnectEvent> {
     public:
-        ServerConnectEventArgs args;
+        ServerConnectEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        ServerConnectEvent(EventTime time, const ServerConnectEventArgs &args) : EventData(time), args(args) {}
+        ServerConnectEvent(EventTime time, const ServerConnectEventContext &context) : EventData(time), context(context) {}
     };
 }
 

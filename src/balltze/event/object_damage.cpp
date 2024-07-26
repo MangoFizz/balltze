@@ -12,14 +12,14 @@ namespace Balltze::Event {
         void *object_damage_function_address = nullptr;
         
         bool dispatch_object_damage_event_before(Engine::ObjectHandle *object, Engine::DamageObjectStructThing *damage_thing) {
-            ObjectDamageEventArgs args(*object, damage_thing->damage_tag_handle, damage_thing->multiplier, damage_thing->causer_player, damage_thing->causer_object);
+            ObjectDamageEventContext args(*object, damage_thing->damage_tag_handle, damage_thing->multiplier, damage_thing->causer_player, damage_thing->causer_object);
             ObjectDamageEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_object_damage_event_after(Engine::ObjectHandle *object, Engine::DamageObjectStructThing *damage_thing) {
-            ObjectDamageEventArgs args(*object, damage_thing->damage_tag_handle, damage_thing->multiplier, damage_thing->causer_player, damage_thing->causer_object);
+            ObjectDamageEventContext args(*object, damage_thing->damage_tag_handle, damage_thing->multiplier, damage_thing->causer_player, damage_thing->causer_object);
             ObjectDamageEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -35,10 +35,10 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::ObjectDamageEvent::subscribe_const([](ObjectDamageEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto tag = Engine::get_tag(arguments.damage_effect);
-                    logger.debug("Object damage event ({}): object: {}, damage tag: {}, multiplier: {}, causer player: {}, causer object: {}", time, arguments.object.value, tag->path, arguments.multiplier, arguments.causer_player.value, arguments.causer_object.value);
+                    auto tag = Engine::get_tag(context.damage_effect);
+                    logger.debug("Object damage event ({}): object: {}, damage tag: {}, multiplier: {}, causer player: {}, causer object: {}", time, context.object.value, tag->path, context.multiplier, context.causer_player.value, context.causer_object.value);
                 });
             }
             else {

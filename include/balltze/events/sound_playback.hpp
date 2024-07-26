@@ -8,22 +8,22 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct SoundPlaybackEventArgs {
+    struct SoundPlaybackEventContext {
         Engine::TagDefinitions::Sound *const sound;
         Engine::TagDefinitions::SoundPermutation *const permutation;
 
-        SoundPlaybackEventArgs(Engine::TagDefinitions::Sound *sound, Engine::TagDefinitions::SoundPermutation *permutation) : sound(sound), permutation(permutation) {}
+        SoundPlaybackEventContext(Engine::TagDefinitions::Sound *sound, Engine::TagDefinitions::SoundPermutation *permutation) : sound(sound), permutation(permutation) {}
     };
 
     class SoundPlaybackEvent : public EventData<SoundPlaybackEvent> {
     public:
-        SoundPlaybackEventArgs args;
+        SoundPlaybackEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        SoundPlaybackEvent(EventTime time, SoundPlaybackEventArgs args) : EventData(time), args(args) {}
+        SoundPlaybackEvent(EventTime time, SoundPlaybackEventContext context) : EventData(time), context(context) {}
     };
 }
 

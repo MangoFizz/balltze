@@ -15,14 +15,14 @@ namespace Balltze::Event {
         void *network_game_decode_hud_message_call_override_return = nullptr;
 
         bool dispatch_network_game_chat_message_event_before(NetworkGameChatMessage *chat_message) {
-            NetworkGameChatMessageEventArgs args(chat_message);
+            NetworkGameChatMessageEventContext args(chat_message);
             NetworkGameChatMessageEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
             return event.cancelled();
         }
 
         void dispatch_network_game_chat_message_event_after(NetworkGameChatMessage *chat_message) {
-            NetworkGameChatMessageEventArgs args(chat_message);
+            NetworkGameChatMessageEventContext args(chat_message);
             NetworkGameChatMessageEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -38,9 +38,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = NetworkGameChatMessageEvent::subscribe_const([](NetworkGameChatMessageEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     if(event.time == EVENT_TIME_BEFORE) {
-                        logger.debug("Network game message event: message type: {}", static_cast<int>(arguments.chat_message->msg_type));
+                        logger.debug("Network game message event: message type: {}", static_cast<int>(context.chat_message->msg_type));
                     }                    
                 }, EVENT_PRIORITY_HIGHEST);
             }

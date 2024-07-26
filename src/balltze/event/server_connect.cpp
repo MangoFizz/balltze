@@ -8,14 +8,14 @@
 #include "../logger.hpp"
 
 namespace Balltze::Event {
-    static std::unique_ptr<ServerConnectEventArgs> server_connect_event_args;
+    static std::unique_ptr<ServerConnectEventContext> server_connect_event_args;
 
     extern "C" {
         void server_connect_event_before() noexcept;
         void server_connect_event_after() noexcept;
         
         bool dispatch_server_connect_event_before(std::uint32_t &address, std::uint16_t &port, wchar_t *password) {
-            server_connect_event_args = std::make_unique<ServerConnectEventArgs>(address, port, password);
+            server_connect_event_args = std::make_unique<ServerConnectEventContext>(address, port, password);
             ServerConnectEvent event(EVENT_TIME_BEFORE, *server_connect_event_args);
             event.dispatch();
             return event.cancelled();
@@ -49,11 +49,11 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::ServerConnectEvent::subscribe_const([](ServerConnectEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto address = ip_address_int_to_string(arguments.address);
-                    auto password = std::string(arguments.password.begin(), arguments.password.end());
-                    logger.debug("Server connect event ({}): address: {}, port: {}, password: {}", time, address, arguments.port, password);
+                    auto address = ip_address_int_to_string(context.address);
+                    auto password = std::string(context.password.begin(), context.password.end());
+                    logger.debug("Server connect event ({}): address: {}, port: {}, password: {}", time, address, context.port, password);
                 });
             }
             else {

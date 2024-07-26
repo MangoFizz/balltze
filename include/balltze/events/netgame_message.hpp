@@ -11,21 +11,21 @@
 namespace Balltze::Event {
     using NetworkGameChatMessage = Engine::NetworkGameMessages::HudChat;
 
-    struct NetworkGameChatMessageEventArgs {
+    struct NetworkGameChatMessageEventContext {
         NetworkGameChatMessage const *chat_message;
 
-        NetworkGameChatMessageEventArgs(NetworkGameChatMessage *msg) : chat_message(msg) {}
+        NetworkGameChatMessageEventContext(NetworkGameChatMessage *msg) : chat_message(msg) {}
     };
 
     class NetworkGameChatMessageEvent : public EventData<NetworkGameChatMessageEvent> {
     public:
-        NetworkGameChatMessageEventArgs args;
+        NetworkGameChatMessageEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        NetworkGameChatMessageEvent(EventTime time, const NetworkGameChatMessageEventArgs &args) : EventData(time), args(args) {}
+        NetworkGameChatMessageEvent(EventTime time, const NetworkGameChatMessageEventContext &context) : EventData(time), context(context) {}
     };
 }
 

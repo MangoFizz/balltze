@@ -15,14 +15,14 @@ namespace Balltze::Event {
     
         bool ui_render_event_before_dispatcher(std::uint32_t unknown) {
             render_user_interface_param = unknown;
-            UIRenderEventArgs args = {unknown};
+            UIRenderEventContext args = {unknown};
             UIRenderEvent ui_render_event(EVENT_TIME_BEFORE, args);
             ui_render_event.dispatch();
             return ui_render_event.cancelled();
         }
     
         void ui_render_event_after_dispatcher() {
-            UIRenderEventArgs args = {render_user_interface_param};
+            UIRenderEventContext args = {render_user_interface_param};
             UIRenderEvent ui_render_event(EVENT_TIME_AFTER, args);
             ui_render_event.dispatch();
         }
@@ -117,7 +117,7 @@ namespace Balltze::Event {
         void hud_element_bitmap_render_event_after_dispatcher_asm();
     
         bool hud_element_bitmap_render_event_before_dispatcher(Engine::ScreenQuad &quad, Engine::TagDefinitions::BitmapData *bitmap_data) {
-            HUDElementBitmapRenderEventArgs args;
+            HUDElementBitmapRenderEventContext args;
             args.quad = &quad;
             args.bitmap_data = bitmap_data;
             hud_element_bitmap_render_event_bitmap_data = bitmap_data;
@@ -127,7 +127,7 @@ namespace Balltze::Event {
         }
     
         void hud_element_bitmap_render_event_after_dispatcher(Engine::ScreenQuad &quad) {
-            HUDElementBitmapRenderEventArgs args;
+            HUDElementBitmapRenderEventContext args;
             args.quad = &quad;
             args.bitmap_data = hud_element_bitmap_render_event_bitmap_data;
             HUDElementBitmapRenderEvent widget_background_render_event(EVENT_TIME_AFTER, args);
@@ -145,9 +145,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::HUDElementBitmapRenderEvent::subscribe([](HUDElementBitmapRenderEvent &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("HUD element bitmap render event ({}): bitmap data: {}, vertices: {}", time, reinterpret_cast<std::uint32_t>(arguments.bitmap_data), reinterpret_cast<std::uint32_t>(&arguments.quad));
+                    logger.debug("HUD element bitmap render event ({}): bitmap data: {}, vertices: {}", time, reinterpret_cast<std::uint32_t>(context.bitmap_data), reinterpret_cast<std::uint32_t>(&context.quad));
                 });
             }
             else {
@@ -196,7 +196,7 @@ namespace Balltze::Event {
         void widget_background_render_event_after_dispatcher_asm();
     
         bool widget_background_render_event_before_dispatcher(Engine::ScreenQuad &quad, Engine::Widget *widget) {
-            UIWidgetBackgroundRenderEventArgs args;
+            UIWidgetBackgroundRenderEventContext args;
             args.quad = &quad;
             args.widget = widget;
             UIWidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_BEFORE, args);
@@ -205,7 +205,7 @@ namespace Balltze::Event {
         }
     
         void widget_background_render_event_after_dispatcher(Engine::ScreenQuad &quad, Engine::Widget *widget) {
-            UIWidgetBackgroundRenderEventArgs args;
+            UIWidgetBackgroundRenderEventContext args;
             args.quad = &quad;
             args.widget = widget;
             UIWidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_AFTER, args);
@@ -223,9 +223,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::UIWidgetBackgroundRenderEvent::subscribe_const([](UIWidgetBackgroundRenderEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Widget background render event ({}): widget: {}", time, reinterpret_cast<std::uint32_t>(arguments.widget));
+                    logger.debug("Widget background render event ({}): widget: {}", time, reinterpret_cast<std::uint32_t>(context.widget));
                 });
             }
             else {

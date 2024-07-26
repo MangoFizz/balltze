@@ -6,7 +6,7 @@
 
 namespace Balltze::Features {
     static void on_read_map_file_data(Event::MapFileDataReadEvent &event) {
-        if(event.time == Event::EVENT_TIME_BEFORE && event.args.output_buffer == nullptr) {
+        if(event.time == Event::EVENT_TIME_BEFORE && event.context.output_buffer == nullptr) {
             logger.fatal("Game ran out of memory: trying to read map data to a buffer pointing to null! (GlobalAlloc failed?)");
             show_error_box("%s", "The game ran out of memory.\nTry disabling maps in RAM or reducing the buffer size in the chimera.ini file.");
             std::exit(EXIT_FAILURE);

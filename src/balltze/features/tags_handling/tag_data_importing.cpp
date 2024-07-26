@@ -597,7 +597,7 @@ namespace Balltze::Features {
 
     void on_map_file_load(Event::MapFileLoadEvent const &event) {
         // Get map file path
-        map_file_path = event.args.map_path; 
+        map_file_path = event.context.map_path; 
     }
 
     void prepare_to_load_map(Event::MapLoadEvent const &event) {
@@ -620,10 +620,10 @@ namespace Balltze::Features {
             return;
         }
 
-        const HANDLE &file_descriptor = event.args.file_handle; 
-        std::byte *output = event.args.output_buffer;
-        const std::size_t &size = event.args.size;
-        std::size_t file_offset = event.args.overlapped->Offset;
+        const HANDLE &file_descriptor = event.context.file_handle; 
+        std::byte *output = event.context.output_buffer;
+        const std::size_t &size = event.context.size;
+        std::size_t file_offset = event.context.overlapped->Offset;
 
         auto file_path = get_path_from_file_handle(file_descriptor);
         auto file_name = file_path.filename();
@@ -643,7 +643,7 @@ namespace Balltze::Features {
                         std::fseek(file, file_offset - offset_acc, SEEK_SET);
                         std::fread(output, 1, size, file);
                         std::fclose(file);
-                        event.args.size = 0;
+                        event.context.size = 0;
                         return;
                     }
                     offset_acc += map_file_size;

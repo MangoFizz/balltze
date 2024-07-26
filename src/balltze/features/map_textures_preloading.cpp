@@ -16,8 +16,8 @@ namespace Balltze::Features {
 
     static void on_map_file_load(Event::MapFileLoadEvent &event) {
         if(event.time == Event::EVENT_TIME_BEFORE) {
-            if(event.args.map_name != "ui") {
-                auto map_size = std::filesystem::file_size(event.args.map_path);
+            if(event.context.map_name != "ui") {
+                auto map_size = std::filesystem::file_size(event.context.map_path);
                 preload_map_textures = map_size > MIB_SIZE * 384;
             }
             else {

@@ -191,7 +191,7 @@ namespace Balltze::LuaLibrary {
             auto it = script->callbacks.find(CallbackTargetedEvent::MAP_FILE_LOAD);
             if(it != script->callbacks.end()) {
                 lua_getglobal(state, it->second.c_str());
-                lua_pushstring(state, event.args.name.c_str());
+                lua_pushstring(state, event.context.name.c_str());
                 if(lua_pcall(state, 1, 0, 0) != LUA_OK) {
                     const char *err = lua_tostring(state, -1);
                     console_printf(CONSOLE_COLOR_ERROR, "%s", err);

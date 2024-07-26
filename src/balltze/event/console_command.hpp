@@ -7,21 +7,21 @@
 #include <balltze/event.hpp>
 
 namespace Balltze::Event {
-    struct ConsoleCommandEventArguments {
+    struct ConsoleCommandEventContext {
         std::string command;
 
-        ConsoleCommandEventArguments(std::string command) : command(command) {}
+        ConsoleCommandEventContext(std::string command) : command(command) {}
     };
 
     class ConsoleCommandEvent : public EventData<ConsoleCommandEvent> {
     public:
-        ConsoleCommandEventArguments args;
+        ConsoleCommandEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        ConsoleCommandEvent(EventTime time, ConsoleCommandEventArguments args) : EventData(time), args(args) {}
+        ConsoleCommandEvent(EventTime time, ConsoleCommandEventContext context) : EventData(time), context(context) {}
     };
 }
 

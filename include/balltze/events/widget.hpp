@@ -7,80 +7,80 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct UIWidgetEventArgs {
+    struct UIWidgetEventContext {
         Engine::Widget *const widget;
 
-        UIWidgetEventArgs(Engine::Widget *const widget) : widget(widget) {}
+        UIWidgetEventContext(Engine::Widget *const widget) : widget(widget) {}
     };
 
-    struct UIWidgetCreateEventArgs : UIWidgetEventArgs {
+    struct UIWidgetCreateEventContext : UIWidgetEventContext {
         const Engine::TagHandle definition_tag_handle;
         const bool is_root_widget;
         Engine::Widget *const parent_widget;
 
-        UIWidgetCreateEventArgs(Engine::Widget *const widget, Engine::TagHandle definition_tag_handle, bool is_root_widget, Engine::Widget *const parent_widget) : UIWidgetEventArgs(widget), definition_tag_handle(definition_tag_handle), is_root_widget(is_root_widget), parent_widget(parent_widget) {}
+        UIWidgetCreateEventContext(Engine::Widget *const widget, Engine::TagHandle definition_tag_handle, bool is_root_widget, Engine::Widget *const parent_widget) : UIWidgetEventContext(widget), definition_tag_handle(definition_tag_handle), is_root_widget(is_root_widget), parent_widget(parent_widget) {}
     };
 
     class UIWidgetCreateEvent : public EventData<UIWidgetCreateEvent> {
     public:
-        UIWidgetCreateEventArgs args;
+        UIWidgetCreateEventContext context;
 
         bool cancellable() const {
             return true;
         }
         void cancel();
 
-        UIWidgetCreateEvent(EventTime time, UIWidgetCreateEventArgs args) : EventData(time), args(args) {}
+        UIWidgetCreateEvent(EventTime time, UIWidgetCreateEventContext context) : EventData(time), context(context) {}
     };
 
     class UIWidgetBackEvent : public EventData<UIWidgetBackEvent> {
     public:
-        UIWidgetEventArgs args;
+        UIWidgetEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        UIWidgetBackEvent(EventTime time, UIWidgetEventArgs args) : EventData(time), args(args) {}
+        UIWidgetBackEvent(EventTime time, UIWidgetEventContext context) : EventData(time), context(context) {}
     };
 
     class UIWidgetFocusEvent : public EventData<UIWidgetFocusEvent> {
     public:
-        UIWidgetEventArgs args;
+        UIWidgetEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        UIWidgetFocusEvent(EventTime time, UIWidgetEventArgs args) : EventData(time), args(args) {}
+        UIWidgetFocusEvent(EventTime time, UIWidgetEventContext context) : EventData(time), context(context) {}
     };
 
     class UIWidgetAcceptEvent : public EventData<UIWidgetAcceptEvent> {
     public:
-        UIWidgetEventArgs args;
+        UIWidgetEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        UIWidgetAcceptEvent(EventTime time, UIWidgetEventArgs args) : EventData(time), args(args) {}
+        UIWidgetAcceptEvent(EventTime time, UIWidgetEventContext context) : EventData(time), context(context) {}
     };
 
-    struct UIWidgetSoundEventArgs {
+    struct UIWidgetSoundEventContext {
         const Engine::WidgetNavigationSound sound;
 
-        UIWidgetSoundEventArgs(Engine::WidgetNavigationSound sound) : sound(sound) {}
+        UIWidgetSoundEventContext(Engine::WidgetNavigationSound sound) : sound(sound) {}
     };
 
     class UIWidgetSoundEvent : public EventData<UIWidgetSoundEvent> {
     public:
-        UIWidgetSoundEventArgs args;
+        UIWidgetSoundEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        UIWidgetSoundEvent(EventTime time, UIWidgetSoundEventArgs args) : EventData(time), args(args) {}
+        UIWidgetSoundEvent(EventTime time, UIWidgetSoundEventContext context) : EventData(time), context(context) {}
     };
 
     enum UIWidgetListTabType {
@@ -93,40 +93,40 @@ namespace Balltze::Event {
         TAB_THRU_CHILDREN_PREV // Find how to differentiate between vertical and horizontal on this one
     };
 
-    struct UIWidgetListTabEventArgs {
+    struct UIWidgetListTabEventContext {
         Engine::Widget *const widget_list;
         const UIWidgetListTabType tab;
 
-        UIWidgetListTabEventArgs(Engine::Widget *const widget_list, UIWidgetListTabType tab) : widget_list(widget_list), tab(tab) {}
+        UIWidgetListTabEventContext(Engine::Widget *const widget_list, UIWidgetListTabType tab) : widget_list(widget_list), tab(tab) {}
     };
 
     class UIWidgetListTabEvent : public EventData<UIWidgetListTabEvent> {
     public:
-        UIWidgetListTabEventArgs args;
+        UIWidgetListTabEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        UIWidgetListTabEvent(EventTime time, UIWidgetListTabEventArgs args) : EventData(time), args(args) {}
+        UIWidgetListTabEvent(EventTime time, UIWidgetListTabEventContext context) : EventData(time), context(context) {}
     };
 
-    struct UIWidgetMouseButtonPressEventArgs {
+    struct UIWidgetMouseButtonPressEventContext {
         Engine::Widget *const widget;
         const Engine::MouseButton button;
 
-        UIWidgetMouseButtonPressEventArgs(Engine::Widget *const widget, const Engine::MouseButton button) : widget(widget), button(button) {}
+        UIWidgetMouseButtonPressEventContext(Engine::Widget *const widget, const Engine::MouseButton button) : widget(widget), button(button) {}
     };
 
     class UIWidgetMouseButtonPressEvent : public EventData<UIWidgetMouseButtonPressEvent> {
     public:
-        UIWidgetMouseButtonPressEventArgs args;
+        UIWidgetMouseButtonPressEventContext context;
 
         bool cancellable() const {
             return true;
         }
 
-        UIWidgetMouseButtonPressEvent(EventTime time, UIWidgetMouseButtonPressEventArgs args) : EventData(time), args(args) {}
+        UIWidgetMouseButtonPressEvent(EventTime time, UIWidgetMouseButtonPressEventContext context) : EventData(time), context(context) {}
     };
 }
 

@@ -364,7 +364,7 @@ namespace Balltze {
         }
 
         if(event.time == Event::EVENT_TIME_BEFORE) {
-            if(execute_command(event.args.command) != COMMAND_RESULT_FAILED_ERROR_NOT_FOUND) {
+            if(execute_command(event.context.command) != COMMAND_RESULT_FAILED_ERROR_NOT_FOUND) {
                 Memory::fill_with_nops(unknown_command_message_print->data(), 5);
                 restore_unknown_command_message_print = true;
 

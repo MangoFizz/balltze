@@ -8,14 +8,14 @@
 
 namespace Balltze::Event {
     static void camera_event_before_dispatcher() {
-        CameraEventArgs args(&Engine::get_camera_data(), Engine::get_camera_type());
-        CameraEvent camera_event(EVENT_TIME_BEFORE, args);
+        CameraEventContext context(&Engine::get_camera_data(), Engine::get_camera_type());
+        CameraEvent camera_event(EVENT_TIME_BEFORE, context);
         camera_event.dispatch();
     }
 
     static void camera_event_after_dispatcher() {
-        CameraEventArgs args(&Engine::get_camera_data(), Engine::get_camera_type());
-        CameraEvent camera_event(EVENT_TIME_AFTER, args);
+        CameraEventContext context(&Engine::get_camera_data(), Engine::get_camera_type());
+        CameraEvent camera_event(EVENT_TIME_AFTER, context);
         camera_event.dispatch();
     }
 
@@ -29,13 +29,13 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::CameraEvent::subscribe_const([](CameraEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    auto type = std::to_string(static_cast<int>(arguments.type));
-                    auto fov = std::to_string(arguments.camera->fov);
-                    auto position = fmt::format("({}, {}, {})", arguments.camera->position.x, arguments.camera->position.y, arguments.camera->position.z);
-                    auto orientation_1 = fmt::format("({}, {}, {})", arguments.camera->orientation[0].x, arguments.camera->orientation[0].y, arguments.camera->orientation[0].z);
-                    auto orientation_2 = fmt::format("({}, {}, {})", arguments.camera->orientation[1].x, arguments.camera->orientation[1].y, arguments.camera->orientation[1].z);
+                    auto type = std::to_string(static_cast<int>(context.type));
+                    auto fov = std::to_string(context.camera->fov);
+                    auto position = fmt::format("({}, {}, {})", context.camera->position.x, context.camera->position.y, context.camera->position.z);
+                    auto orientation_1 = fmt::format("({}, {}, {})", context.camera->orientation[0].x, context.camera->orientation[0].y, context.camera->orientation[0].z);
+                    auto orientation_2 = fmt::format("({}, {}, {})", context.camera->orientation[1].x, context.camera->orientation[1].y, context.camera->orientation[1].z);
                     logger.debug("Camera event ({}): camera type: {}, camera fov: {}, camera position: ({}), camera orientation: ({}) ({})", time, type, fov, position, orientation_1, orientation_2);
                 });
             }

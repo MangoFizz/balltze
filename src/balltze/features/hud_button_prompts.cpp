@@ -157,26 +157,26 @@ namespace Balltze::Features {
             static std::wstring left_quote;
             static std::wstring right_quote;
 
-            auto slice = event.args.slice;
+            auto slice = event.context.slice;
             if(slice == HudHoldForActionMessageSlice::BUTTON_NAME) {
-                if(event.args.button->device == Engine::INPUT_DEVICE_GAMEPAD) {
-                    auto &button = *event.args.button;
-                    auto &offset = event.args.offset;
-                    auto &color = event.args.color;
+                if(event.context.button->device == Engine::INPUT_DEVICE_GAMEPAD) {
+                    auto &button = *event.context.button;
+                    auto &offset = event.context.offset;
+                    auto &color = event.context.color;
                     bool success = draw_button_icon(offset, button, color);
                     allow = !success;
                 }
                 if(allow) {
-                    event.args.text = left_quote + event.args.text + right_quote;
+                    event.context.text = left_quote + event.context.text + right_quote;
                     allow = true;
                 }
             }
             else if(slice == HudHoldForActionMessageSlice::BUTTON_NAME_LEFT_QUOTE) {
-                left_quote = event.args.text;
+                left_quote = event.context.text;
                 allow = false;
             }
             else if(slice == HudHoldForActionMessageSlice::BUTTON_NAME_RIGHT_QUOTE) {
-                right_quote = event.args.text;
+                right_quote = event.context.text;
                 allow = false;
             }
         }

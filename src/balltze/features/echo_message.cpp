@@ -56,24 +56,24 @@ namespace Balltze::Features {
 
     void set_up_echo_message_command() {
         Event::NetworkGameChatMessageEvent::subscribe([](Event::NetworkGameChatMessageEvent &event) {
-            auto &arguments = event.args;
+            auto &context = event.context;
             if(event.time == Event::EVENT_TIME_BEFORE) {
-                if(arguments.chat_message->msg_type == Engine::NetworkGameMessages::HudChatType::CUSTOM) {
-                    if(std::wcsncmp(arguments.chat_message->message, L"PING", 4) == 0) {
+                if(context.chat_message->msg_type == Engine::NetworkGameMessages::HudChatType::CUSTOM) {
+                    if(std::wcsncmp(context.chat_message->message, L"PING", 4) == 0) {
                         std::string msg_str;
-                        size_t wstr_len = std::wcslen(arguments.chat_message->message);
+                        size_t wstr_len = std::wcslen(context.chat_message->message);
                         for(size_t i = 0; i < wstr_len; i++) {
-                            msg_str.push_back(static_cast<char>(arguments.chat_message->message[i] & 0xFF));
+                            msg_str.push_back(static_cast<char>(context.chat_message->message[i] & 0xFF));
                         }
                         logger.info("Ball Ball says {}. Sending pong...", msg_str);
 
-                        send_pong_message(arguments.chat_message->player_id);
+                        send_pong_message(context.chat_message->player_id);
                     }
-                    if(std::wcsncmp(arguments.chat_message->message, L"PONG", 4) == 0) {
+                    if(std::wcsncmp(context.chat_message->message, L"PONG", 4) == 0) {
                         std::string msg_str;
-                        size_t wstr_len = std::wcslen(arguments.chat_message->message);
+                        size_t wstr_len = std::wcslen(context.chat_message->message);
                         for(size_t i = 0; i < wstr_len; i++) {
-                            msg_str.push_back(static_cast<char>(arguments.chat_message->message[i] & 0xFF));
+                            msg_str.push_back(static_cast<char>(context.chat_message->message[i] & 0xFF));
                         }
                         logger.info("Ball Ball says {}.", msg_str);
                     }

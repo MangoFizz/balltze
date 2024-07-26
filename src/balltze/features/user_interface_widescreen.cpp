@@ -159,7 +159,7 @@ namespace Balltze::Features {
     }
 
     static void jason_jones_widgets() noexcept {
-        auto stretch_widget = [](const char *widget_path) noexcept {
+        auto stretch_widget = [](const char *widget_path) {
             auto *tag = get_tag(widget_path, TAG_CLASS_UI_WIDGET_DEFINITION);
             if(tag) {
                 auto *data = reinterpret_cast<TagDefinitions::UiWidgetDefinition *>(tag->data);
@@ -217,7 +217,7 @@ namespace Balltze::Features {
 
     static void widescreen_displace_ui_widgets(UIWidgetBackgroundRenderEvent &ev) {
         if(ev.time == EVENT_TIME_BEFORE) {
-            auto &quad = ev.args.quad;
+            auto &quad = ev.context.quad;
             float min_x = quad->top_left.x;
             float max_x = quad->top_right.x;
             float min_y = quad->top_left.y;

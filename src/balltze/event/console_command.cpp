@@ -14,14 +14,14 @@ namespace Balltze::Event {
         void *console_command_function = nullptr;
 
         bool dispatch_console_command_event_before(const char *command) {
-            ConsoleCommandEventArguments args(command);
+            ConsoleCommandEventContext args(command);
             ConsoleCommandEvent console_command_event(EVENT_TIME_BEFORE, args);
             console_command_event.dispatch();
             return console_command_event.cancelled();
         }
 
         void dispatch_console_command_event_after(const char *command) {
-            ConsoleCommandEventArguments args(command);
+            ConsoleCommandEventContext args(command);
             ConsoleCommandEvent console_command_event(EVENT_TIME_AFTER, args);
             console_command_event.dispatch();
         }
@@ -37,9 +37,9 @@ namespace Balltze::Event {
                     handle = std::nullopt;
                 }
                 handle = Event::ConsoleCommandEvent::subscribe_const([](ConsoleCommandEvent const &event) {
-                    auto &arguments = event.args;
+                    auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Console command event ({}): command: {}", time, arguments.command);
+                    logger.debug("Console command event ({}): command: {}", time, context.command);
                 });
             }
             else {

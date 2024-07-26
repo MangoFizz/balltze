@@ -7,22 +7,22 @@
 #include "../event.hpp"
 
 namespace Balltze::Event {
-    struct CameraEventArgs {
+    struct CameraEventContext {
         Engine::CameraData *const camera;
         const Engine::CameraType type;
 
-        CameraEventArgs(Engine::CameraData *camera, const Engine::CameraType type) : camera(camera), type(type) {}
+        CameraEventContext(Engine::CameraData *camera, const Engine::CameraType type) : camera(camera), type(type) {}
     };
 
     class CameraEvent : public EventData<CameraEvent> {
     public:
-        CameraEventArgs args;
+        CameraEventContext context;
 
         bool cancellable() const {
             return false;
         }
 
-        CameraEvent(EventTime time, const CameraEventArgs &args) : EventData(time), args(args) {}
+        CameraEvent(EventTime time, const CameraEventContext &context) : EventData(time), context(context) {}
     };
 }
 
