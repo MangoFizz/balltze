@@ -116,9 +116,9 @@ namespace Balltze::Event {
         bool hud_element_bitmap_render_event_before_dispatcher_asm();
         void hud_element_bitmap_render_event_after_dispatcher_asm();
     
-        bool hud_element_bitmap_render_event_before_dispatcher(UIWidgetRenderVertices &vertices, Engine::TagDefinitions::BitmapData *bitmap_data) {
+        bool hud_element_bitmap_render_event_before_dispatcher(Engine::ScreenQuad &quad, Engine::TagDefinitions::BitmapData *bitmap_data) {
             HUDElementBitmapRenderEventArgs args;
-            args.vertices = &vertices;
+            args.quad = &quad;
             args.bitmap_data = bitmap_data;
             hud_element_bitmap_render_event_bitmap_data = bitmap_data;
             HUDElementBitmapRenderEvent widget_background_render_event(EVENT_TIME_BEFORE, args);
@@ -126,9 +126,9 @@ namespace Balltze::Event {
             return widget_background_render_event.cancelled();
         }
     
-        void hud_element_bitmap_render_event_after_dispatcher(UIWidgetRenderVertices &vertices) {
+        void hud_element_bitmap_render_event_after_dispatcher(Engine::ScreenQuad &quad) {
             HUDElementBitmapRenderEventArgs args;
-            args.vertices = &vertices;
+            args.quad = &quad;
             args.bitmap_data = hud_element_bitmap_render_event_bitmap_data;
             HUDElementBitmapRenderEvent widget_background_render_event(EVENT_TIME_AFTER, args);
             widget_background_render_event.dispatch();
@@ -147,7 +147,7 @@ namespace Balltze::Event {
                 handle = Event::HUDElementBitmapRenderEvent::subscribe([](HUDElementBitmapRenderEvent &event) {
                     auto &arguments = event.args;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("HUD element bitmap render event ({}): bitmap data: {}, vertices: {}", time, reinterpret_cast<std::uint32_t>(arguments.bitmap_data), reinterpret_cast<std::uint32_t>(&arguments.vertices));
+                    logger.debug("HUD element bitmap render event ({}): bitmap data: {}, vertices: {}", time, reinterpret_cast<std::uint32_t>(arguments.bitmap_data), reinterpret_cast<std::uint32_t>(&arguments.quad));
                 });
             }
             else {
@@ -195,18 +195,18 @@ namespace Balltze::Event {
         bool widget_background_render_event_before_dispatcher_asm();
         void widget_background_render_event_after_dispatcher_asm();
     
-        bool widget_background_render_event_before_dispatcher(UIWidgetRenderVertices &vertices, Engine::Widget *widget) {
+        bool widget_background_render_event_before_dispatcher(Engine::ScreenQuad &quad, Engine::Widget *widget) {
             UIWidgetBackgroundRenderEventArgs args;
-            args.vertices = &vertices;
+            args.quad = &quad;
             args.widget = widget;
             UIWidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_BEFORE, args);
             widget_background_render_event.dispatch();
             return widget_background_render_event.cancelled();
         }
     
-        void widget_background_render_event_after_dispatcher(UIWidgetRenderVertices &vertices, Engine::Widget *widget) {
+        void widget_background_render_event_after_dispatcher(Engine::ScreenQuad &quad, Engine::Widget *widget) {
             UIWidgetBackgroundRenderEventArgs args;
-            args.vertices = &vertices;
+            args.quad = &quad;
             args.widget = widget;
             UIWidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_AFTER, args);
             widget_background_render_event.dispatch();

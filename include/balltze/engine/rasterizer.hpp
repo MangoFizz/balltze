@@ -188,6 +188,18 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(TransparentGeometryGroup) == 0xA8);
 
+    struct ScreenQuad {
+        struct Vertex {
+            float x, y, z, rhw;
+            float u, v;
+        };
+
+        Vertex top_left;
+        Vertex top_right;
+        Vertex bottom_right;
+        Vertex bottom_left;
+    };
+
     /**
      * Get the window globals.
      * @return      Reference to the window globals.

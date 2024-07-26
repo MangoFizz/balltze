@@ -23,8 +23,6 @@ namespace Balltze::Plugins::Lua {
     using BalltzeHudChatMessage = Engine::NetworkGameMessages::HudChat;
     using BalltzeObjectDamageEventArgs = Event::ObjectDamageEventArgs;
     using BalltzeRconMessageEventArgs = Event::RconMessageEventArgs;
-    using BalltzeUIWidgetRenderVertex = Event::UIWidgetRenderVertices::Vertex;
-    using BalltzeUIWidgetRenderVertices = Event::UIWidgetRenderVertices;
     using BalltzeHudElementRenderEventArgs = Event::HUDElementBitmapRenderEventArgs;
     using BalltzeUIWidgetBackgroundRenderEventArgs = Event::UIWidgetBackgroundRenderEventArgs;
     using BalltzeServerConnectEventArgs = Event::ServerConnectEventArgs;

@@ -41,21 +41,9 @@ namespace Balltze::Event {
         PostCarnageReportRenderEvent(EventTime time) : EventData(time) {}
     };
 
-    struct UIWidgetRenderVertices {
-        struct Vertex {
-            float x, y, z, rhw;
-            float u, v;
-        };
-
-        Vertex top_left;
-        Vertex top_right;
-        Vertex bottom_right;
-        Vertex bottom_left;
-    };
-
     struct HUDElementBitmapRenderEventArgs {
         Engine::TagDefinitions::BitmapData *bitmap_data;
-        UIWidgetRenderVertices *vertices;
+        Engine::ScreenQuad *quad;
     };
 
     class HUDElementBitmapRenderEvent : public EventData<HUDElementBitmapRenderEvent> {
@@ -71,7 +59,7 @@ namespace Balltze::Event {
 
     struct UIWidgetBackgroundRenderEventArgs {
         Engine::Widget *widget;
-        UIWidgetRenderVertices *vertices;
+        Engine::ScreenQuad *quad;
     };
 
     class UIWidgetBackgroundRenderEvent : public EventData<UIWidgetBackgroundRenderEvent> {

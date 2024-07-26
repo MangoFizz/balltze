@@ -768,7 +768,13 @@ namespace Balltze {
         auto *draw_text_16_bit_sig = Memory::get_signature("draw_16_bit_text");
         auto *font_data_sig = Memory::get_signature("text_font_data");
 
-        Memory::hook_function(text_hook_sig->data(), on_text);
+        try {
+            Memory::hook_function(text_hook_sig->data(), on_text);
+        }
+        catch(std::runtime_error &err) {
+            logger.error("Failed to set up text hooks: {}", err.what());
+            return;
+        }
         
         Event::FrameEvent::subscribe(+[](Event::FrameEvent &event) -> void {
             if(event.time == Event::EVENT_TIME_BEFORE) {

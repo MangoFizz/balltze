@@ -217,11 +217,11 @@ namespace Balltze::Features {
 
     static void widescreen_displace_ui_widgets(UIWidgetBackgroundRenderEvent &ev) {
         if(ev.time == EVENT_TIME_BEFORE) {
-            auto &vertices = ev.args.vertices;
-            float min_x = vertices->top_left.x;
-            float max_x = vertices->top_right.x;
-            float min_y = vertices->top_left.y;
-            float max_y = vertices->bottom_left.y;
+            auto &quad = ev.args.quad;
+            float min_x = quad->top_left.x;
+            float max_x = quad->top_right.x;
+            float min_y = quad->top_left.y;
+            float max_y = quad->bottom_left.y;
 
             /**
              * These widgets will be stretched by the widescreen fix
@@ -233,20 +233,20 @@ namespace Balltze::Features {
             if(min_x == 0.0f && max_x == 640.0f) {
                 // Revert widescreen fix displacement
                 float screen_extra_width = screen_width_480p - 640.000f;
-                vertices->top_right.x -= screen_extra_width / 2.0f;
-                vertices->bottom_right.x -= screen_extra_width / 2.0f;
-                vertices->top_left.x -= screen_extra_width / 2.0f;
-                vertices->bottom_left.x -= screen_extra_width / 2.0f;
+                quad->top_right.x -= screen_extra_width / 2.0f;
+                quad->bottom_right.x -= screen_extra_width / 2.0f;
+                quad->top_left.x -= screen_extra_width / 2.0f;
+                quad->bottom_left.x -= screen_extra_width / 2.0f;
 
                 // Stretch it
-                vertices->top_right.x += screen_extra_width;
-                vertices->bottom_right.x += screen_extra_width;
+                quad->top_right.x += screen_extra_width;
+                quad->bottom_right.x += screen_extra_width;
             }
             else {
-                vertices->top_left.x += ui_displacement;
-                vertices->top_right.x += ui_displacement;
-                vertices->bottom_right.x += ui_displacement;
-                vertices->bottom_left.x += ui_displacement;
+                quad->top_left.x += ui_displacement;
+                quad->top_right.x += ui_displacement;
+                quad->bottom_right.x += ui_displacement;
+                quad->bottom_left.x += ui_displacement;
             }
         }
     }

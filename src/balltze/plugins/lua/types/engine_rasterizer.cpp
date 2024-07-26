@@ -45,8 +45,39 @@ namespace Balltze::Plugins::Lua {
         luacs_newobject(state, EngineCameraData, data);
     }
 
+    static void define_engine_rasterizer_vertex(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineRasterizerVertex);
+        luacs_float_field(state, EngineRasterizerVertex, x, 0);
+        luacs_float_field(state, EngineRasterizerVertex, y, 0);
+        luacs_float_field(state, EngineRasterizerVertex, z, 0);
+        luacs_float_field(state, EngineRasterizerVertex, rhw, 0);
+        luacs_float_field(state, EngineRasterizerVertex, u, 0);
+        luacs_float_field(state, EngineRasterizerVertex, v, 0);
+        lua_pop(state, 1);
+    }
+
+    void push_meta_engine_rasterizer_vertex(lua_State *state, Engine::ScreenQuad::Vertex *data) noexcept {
+        luacs_newobject(state, EngineRasterizerVertex, data);
+    }
+
+    static void define_engine_rasterizer_quad(lua_State *state) noexcept {
+        luacs_newstruct(state, EngineRasterizerQuad);
+        luacs_nested_field(state, EngineRasterizerQuad, EngineRasterizerVertex, top_left, 0);
+        luacs_nested_field(state, EngineRasterizerQuad, EngineRasterizerVertex, top_right, 0);
+        luacs_nested_field(state, EngineRasterizerQuad, EngineRasterizerVertex, bottom_right, 0);
+        luacs_nested_field(state, EngineRasterizerQuad, EngineRasterizerVertex, bottom_left, 0);
+        lua_pop(state, 1);
+    }
+
+    void push_meta_engine_rasterizer_quad(lua_State *state, Engine::ScreenQuad *data) noexcept {
+        luacs_newobject(state, EngineRasterizerQuad, data);
+    }
+
     void define_engine_rasterizer_types(lua_State *state) noexcept {
         define_camera_type_enum(state);
         define_camera_data_struct(state);
+        define_engine_resolution_struct(state);
+        define_engine_rasterizer_vertex(state);
+        define_engine_rasterizer_quad(state);
     }
 }

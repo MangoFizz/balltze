@@ -205,30 +205,10 @@ namespace Balltze::Plugins::Lua {
         luacs_newobject(state, BalltzeRconMessageEventArgs, args);
     }
 
-    static void define_balltze_ui_widget_render_vertex(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetRenderVertex);
-        luacs_float_field(state, BalltzeUIWidgetRenderVertex, x, 0);
-        luacs_float_field(state, BalltzeUIWidgetRenderVertex, y, 0);
-        luacs_float_field(state, BalltzeUIWidgetRenderVertex, z, 0);
-        luacs_float_field(state, BalltzeUIWidgetRenderVertex, rhw, 0);
-        luacs_float_field(state, BalltzeUIWidgetRenderVertex, u, 0);
-        luacs_float_field(state, BalltzeUIWidgetRenderVertex, v, 0);
-        lua_pop(state, 1);
-    }
-
-    static void define_balltze_ui_widget_render_vertices(lua_State *state) noexcept {
-        luacs_newstruct(state, BalltzeUIWidgetRenderVertices);
-        luacs_nested_field(state, BalltzeUIWidgetRenderVertices, BalltzeUIWidgetRenderVertex, top_left, 0);
-        luacs_nested_field(state, BalltzeUIWidgetRenderVertices, BalltzeUIWidgetRenderVertex, top_right, 0);
-        luacs_nested_field(state, BalltzeUIWidgetRenderVertices, BalltzeUIWidgetRenderVertex, bottom_right, 0);
-        luacs_nested_field(state, BalltzeUIWidgetRenderVertices, BalltzeUIWidgetRenderVertex, bottom_left, 0);
-        lua_pop(state, 1);
-    }
-
     static void define_balltze_hud_element_render_event_args(lua_State *state) noexcept {
         luacs_newstruct(state, BalltzeHudElementRenderEventArgs);
         luacs_objref_field(state, BalltzeHudElementRenderEventArgs, EngineBitmapData, bitmap_data, 0);
-        luacs_nested_field(state, BalltzeHudElementRenderEventArgs, BalltzeUIWidgetRenderVertices, vertices, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeHudElementRenderEventArgs, EngineRasterizerQuad, quad, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
@@ -239,7 +219,7 @@ namespace Balltze::Plugins::Lua {
     static void define_balltze_ui_widget_background_render_event_args(lua_State *state) noexcept {
         luacs_newstruct(state, BalltzeUIWidgetBackgroundRenderEventArgs);
         luacs_objref_field(state, BalltzeUIWidgetBackgroundRenderEventArgs, EngineUIWidget, widget, LUACS_FREADONLY);
-        luacs_nested_field(state, BalltzeUIWidgetBackgroundRenderEventArgs, BalltzeUIWidgetRenderVertices, vertices, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeUIWidgetBackgroundRenderEventArgs, EngineRasterizerQuad, quad, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
@@ -370,8 +350,6 @@ namespace Balltze::Plugins::Lua {
         define_balltze_network_game_chat_message_event_args_struct(state);
         define_balltze_object_damage_event_args_struct(state);
         define_balltze_rcon_message_event_args_struct(state);
-        define_balltze_ui_widget_render_vertex(state);
-        define_balltze_ui_widget_render_vertices(state);
         define_balltze_hud_element_render_event_args(state);
         define_balltze_ui_widget_background_render_event_args(state);
         define_balltze_server_connect_event_args(state);
