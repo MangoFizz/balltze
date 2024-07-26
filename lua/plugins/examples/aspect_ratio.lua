@@ -12,7 +12,7 @@ end
 
 function PluginInit() 
     Balltze.event.mapLoad.subscribe(function (event)
-        if event.time == "before" and event.context:mapName() == "levels\\ui\\ui" then
+        if event.time == "before" and event.context:mapName() == "ui" then
             Balltze.features.setUIAspectRatio(16, 9)
         end
     end)

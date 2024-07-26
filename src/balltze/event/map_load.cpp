@@ -8,21 +8,24 @@
 #include "../logger.hpp"
 
 namespace Balltze::Event {
-    static std::string last_map_name;
+    static std::string current_map_name;
 
     extern "C" {
         void map_load_before_event();
         void map_load_after_event();
 
         void dispatch_map_load_event_before(const char *map_name) {
-            MapLoadEventContext args(map_name);
-            last_map_name = map_name;
+            current_map_name = map_name;
+            if(current_map_name == "levels\\ui\\ui") {
+                current_map_name = "ui";
+            }
+            MapLoadEventContext args(current_map_name);
             MapLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
 
         void dispatch_map_load_event_after() {
-            MapLoadEventContext args(last_map_name);
+            MapLoadEventContext args(current_map_name);
             MapLoadEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
@@ -93,7 +96,12 @@ namespace Balltze::Event {
                 logger.debug("dispatch_map_file_load_event_before: map_path or map_name is null");
             }
 
-            MapFileLoadEventContext args(map_name, map_path);
+            std::string name = map_name;
+            if(name == "levels\\ui\\ui") {
+                name = "ui";
+            }
+
+            MapFileLoadEventContext args(name, map_path);
             MapFileLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
