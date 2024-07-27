@@ -180,7 +180,13 @@ namespace Balltze::Event {
             if(!render_hud_element_bitmap_function_call_sig) {
                 throw std::runtime_error("Could not find signature for HUD element bitmap render event");
             }
-            auto *address = Memory::follow_32bit_jump(render_hud_element_bitmap_function_call_sig->data()) + 5;
+            /**
+             * @todo FIX THIS HOOK
+             */
+            auto *address = render_hud_element_bitmap_function_call_sig->data();
+            if(*reinterpret_cast<std::uint8_t *>(address) == 0xE9) { 
+                address = Memory::follow_32bit_jump(address) + 5;
+            }
             auto before_dispatcher = std::function<bool()>(hud_element_bitmap_render_event_before_dispatcher_asm);
             Memory::hook_function(address, before_dispatcher, hud_element_bitmap_render_event_after_dispatcher_asm);
 
