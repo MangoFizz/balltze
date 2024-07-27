@@ -93,10 +93,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::ColorARGBInt> get_color_a_r_g_b_int(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::ColorARGBInt color;
-            
-            auto get_field = [state](std::uint8_t &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](std::uint8_t &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isinteger(state, -1)) {
                     field = luaL_checkinteger(state, -1);
                     lua_pop(state, 1);
@@ -106,6 +105,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::ColorARGBInt color;
             bool success = true;
             success &= get_field(color.alpha, "alpha");
             success &= get_field(color.red, "red");
@@ -139,12 +139,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::ColorARGB> get_color_a_r_g_b(lua_State *state, int index) noexcept {
         if(lua_istable(state, index) || lua_isuserdata(state, index)) {
-            lua_pushvalue(state, index);
-
-            Engine::ColorARGB color;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -154,6 +151,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::ColorARGB color;
             bool success = true;
             success &= get_field(color.alpha, "alpha");
             success &= get_field(color.red, "red");
@@ -189,10 +187,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::ColorRGB> get_color_r_g_b(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::ColorRGB color;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -202,6 +199,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::ColorRGB color;
             bool success = true;
             success &= get_field(color.red, "red");
             success &= get_field(color.green, "green");
@@ -232,10 +230,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Point2D> get_point2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Point2D point;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -245,6 +242,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Point2D point;
             bool success = true;
             success &= get_field(point.x, "x");
             success &= get_field(point.y, "y");
@@ -274,10 +272,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Point2DInt> get_point2_d_int(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Point2DInt point;
-            
-            auto get_field = [state](std::int16_t &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](std::int16_t &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isinteger(state, -1)) {
                     field = luaL_checkinteger(state, -1);
                     lua_pop(state, 1);
@@ -287,6 +284,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Point2DInt point;
             bool success = true;
             success &= get_field(point.x, "x");
             success &= get_field(point.y, "y");
@@ -317,10 +315,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Point3D> get_point3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Point3D point;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -330,6 +327,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Point3D point;
             bool success = true;
             success &= get_field(point.x, "x");
             success &= get_field(point.y, "y");
@@ -362,10 +360,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Rectangle2D> get_rectangle2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Rectangle2D rectangle;
-            
-            auto get_field = [state](std::int16_t &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](std::int16_t &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isinteger(state, -1)) {
                     field = luaL_checkinteger(state, -1);
                     lua_pop(state, 1);
@@ -375,6 +372,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Rectangle2D rectangle;
             bool success = true;
             success &= get_field(rectangle.left, "left");
             success &= get_field(rectangle.top, "top");
@@ -408,10 +406,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Rectangle2DF> get_rectangle2_d_f(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Rectangle2DF rectangle;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -421,6 +418,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Rectangle2DF rectangle;
             bool success = true;
             success &= get_field(rectangle.left, "left");
             success &= get_field(rectangle.top, "top");
@@ -452,10 +450,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Euler2D> get_euler2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Euler2D euler;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -465,6 +462,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Euler2D euler;
             bool success = true;
             success &= get_field(euler.yaw, "yaw");
             success &= get_field(euler.pitch, "pitch");
@@ -495,10 +493,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Euler3D> get_euler3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Euler3D euler;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -508,6 +505,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Euler3D euler;
             bool success = true;
             success &= get_field(euler.yaw, "yaw");
             success &= get_field(euler.pitch, "pitch");
@@ -539,10 +537,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Euler3DPYR> get_euler3_d_p_y_r(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Euler3DPYR euler;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -552,6 +549,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Euler3DPYR euler;
             bool success = true;
             success &= get_field(euler.pitch, "pitch");
             success &= get_field(euler.yaw, "yaw");
@@ -582,10 +580,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Vector2D> get_vector2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Vector2D vector;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -595,6 +592,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Vector2D vector;
             bool success = true;
             success &= get_field(vector.i, "i");
             success &= get_field(vector.j, "j");
@@ -625,10 +623,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Vector3D> get_vector3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Vector3D vector;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -638,6 +635,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Vector3D vector;
             bool success = true;
             success &= get_field(vector.i, "i");
             success &= get_field(vector.j, "j");
@@ -670,10 +668,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Quaternion> get_quaternion(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Quaternion quaternion;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -683,6 +680,7 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Quaternion quaternion;
             bool success = true;
             success &= get_field(quaternion.i, "i");
             success &= get_field(quaternion.j, "j");
@@ -714,10 +712,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Plane3D> get_plane3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Plane3D plane;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -727,8 +724,8 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Plane3D plane;
             bool success = true;
-            
             lua_getfield(state, index, "vector");
             auto vector = get_vector3_d(state, -1);
             if(vector.has_value()) {
@@ -764,10 +761,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<Engine::Plane2D> get_plane2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            Engine::Plane2D plane;
-            
-            auto get_field = [state](float &field, const char *name) -> bool {
-                lua_getfield(state, -1, name);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](float &field, const char *name) -> bool {
+                lua_getfield(state, table, name);
                 if(lua_isnumber(state, -1)) {
                     field = luaL_checknumber(state, -1);
                     lua_pop(state, 1);
@@ -777,8 +773,8 @@ namespace Balltze::Plugins::Lua {
                 return false;
             };
             
+            Engine::Plane2D plane;
             bool success = true;
-            
             lua_getfield(state, index, "vector");
             auto vector = get_vector2_d(state, -1);
             if(vector.has_value()) {
@@ -813,10 +809,9 @@ namespace Balltze::Plugins::Lua {
 
     std::optional<EngineMatrix> get_matrix(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
-            EngineMatrix matrix;
-            
-            auto get_field = [state](std::size_t index, Engine::Vector3D &field) -> bool {
-                lua_geti(state, -1, index);
+            auto table = lua_absindex(state, index);
+            auto get_field = [state, table](std::size_t index, Engine::Vector3D &field) -> bool {
+                lua_geti(state, table, index);
                 auto vector = get_vector3_d(state, -1);
                 if(vector.has_value()) {
                     field = vector.value();
@@ -825,6 +820,7 @@ namespace Balltze::Plugins::Lua {
                 return vector.has_value();
             };
             
+            EngineMatrix matrix;
             bool success = true;
             for(std::size_t i = 0; i < 3; ++i) {
                 success &= get_field(i + 1, matrix.m[i]);
