@@ -13,6 +13,7 @@ free_widget_memory_function_address: .long 0
 draw_hud_bitmap_function: .long 0
 get_button_name_function: .long 0
 play_sound_function_address: .long 0
+draw_bitmap_in_react_function_address: .long 0
 
 .text
 create_widget_function_sig: .string "widget_create_function"
@@ -25,6 +26,7 @@ free_widget_memory_function_sig: .string "widget_memory_release_function"
 draw_hud_bitmap_function_sig: .string "draw_hud_bitmap_function"
 get_button_name_function_sig: .string "get_button_name_function"
 play_sound_function_sig: .string "play_sound_function"
+draw_bitmap_in_react_function_sig: .string "draw_bitmap_in_rect_funcion"
 
 .globl _create_widget_asm
 _create_widget_asm:
@@ -281,4 +283,36 @@ _play_sound_asm:
     return:
     popfd
     popad
+    ret
+
+.globl _draw_bitmap_in_rect_asm
+_draw_bitmap_in_rect_asm:
+    cmp dword ptr draw_bitmap_in_react_function_address, 0
+    jnz found_draw_bitmap_in_react_function_sig
+    lea eax, draw_bitmap_in_react_function_sig
+    push eax
+    call _get_address_for_signature
+    mov draw_bitmap_in_react_function_address, eax
+    add esp, 4
+    found_draw_bitmap_in_react_function_sig:
+
+    pushad
+    pushfd
+
+    mov eax, [esp + 0x28] ;# bitmap data
+    mov ebx, [esp + 0x2C] ;# bounds
+    mov ecx, [esp + 0x30] ;# rect
+    mov edx, [esp + 0x34] ;# color mask
+
+    push edx
+    push ecx
+    push eax
+    mov ecx, ebx
+    mov eax, ebx
+    call dword ptr draw_bitmap_in_react_function_address
+    add esp, 0x0C
+
+    popfd
+    popad
+
     ret

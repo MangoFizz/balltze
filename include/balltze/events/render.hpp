@@ -9,7 +9,7 @@
 
 namespace Balltze::Event {
     struct UIRenderEventContext {
-        std::uint32_t unknown_param_1;
+        std::uint32_t player_index;
     };
 
     class UIRenderEvent : public EventData<UIRenderEvent> {

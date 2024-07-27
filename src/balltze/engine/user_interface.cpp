@@ -138,6 +138,15 @@ namespace Balltze::Engine {
          * @param sound     Tag handle of the sound
          */
         void play_sound_asm(TagHandle sound);
+
+        /**
+         * Draw a bitmap in a rectangle
+         * @param bitmap            Pointer to bitmap data to draw
+         * @param bitmap_bounds     Bounds of the bitmap
+         * @param rect              Screen rectangle where to draw the bitmap
+         * @param color_mask        Color mask
+         */
+        void draw_bitmap_in_rect_asm(TagDefinitions::BitmapData *bitmap, Rectangle2D const *bitmap_bounds, Rectangle2D const *rect, ColorARGBInt color_mask);
     }
 
     Widget *find_widget(TagHandle widget_definition, Widget *widget_base) noexcept {
@@ -349,6 +358,10 @@ namespace Balltze::Engine {
             throw std::runtime_error("Invalid sound tag");
         }
         play_sound_asm(tag_sound);
+    }
+
+    void draw_bitmap_in_rect(TagDefinitions::BitmapData *bitmap, Rectangle2D const &bitmap_bounds, Rectangle2D const &rect, ColorARGBInt color_mask) {
+        draw_bitmap_in_rect_asm(bitmap, &bitmap_bounds, &rect, color_mask);
     }
 
     std::uint8_t get_master_volume() noexcept {

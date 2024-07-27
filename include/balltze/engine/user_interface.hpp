@@ -919,6 +919,15 @@ namespace Balltze::Engine {
     BALLTZE_API void play_sound(TagHandle tag_sound);
 
     /**
+     * Draw a bitmap in a rectangle
+     * @param bitmap            Pointer to bitmap data to draw
+     * @param bitmap_bounds     Bounds of the bitmap
+     * @param rect              Screen rectangle where to draw the bitmap
+     * @param color_mask        Color mask
+     */
+    BALLTZE_API void draw_bitmap_in_rect(TagDefinitions::BitmapData *bitmap, Rectangle2D const &bitmap_bounds, Rectangle2D const &rect, ColorARGBInt color_mask);
+
+    /**
      * Get the master volume.
      * @return Return the master volume.
      */

@@ -428,6 +428,37 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    static int engine_draw_bitmap_in_rect(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 4) {
+            auto *bitmap_data = reinterpret_cast<Engine::TagDefinitions::BitmapData *>(luacs_checkobject(state, 1, "EngineBitmapData"));
+            if(!bitmap_data) {
+                return luaL_error(state, "Invalid bitmap data in function Engine.userInterface.drawBitmapInRect.");
+            }
+
+            auto bounds = get_rectangle2_d(state, 2);
+            if(!bounds) {
+                return luaL_error(state, "Invalid bounds in function Engine.userInterface.drawBitmapInRect.");
+            }
+
+            auto rect = get_rectangle2_d(state, 3);
+            if(!rect) {
+                return luaL_error(state, "Invalid rect in function Engine.userInterface.drawBitmapInRect.");
+            }
+
+            auto color = get_color_a_r_g_b_int(state, 4);
+            if(!color) {
+                return luaL_error(state, "Invalid color in function Engine.userInterface.drawBitmapInRect.");
+            }
+
+            Engine::draw_bitmap_in_rect(bitmap_data, *bounds, *rect, *color);
+            return 0;
+        }
+        else {
+            return luaL_error(state, "Invalid number of arguments in function Engine.userInterface.drawBitmapInRect.");
+        }
+    }
+
     static const luaL_Reg engine_user_interface_functions[] = {
         {"findWidget", engine_find_widget},
         {"findWidgets", engine_find_widgets},
@@ -443,6 +474,7 @@ namespace Balltze::Plugins::Lua {
         {"drawHudMessageSprite", engine_draw_hud_message_sprite},
         {"playSound", engine_play_sound},
         {"getSoundPermutationSamplesDuration", engine_get_sound_permutation_samples_duration},
+        {"drawBitmapInRect", engine_draw_bitmap_in_rect},
         {nullptr, nullptr}
     };
 
