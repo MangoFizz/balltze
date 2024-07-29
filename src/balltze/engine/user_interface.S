@@ -300,15 +300,16 @@ _draw_bitmap_in_rect_asm:
     pushfd
 
     mov eax, [esp + 0x28] ;# bitmap data
-    mov ebx, [esp + 0x2C] ;# bounds
-    mov ecx, [esp + 0x30] ;# rect
-    mov edx, [esp + 0x34] ;# color mask
+    mov ebx, [esp + 0x2C] ;# rect
+    mov ecx, [esp + 0x30] ;# bounds
+    mov edx, [esp + 0x34] ;# frame
+    mov esi, [esp + 0x38] ;# color mask
 
-    push edx
-    push ecx
+    push esi
+    push edx 
     push eax
+    mov eax, ecx
     mov ecx, ebx
-    mov eax, ebx
     call dword ptr draw_bitmap_in_react_function_address
     add esp, 0x0C
 

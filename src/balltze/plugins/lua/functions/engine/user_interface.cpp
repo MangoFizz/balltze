@@ -430,28 +430,38 @@ namespace Balltze::Plugins::Lua {
 
     static int engine_draw_bitmap_in_rect(lua_State *state) noexcept {
         int args = lua_gettop(state);
-        if(args == 4) {
+        if(args == 3 || args == 4) {
             auto *bitmap_data = reinterpret_cast<Engine::TagDefinitions::BitmapData *>(luacs_checkobject(state, 1, "EngineBitmapData"));
             if(!bitmap_data) {
                 return luaL_error(state, "Invalid bitmap data in function Engine.userInterface.drawBitmapInRect.");
             }
 
-            auto bounds = get_rectangle2_d(state, 2);
-            if(!bounds) {
-                return luaL_error(state, "Invalid bounds in function Engine.userInterface.drawBitmapInRect.");
-            }
-
-            auto rect = get_rectangle2_d(state, 3);
+            auto rect = get_rectangle2_d(state, 2);
             if(!rect) {
                 return luaL_error(state, "Invalid rect in function Engine.userInterface.drawBitmapInRect.");
             }
 
-            auto color = get_color_a_r_g_b_int(state, 4);
-            if(!color) {
-                return luaL_error(state, "Invalid color in function Engine.userInterface.drawBitmapInRect.");
-            }
+            if(args == 3) {
+                auto color = get_color_a_r_g_b_int(state, 3);
+                if(!color) {
+                    return luaL_error(state, "Invalid color in function Engine.userInterface.drawBitmapInRect.");
+                }
 
-            Engine::draw_bitmap_in_rect(bitmap_data, *bounds, *rect, *color);
+                Engine::draw_bitmap_in_rect(bitmap_data, *rect, *color);
+            }
+            else {
+                auto bounds = get_rectangle2_d(state, 3);
+                if(!bounds) {
+                    return luaL_error(state, "Invalid bounds in function Engine.userInterface.drawBitmapInRect.");
+                }
+
+                auto color = get_color_a_r_g_b_int(state, 4);
+                if(!color) {
+                    return luaL_error(state, "Invalid color in function Engine.userInterface.drawBitmapInRect.");
+                }
+
+                Engine::draw_bitmap_in_rect(bitmap_data, *rect, *bounds, *color);
+            }
             return 0;
         }
         else {

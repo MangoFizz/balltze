@@ -402,6 +402,7 @@ function Engine.userInterface.getSoundPermutationSamplesDuration(soundPermutatio
 ---@param bitmapBounds EngineRectangle2D @The bounds of the bitmap
 ---@param rect EngineRectangle2D @The rectangle to draw the bitmap
 ---@param colorMask EngineColorARGBInt @The color mask to apply to the bitmap
+---@overload fun(bitmapData: MetaEngineTagDataBitmapData, rect: EngineRectangle2D, colorMask: EngineColorARGBInt)
 function Engine.userInterface.drawBitmapInRect(bitmapData, bitmapBounds, rect, colorMask) end
 
 -------------------------------------------------------

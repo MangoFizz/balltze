@@ -146,7 +146,7 @@ namespace Balltze::Engine {
          * @param rect              Screen rectangle where to draw the bitmap
          * @param color_mask        Color mask
          */
-        void draw_bitmap_in_rect_asm(TagDefinitions::BitmapData *bitmap, Rectangle2D const *bitmap_bounds, Rectangle2D const *rect, ColorARGBInt color_mask);
+        void draw_bitmap_in_rect_asm(TagDefinitions::BitmapData *bitmap, Rectangle2D const *rect, Rectangle2D const *bitmap_bounds, Rectangle2D const *frame, ColorARGBInt color_mask);
     }
 
     Widget *find_widget(TagHandle widget_definition, Widget *widget_base) noexcept {
@@ -360,8 +360,12 @@ namespace Balltze::Engine {
         play_sound_asm(tag_sound);
     }
 
-    void draw_bitmap_in_rect(TagDefinitions::BitmapData *bitmap, Rectangle2D const &bitmap_bounds, Rectangle2D const &rect, ColorARGBInt color_mask) {
-        draw_bitmap_in_rect_asm(bitmap, &bitmap_bounds, &rect, color_mask);
+    void draw_bitmap_in_rect(TagDefinitions::BitmapData *bitmap, const Rectangle2D &rect, const Rectangle2D &bitmap_bounds, ColorARGBInt color_mask) {
+        draw_bitmap_in_rect_asm(bitmap, &bitmap_bounds, &bitmap_bounds, &rect, color_mask);
+    }
+
+    void draw_bitmap_in_rect(TagDefinitions::BitmapData *bitmap, const Rectangle2D &rect, ColorARGBInt color_mask) {
+        draw_bitmap_in_rect_asm(bitmap, &rect, nullptr, &rect, color_mask);
     }
 
     std::uint8_t get_master_volume() noexcept {
