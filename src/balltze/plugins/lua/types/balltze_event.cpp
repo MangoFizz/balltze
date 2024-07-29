@@ -44,7 +44,7 @@ namespace Balltze::Plugins::Lua {
 
     static void define_balltze_keyboard_input_event_context_struct(lua_State *state) noexcept {
         luacs_newstruct(state, BalltzeKeyboardEventContext);
-        luacs_objref_field(state, BalltzeKeyboardEventContext, EngineInputBufferedKey, key, LUACS_FREADONLY);
+        luacs_nested_field(state, BalltzeKeyboardEventContext, EngineInputBufferedKey, key, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
@@ -338,6 +338,7 @@ namespace Balltze::Plugins::Lua {
     void define_balltze_event_types(lua_State *state) noexcept {
         define_balltze_camera_event_context_struct(state);
         define_balltze_game_input_event_context_struct(state);
+        define_balltze_keyboard_input_event_context_struct(state);
         define_hud_hold_for_action_message_slice_enum(state);
         define_balltze_event_hud_message_button_type_enum(state);
         define_balltze_event_hud_message_axis_direction_enum(state);

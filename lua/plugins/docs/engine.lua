@@ -16,8 +16,8 @@ Engine.core = {}
 -- Print a message of a color in the console; It uses the fmt library to format the message
 ---@param color EngineColorARGB @The color of the message
 ---@param format string @The format string in case the first argument is a color
----@param ... string @The arguments to the format string
----@overload fun(format: string, ...: string)
+---@param ... any @The arguments to the format string
+---@overload fun(format: string, ...: any)
 function Engine.core.consolePrint(color, format, ...) end
 
 -- Get the number of ticks since the engine started
