@@ -225,7 +225,7 @@ end
 local function snakeCaseToCamelCase(str)
     if str then
         -- convert snake_case to camelCase
-        local new = str:gsub("_([a-z])", function(c)
+        local new = str:gsub("_([a-z0-9])", function(c)
             return c:upper()
         end)
         -- capitalize first letter
