@@ -75,8 +75,8 @@ namespace Balltze::Plugins::Lua {
     static void define_engine_input_buffered_key(lua_State *state) noexcept {
         luacs_newstruct(state, EngineInputBufferedKey);
         luacs_enum_field(state, EngineInputBufferedKey, EngineInputBufferedKeyModifier, modifiers, 0);
-        luacs_unsigned_field(state, EngineInputBufferedKey, character, 0);
-        luacs_unsigned_field(state, EngineInputBufferedKey, keycode, 0);
+        luacs_int_field(state, EngineInputBufferedKey, character, 0);
+        luacs_int_field(state, EngineInputBufferedKey, keycode, 0);
         lua_pop(state, 1);
     }
 
