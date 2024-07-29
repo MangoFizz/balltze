@@ -379,6 +379,7 @@ namespace Balltze::Plugins::Lua {
         SET_UP_EVENT_LISTENERS(CameraEvent, populate_camera_events);
         SET_UP_EVENT_LISTENERS(FrameEvent, populate_frame_events);
         SET_UP_EVENT_LISTENERS(GameInputEvent, populate_game_input_events);
+        SET_UP_EVENT_LISTENERS(KeyboardInputEvent, populate_keyboard_input_events);
         SET_UP_EVENT_LISTENERS(HudHoldForActionMessageEvent, populate_hud_hold_for_action_message_events);
         SET_UP_EVENT_LISTENERS(MapFileLoadEvent, populate_map_file_load_events);
         SET_UP_EVENT_LISTENERS(MapLoadEvent, populate_map_load_events);
