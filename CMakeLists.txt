@@ -172,9 +172,9 @@ add_library(balltze SHARED
 # Set Balltze output properties
 set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
-set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
+set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--export-all-symbols")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze lua53 fmt invader luacstruct lanes d3d9 gdiplus ws2_32)
+target_link_libraries(balltze $<LINK_LIBRARY:WHOLE_ARCHIVE,lua53,fmt> invader luacstruct lanes d3d9 gdiplus ws2_32)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
