@@ -119,7 +119,7 @@ namespace Balltze::Math {
          * @param points    Number of points for the curve
          * @return          Points array
          */
-        Curve get_curve(std::size_t points = 100) noexcept;
+        Curve get_curve(std::size_t points = 100) const noexcept;
 
         /**
          * Get an specific point of the curve
@@ -127,7 +127,7 @@ namespace Balltze::Math {
          * @param reverse   Calculate the point starting from the end of the curve
          * @return      Result point
          */
-        Point2D get_point(float t, bool reverse = false) noexcept;
+        Point2D get_point(float t, bool reverse = false) const noexcept;
 
         /**
          * Constructor for quadratic bezier curve (First node is on 0,0)
@@ -160,7 +160,7 @@ namespace Balltze::Math {
          * @param t     Number between 0 and 1
          * @return      Result point
          */
-        Point2D calculate_point(Point2D p0, Point2D p1, float t) noexcept;
+        Point2D calculate_point(Point2D p0, Point2D p1, float t) const noexcept;
     };
 }
 

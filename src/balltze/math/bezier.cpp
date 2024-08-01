@@ -3,14 +3,14 @@
 #include <balltze/math.hpp>
 
 namespace Balltze::Math {
-    Point2D QuadraticBezier::calculate_point(Point2D p0, Point2D p1, float t) noexcept {
+    Point2D QuadraticBezier::calculate_point(Point2D p0, Point2D p1, float t) const noexcept {
         return {
             p0.x + (p0.x - p1.x) * t,
             p0.y + (p0.y - p1.y) * t
         };
     }
 
-    Curve QuadraticBezier::get_curve(std::size_t points) noexcept {
+    Curve QuadraticBezier::get_curve(std::size_t points) const noexcept {
         Point2D p0, p1, p2;
         Curve curve;
         p1 = this->p1;
@@ -27,7 +27,7 @@ namespace Balltze::Math {
         return curve;
     }
 
-    Point2D QuadraticBezier::get_point(float t, bool reverse) noexcept {
+    Point2D QuadraticBezier::get_point(float t, bool reverse) const noexcept {
         Point2D p0, p1, p2;
         p1 = this->p1;
         p2 = this->p2;
