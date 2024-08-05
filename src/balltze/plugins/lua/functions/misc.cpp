@@ -202,7 +202,7 @@ namespace Balltze::Plugins::Lua {
             if(elapsed_seconds.count() >= interval) {
                 lua_getfield(state, -1, "function");
                 if(lua_pcall(state, 0, 0, 0) != 0) {
-                    logger.error("Error in timer function at plugin {}: ", plugin->name(), plugin->get_error_message());
+                    logger.error("Error in timer function at plugin {}: {}", plugin->name(), plugin->get_error_message());
                     plugin->print_traceback();
                     lua_pop(state, 1);
                 }

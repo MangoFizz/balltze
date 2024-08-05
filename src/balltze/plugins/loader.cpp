@@ -185,3 +185,10 @@ namespace Balltze::Plugins {
         }, false, 0, 0);
     }
 }
+
+namespace Balltze {
+    std::filesystem::path get_plugin_path(PluginHandle handle) {
+        auto *plugin = Plugins::get_dll_plugin(reinterpret_cast<HMODULE>(handle));
+        return plugin->directory();
+    }
+}

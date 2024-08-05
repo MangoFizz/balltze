@@ -9,12 +9,11 @@
 #include <optional>
 #include "utils.hpp"
 #include "api.hpp"
+#include "plugin.hpp"
 
 namespace Balltze {
     #define BOOL_TO_STR(boolean) (boolean ? "true" : "false")
     #define STR_TO_BOOL(str) (std::strcmp(str, "1") == 0 || std::strcmp(str, "true") == 0)
-
-    using PluginHandle = void *;
 
     /**
      * Result of a command

@@ -6,7 +6,12 @@
 #define BALLTZE_PLUGIN_API extern "C" __declspec(dllexport)
 
 #include <string>
+#include <filesystem>
 #include <semver.hpp>
+#include "api.hpp"
+#include "utils.hpp"
+
+using PluginHandle = void *;
 
 namespace Balltze {
     struct PluginMetadata {
@@ -21,6 +26,12 @@ namespace Balltze {
     using plugin_init_proc_t = bool (*)();
     using plugin_load_proc_t = void (*)();
     using plugin_unload_proc_t = void (*)();
+
+    BALLTZE_API std::filesystem::path get_plugin_path(PluginHandle);
+
+    inline std::filesystem::path get_plugin_path() {
+        return get_plugin_path(get_current_module());
+    }
 }
 
 #endif
