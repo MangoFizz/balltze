@@ -5,8 +5,7 @@ Bedrock dedicated server.
 
 This mod currently has two main goals:
 1. Restore most of the functionality from the original Xbox version that is missing on the PC versions.
-2. Create an API that allows you to manipulate every aspect of the game from your DLL or Lua script. This could (eventually) help in the 
-process of creating a reimplementation of the game's netcode.
+2. Create an API that allows you to manipulate every aspect of the game from your DLL or Lua script. 
 
 ## Installation
 ### Manual
