@@ -109,11 +109,10 @@ namespace Balltze::Event {
             return event.cancelled();
         }
 
-        bool dispatch_network_game_sound_event_after(Engine::NetworkGameMultiplayerSound sound) {
+        void dispatch_network_game_sound_event_after(Engine::NetworkGameMultiplayerSound sound) {
             NetworkGameMultiplayerSoundEventContext args = { .sound = sound };
             NetworkGameMultiplayerSoundEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
-            return event.cancelled();
         }
     }
 
@@ -143,13 +142,14 @@ namespace Balltze::Event {
     }
 
     extern "C" {
-        void network_game_multiplayer_hud_message_event_before_asm();
+        bool network_game_multiplayer_hud_message_event_before_asm();
         void network_game_multiplayer_hud_message_event_after_asm();
     
-        void dispatch_network_game_multiplayer_hud_message_before(Engine::NetworkGameMultiplayerHudMessage message_type, Engine::PlayerHandle causer, Engine::PlayerHandle victim, Engine::PlayerHandle local_player) {
+        bool dispatch_network_game_multiplayer_hud_message_before(Engine::NetworkGameMultiplayerHudMessage message_type, Engine::PlayerHandle causer, Engine::PlayerHandle victim, Engine::PlayerHandle local_player) {
             NetworkGameHudMessageEventContext args = { .message_type = message_type, .causer = causer, .victim = victim, .local_player = local_player };
             NetworkGameHudMessageEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
+            return event.cancelled();
         }
 
         void dispatch_network_game_multiplayer_hud_message_after(Engine::NetworkGameMultiplayerHudMessage message_type, Engine::PlayerHandle causer, Engine::PlayerHandle victim, Engine::PlayerHandle local_player) {
@@ -177,7 +177,8 @@ namespace Balltze::Event {
         }
 
         try {
-            auto *hook = Memory::hook_function(network_game_multiplayer_hud_message_event_before_sig->data(), network_game_multiplayer_hud_message_event_before_asm, network_game_multiplayer_hud_message_event_after_asm, false);
+            std::function<bool()> before_function = network_game_multiplayer_hud_message_event_before_asm;
+            auto *hook = Memory::hook_function(network_game_multiplayer_hud_message_event_before_sig->data(), before_function, network_game_multiplayer_hud_message_event_after_asm);
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook network game hud message event: " + std::string(e.what()));

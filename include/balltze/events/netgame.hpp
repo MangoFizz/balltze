@@ -55,7 +55,7 @@ namespace Balltze::Event {
         NetworkGameHudMessageEventContext context;
 
         bool cancellable() const {
-            return false;
+            return true;
         }
 
         NetworkGameHudMessageEvent(EventTime time, const NetworkGameHudMessageEventContext &context) : EventData(time), context(context) {}

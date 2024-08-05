@@ -105,16 +105,15 @@ _netgame_sound_override:
 
 .globl _network_game_multiplayer_hud_message_event_before_asm
 _network_game_multiplayer_hud_message_event_before_asm:
-    pushfd
-    pushad
     push edi ;# local player
     push ecx ;# victim
     push eax ;# killer
     push edx ;# event type
     call _dispatch_network_game_multiplayer_hud_message_before
-    add esp, 16
-    popad
-    popfd
+    pop edx
+    add esp, 4
+    pop ecx
+    pop edi
     ret
 
 .globl _network_game_multiplayer_hud_message_event_after_asm
