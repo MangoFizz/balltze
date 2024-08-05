@@ -120,6 +120,8 @@ namespace Balltze::Event {
     template class EventHandler<UIWidgetSoundEvent>;
     template class EventHandler<UIWidgetListTabEvent>;
     template class EventHandler<UIWidgetMouseButtonPressEvent>;
+    template class EventHandler<NetworkGameMultiplayerSoundEvent>;
+    template class EventHandler<NetworkGameHudMessageEvent>;
 
     static EventListenerHandle<TickEvent> first_tick_listener;
 
@@ -157,6 +159,8 @@ namespace Balltze::Event {
                 EventHandler<D3D9EndSceneEvent>::init();
                 EventHandler<D3D9DeviceResetEvent>::init();
                 EventHandler<NetworkGameChatMessageEvent>::init();
+                EventHandler<NetworkGameMultiplayerSoundEvent>::init();
+                EventHandler<NetworkGameHudMessageEvent>::init();
                 EventHandler<KeyboardInputEvent>::init();
                 first_tick_listener.remove();
             });

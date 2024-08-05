@@ -97,4 +97,90 @@ namespace Balltze::Event {
 
         register_command("debug_network_game_chat_message_event", "debug", "Sets whenever to log when a network game chat message is received.", "[enable: boolean]", debug_network_game_chat_message_event_command, true, 0, 1);
     }
+
+    extern "C" {
+        void netgame_sound_override();
+        void *netgame_sound_fn_return;
+
+        bool dispatch_network_game_sound_event_before(Engine::NetworkGameMultiplayerSound sound) {
+            NetworkGameMultiplayerSoundEventContext args = { .sound = sound };
+            NetworkGameMultiplayerSoundEvent event(EVENT_TIME_BEFORE, args);
+            event.dispatch();
+            return event.cancelled();
+        }
+
+        bool dispatch_network_game_sound_event_after(Engine::NetworkGameMultiplayerSound sound) {
+            NetworkGameMultiplayerSoundEventContext args = { .sound = sound };
+            NetworkGameMultiplayerSoundEvent event(EVENT_TIME_AFTER, args);
+            event.dispatch();
+            return event.cancelled();
+        }
+    }
+
+    template<>
+    void EventHandler<NetworkGameMultiplayerSoundEvent>::init() {
+        static bool enabled = false;
+        if(enabled) {
+            return;
+        }
+        enabled = true;
+
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
+            return;
+        }
+
+        auto *netgame_sound_sig = Memory::get_signature("network_game_multiplayer_sound_call");
+        if(!netgame_sound_sig) {
+            throw std::runtime_error("Could not find signature for network game sound event");
+        }
+
+        try {
+            auto *hook = Memory::override_function(netgame_sound_sig->data(), netgame_sound_override, netgame_sound_fn_return);
+        }
+        catch(const std::runtime_error &e) {
+            throw std::runtime_error("Could not hook network game sound event: " + std::string(e.what()));
+        }
+    }
+
+    extern "C" {
+        void network_game_multiplayer_hud_message_event_before_asm();
+        void network_game_multiplayer_hud_message_event_after_asm();
+    
+        void dispatch_network_game_multiplayer_hud_message_before(Engine::NetworkGameMultiplayerHudMessage message_type, Engine::PlayerHandle causer, Engine::PlayerHandle victim, Engine::PlayerHandle local_player) {
+            NetworkGameHudMessageEventContext args = { .message_type = message_type, .causer = causer, .victim = victim, .local_player = local_player };
+            NetworkGameHudMessageEvent event(EVENT_TIME_BEFORE, args);
+            event.dispatch();
+        }
+
+        void dispatch_network_game_multiplayer_hud_message_after(Engine::NetworkGameMultiplayerHudMessage message_type, Engine::PlayerHandle causer, Engine::PlayerHandle victim, Engine::PlayerHandle local_player) {
+            NetworkGameHudMessageEventContext args = { .message_type = message_type, .causer = causer, .victim = victim, .local_player = local_player };
+            NetworkGameHudMessageEvent event(EVENT_TIME_AFTER, args);
+            event.dispatch();
+        }
+    }
+    
+    template<>
+    void EventHandler<NetworkGameHudMessageEvent>::init() {
+        static bool enabled = false;
+        if(enabled) {
+            return;
+        }
+        enabled = true;
+
+        if(get_balltze_side() != BALLTZE_SIDE_CLIENT) {
+            return;
+        }
+
+        auto *network_game_multiplayer_hud_message_event_before_sig = Memory::get_signature("network_game_multiplayer_hud_message_dispatch_call");
+        if(!network_game_multiplayer_hud_message_event_before_sig) {
+            throw std::runtime_error("Could not find signature for network game hud message event");
+        }
+
+        try {
+            auto *hook = Memory::hook_function(network_game_multiplayer_hud_message_event_before_sig->data(), network_game_multiplayer_hud_message_event_before_asm, network_game_multiplayer_hud_message_event_after_asm, false);
+        }
+        catch(const std::runtime_error &e) {
+            throw std::runtime_error("Could not hook network game hud message event: " + std::string(e.what()));
+        }
+    }
 }

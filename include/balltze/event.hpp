@@ -112,7 +112,7 @@ namespace Balltze::Event {
 #include "events/game_input.hpp"
 #include "events/hud_hold_to_action_message.hpp"
 #include "events/map_load.hpp"
-#include "events/netgame_message.hpp"
+#include "events/netgame.hpp"
 #include "events/sound_playback.hpp"
 #include "events/camera.hpp"
 #include "events/server_connect.hpp"
