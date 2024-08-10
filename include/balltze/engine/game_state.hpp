@@ -71,7 +71,7 @@ namespace Balltze::Engine {
     };
     static_assert(sizeof(ObjectTableEntry) == 0xC);
 
-    struct ObjectTable : GenericTable<ObjectTableEntry> {
+    struct BALLTZE_API ObjectTable : GenericTable<ObjectTableEntry> {
         /**
          * Get the object by its handle, returning nullptr if the handle is invalid.
          * @param  object_handle This is the handle of the object.
@@ -112,7 +112,7 @@ namespace Balltze::Engine {
      * Get the object table
      * @return object table
      */
-    ObjectTable& get_object_table() noexcept;
+    BALLTZE_API ObjectTable& get_object_table() noexcept;
 
     /**
      * This is the type of object an object is.
@@ -1482,7 +1482,7 @@ namespace Balltze::Engine {
      * @param causer_player player responsible for the damage
      * @param causer_object object responsible for the damage
      */
-    void apply_damage(ObjectHandle object, TagHandle damage_effect, float multiplier = 1.0F, PlayerHandle causer_player = PlayerHandle::null(), ObjectHandle causer_object = ObjectHandle::null()) noexcept;
+    BALLTZE_API void apply_damage(ObjectHandle object, TagHandle damage_effect, float multiplier = 1.0F, PlayerHandle causer_player = PlayerHandle::null(), ObjectHandle causer_object = ObjectHandle::null()) noexcept;
 
     struct AntennaVertex {
         Point3D position;
@@ -1568,7 +1568,7 @@ namespace Balltze::Engine {
     /**
      * These are players.
      */
-    struct Player {
+    struct BALLTZE_API Player {
         /** This is some sort of an index of the player. If it's 0xFFFF, the slot is not used. */
         std::uint16_t player_id;
 
@@ -1793,9 +1793,9 @@ namespace Balltze::Engine {
      * Get the handle of the client player
      * @return handle of the client player
      */
-    PlayerHandle get_client_player_handle() noexcept;
+    BALLTZE_API PlayerHandle get_client_player_handle() noexcept;
 
-    struct PlayerTable : GenericTable<Player> {
+    struct BALLTZE_API PlayerTable : GenericTable<Player> {
         /**
          * Get the player
          * @param  player_handle handle of the player to get
@@ -1820,7 +1820,7 @@ namespace Balltze::Engine {
      * Get the player table
      * @return reference to the player table
      */
-    PlayerTable& get_player_table() noexcept;
+    BALLTZE_API PlayerTable& get_player_table() noexcept;
 
     struct Antenna {
         std::uint32_t unknown_0;
@@ -1838,7 +1838,7 @@ namespace Balltze::Engine {
      * Get the antenna table
      * @return reference to the antenna table
      */
-    AntennaTable& get_antenna_table() noexcept;
+    BALLTZE_API AntennaTable& get_antenna_table() noexcept;
 
     using DecalTable = GenericTable<void>;
 
@@ -1846,7 +1846,7 @@ namespace Balltze::Engine {
      * Get the decal table
      * @return reference to the decal table
      */
-    DecalTable& get_decal_table() noexcept;
+    BALLTZE_API DecalTable& get_decal_table() noexcept;
 
     using EffectTable = GenericTable<void>;
 
@@ -1854,7 +1854,7 @@ namespace Balltze::Engine {
      * Get the effect table
      * @return reference to the effect table
      */
-    EffectTable& get_effect_table() noexcept;
+    BALLTZE_API EffectTable& get_effect_table() noexcept;
 
     /** This is a part of a flag. */
     struct FlagPart {
@@ -1884,7 +1884,7 @@ namespace Balltze::Engine {
      * Get the flag table
      * @return reference to the flag table
      */
-    FlagTable& get_flag_table() noexcept;
+    BALLTZE_API FlagTable& get_flag_table() noexcept;
 
     struct Light {
         // 0x0
@@ -1916,7 +1916,7 @@ namespace Balltze::Engine {
      * Get the light table
      * @return reference to the light table
      */
-    LightTable& get_light_table() noexcept;
+    BALLTZE_API LightTable& get_light_table() noexcept;
 
     struct Particle {
         // 0x0
@@ -1961,7 +1961,7 @@ namespace Balltze::Engine {
      * Get the particle table
      * @return reference to the particle table
      */
-    ParticleTable& get_particle_table() noexcept;
+    BALLTZE_API ParticleTable& get_particle_table() noexcept;
 
     /**
      * Get whether the game is paused
