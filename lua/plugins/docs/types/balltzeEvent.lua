@@ -316,7 +316,7 @@
 -------------------------------------------------------
 
 ---@class BalltzeUIWidgetCreateEventContext
----@field widget MetaEngineWidget @The widget that is being created
+---@field widget MetaEngineWidget? @The widget that is being created; this field is nil if the widget is not created yet
 ---@field definitionTagHandle EngineTagHandle @The tag handle of the widget definition
 ---@field isRootWidget boolean @Whether the widget is a root widget
 
