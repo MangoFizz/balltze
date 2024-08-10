@@ -60,6 +60,8 @@ namespace Balltze::Event {
         bool m_cancelled = false;
 
     public:
+        using ListenerHandle = EventListenerHandle<T>;
+        
         const EventTime time;
 
         EventData(EventTime time) : time(time) {}
@@ -87,15 +89,15 @@ namespace Balltze::Event {
             return m_cancelled;
         }
 
-        static EventListenerHandle<T> subscribe(EventCallback<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT) {
-            return EventListenerHandle<T>(EventHandler<T>::add_listener(callback, priority));
+        static ListenerHandle subscribe(EventCallback<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT) {
+            return ListenerHandle(EventHandler<T>::add_listener(callback, priority));
         }
 
-        static EventListenerHandle<T> subscribe_const(ConstEventCallback<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT) {
-            return EventListenerHandle<T>(EventHandler<T>::add_listener_const(callback, priority));
+        static ListenerHandle subscribe_const(ConstEventCallback<T> callback, EventPriority priority = EVENT_PRIORITY_DEFAULT) {
+            return ListenerHandle(EventHandler<T>::add_listener_const(callback, priority));
         }
 
-        static void unsubscribe(EventListenerHandle<T> listener) {
+        static void unsubscribe(ListenerHandle listener) {
             listener.remove();
         }
     };
