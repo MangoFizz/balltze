@@ -329,7 +329,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
     if sneakCaseName == "tag_collection" then
         sneakCaseName = "tag_collection_tag"
     end
-    local dataStruct = sneakCaseName
+    local dataStruct = class
     if dataStruct == "ui_widget_collection" then
         dataStruct = "tag_collection"
     end
