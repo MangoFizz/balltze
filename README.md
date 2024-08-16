@@ -10,6 +10,7 @@
         ·
         <a href="https://github.com/MangoFizz/balltze/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
     </p>
+    <br>
 </div>
 
 Balltze is a mod for Halo: Custom Edition that aims to be ultimate modding platform for the game,
