@@ -4,7 +4,7 @@
     <p align="center" style="margin-bottom: 1.5rem">
         <strong>A plugin-loader/mod for Halo Custom Edition</strong>
         <br>
-        <a href="/">Docs</a>
+        <a href="https://balltze.shadowmods.net/">Docs</a>
         ·
         <a href="https://github.com/MangoFizz/balltze/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
         ·
