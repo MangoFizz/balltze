@@ -1,0 +1,40 @@
+site_name: Balltze
+repo_url: https://github.com/MangoFizz/balltze
+nav:
+  - Home: index.md
+  - Install: install.md
+  - Features:
+    - features/overview.md
+    - features/loading-screen.md
+    - features/tags-handling.md
+    - features/console-key-custom-binding.md
+    - features/multiplayer-menu-extended-description-fix.md
+    - features/extended-limits.md
+    - features/gamepad-pause-button.md
+    - features/hud-button-prompts.md
+    - features/map-textures-preloading.md
+    - features/sound-subtitles.md
+    - features/ui-widget-widescreen-support.md
+  - Plugins: 
+    - plugins/introduction.md
+theme:
+  name: material
+  logo: assets/favicon-dm.svg
+  favicon: assets/favicon-dm.svg
+  palette:
+    scheme: slate
+    primary: deep orange
+  features:
+    - navigation.tabs
+    - content.code.copy
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
