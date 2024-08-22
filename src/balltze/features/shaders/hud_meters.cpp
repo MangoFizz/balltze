@@ -44,15 +44,17 @@ namespace Balltze::Features {
             }
 
             if(!meter->flags.use_xbox_shading) {
-                // Draw filled part
+                device->SetPixelShader(NULL);
+                device->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_ALPHA | D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
                 device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-                device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_LESSEQUAL);
                 device->SetRenderState(D3DRS_ALPHAREF, meter_colors->tint_color.alpha);
                 device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-                device->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_ALPHA | D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
                 device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
                 device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
                 device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+
+                // Draw filled part
+                device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_LESSEQUAL);
                 device->SetRenderState(D3DRS_TEXTUREFACTOR, *(DWORD *)&meter_colors->tint_color);
                 device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
                 device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
@@ -65,7 +67,6 @@ namespace Balltze::Features {
 
                 // Draw empty part
                 device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-                device->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_ALPHA | D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
                 device->SetRenderState(D3DRS_TEXTUREFACTOR, *(DWORD *)&meter_colors->empty_color);
                 device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE2X);
                 device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
@@ -74,8 +75,6 @@ namespace Balltze::Features {
                 device->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
                 device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
                 device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-                device->SetPixelShader(NULL);
                 device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vertex_data, 0x18);
             }
             else {
@@ -90,13 +89,11 @@ namespace Balltze::Features {
                     return;
                 }
 
-                // Set blend mode
                 device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
                 device->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_SRCALPHA);
                 device->SetRenderState(D3DRS_DESTBLENDALPHA, D3DBLEND_INVSRCALPHA);
                 device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 
-                // Draw filled part
                 device->SetPixelShaderConstantF(0, c_tint_color, 1);
                 device->SetPixelShaderConstantF(1, c_empty_color, 1);
                 device->SetPixelShaderConstantF(2, c_background, 1);
