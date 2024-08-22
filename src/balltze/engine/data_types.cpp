@@ -64,4 +64,13 @@ namespace Balltze::Engine {
         this->v[2].y = 2.0f * (tmp1 + tmp2)*invs;
         this->v[1].z = 2.0f * (tmp1 - tmp2)*invs;
     }
+
+	ColorARGB color_argb_32_to_real(ColorARGBInt color) noexcept {
+        return {
+            .alpha = static_cast<float>(color.alpha) / 255.0f,
+            .red = static_cast<float>(color.red) / 255.0f,
+            .green = static_cast<float>(color.green) / 255.0f,
+            .blue = static_cast<float>(color.blue) / 255.0f
+        };
+    }
 }

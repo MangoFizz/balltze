@@ -87,11 +87,14 @@ add_library(balltze SHARED
     src/balltze/event/widget.S
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
+    src/balltze/features/shaders/hud_meters.cpp
+    src/balltze/features/shaders/hud_meters.S
     src/balltze/features/loading_screen/loading_screen.cpp
     src/balltze/features/loading_screen/loading_screen.S
     src/balltze/features/loading_screen/loading_screen.rc
     src/balltze/features/shaders/shader_transparent_chicago.cpp
     src/balltze/features/shaders/shader_transparent_chicago.S
+    src/balltze/features/shaders/shaders.rc
     src/balltze/features/sound_subtitles.cpp
     src/balltze/features/tags_handling/map.cpp
     src/balltze/features/tags_handling/tag_data_importing.cpp

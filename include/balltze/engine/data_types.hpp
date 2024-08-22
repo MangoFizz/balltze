@@ -230,6 +230,13 @@ namespace Balltze::Engine {
 	struct Matrix {
 		Engine::Vector3D m[3];
 	};
+
+	/**
+	 * Converts a 32-bit ARGB color to a real ARGB color.
+	 * @param color The 32-bit ARGB color.
+	 * @return The real ARGB color.
+	 */
+	ColorARGB color_argb_32_to_real(ColorARGBInt color) noexcept;
 }
 
 #endif

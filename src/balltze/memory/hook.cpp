@@ -235,7 +235,7 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 4);
                         instruction_size = 4;
                     }
-                    else if(instruction[1] == 0xBF && (instruction[2] == 0xC0 || instruction[2] == 0xC1)) { // eax, ax/cx
+                    else if(instruction[1] == 0xBF && (instruction[2] == 0xC0 || instruction[2] == 0xC1 || instruction[2] == 0xC5)) { // eax, ax/cx/bp
                         m_cave.insert(&instruction[0], 3);
                         instruction_size = 3;
                     }
@@ -447,6 +447,13 @@ namespace Balltze::Memory {
                 case 0x40: {
                     m_cave.insert(0x40);
                     instruction_size = 1;
+                    break;
+                }
+
+                // xor ebp, ebp
+                case 0x33: {
+                    m_cave.insert(&instruction[0], 2);
+                    instruction_size = 2;
                     break;
                 }
 

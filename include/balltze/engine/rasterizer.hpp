@@ -7,6 +7,7 @@
 #include "tag_definitions/bitmap.hpp"
 #include "tag_definitions/shader.hpp"
 #include "tag_definitions/shader_transparent_chicago.hpp"
+#include "tag_definitions/hud_interface_types.hpp"
 #include "../api.hpp"
 
 namespace Balltze::Engine {
@@ -199,6 +200,31 @@ namespace Balltze::Engine {
         Vertex bottom_right;
         Vertex bottom_left;
     };
+
+    struct HudInterfaceMeter {
+        Point2DInt anchor_offset;
+		float width_scale;
+		float height_scale;
+		TagDefinitions::HUDInterfaceScalingFlags scaling_flags;
+		PADDING(2);
+		PADDING(20);
+		TagDependency meter_bitmap;
+		ColorARGBInt color_at_meter_minimum;
+		ColorARGBInt color_at_meter_maximum;
+		ColorARGBInt flash_color;
+		ColorARGBInt empty_color;
+		TagDefinitions::HUDInterfaceMeterFlags flags;
+		std::int8_t minimum_meter_value;
+		Index sequence_index;
+		std::int8_t alpha_multiplier;
+		std::int8_t alpha_bias;
+		std::int16_t value_scale;
+		float opacity;
+		float translucency;
+		float min_alpha;
+        PADDING(12);
+		ColorARGBInt overcharge_empty_color;
+    }; static_assert(sizeof(HudInterfaceMeter) == 0x68);
 
     /**
      * Get the window globals.
