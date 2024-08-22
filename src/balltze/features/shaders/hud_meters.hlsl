@@ -5,11 +5,13 @@ float4 tint_color : register(c0);
 float4 empty_color : register(c1);
 float4 background_color : register(c2);
 
+float alpha_factor = 0.25;
+
 float4 main(float2 texCoord : TEXCOORD0) : COLOR0 {
     float4 tex = tex2D(sampler_2d, texCoord);
 
     // clip by non interpolated alpha
-    clip(dot(tex.rgb, 1) - 0.001);
+    clip(tex.r - alpha_factor);
 
     float4 r0;
     if(tex.a <= tint_color.a) {
