@@ -22,6 +22,7 @@ nav:
       - features/shaders/shader-transparent-chicago.md
   - Plugins: 
     - plugins/introduction.md
+    - plugins/first-lua-plugin.md
 theme:
   name: material
   logo: assets/favicon-dm.svg
