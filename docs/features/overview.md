@@ -1,20 +1,11 @@
 # Overview
 
-!!! Info
-    This document provides an overview of the features of Balltze. The list below includes features
-    that are relevant both to users and developers.
+While Balltze purpose is to be a modding platform for Halo Custom Edition that makes it easy to create new
+mods, it also comes with a set of features that are meant to enhance the game experience, fix bugs or even
+add new functionalities to the game.
 
-Feel free to send a feature request or report a bug :smile:
+Most of the features are enabled by default, but most of them can be disabled by changing the configuration
+file or using the in-game console commands to configure them. Settings file is located at `My Games/Halo CE/balltze/settings.json`, it is just a JSON file that can be edited with any text editor.
 
-## Features
-
-- [Loading screen](/features/loading-screen)
-- [Tag handling](/features/tags-handling)
-- [Console key custom binding](/features/console-key-custom-binding)
-- [Multiplayer menu extended description fix](/features/multiplayer-menu-extended-description-fix)
-- [Extended limits](/features/extended-limits)
-- [Gamepad pause button binding](/features/gamepad-pause-button)
-- [HUD button prompts](/features/hud-button-prompts)
-- [Map textures preloading](/features/map-textures-preloading)
-- [Sound subtitles](/features/sound-subtitles)
-- [UI widget widescreen support](/features/ui-widget-widescreen-support)
+The majority of the features were implemented by a request from ShadowMods community members, so if you have
+any ideas or suggestions for new features, feel free to share them in the  [Discord server](https://discord.shadowmods.net/) or in the GitHub repository. :smiley:

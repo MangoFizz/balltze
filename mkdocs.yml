@@ -5,28 +5,37 @@ nav:
   - Install: install.md
   - Features:
     - features/overview.md
-    - features/loading-screen.md
-    - features/tags-handling.md
-    - features/console-key-custom-binding.md
-    - features/multiplayer-menu-extended-description-fix.md
-    - features/extended-limits.md
-    - features/gamepad-pause-button.md
-    - features/hud-button-prompts.md
-    - features/map-textures-preloading.md
-    - features/sound-subtitles.md
-    - features/ui-widget-widescreen-support.md
+    - Engine:
+      - features/engine/loading-screen.md
+      - features/engine/tags-handling.md
+      - features/engine/extended-limits.md
+      - features/engine/map-textures-preloading.md
+      - features/engine/sound-subtitles.md
+    - User interface:
+      - features/user_interface/widget-widescreen-support.md
+      - features/user_interface/multiplayer-menu-extended-description-fix.md
+      - features/user_interface/console-key-custom-binding.md
+      - features/user_interface/gamepad-pause-button.md
+      - features/user_interface/hud-button-prompts.md
+    - Shaders reimplementation:
+      - features/shaders/hud-meters.md
+      - features/shaders/shader-transparent-chicago.md
   - Plugins: 
     - plugins/introduction.md
 theme:
   name: material
   logo: assets/favicon-dm.svg
-  favicon: assets/favicon-dm.svg
+  favicon: assets/logo.svg
   palette:
     scheme: slate
-    primary: deep orange
+    primary: custom
   features:
     - navigation.tabs
+    - navigation.expand
+    - navigation.path
     - content.code.copy
+extra_css:
+  - stylesheets/extra.css
 markdown_extensions:
   - admonition
   - pymdownx.details

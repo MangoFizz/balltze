@@ -8,6 +8,7 @@ setting the correct bitmap index.
 
 <img src="/assets/extended-description-fix.png" alt="Demo" width="560" height="315">
 
+*Screenshot of the multiplayer menu showing the extended description fix.*
 
 ## Configuration
 

@@ -8,10 +8,11 @@ bottom of the screen when the sound is played as in any modern game.
 
 At the moment there is no way to include the subtitles in the sound tags.
 
-### Demo video
-
 <iframe width="560" height="315" src="https://www.youtube.com/embed/2Aw5ejhdtbE?si=krrqm2WPuQtJYrS2" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*Demo video of the sound subtitles.*
 
 ## Configuration
 
-The sound subtitles are enabled by default and cannot be disabled. The configuration is not required.
+The sound subtitles are enabled by default and cannot be disabled. There are no configuration options
+for this feature.
