@@ -89,9 +89,6 @@ author, version, and description.
 responsible for initializing the plugin and setting up any required resources or event listeners.
 It returns a boolean value indicating whether the plugin was loaded successfully.
 
-- **Plugin start:** A function that is called when the plugin is actually started by Balltze at the 
-first/next tick of the game.
-
 - **Plugin unload:** A function that is called when the plugin is unloaded by Balltze. This function
 is responsible for cleaning up any resources or event listeners that were set up during the plugin
 load. This may be called when the game is closed or when the plugin is reloaded manually. 
