@@ -94,6 +94,16 @@ namespace Balltze::Features {
                 float c_background[2] = { meter->opacity, meter->translucency };
                 float c_flash_color[4] = { flash_color.red, flash_color.green, flash_color.blue, alpha_ref.alpha };
 
+                if(force_xbox_shading) {
+                    if(empty_color.alpha == 0) {
+                        c_empty_color[3] = 1.0f;
+                    }
+
+                    if(empty_color.red == 0 && empty_color.green == 0 && empty_color.blue == 0) {
+                        c_empty_color[3] = 0.0f;
+                    }
+                }
+
                 device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
                 device->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_SRCALPHA);
                 device->SetRenderState(D3DRS_DESTBLENDALPHA, D3DBLEND_INVSRCALPHA);
