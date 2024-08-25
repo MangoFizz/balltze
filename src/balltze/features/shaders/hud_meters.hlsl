@@ -4,18 +4,23 @@ sampler2D sampler_2d : register(s0);
 float4 tint_color : register(c0);
 float4 empty_color : register(c1);
 float4 background_color : register(c2);
-
-float alpha_factor = 0.25;
+float4 flash_color : register(c3);
 
 float4 main(float2 texCoord : TEXCOORD0) : COLOR0 {
     float4 tex = tex2D(sampler_2d, texCoord);
+    float alpha_factor = 0.25;
 
     // clip by non interpolated alpha
     clip(tex.r - alpha_factor);
 
     float4 r0;
-    if(tex.a <= tint_color.a) {
-        r0.rgb = tint_color.rgb;
+    if(tex.a <= flash_color.a) {
+        if(tex.a <= tint_color.a) {
+            r0.rgb = tint_color.rgb;
+        }
+        else {
+            r0.rgb = flash_color.rgb;
+        }
         r0.a = (1.0 - background_color.y);
     }
     else {

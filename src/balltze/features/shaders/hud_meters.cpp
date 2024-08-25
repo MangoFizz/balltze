@@ -78,16 +78,19 @@ namespace Balltze::Features {
                 device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vertex_data, 0x18);
             }
             else {
-                auto tint_color = Engine::color_argb_32_to_real(meter_colors->tint_color);
-                auto empty_color = Engine::color_argb_32_to_real(meter->empty_color);
-                float c_tint_color[4] = { tint_color.red, tint_color.green, tint_color.blue, tint_color.alpha };
-                float c_empty_color[4] = { empty_color.red, empty_color.green, empty_color.blue, empty_color.alpha };
-                float c_background[2] = { meter->opacity, meter->translucency };
-
                 if(!hud_meters_shader) {
                     logger.warning("HUD meters shader not loaded. This is a bug.");
                     return;
                 }
+                
+                auto tint_color = Engine::color_argb_32_to_real(meter_colors->tint_color);
+                auto empty_color = Engine::color_argb_32_to_real(meter->empty_color);
+                auto alpha_ref = Engine::color_argb_32_to_real(meter_colors->alpha_ref);
+                auto flash_color = Engine::color_argb_32_to_real(meter->flash_color);
+                float c_tint_color[4] = { tint_color.red, tint_color.green, tint_color.blue, tint_color.alpha };
+                float c_empty_color[4] = { empty_color.red, empty_color.green, empty_color.blue, empty_color.alpha };
+                float c_background[2] = { meter->opacity, meter->translucency };
+                float c_flash_color[4] = { flash_color.red, flash_color.green, flash_color.blue, alpha_ref.alpha };
 
                 device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
                 device->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_SRCALPHA);
@@ -97,6 +100,7 @@ namespace Balltze::Features {
                 device->SetPixelShaderConstantF(0, c_tint_color, 1);
                 device->SetPixelShaderConstantF(1, c_empty_color, 1);
                 device->SetPixelShaderConstantF(2, c_background, 1);
+                device->SetPixelShaderConstantF(3, c_flash_color, 1);
                 device->SetPixelShader(hud_meters_shader);
                 device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vertex_data, 0x18);
             }
