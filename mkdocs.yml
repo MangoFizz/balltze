@@ -17,7 +17,7 @@ nav:
       - features/user_interface/console-key-custom-binding.md
       - features/user_interface/gamepad-pause-button.md
       - features/user_interface/hud-button-prompts.md
-    - Shaders reimplementation:
+    - Shaders reimplementations:
       - features/shaders/hud-meters.md
       - features/shaders/shader-transparent-chicago.md
   - Plugins: 

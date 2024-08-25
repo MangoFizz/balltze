@@ -1,7 +1,5 @@
 # Widget custom aspect ratio
 
-## Description
-
 !!! note
     This feature is intended for developers, as it is only accessible through the plugins API.
 

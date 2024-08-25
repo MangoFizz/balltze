@@ -1,7 +1,5 @@
 # Gamepad pause button
 
-## Description
-
 Allows you to bind a gamepad button to pause the game. By default, the game is 
 paused by pressing the `ESC` key on the keyboard, but with this feature, you can bind it to 
 any button on your gamepad.

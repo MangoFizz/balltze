@@ -1,13 +1,10 @@
 # Loading screen 
 
-## Description
-
 Adds a loading screen similar to the one from the Original Xbox version of the game.
 
-!!! info
-    The loading screen also helps to prevent the game from freezing or timing out on multiplayer
-    games when loading maps with a lot of tags or when plugins perform heavy operations during the 
-    loading process. Is recommended to keep this feature enabled.
+The loading screen also helps to prevent the game from freezing or timing out on multiplayer
+games when loading maps with a lot of tags or when plugins perform heavy operations during the 
+loading process. Is recommended to keep this feature enabled.
 
 Thanks to [@SnowyMouse](https://github.com/SnowyMouse) for the [shader](https://gist.github.com/SnowyMouse/eb7558d2e036e4becbc764501d99a703) that was used to create the loading screen effect. :frog:
 

@@ -54,7 +54,8 @@ generates native build files.
 
 !!! note
     You can also use Docker to build the project without having to install the tools on your 
-    system.
+    system. Note that you may also need the Mingw GCC compiler installed on your system to 
+    set up your IDE's IntelliSense.
 
 ## Plugins folder
 
@@ -97,6 +98,6 @@ is responsible for cleaning up any resources or event listeners that were set up
 load. This may be called when the game is closed or when the plugin is reloaded manually. 
 
 !!! info
-    Unload function It can be omitted if the plugin does not require any cleanup or if is not meant 
+    The unload function can be omitted if the plugin does not require any cleanup or if is not meant 
     to be reloaded.
 

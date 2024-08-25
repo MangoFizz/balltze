@@ -1,7 +1,5 @@
 # Console key custom binding
 
-## Description
-
 Allows to bind a custom key to open the console in the game. By default, the console is 
 opened by pressing the tilde key (`~`), but with this feature, you can bind it to any key you want.
 

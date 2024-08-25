@@ -73,7 +73,3 @@ Now use docker compose to build the project:
 docker compose run compile
 ```
 The compiled files will be available on the `build` folder inside of the project directory.
-
-!!! note
-    While this method is easier, you may also need the Mingw GCC compiler installed on your system to
-    set up your IDE's IntelliSense.

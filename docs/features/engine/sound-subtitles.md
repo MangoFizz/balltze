@@ -1,7 +1,5 @@
 # Sound subtitles
 
-## Description
-
 Displays subtitles for the dialog sounds in the game. This feature takes advantage of the unused
 `subtitle data` field in the sound tags to store the subtitles. The subtitles are displayed at the 
 bottom of the screen when the sound is played as in any modern game.

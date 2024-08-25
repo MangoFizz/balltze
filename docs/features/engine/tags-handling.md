@@ -4,8 +4,6 @@
     This feature may crash the game if it is used on maps that are broken or have corrupted tags. 
     Use it with caution. :skull:
 
-## Description
-
 !!! note
     This feature is intended for developers, as it is only accessible through the plugins API.
 

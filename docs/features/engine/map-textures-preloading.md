@@ -1,7 +1,5 @@
 # Map textures preloading
 
-## Description
-
 Preloads the textures of the map when the game is loading. This feature can help to reduce 
 the stuttering that occurs when the game loads textures during gameplay, especially on maps 
 with a lot of high-resolution textures.

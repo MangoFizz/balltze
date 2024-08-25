@@ -1,7 +1,5 @@
 # Mp extended description fix
 
-## Description
-
 Fixes the issue where the extended description of the multiplayer menu is not displayed the
 correct bitmap for the buttons under the "Create game" section. The issue is caused by the game not
 setting the correct bitmap index.

@@ -1,7 +1,5 @@
 # HUD button prompts
 
-## Description
-
 Restores the button prompts that are displayed in the HUD when using a gamepad. It
 behaves like in HCEA in MCC, where the button prompts are only displayed in the HUD when using 
 a gamepad.
