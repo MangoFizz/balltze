@@ -16,8 +16,13 @@ float4 main(float2 texCoord : TEXCOORD0) : COLOR0 {
     float4 r0;
     if(tex.a <= flash_color.a) {
         if(tex.a <= tint_color.a) {
-            r0.rgb = tint_color.rgb;
-        }
+            if(tint_color.a != flash_color.a) {
+                r0.rgb = lerp(flash_color.rgb, tint_color.rgb, saturate((tint_color.a - tex.a) / 0.1));
+            }
+            else {
+                r0.rgb = tint_color.rgb;
+            }
+        }   
         else {
             r0.rgb = flash_color.rgb;
         }
