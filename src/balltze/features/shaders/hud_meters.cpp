@@ -5,6 +5,7 @@
 #include <balltze/events/d3d9.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
+#include <balltze/command.hpp>
 #include <balltze/engine/data_types.hpp>
 #include <balltze/engine/rasterizer.hpp>
 #include <balltze/engine/tag_definitions/unit_hud_interface.hpp>
@@ -15,6 +16,7 @@
 namespace Balltze::Features {
     static IDirect3DPixelShader9 *hud_meters_shader = nullptr;
     static Engine::HudInterfaceMeter *current_meter = nullptr;
+    static bool force_xbox_shading = false;
 
     static HRESULT load_pixel_shader_from_resource(IDirect3DDevice9 *device, std::uint32_t res, IDirect3DPixelShader9 **shader) {
         auto shader_data = load_resource_data(get_current_module(), MAKEINTRESOURCEW(res), L"CSO");
@@ -43,7 +45,7 @@ namespace Balltze::Features {
                 return;
             }
 
-            if(!meter->flags.use_xbox_shading) {
+            if(!meter->flags.use_xbox_shading && !force_xbox_shading) {
                 device->SetPixelShader(NULL);
                 device->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_ALPHA | D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
                 device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
@@ -135,6 +137,16 @@ namespace Balltze::Features {
         });
     }
 
+    static bool force_xbox_shading_command(int arg_count, const char **args) {
+        if(arg_count == 1) {
+            bool new_setting = STR_TO_BOOL(args[0]);
+            force_xbox_shading = new_setting;
+        }
+        logger.info("force_xbox_shading_command is set to: {}", BOOL_TO_STR(force_xbox_shading));
+        Engine::console_printf("force_xbox_shading_command: %s", BOOL_TO_STR(force_xbox_shading));
+        return true;
+    }
+
     void set_up_hud_meters_shader() {
         auto *hud_draw_meter_bitmap_call_sig = Memory::get_signature("hud_draw_meter_bitmap_call");
         auto *rasterizer_draw_screen_quad_bitmap_meter_sig = Memory::get_signature("rasterizer_draw_screen_quad_bitmap_meter");
@@ -154,5 +166,7 @@ namespace Balltze::Features {
         catch(const std::runtime_error &e) {
             logger.error("Failed to set up HUD meters shader: {}", e.what());
         }
+
+        register_command("hud_meters_force_xbox_shading", "features", "Set whether to force Xbox shading for HUD meters", "<setting: boolean>", force_xbox_shading_command, true, 0, 1);
     }
 }
