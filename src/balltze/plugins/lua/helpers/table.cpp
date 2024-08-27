@@ -69,7 +69,7 @@ namespace Balltze::Plugins::Lua {
     void table_remove(lua_State *state, int table, int pos) {
         lua_Integer t = lua_absindex(state, table);
         lua_Integer size = aux_getn(state, t, TAB_RW);
-        if (pos != size) /* validate 'pos' if given */
+        if (pos > size) /* validate 'pos' if given */
             throw std::invalid_argument("position out of bounds");
         lua_geti(state, t, pos); /* result = t[pos] */
         for (; pos < size; pos++) {
