@@ -32,6 +32,9 @@ namespace Balltze::Engine {
     std::vector<Widget *> find_widgets(TagHandle widget_definition, bool first_match, Widget *widget_base) noexcept {
         if(!widget_base) {
             auto *widget_globals = get_widget_globals();
+            if(!widget_globals->root_widget) {
+                return {};
+            }
             widget_base = widget_globals->root_widget;
         }
 
@@ -55,9 +58,10 @@ namespace Balltze::Engine {
                 search_instances(widget->next_widget);
             }
 
-            if(widget->extended_description) {
-                search_instances(widget->extended_description);
-            }
+            // TODO: Fix extended description
+            // if(widget->extended_description) {
+            //     search_instances(widget->extended_description);
+            // }
         };
         search_instances(widget_base);
 
