@@ -401,6 +401,7 @@ namespace Balltze::Plugins::Lua {
         SET_UP_EVENT_LISTENERS(UIWidgetAcceptEvent, populate_ui_widget_accept_events);
         SET_UP_EVENT_LISTENERS(UIWidgetSoundEvent, populate_ui_widget_sound_events);
         SET_UP_EVENT_LISTENERS(UIWidgetListTabEvent, populate_ui_widget_list_tab_events);
+        SET_UP_EVENT_LISTENERS(UIWidgetMouseButtonPressEvent, populate_ui_widget_mouse_button_press_events);
 
         #undef SET_UP_EVENT_LISTENERS
     }
