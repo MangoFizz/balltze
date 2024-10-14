@@ -127,21 +127,6 @@ for structName, struct in pairs(structs) do
     local typename = "Engine" .. camelCaseName
 
     indent(1)
-    add("inline void create_engine_" .. structName .. "_struct(lua_State *state) noexcept { \n")
-    indent(2)
-    if(struct.inherits) then
-        local sneakCaseParentName = definitionParser.camelCaseToSnakeCase(struct.inherits)
-        local camelCaseParentName = definitionParser.snakeCaseToCamelCase(sneakCaseParentName)
-        add("luacs_newderivedstruct(state, " .. typename .. ", Engine" .. camelCaseParentName .. "); \n")
-    else 
-        add("luacs_newstruct(state, " .. typename .. "); \n")
-    end
-    indent(2)
-    add("lua_pop(state, 1); \n")
-    indent(1)
-    add("} \n\n")
-
-    indent(1)
     add("static void define_engine_" .. structName .. "_struct(lua_State *state) noexcept { \n")
     indent(2)
     local parentTypename = "NULL"
@@ -264,15 +249,6 @@ for bitfieldName, bitfield in pairs(bitfields) do
     end
 
     indent(1)
-    add("inline void create_engine_" .. bitfieldName .. "_struct(lua_State *state) noexcept { \n")
-    indent(2)
-    add("luacs_newstruct(state, " .. typename .. "); \n")
-    indent(2)
-    add("lua_pop(state, 1); \n")
-    indent(1)
-    add("} \n\n")
-
-    indent(1)
     add("static void define_engine_" .. bitfieldName .. "_struct(lua_State *state) noexcept { \n")
     indent(2)
     add("luacs_newstruct(state, " .. typename .. "); \n")
@@ -296,15 +272,6 @@ for enumName, enum in pairs(enums) do
     local sneakCaseName = definitionParser.camelCaseToSnakeCase(enumName)
     local camelCaseName = definitionParser.snakeCaseToCamelCase(sneakCaseName)
     local lowerCamelCaseName = definitionParser.snakeCaseToLowerCamelCase(sneakCaseName)
-
-    indent(1)
-    add("inline void create_engine_" .. enumName .. "_enum(lua_State *state) noexcept { \n")
-    indent(2)
-    add("luacs_newenum(state, Engine" .. camelCaseName .. "); \n")
-    indent(2)
-    add("lua_pop(state, 1); \n")
-    indent(1)
-    add("} \n\n")
 
     indent(1)
     add("static void define_engine_" .. enumName .. "_enum(lua_State *state) noexcept { \n")
@@ -381,53 +348,77 @@ add([[
 indent(1)
 add("void define_engine_tag_data_types(lua_State *state) noexcept { \n")
 
-for bitfieldName, _ in pairs(bitfields) do
-    indent(2)
-    add("create_engine_" .. bitfieldName .. "_struct(state); \n")
-end
-
-for enumName, _ in pairs(enums) do
-    indent(2)
-    add("create_engine_" .. enumName .. "_enum(state); \n")
-end
-
 local definedStructs = {}
-local undefinedStructFound = true
-while undefinedStructFound do
-    undefinedStructFound = false
-    for structName, struct in pairs(structs) do
-        if struct.inherits then
-            local parentStructName = definitionParser.camelCaseToSnakeCase(struct.inherits)
-            if definedStructs[parentStructName] then
-                indent(2)
-                add("create_engine_" .. structName .. "_struct(state); \n")
-                definedStructs[structName] = true
-            else
-                undefinedStructFound = true
-            end
-        else
-            if not definedStructs[structName] then
-                indent(2)
-                add("create_engine_" .. structName .. "_struct(state); \n")
-                definedStructs[structName] = true
-            end
-        end
-    end
-end
-
-for structName, _ in pairs(structs) do
-    indent(2)
-    add("define_engine_" .. structName .. "_struct(state); \n")
-end
 
 for bitfieldName, _ in pairs(bitfields) do
     indent(2)
     add("define_engine_" .. bitfieldName .. "_struct(state); \n")
+    definedStructs[bitfieldName] = true
 end
 
 for enumName, _ in pairs(enums) do
     indent(2)
     add("define_engine_" .. enumName .. "_enum(state); \n")
+    definedStructs[enumName] = true
+end
+
+for sneakCaseName, _ in pairs(definitionParser.commonStructs) do
+    definedStructs[sneakCaseName] = true
+end
+
+for sneakCaseName, _ in pairs(definitionParser.commonEnums) do
+    definedStructs[sneakCaseName] = true
+end
+
+for sneakCaseName, _ in pairs(definitionParser.commonBitfields) do
+    definedStructs[sneakCaseName] = true
+end
+
+for sneakCaseName, _ in pairs(definitionParser.primitiveTypes) do
+    definedStructs[sneakCaseName] = true
+end
+
+local function defineStruct(sneakCaseName)
+    local struct = structs[sneakCaseName]
+    if not struct then
+        error("Struct " .. sneakCaseName .. " not found")
+        return
+    end
+
+    if definedStructs[sneakCaseName] then
+        return
+    end
+
+    if struct.inherits then
+        local parentStructName = definitionParser.camelCaseToSnakeCase(struct.inherits)
+        defineStruct(parentStructName)
+    end
+
+    for _, field in ipairs(struct.fields) do
+        if field.name then
+            local sneakCaseFieldType = definitionParser.camelCaseToSnakeCase(field.type)
+            if sneakCaseFieldType == "tag_block" then
+                local sneakCaseStructName = definitionParser.camelCaseToSnakeCase(field.struct)
+                if not definedStructs[sneakCaseStructName] then
+                    defineStruct(sneakCaseStructName)
+                end
+            else
+                if not definedStructs[sneakCaseFieldType] then
+                    defineStruct(sneakCaseFieldType)
+                end
+            end
+        end
+    end
+
+    indent(2)
+    add("define_engine_" .. sneakCaseName .. "_struct(state); \n")
+    definedStructs[sneakCaseName] = true
+end
+
+for structName, struct in pairs(structs) do
+    if not definedStructs[structName] then
+        defineStruct(structName)
+    end
 end
 
 for _, class in ipairs(definitionParser.tagClasses) do
