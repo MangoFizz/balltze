@@ -76,6 +76,7 @@ add_library(balltze SHARED
     src/balltze/event/object_damage.cpp
     src/balltze/event/object_damage.S
     src/balltze/event/rcon_message.cpp
+    src/balltze/event/rcon_message.S
     src/balltze/event/render.cpp
     src/balltze/event/render.S
     src/balltze/event/server_connect.cpp

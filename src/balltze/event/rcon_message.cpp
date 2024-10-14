@@ -10,7 +10,9 @@
 
 namespace Balltze::Event {
     extern "C" {
-        bool rcon_message_event_before_hook();
+
+        void rcon_message_event_before_hook();
+        bool rcon_message_event_cancellation_hook();
         void rcon_message_event_after_hook();
 
         bool dispatch_rcon_message_event_before(char *message_data) {
@@ -86,9 +88,10 @@ namespace Balltze::Event {
 
         try {
             // Workaround for Chimera hook (NEEDS TO BE FIXED)
-            std::byte *ptr = Memory::follow_32bit_jump(rcon_message_function_call_sig->data()) + 9;
-            std::function<bool()> before_function = reinterpret_cast<bool(*)()>(rcon_message_event_before_hook);
-            auto *hook = Memory::hook_function(ptr, before_function, reinterpret_cast<void(*)()>(rcon_message_event_after_hook));
+            Memory::hook_function(rcon_message_function_call_sig->data(), std::nullopt, rcon_message_event_before_hook);
+            std::byte *ptr = Memory::follow_32bit_jump(rcon_message_function_call_sig->data() + 5) + 9;
+            std::function<bool()> before_function = reinterpret_cast<bool(*)()>(rcon_message_event_cancellation_hook);
+            Memory::hook_function(ptr, before_function, reinterpret_cast<void(*)()>(rcon_message_event_after_hook));
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook rcon message event: " + std::string(e.what()));

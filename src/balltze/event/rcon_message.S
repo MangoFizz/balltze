@@ -4,6 +4,7 @@
 
 .data
 last_rcon_message: .long 0
+cancel_rcon_message: .long 0
 
 .text
 
@@ -13,6 +14,12 @@ _rcon_message_event_before_hook:
     push ecx
     call _dispatch_rcon_message_event_before
     add esp, 4
+    mov [cancel_rcon_message], eax
+    ret
+
+.globl _rcon_message_event_cancellation_hook
+_rcon_message_event_cancellation_hook:
+    mov eax, [cancel_rcon_message]
     ret
 
 .globl _rcon_message_event_after_hook
