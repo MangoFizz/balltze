@@ -12,9 +12,7 @@
 #include <gdiplus.h>
 #include "../api.hpp"
 
-namespace Balltze {
-    BALLTZE_API std::optional<std::vector<std::byte>> load_resource_data(HMODULE module, const wchar_t *resource_id, const wchar_t *resource_type) noexcept;
-    BALLTZE_API std::unique_ptr<Gdiplus::Bitmap> load_image_from_resource(HMODULE module, const wchar_t *resource_id, const wchar_t *resource_type) noexcept;
-}
+BALLTZE_API std::optional<std::vector<std::byte>> load_resource_data(HMODULE module, const wchar_t *resource_id, const wchar_t *resource_type) noexcept;
+BALLTZE_API std::unique_ptr<Gdiplus::Bitmap> load_image_from_resource(HMODULE module, const wchar_t *resource_id, const wchar_t *resource_type) noexcept;
 
 #endif

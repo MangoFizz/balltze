@@ -9,9 +9,10 @@
 
 namespace Balltze::Event {
     struct RconMessageEventContext {
-        const std::string message;
+        const std::optional<std::string> message;
+        const char *const raw_message;
 
-        RconMessageEventContext(const char *const message) : message(message) {}
+        RconMessageEventContext(const char *message_data, std::optional<std::string> message) : message(message), raw_message(message_data) {}
     };
 
     class RconMessageEvent : public EventData<RconMessageEvent> {

@@ -5,20 +5,40 @@
 #include <balltze/hook.hpp>
 #include <balltze/api.hpp>
 #include <balltze/command.hpp>
+#include <balltze/helpers/string.hpp>
 #include "../logger.hpp"
 
 namespace Balltze::Event {
-    static bool dispatch_rcon_message_event_before(const char *message) {
-        RconMessageEventContext args(message);
-        RconMessageEvent event(EVENT_TIME_BEFORE, args);
-        event.dispatch();
-        return event.cancelled();
-    }
+    extern "C" {
+        bool rcon_message_event_before_hook();
+        void rcon_message_event_after_hook();
 
-    static void dispatch_rcon_message_event_after(const char *message) {
-        RconMessageEventContext args(message);
-        RconMessageEvent event(EVENT_TIME_AFTER, args);
-        event.dispatch();
+        bool dispatch_rcon_message_event_before(char *message_data) {
+            std::optional<std::string> decoded_message;
+            try {
+                decoded_message = string_w1252_to_utf8(message_data);
+            }
+            catch(std::runtime_error &e) {
+                logger.warning("Failed to decode RCON message string: {}", e.what());
+            }
+            RconMessageEventContext args(message_data, decoded_message);
+            RconMessageEvent event(EVENT_TIME_BEFORE, args);
+            event.dispatch();
+            return event.cancelled();
+        }
+
+        void dispatch_rcon_message_event_after(char *message_data) {
+            std::optional<std::string> decoded_message;
+            try {
+                decoded_message = string_w1252_to_utf8(message_data);
+            }
+            catch(std::runtime_error &e) {
+                logger.warning("Failed to decode RCON message string: {}", e.what());
+            }
+            RconMessageEventContext args(message_data, decoded_message);
+            RconMessageEvent event(EVENT_TIME_BEFORE, args);
+            event.dispatch();
+        }
     }
 
     static bool debug_rcon_message_event(int arg_count, const char **args) {
@@ -33,7 +53,7 @@ namespace Balltze::Event {
                 handle = Event::RconMessageEvent::subscribe_const([](RconMessageEvent const &event) {
                     auto &context = event.context;
                     auto time = event_time_to_string(event.time);
-                    logger.debug("Rcon message event ({}): message: {}", time, context.message);
+                    logger.debug("Rcon message event ({}): message: {}", time, context.message.value_or("null"));
                 });
             }
             else {
@@ -67,7 +87,8 @@ namespace Balltze::Event {
         try {
             // Workaround for Chimera hook (NEEDS TO BE FIXED)
             std::byte *ptr = Memory::follow_32bit_jump(rcon_message_function_call_sig->data()) + 9;
-            auto *camera_data_read_chimera_hook = Memory::hook_function(ptr, reinterpret_cast<void(*)()>(dispatch_rcon_message_event_before), reinterpret_cast<void(*)()>(dispatch_rcon_message_event_after));
+            std::function<bool()> before_function = reinterpret_cast<bool(*)()>(rcon_message_event_before_hook);
+            auto *hook = Memory::hook_function(ptr, before_function, reinterpret_cast<void(*)()>(rcon_message_event_after_hook));
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook rcon message event: " + std::string(e.what()));

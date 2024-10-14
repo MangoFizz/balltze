@@ -195,9 +195,10 @@ namespace Balltze::Plugins::Lua {
         luacs_newstruct(state, BalltzeRconMessageEventContext);
         luacs_declare_method(state, "message", +[](lua_State *state) -> int {
             auto *self = luacs_to_object(state, 1, BalltzeRconMessageEventContext);
-            lua_pushstring(state, self->message.c_str());
+            lua_pushstring(state, self->message->c_str());
             return 1;
         });
+        luacs_string_field(state, BalltzeRconMessageEventContext, raw_message, 0);
         lua_pop(state, 1);
     }
 
