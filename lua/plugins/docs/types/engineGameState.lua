@@ -53,6 +53,21 @@
 ---@field shieldRecharging boolean
 ---@field killedNoStats boolean
 
+---@class MetaEngineObjectVitals
+---@field baseHealth number
+---@field baseShield number
+---@field health number
+---@field shield number
+---@field currentShieldDamage number
+---@field currentHealthDamage number
+---@field entangledObject EngineObjectHandle
+---@field recentShieldDamage number
+---@field recentHealthDamage number
+---@field recentShieldDamageTime integer
+---@field recentHealthDamageTime integer
+---@field shieldStunTime integer
+---@field flags MetaEngineObjectVitalsFlags
+
 ---@class MetaEngineObjectAttachmentsData
 ---@field types table<integer, string>
 ---@field attachments table<integer, integer>
@@ -101,7 +116,7 @@
 ---@field animationFrame integer
 ---@field animationInterpolationFrame integer
 ---@field animationInterpolationFrameCount integer
----@field vitals MetaEngineObjectVitalsFlags
+---@field vitals MetaEngineObjectVitals
 ---@field clusterPartition integer
 ---@field unknownObject integer
 ---@field nextObject integer
@@ -626,7 +641,7 @@
 ---@field interactionObjectSeat integer
 ---@field respawnTime integer
 ---@field respawnTimeGrowth integer
----@field objectHandle integer
+---@field objectHandle EngineObjectHandle
 ---@field prevObjectHandle integer
 ---@field bspClusterId integer
 ---@field weaponSwapResult boolean

@@ -66,6 +66,7 @@
 ---@field value integer
 ---@field index integer
 ---@field id integer
+---@field isNull fun():boolean
 
 ---@class EngineTagHandle: EngineResourceHandle
 

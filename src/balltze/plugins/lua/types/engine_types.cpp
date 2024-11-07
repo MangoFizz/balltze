@@ -12,6 +12,11 @@ namespace Balltze::Plugins::Lua {
         luacs_unsigned_field(state, EngineResourceHandle, value, 0);
         luacs_unsigned_field(state, EngineResourceHandle, id, 0);
         luacs_unsigned_field(state, EngineResourceHandle, index, 0);
+        luacs_declare_method(state, "isNull", +[](lua_State *state) -> int {
+            auto *self = luacs_to_object(state, 1, EngineResourceHandle);
+            lua_pushboolean(state, self->is_null());
+            return 1;
+        });
         lua_pop(state, 1);
     }
 
