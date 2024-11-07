@@ -15,8 +15,13 @@ namespace Balltze::Plugins::Lua {
         int args = lua_gettop(state);
         if(args == 1 || args == 2) {
             auto object_handle = get_engine_resource_handle(state, 1);
-            if(!object_handle || object_handle->is_null()) {
-                return luaL_error(state, "Invalid object handle.");
+            if(!object_handle) {
+                return luaL_error(state, "invalid object handle");
+            }
+
+            if(object_handle->is_null()) {
+                lua_pushnil(state);
+                return 1;
             }
 
             auto &object_table = Engine::get_object_table();
