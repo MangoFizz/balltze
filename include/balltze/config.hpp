@@ -84,7 +84,12 @@ namespace Balltze::Config {
                 }
             }
             if(slice->is_primitive()) {
-                return slice->get<T>();
+                try {
+                    return slice->get<T>();
+                }
+                catch(...) {
+                    return std::nullopt;
+                }
             }
             else {
                 return std::nullopt;
