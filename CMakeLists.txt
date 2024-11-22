@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 
 # Set project info
 project(balltze
-    VERSION 1.0.0
+    VERSION 1.2.0
     LANGUAGES ASM C CXX
 )
 
