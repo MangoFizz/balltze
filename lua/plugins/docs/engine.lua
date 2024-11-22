@@ -37,16 +37,16 @@ Engine.gameState = {}
 -- Get an object of the current game
 ---@param handle EngineObjectHandle|integer Handle of the object
 ---@param type EngineTagDataObjectType Type of the object
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeBiped): MetaEngineBipedObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeVehicle): MetaEngineVehicleObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeGarbage): MetaEngineGarbageObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeWeapon): MetaEngineWeaponObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeEquipment): MetaEngineEquipmentObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeProjectile): MetaEngineProjectileObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeDeviceMachine): MetaEngineDeviceMachineObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeDeviceControl): MetaEngineDeviceControlObject?
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeDeviceLightFixture): MetaEngineDeviceLightFixtureObject?
----@return MetaEngineBaseObject?
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeBiped): MetaEngineBipedObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeVehicle): MetaEngineVehicleObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeGarbage): MetaEngineGarbageObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeWeapon): MetaEngineWeaponObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeEquipment): MetaEngineEquipmentObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeProjectile): MetaEngineProjectileObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeDeviceMachine): MetaEngineDeviceMachineObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeDeviceControl): MetaEngineDeviceControlObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagDataObjectTypeDeviceLightFixture): MetaEngineDeviceLightFixtureObject|nil
+---@return MetaEngineBaseObject|nil
 function Engine.gameState.getObject(handle, type) end
 
 -- Spawn an object
