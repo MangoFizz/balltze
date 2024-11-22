@@ -19,7 +19,7 @@ namespace Balltze::Plugins::Lua {
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         try {
@@ -43,7 +43,7 @@ namespace Balltze::Plugins::Lua {
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         try {
@@ -67,7 +67,7 @@ namespace Balltze::Plugins::Lua {
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         auto *key = luaL_checkstring(state, 2);
@@ -90,7 +90,7 @@ namespace Balltze::Plugins::Lua {
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         auto *key = luaL_checkstring(state, 2);
@@ -105,20 +105,20 @@ namespace Balltze::Plugins::Lua {
     static int config_get_key_integer(lua_State *state) {
         int args = lua_gettop(state);
         if(args != 2) {
-            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getKeyInteger.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getInteger.");
         }
 
         if(!lua_istable(state, 1)) {
-            return luaL_error(state, "Invalid argument in function Balltze.config.getKeyInteger.");
+            return luaL_error(state, "Invalid argument in function Balltze.config.getInteger.");
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
-            return luaL_error(state, "Invalid key in function Balltze.config.getKeyInteger.");
+            return luaL_error(state, "Invalid key in function Balltze.config.getInteger.");
         }
 
         try {
@@ -132,27 +132,27 @@ namespace Balltze::Plugins::Lua {
             return 1;
         }
         catch(const std::runtime_error &e) {
-            return luaL_error(state, "Could not get integer value in function Balltze.config.getKeyInteger: %s", e.what());
+            return luaL_error(state, "Could not get integer value in function Balltze.config.getInteger: %s", e.what());
         }
     }
 
     static int config_get_key_number(lua_State *state) {
         int args = lua_gettop(state);
         if(args != 2) {
-            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getKeyNumber.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getNumber.");
         }
 
         if(!lua_istable(state, 1)) {
-            return luaL_error(state, "Invalid argument in function Balltze.config.getKeyNumber.");
+            return luaL_error(state, "Invalid argument in function Balltze.config.getNumber.");
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
-            return luaL_error(state, "Invalid key in function Balltze.config.getKeyNumber.");
+            return luaL_error(state, "Invalid key in function Balltze.config.getNumber.");
         }
 
         try {
@@ -166,27 +166,27 @@ namespace Balltze::Plugins::Lua {
             return 1;
         }
         catch(const std::runtime_error &e) {
-            return luaL_error(state, "Could not get number value in function Balltze.config.getKeyNumber: %s", e.what());
+            return luaL_error(state, "Could not get number value in function Balltze.config.getNumber: %s", e.what());
         }
     }
 
     static int config_get_key_string(lua_State *state) {
         int args = lua_gettop(state);
         if(args != 2) {
-            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getKeyString.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getString.");
         }
 
         if(!lua_istable(state, 1)) {
-            return luaL_error(state, "Invalid argument in function Balltze.config.getKeyString.");
+            return luaL_error(state, "Invalid argument in function Balltze.config.getString.");
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
-            return luaL_error(state, "Invalid key in function Balltze.config.getKeyString.");
+            return luaL_error(state, "Invalid key in function Balltze.config.getString.");
         }
 
         try {
@@ -200,27 +200,27 @@ namespace Balltze::Plugins::Lua {
             return 1;
         }
         catch(const std::runtime_error &e) {
-            return luaL_error(state, "Could not get string value in function Balltze.config.getKeyString: %s", e.what());
+            return luaL_error(state, "Could not get string value in function Balltze.config.getString: %s", e.what());
         }
     }
 
     static int config_get_key_boolean(lua_State *state) {
         int args = lua_gettop(state);
         if(args != 2) {
-            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getKeyBoolean.");
+            return luaL_error(state, "Invalid number of arguments in function Balltze.config.getBoolean.");
         }
 
         if(!lua_istable(state, 1)) {
-            return luaL_error(state, "Invalid argument in function Balltze.config.getKeyBoolean.");
+            return luaL_error(state, "Invalid argument in function Balltze.config.getBoolean.");
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
-            return luaL_error(state, "Invalid key in function Balltze.config.getKeyBoolean.");
+            return luaL_error(state, "Invalid key in function Balltze.config.getBoolean.");
         }
 
         try {
@@ -234,7 +234,7 @@ namespace Balltze::Plugins::Lua {
             return 1;
         }
         catch(const std::runtime_error &e) {
-            return luaL_error(state, "Could not get boolean value in function Balltze.config.getKeyBoolean: %s", e.what());
+            return luaL_error(state, "Could not get boolean value in function Balltze.config.getBoolean: %s", e.what());
         }
     }
 
@@ -249,7 +249,7 @@ namespace Balltze::Plugins::Lua {
         }
 
         lua_getfield(state, 1, "data");
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, -1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, -1));
         lua_pop(state, 1);
 
         auto *key = luaL_checkstring(state, 2);
@@ -300,7 +300,7 @@ namespace Balltze::Plugins::Lua {
     }
 
     static int config__gc(lua_State *state) {
-        auto *config = reinterpret_cast<Config::Config *>(luaL_checkudata(state, 1, "Config"));
+        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, lua_upvalueindex(1)));
         delete config;
         return 0;
     }
