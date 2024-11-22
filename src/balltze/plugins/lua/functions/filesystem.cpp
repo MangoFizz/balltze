@@ -264,6 +264,27 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    static int get_game_path(lua_State *state) {
+        lua_pushstring(state, fs::current_path().string().c_str());
+        return 1;
+    }
+
+    static int get_profiles_path(lua_State *state) {
+        lua_pushstring(state, Engine::get_path().string().c_str());
+        return 1;
+    }
+
+    static int get_plugin_path(lua_State *state) {
+        auto *plugin = get_lua_plugin(state);
+        if(plugin) {
+            lua_pushstring(state, plugin->directory().string().c_str());
+            return 1;
+        }
+        else {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.getPluginPath.");
+        }
+    }
+
     static const luaL_Reg filesystem_functions[] = {
         {"createDirectory", lua_create_directory},
         {"removeDirectory", lua_remove_directory},
@@ -273,6 +294,9 @@ namespace Balltze::Plugins::Lua {
         {"readFile", lua_read_file},
         {"deleteFile", lua_delete_file},
         {"fileExists", lua_file_exists},
+        {"getGamePath", get_game_path},
+        {"getProfilesPath", get_profiles_path},
+        {"getPluginPath", get_plugin_path},
         {nullptr, nullptr}
     };
 
