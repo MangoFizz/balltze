@@ -1,0 +1,13 @@
+{
+    "description": "Game engine improvements and sandbox tool for modders",
+    "name": "Balltze",
+    "version": "1.2.0",
+    "author": "Mango, Sledmine",
+    "category": "addon",
+    "label": "balltze",
+    "files": [],
+    "manifestVersion": "1.1.0",
+    "conflicts": [
+        "harmony"
+    ]
+}
