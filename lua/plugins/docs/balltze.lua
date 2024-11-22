@@ -11,6 +11,77 @@ Balltze = {}
 Balltze.apiVersion = "1.1.0"
 
 -------------------------------------------------------
+-- Balltze.config
+-------------------------------------------------------
+
+Balltze.config = {}
+
+---@class BalltzeConfig
+---@field save fun(self: BalltzeConfig) @Save configs to file
+---@field load fun(self: BalltzeConfig, key: string): any @Load configs from file
+---@field exists fun(self: BalltzeConfig, key: string): boolean @Check if a config exists
+---@field remove fun(self: BalltzeConfig, key: string) @Remove a config
+---@field getInteger fun(self: BalltzeConfig, key: string): integer|nil @Get an integer config
+---@field getNumber fun(self: BalltzeConfig, key: string): number|nil @Get a float config
+---@field getString fun(self: BalltzeConfig, key: string): string|nil @Get a string config
+---@field getBoolean fun(self: BalltzeConfig, key: string): boolean|nil @Get a boolean config
+---@field set fun(self: BalltzeConfig, key: string, value: any) @Set a config
+
+-- Get a configuration file 
+---@param path string @The path of the configuration file
+---@return BalltzeConfig @The configuration object
+function Balltze.config.open(path) end
+
+-- Save configs to its file
+---@param config BalltzeConfig @The configuration object
+function Balltze.config.save(config) end
+
+-- Load configs from its file
+---@param config BalltzeConfig @The configuration object
+function Balltze.config.load(config) end
+
+-- Check if a config exists
+---@param config BalltzeConfig @The configuration object\
+---@param key string @The key of the config
+---@return boolean @Whether the config exists
+function Balltze.config.exists(config, key) end
+
+-- Remove a config
+---@param config BalltzeConfig @The configuration object
+---@param key string @The key of the config
+function Balltze.config.remove(config, key) end
+
+-- Get an integer config
+---@param config BalltzeConfig @The configuration object
+---@param key string @The key of the config
+---@return integer|nil @The value of the config
+function Balltze.config.getInteger(config, key) end
+
+-- Get a float config
+---@param config BalltzeConfig @The configuration object
+---@param key string @The key of the config
+---@return number|nil @The value of the config
+function Balltze.config.getNumber(config, key) end
+
+-- Get a string config
+---@param config BalltzeConfig @The configuration object
+---@param key string @The key of the config
+---@return string|nil @The value of the config
+function Balltze.config.getString(config, key) end
+
+-- Get a boolean config
+---@param config BalltzeConfig @The configuration object
+---@param key string @The key of the config
+---@return boolean|nil @The value of the config
+function Balltze.config.getBoolean(config, key) end
+
+-- Set a config
+---@param config BalltzeConfig @The configuration object
+---@param key string @The key of the config
+---@param value any @The value of the config
+function Balltze.config.set(config, key, value) end
+
+-------------------------------------------------------
 -- Balltze.command
 -------------------------------------------------------
 
@@ -535,6 +606,18 @@ function Balltze.filesystem.deleteFile(path) end
 ---@param path string @The path of the file to check
 ---@return boolean @Whether the file exists
 function Balltze.filesystem.fileExists(path) end
+
+-- Get the game directory path
+---@return string @The game directory path
+function Balltze.filesystem.getGamePath() end
+
+-- Get the player profiles directory path
+---@return string @The player profiles path
+function Balltze.filesystem.getProfilesPath() end
+
+-- Get the game data directory path
+---@return string @The game data path
+function Balltze.filesystem.getPluginPath() end
 
 -------------------------------------------------------
 -- Balltze.logger
