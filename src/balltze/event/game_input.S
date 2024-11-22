@@ -47,7 +47,7 @@ _mouse_input_event:
     mouse_input_event_mapped:
     push 1
     mouse_input_event_call:
-    push edx
+    push ecx
     push 2
     call _dispatch_input_event_before
     cmp eax, 1
