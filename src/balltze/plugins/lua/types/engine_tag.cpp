@@ -129,7 +129,7 @@ namespace Balltze::Plugins::Lua {
         luacs_unsigned_field(state, EngineTagDataOffset, size, LUACS_FREADONLY);
         luacs_unsigned_field(state, EngineTagDataOffset, external, LUACS_FREADONLY);
         luacs_unsigned_field(state, EngineTagDataOffset, file_offset, LUACS_FREADONLY);
-        luacs_extref_field(state, EngineTagDataOffset, pointer, LUACS_FREADONLY);
+        luacs_unsigned_field(state, EngineTagDataOffset, pointer, LUACS_FREADONLY);
         lua_pop(state, 1);
     }
 
