@@ -38,6 +38,10 @@ namespace Balltze::Plugins {
         return m_metadata->target_api;
     }
 
+    std::vector<std::string> const &Plugin::maps() const noexcept {
+        return m_metadata->maps;
+    }
+
     bool Plugin::reloadable() const noexcept {
         return m_metadata->reloadable;
     }
@@ -66,7 +70,7 @@ namespace Balltze::Plugins {
         return m_loaded;
     }
 
-    void DLLPlugin::read_metadata() {
+    void NativePlugin::update_metadata() {
         auto metadata_proc = GetProcAddress(m_handle, "plugin_metadata");
         if(metadata_proc) {
             auto get_metadata = reinterpret_cast<plugin_metadata_proc_t>(metadata_proc);
@@ -80,64 +84,48 @@ namespace Balltze::Plugins {
         }
     }
 
-    void DLLPlugin::get_directory() {
+    void NativePlugin::set_up_directory() {
         m_directory = get_plugins_path() / m_filepath.stem().string();
+        init_data_directory();
     }
 
-    HMODULE DLLPlugin::handle() {
+    HMODULE NativePlugin::handle() {
         return m_handle;
     }
 
-    PluginInitResult DLLPlugin::init() {
+    PluginLoadResult NativePlugin::load() {
         if(m_loaded) {
-            throw std::runtime_error("Plugin cannot be initialized after loading.");
-        }
-
-        logger.info("Initializing plugin {}...", m_filename);
-
-        // check if plugin is compatible with the current version of Balltze
-        if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
-            return PluginInitResult::PLUGIN_INIT_INCOMPATIBLE;
-        }
-
-        auto init_proc = GetProcAddress(m_handle, "plugin_init");
-        if(init_proc) {
-            try {
-                auto init_plugin = reinterpret_cast<plugin_init_proc_t>(init_proc);
-                bool result = init_plugin();
-                if(result) {
-                    return PluginInitResult::PLUGIN_INIT_SUCCESS;
-                }
-            }
-            catch(std::runtime_error& e) {
-                logger.error("Failed to initialize plugin {}: {}", m_metadata->name, e.what());
-            }
-            return PluginInitResult::PLUGIN_INIT_FAILURE;
-        }
-        else {
-            return PluginInitResult::PLUGIN_INIT_NOT_FOUND;
-        }
-    }
-
-    void DLLPlugin::load() {
-        if(m_loaded) {
-            throw std::runtime_error("Plugin already unloaded.");
+            throw std::runtime_error("Plugin already loaded.");
         }
 
         logger.info("Loading plugin {}...", m_filename);
+
+        // check if plugin is compatible with the current version of Balltze
+        if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
+            return PluginLoadResult::PLUGIN_LOAD_INCOMPATIBLE;
+        }
+
         auto load_proc = GetProcAddress(m_handle, "plugin_load");
         if(load_proc) {
-            auto load_plugin = reinterpret_cast<plugin_load_proc_t>(load_proc);
-            load_plugin();
+            try {
+                auto load_plugin = reinterpret_cast<plugin_load_proc_t>(load_proc);
+                bool result = load_plugin();
+                if(result) {
+                    m_loaded = true;
+                    return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
+                }
+            }
+            catch(std::runtime_error& e) {
+                logger.error("Failed to load plugin {}: {}", m_metadata->name, e.what());
+            }
+            return PluginLoadResult::PLUGIN_LOAD_FAILURE;
         }
         else {
-            logger.warning("Could not find plugin_load function in plugin {}.", m_filename);
+            return PluginLoadResult::PLUGIN_LOAD_NOT_FOUND;
         }
-
-        m_loaded = true;
     }
 
-    void DLLPlugin::unload() {
+    void NativePlugin::unload() {
         if(!m_loaded) {
             throw std::runtime_error("Plugin not loaded.");
         }
@@ -157,20 +145,29 @@ namespace Balltze::Plugins {
         }
     }
 
-    DLLPlugin::DLLPlugin(std::filesystem::path dll_file) {
+    NativePlugin::NativePlugin(std::filesystem::path dll_file) {
         m_filename = dll_file.filename().string();
         m_filepath = dll_file;
         m_handle = LoadLibraryA(dll_file.string().c_str());
         if(m_handle) {
-            read_metadata();
-            get_directory();
+            update_metadata();
+            set_up_directory();
         }
         else {
             throw std::runtime_error("Could not load DLL plugin.");
         }
     }
 
-    void LuaPlugin::read_metadata() {
+    NativePlugin::~NativePlugin() {
+        if(m_loaded) {
+            unload();
+        }
+        if(m_handle) {
+            FreeLibrary(m_handle);
+        }
+    }
+
+    void LuaPlugin::update_metadata() {
         m_metadata = PluginMetadata();
         lua_getglobal(m_state, "PluginMetadata");
         if(lua_isfunction(m_state, -1)) {
@@ -212,8 +209,20 @@ namespace Balltze::Plugins {
                     lua_pop(m_state, 1);
                 }
                 catch(std::runtime_error& e) {
-                    logger.warning("Could not read version number in plugin {}.", m_filename);
+                    logger.warning("Could not read plugin version/target api version in plugin {}.", m_filename);
                 }
+
+                lua_getfield(m_state, -1, "maps");
+                if(lua_istable(m_state, -1)) {
+                    lua_pushnil(m_state);
+                    while(lua_next(m_state, -2) != 0) {
+                        if(lua_isstring(m_state, -1)) {
+                            m_metadata->maps.push_back(lua_tostring(m_state, -1));
+                        }
+                        lua_pop(m_state, 1);
+                    }
+                }
+                lua_pop(m_state, 1);
 
                 lua_getfield(m_state, -1, "reloadable");
                 if(lua_isboolean(m_state, -1)) {
@@ -237,8 +246,9 @@ namespace Balltze::Plugins {
         }
     }
 
-    void LuaPlugin::get_directory() {
+    void LuaPlugin::set_up_directory() {
         m_directory =  get_plugins_path() / ("lua_" + m_filepath.stem().string());
+        init_data_directory();
     }
 
     lua_State* LuaPlugin::state() noexcept {
@@ -309,19 +319,19 @@ namespace Balltze::Plugins {
         return err;
     }
 
-    PluginInitResult LuaPlugin::init() {
+    PluginLoadResult LuaPlugin::load() {
         if(m_loaded) {
-            throw std::runtime_error("Plugin cannot be initialized after loading.");
+            throw std::runtime_error("Plugin already loaded.");
         }
         
-        logger.info("Initializing plugin '{}'...", m_filename);
+        logger.info("Loading plugin '{}'...", m_filename);
 
         // check if plugin is compatible with the current version of Balltze
         if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
-            return PluginInitResult::PLUGIN_INIT_INCOMPATIBLE;
+            return PluginLoadResult::PLUGIN_LOAD_INCOMPATIBLE;
         }
 
-        lua_getglobal(m_state, "PluginInit");
+        lua_getglobal(m_state, "PluginLoad");
         if(lua_isfunction(m_state, -1)) {
             auto res = lua_pcall(m_state, 0, 1, 0);
             if(res == LUA_OK) {
@@ -329,40 +339,21 @@ namespace Balltze::Plugins {
                     bool result = lua_toboolean(m_state, -1);
                     lua_pop(m_state, 1);
                     if(result) {
-                        return PluginInitResult::PLUGIN_INIT_SUCCESS;
+                        m_loaded = true;
+                        return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
                     }
                 }
                 lua_pop(m_state, 1);
             }
             else {
-                logger.error("Failed to initialize plugin '{}': {}", m_filename, get_error_message());
+                logger.error("Failed to load plugin '{}': {}", m_filename, get_error_message());
                 print_traceback();
             }
-            return PluginInitResult::PLUGIN_INIT_FAILURE;
+            return PluginLoadResult::PLUGIN_LOAD_FAILURE;
         }
         else {
-            return PluginInitResult::PLUGIN_INIT_NOT_FOUND;
+            return PluginLoadResult::PLUGIN_LOAD_NOT_FOUND;
         }
-    }
-
-    void LuaPlugin::load() {
-        if(m_loaded) {
-            throw std::runtime_error("Plugin already loaded.");
-        }
-
-        logger.info("Loading plugin {}...", m_filename);
-        lua_getglobal(m_state, "PluginLoad");
-        if(lua_isfunction(m_state, -1)) {
-            auto res = lua_pcall(m_state, 0, 0, 0);
-            if(res != LUA_OK) {
-                logger.error("Error while loading plugin '{}': {}", m_filename, get_error_message());
-                print_traceback();
-            }
-        }
-        else {
-            logger.warning("Could not find PluginLoad function in plugin '{}'.", m_filename);
-        }
-        m_loaded = true;
     }
 
     void LuaPlugin::unload() {
@@ -409,7 +400,7 @@ namespace Balltze::Plugins {
             lua_setfield(m_state, -2, "execute");
             
             // Get plugin directory
-            get_directory();
+            set_up_directory();
                  
             // Set package.path and package.cpath
             lua_getglobal(m_state, "package");
@@ -429,7 +420,7 @@ namespace Balltze::Plugins {
                     lua_close(m_state);
                     throw std::runtime_error("Could not execute Lua plugin '" + m_filename + "'.");
                 }
-                read_metadata();
+                update_metadata();
             }
             else {
                 lua_close(m_state);
@@ -439,6 +430,13 @@ namespace Balltze::Plugins {
         else {
             throw std::runtime_error("could not create Lua state for plugin '" + m_filename + "'.");
         }
+    }
+
+    LuaPlugin::~LuaPlugin() {
+        if(m_loaded) {
+            unload();
+        }
+        lua_close(m_state);
     }
 
     std::filesystem::path get_plugins_path() noexcept {

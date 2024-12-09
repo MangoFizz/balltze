@@ -7,10 +7,9 @@
 #include "plugin.hpp"
 
 namespace Balltze::Plugins {
-    void init_plugins() noexcept;
     std::vector<LuaPlugin *> get_lua_plugins() noexcept;
     LuaPlugin *get_lua_plugin(lua_State *state) noexcept;
-    DLLPlugin *get_dll_plugin(HMODULE handle) noexcept;
+    NativePlugin *get_dll_plugin(HMODULE handle) noexcept;
     void set_up_plugins() noexcept;
 }
 

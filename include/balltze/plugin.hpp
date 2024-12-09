@@ -6,6 +6,7 @@
 #define BALLTZE_PLUGIN_API extern "C" __declspec(dllexport)
 
 #include <string>
+#include <vector>
 #include <filesystem>
 #include <semver.hpp>
 #include "api.hpp"
@@ -19,12 +20,12 @@ namespace Balltze {
         std::string author;
         semver::version version;
         semver::version target_api;
+        std::vector<std::string> maps;
         bool reloadable;
     };
 
     using plugin_metadata_proc_t = PluginMetadata (*)();
-    using plugin_init_proc_t = bool (*)();
-    using plugin_load_proc_t = void (*)();
+    using plugin_load_proc_t = bool (*)();
     using plugin_unload_proc_t = void (*)();
 
     BALLTZE_API std::filesystem::path get_plugin_path(PluginHandle);

@@ -15,11 +15,11 @@
 #include <balltze/plugin.hpp>
 
 namespace Balltze::Plugins {
-    enum PluginInitResult {
-        PLUGIN_INIT_SUCCESS,
-        PLUGIN_INIT_FAILURE,
-        PLUGIN_INIT_INCOMPATIBLE,
-        PLUGIN_INIT_NOT_FOUND
+    enum PluginLoadResult {
+        PLUGIN_LOAD_SUCCESS,
+        PLUGIN_LOAD_FAILURE,
+        PLUGIN_LOAD_INCOMPATIBLE,
+        PLUGIN_LOAD_NOT_FOUND
     };
 
     class Plugin {
@@ -30,8 +30,8 @@ namespace Balltze::Plugins {
         std::filesystem::path m_directory;
         bool m_loaded = false;
 
-        virtual void get_directory() = 0;
-        virtual void read_metadata() = 0;
+        virtual void set_up_directory() = 0;
+        virtual void update_metadata() = 0;
 
     public:
         std::string filename() const noexcept;
@@ -40,30 +40,30 @@ namespace Balltze::Plugins {
         std::string author() const noexcept;
         semver::version version() const noexcept;
         semver::version target_api() const noexcept;
+        std::vector<std::string> const &maps() const noexcept;
         bool reloadable() const noexcept;
         std::filesystem::path directory() const noexcept;
         bool path_is_valid(std::filesystem::path path) const noexcept;
         void init_data_directory();
         bool loaded() const noexcept;
 
-        virtual PluginInitResult init() = 0;
-        virtual void load() = 0;
+        virtual PluginLoadResult load() = 0;
         virtual void unload() = 0;
     };
 
-    class DLLPlugin : public Plugin {
+    class NativePlugin : public Plugin {
     private:
         HMODULE m_handle;
 
-        void get_directory();
-        void read_metadata();
+        void set_up_directory();
+        void update_metadata();
 
     public:
         HMODULE handle();
-        PluginInitResult init();
-        void load();
+        PluginLoadResult load();
         void unload();
-        DLLPlugin(std::filesystem::path dlL_file);
+        NativePlugin(std::filesystem::path dlL_file);
+        ~NativePlugin();
     };
 
     class LuaPlugin : public Plugin {
@@ -72,8 +72,8 @@ namespace Balltze::Plugins {
         std::vector<std::unique_ptr<Logger>> m_loggers;
         std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> m_tag_imports;
 
-        void get_directory();
-        void read_metadata();
+        void set_up_directory();
+        void update_metadata();
 
     public:
         lua_State *state() noexcept;
@@ -86,10 +86,10 @@ namespace Balltze::Plugins {
         std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &imported_tags() const noexcept;
         void print_traceback();
         std::string get_error_message();
-        PluginInitResult init();
-        void load();
+        PluginLoadResult load();
         void unload();
         LuaPlugin(std::filesystem::path lua_file);
+        ~LuaPlugin();
     };
 
     std::filesystem::path get_plugins_path() noexcept;
