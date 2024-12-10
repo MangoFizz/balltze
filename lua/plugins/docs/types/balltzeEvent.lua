@@ -29,7 +29,7 @@
 -------------------------------------------------------
 
 ---@class BalltzeCameraEventContext
----@field position EngineCameraData @The position of the camera
+---@field camera EngineCameraData @The position of the camera
 ---@field type EngineCameraType @The type of the camera
 
 ---@class MetaBalltzeCameraEventContext: BalltzeCameraEventContext

@@ -290,7 +290,7 @@
 ---@field vehicleSeatId integer
 ---@field currentWeaponId integer
 ---@field nextWeaponId integer
----@field weapons table<integer, integer>
+---@field weapons EngineObjectHandle[]
 ---@field weaponReadyTicks table<integer, integer>
 ---@field equipmentHandle integer
 ---@field currentGrenadeIndex integer
@@ -498,8 +498,8 @@
 ---@field integratedLightPower number
 ---@field trackedObject integer
 ---@field altShotsLoaded integer
----@field triggers table<integer, MetaEngineWeaponTrigger>
----@field magazines table<integer, MetaEngineWeaponMagazine>
+---@field triggers MetaEngineWeaponTrigger[]
+---@field magazines MetaEngineWeaponMagazine[]
 ---@field lastTriggerFireTick integer
 ---@field reloadStartingPoint MetaEngineWeaponReloadStartData
 ---@field network MetaEngineWeaponNetwork
