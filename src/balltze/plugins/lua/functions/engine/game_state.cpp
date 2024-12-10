@@ -197,6 +197,7 @@ namespace Balltze::Plugins::Lua {
                 else {
                     return luaL_error(state, "invalid seat index or label in function Engine.gameState.unitEnterVehicle, expected integer or string");
                 }
+                return 0;
             }
             catch(std::runtime_error &e) {
                 return luaL_error(state, "%s in function Engine.gameState.unitEnterVehicle", e.what());
