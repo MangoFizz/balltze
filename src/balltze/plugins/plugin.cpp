@@ -104,6 +104,8 @@ namespace Balltze::Plugins {
             throw std::runtime_error("Plugin already loaded.");
         }
 
+        m_loaded = true;
+
         logger.info("Loading plugin {}...", m_filename);
 
         // check if plugin is compatible with the current version of Balltze
@@ -117,7 +119,6 @@ namespace Balltze::Plugins {
                 auto load_plugin = reinterpret_cast<plugin_load_proc_t>(load_proc);
                 bool result = load_plugin();
                 if(result) {
-                    m_loaded = true;
                     return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
                 }
             }
@@ -322,6 +323,8 @@ namespace Balltze::Plugins {
         if(m_loaded) {
             throw std::runtime_error("Plugin already loaded.");
         }
+
+        m_loaded = true;
         
         logger.info("Loading plugin '{}'...", m_filename);
 
@@ -338,7 +341,6 @@ namespace Balltze::Plugins {
                     bool result = lua_toboolean(m_state, -1);
                     lua_pop(m_state, 1);
                     if(result) {
-                        m_loaded = true;
                         return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
                     }
                 }
