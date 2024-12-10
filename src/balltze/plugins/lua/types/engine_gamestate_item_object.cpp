@@ -269,44 +269,8 @@ namespace Balltze::Plugins::Lua {
     }
 
     void define_engine_gamestate_item_object_types(lua_State *state) noexcept {
-        luacs_newenum(state, EngineWeaponState);
-        lua_pop(state, 1);
-        luacs_newenum(state, EngineGameStateWeaponMagazineState);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineGameStateWeaponTrigger);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineGameStateWeaponMagazine);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineWeaponReloadStartData);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineWeaponNetworkData);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineWeaponNetwork);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineEquipmentNetworkData);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineEquipmentNetwork);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineProjectileObjectFlags); 
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineProjectileNetworkData);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineProjectileNetwork);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineItemObject, EngineBaseObject);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineGarbageObject, EngineItemObject);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineWeaponObject, EngineItemObject);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineEquipmentObject, EngineItemObject);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineProjectileObject, EngineItemObject);
-        lua_pop(state, 1);
-
         define_weapon_state_enum(state);
         define_weapon_magazine_state_enum(state);
-
         define_engine_item_object_struct(state);
         define_engine_garbage_object_struct(state);
         define_engine_weapon_trigger_struct(state);

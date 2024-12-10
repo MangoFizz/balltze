@@ -244,31 +244,6 @@ namespace Balltze::Plugins::Lua {
     }
 
     void define_engine_gamestate_object_types(lua_State *state) noexcept {
-        luacs_newenum(state, EngineBaseObjectAttachmentType);
-        lua_pop(state, 1);
-        luacs_newenum(state, EngineObjectNetworkRole);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineGameStateObjectFlags); 
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineBaseObjectNetwork); 
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineScenarioLocation);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineBaseObjectVitalsFlags); 
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineBaseObjectVitals);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineBaseObjectAttachmentsData);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineBaseObjectRegionDestroyeds); 
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineBaseObjectBlockReference);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineObjectValidOutGoingFunctions); 
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineBaseObject);
-        lua_pop(state, 1);
-
         define_engine_base_object_attachment_type_enum(state);
         define_engine_object_network_role_enum(state);
         define_engine_object_flags_struct(state);

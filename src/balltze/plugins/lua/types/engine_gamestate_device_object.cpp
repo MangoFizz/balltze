@@ -98,21 +98,6 @@ namespace Balltze::Plugins::Lua {
     }
 
     void define_engine_gamestate_device_object_types(lua_State *state) noexcept {
-        luacs_newstruct(state, EngineDeviceObjectState);
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineDeviceMachineObjectFlags); 
-        lua_pop(state, 1);
-        luacs_newstruct(state, EngineDeviceControlObjectFlags); 
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineDeviceObject, EngineBaseObject);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineDeviceMachineObject, EngineDeviceObject);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineDeviceControlObject, EngineDeviceObject);
-        lua_pop(state, 1);
-        luacs_newderivedstruct(state, EngineDeviceLightFixtureObject, EngineDeviceObject);
-        lua_pop(state, 1);
-    
         define_engine_device_object_state_struct(state);
         define_engine_device_object_struct(state);
         define_engine_device_machine_object_flags_struct(state);
