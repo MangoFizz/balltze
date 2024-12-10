@@ -49,6 +49,7 @@ namespace Balltze::Plugins {
 
         virtual PluginLoadResult load() = 0;
         virtual void unload() = 0;
+        ~Plugin();
     };
 
     class NativePlugin : public Plugin {
@@ -63,7 +64,6 @@ namespace Balltze::Plugins {
         PluginLoadResult load();
         void unload();
         NativePlugin(std::filesystem::path dlL_file);
-        ~NativePlugin();
     };
 
     class LuaPlugin : public Plugin {
@@ -89,7 +89,6 @@ namespace Balltze::Plugins {
         PluginLoadResult load();
         void unload();
         LuaPlugin(std::filesystem::path lua_file);
-        ~LuaPlugin();
     };
 
     std::filesystem::path get_plugins_path() noexcept;

@@ -70,6 +70,12 @@ namespace Balltze::Plugins {
         return m_loaded;
     }
 
+    Plugin::~Plugin() {
+        if(m_loaded) {
+            logger.warning("Destroying plugin {} while it is still loaded.", m_filename);
+        }
+    }
+
     void NativePlugin::update_metadata() {
         auto metadata_proc = GetProcAddress(m_handle, "plugin_metadata");
         if(metadata_proc) {
@@ -143,6 +149,8 @@ namespace Balltze::Plugins {
         if(reloadable()) {
             FreeLibrary(m_handle);
         }
+
+        m_loaded = false;
     }
 
     NativePlugin::NativePlugin(std::filesystem::path dll_file) {
@@ -155,15 +163,6 @@ namespace Balltze::Plugins {
         }
         else {
             throw std::runtime_error("Could not load DLL plugin.");
-        }
-    }
-
-    NativePlugin::~NativePlugin() {
-        if(m_loaded) {
-            unload();
-        }
-        if(m_handle) {
-            FreeLibrary(m_handle);
         }
     }
 
@@ -379,6 +378,8 @@ namespace Balltze::Plugins {
         if(reloadable()) {
             lua_close(m_state);
         }
+
+        m_loaded = false;
     }
 
     LuaPlugin::LuaPlugin(std::filesystem::path lua_file) {
@@ -430,13 +431,6 @@ namespace Balltze::Plugins {
         else {
             throw std::runtime_error("could not create Lua state for plugin '" + m_filename + "'.");
         }
-    }
-
-    LuaPlugin::~LuaPlugin() {
-        if(m_loaded) {
-            unload();
-        }
-        lua_close(m_state);
     }
 
     std::filesystem::path get_plugins_path() noexcept {

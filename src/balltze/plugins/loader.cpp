@@ -80,7 +80,7 @@ namespace Balltze::Plugins {
         auto load_result = plugin->load();
         switch(load_result) {
             case PLUGIN_LOAD_SUCCESS:
-                logger.debug("Plugin {} load successfully.", plugin->name());
+                logger.debug("Plugin {} loaded successfully.", plugin->name());
                 break;
             case PLUGIN_LOAD_FAILURE:
                 logger.warning("Plugin {} failed to load.", plugin->name());
@@ -146,6 +146,7 @@ namespace Balltze::Plugins {
         while(it != plugins.end()) {
             auto *plugin = it->get();
             if(plugin->reloadable()) {
+                plugin->unload();
                 it = plugins.erase(it);
             }
             else {
@@ -155,9 +156,19 @@ namespace Balltze::Plugins {
         init_plugins();
     }
 
+    static bool first_load = true;
+
     static void plugins_tick(TickEvent const &context) noexcept {
         if(context.time == EVENT_TIME_AFTER) {
             return;
+        }
+
+        if(first_load) {
+            load_global_plugins();
+            if(last_map) {
+                load_map_plugins(*last_map);
+            }
+            first_load = false;
         }
 
         if(reinit_plugins_on_next_tick) {
@@ -192,11 +203,9 @@ namespace Balltze::Plugins {
             }
         }
         else {
-            if(first_load) {
-                load_global_plugins();
-                first_load = false;
+            if(!first_load) {
+                load_map_plugins(ev.context.name);
             }
-            load_map_plugins(ev.context.name);
             last_map = ev.context.name;
         }
     }
