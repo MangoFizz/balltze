@@ -322,7 +322,7 @@ namespace Balltze::Plugins::Lua {
         {"createObject", engine_create_object},
         {"deleteObject", engine_delete_object},
         {"unitEnterVehicle", unit_enter_vehicle},
-        {"exitVehicle", unit_exit_vehicle},
+        {"unitExitVehicle", unit_exit_vehicle},
         {"getPlayer", get_player},
         {"getPlayerByRconHandle", get_player_by_rcon_handle},
         {"getCameraType", engine_get_camera_type},
