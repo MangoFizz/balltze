@@ -208,6 +208,34 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    static int unit_exit_vehicle(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            auto unit_handle = get_engine_resource_handle(state, 1);
+            if(!unit_handle || unit_handle->is_null()) {
+                return luaL_error(state, "invalid unit object handle in function Engine.gameState.exitVehicle");
+            }
+            auto &object_table = Engine::get_object_table();
+            auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(*unit_handle));
+            if(!unit) {
+                return luaL_error(state, "invalid unit handle in function Engine.gameState.exitVehicle");
+            }
+            if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
+                return luaL_error(state, "invalid object type in function Engine.gameState.exitVehicle, expected biped or vehicle");
+            }
+            try {
+                Engine::unit_scripting_exit_vehicle(*unit_handle);
+                return 0;
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, "%s in function Engine.gameState.exitVehicle", e.what());
+            }
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in function Engine.gameState.exitVehicle");
+        }
+    }
+
     static int get_player(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0 || args == 1) {
@@ -294,6 +322,7 @@ namespace Balltze::Plugins::Lua {
         {"createObject", engine_create_object},
         {"deleteObject", engine_delete_object},
         {"unitEnterVehicle", unit_enter_vehicle},
+        {"exitVehicle", unit_exit_vehicle},
         {"getPlayer", get_player},
         {"getPlayerByRconHandle", get_player_by_rcon_handle},
         {"getCameraType", engine_get_camera_type},

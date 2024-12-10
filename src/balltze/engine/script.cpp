@@ -74,7 +74,13 @@ namespace Balltze::Engine {
     }
 
     void unit_scripting_exit_vehicle(ObjectHandle unit_handle) {
-        // TODO Validate that unit is in a vehicle
+        auto *unit = get_object_table().get_object(unit_handle);
+        if(!unit) {
+            throw std::runtime_error("unit object not found");
+        }
+        if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
+            throw std::runtime_error("object is not a biped/vehicle");
+        }
         unit_scripting_exit_vehicle_asm(unit_handle);
     }
 
