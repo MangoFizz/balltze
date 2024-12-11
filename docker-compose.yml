@@ -1,7 +1,6 @@
-version: '3.1'
 services:
   common: &common
-    image: bonk
+    image: balltze-dev-env
     stdin_open: true
     volumes:
       - ./:/workspace

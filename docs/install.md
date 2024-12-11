@@ -66,10 +66,10 @@ tools on your system. You only need to have Docker installed on your system.
 
 To build the image, run:
 ```
-docker build . -t bonk
+docker build . -t balltze-dev-env
 ```
 Now use docker compose to build the project:
 ```
-docker compose run compile
+docker compose run build
 ```
 The compiled files will be available on the `build` folder inside of the project directory.

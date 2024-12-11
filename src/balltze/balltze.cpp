@@ -35,7 +35,6 @@ namespace Balltze {
 
         try {
             balltze_side = Memory::find_signatures();
-
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
                 Event::set_up_events();
@@ -45,12 +44,8 @@ namespace Balltze {
                 load_commands_settings();
 
                 firstTickListener = TickEvent::subscribe_const(+[](TickEvent const &context) {
-                    logger.debug("First tick");
-
-                    // Initialize stuff
                     set_up_text_hook();
                     set_up_subtitles();
-
                     firstTickListener.remove();
                 }, EVENT_PRIORITY_HIGHEST);
             }
@@ -66,7 +61,6 @@ namespace Balltze {
                 logger.fatal("failed to detect engine type");
                 std::exit(EXIT_FAILURE);
             }
-
             logger.info("initialized successfully!");
         }
         catch(std::runtime_error &e) {
