@@ -9,3 +9,4 @@ lua/plugins/docs/types/tag_data/
 package/game-mods/balltze.dll
 src/balltze/plugins/lua/types/engine_tag_data.cpp
 src/balltze/plugins/lua/types/engine_tag_data.hpp
+package/my-games-data-path/balltze/config

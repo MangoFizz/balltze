@@ -338,6 +338,31 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    static int engine_unit_add_weapon_to_inventory(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 3) {
+            auto unit_handle = get_engine_resource_handle(state, 1);
+            if(!unit_handle) {
+                return luaL_error(state, "invalid argument #1, expected object handle in function Engine.gameState.unitAddWeaponToInventory");
+            }
+            auto weapon_handle = get_engine_resource_handle(state, 2);
+            if(!weapon_handle) {
+                return luaL_error(state, "invalid argument #2, expected object handle in function Engine.gameState.unitAddWeaponToInventory");
+            }
+            auto weapon_slot = luaL_checkinteger(state, 3);
+            try {
+                Engine::unit_add_weapon_to_inventory(*unit_handle, *weapon_handle, weapon_slot);
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, "%s in function Engine.gameState.unitAddWeaponToInventory", e.what());
+            }
+            return 0;
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in function Engine.gameState.unitAddWeaponToInventory");
+        }
+    }
+
     static const luaL_Reg engine_game_state_functions[] = {
         {"getObject", engine_get_object},
         {"createObject", engine_create_object},
@@ -345,6 +370,7 @@ namespace Balltze::Plugins::Lua {
         {"unitEnterVehicle", engine_unit_enter_vehicle},
         {"unitExitVehicle", engine_unit_exit_vehicle},
         {"unitDeleteAllWeapons", engine_unit_delete_all_weapons},
+        {"unitAddWeaponToInventory", engine_unit_add_weapon_to_inventory},
         {"getPlayer", get_player},
         {"getPlayerByRconHandle", get_player_by_rcon_handle},
         {"getCameraType", engine_get_camera_type},

@@ -216,4 +216,22 @@ namespace Balltze::Engine {
         }
         ::unit_delete_all_weapons((::ObjectHandle)unit_handle.value);
     }
+
+    void unit_add_weapon_to_inventory(ObjectHandle unit_handle, ObjectHandle weapon_handle, uint16_t param_3) {
+        if(unit_handle.is_null()) {
+            throw std::runtime_error("invalid unit object handle");
+        }
+        if(weapon_handle.is_null()) {
+            throw std::runtime_error("invalid weapon object handle");
+        }
+        auto &object_table = Engine::get_object_table();
+        auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(unit_handle));
+        if(!unit) {
+            throw std::runtime_error("unit object not found");
+        }
+        if(unit->type != Engine::OBJECT_TYPE_BIPED) {
+            throw std::runtime_error("invalid object type, expected biped");
+        }
+        ::unit_add_weapon_to_inventory((::ObjectHandle)unit_handle.value, (::ObjectHandle)weapon_handle.value, param_3);
+    }
 }

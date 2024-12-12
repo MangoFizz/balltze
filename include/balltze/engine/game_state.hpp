@@ -2018,6 +2018,14 @@ namespace Balltze::Engine {
      * @throws std::runtime_error if the object does not exist, or if the object is not a biped or vehicle.
      */
     BALLTZE_API void unit_delete_all_weapons(ObjectHandle unit);
+
+    /**
+     * Add a weapon to a unit.
+     * @param unit The handle of the unit to add the weapon to.
+     * @param weapon The handle of the weapon to add.
+     * @throws std::runtime_error if the object does not exist, or if the object is not a biped or vehicle.
+     */
+    BALLTZE_API void unit_add_weapon_to_inventory(ObjectHandle unit, ObjectHandle weapon, uint16_t param_3);
 }
 
 #endif
