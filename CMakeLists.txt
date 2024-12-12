@@ -21,6 +21,7 @@ include(lib/luacstruct/luacstruct.cmake)
 include(lib/invader/invader.cmake)
 include(lib/lanes/lanes.cmake)
 include(src/sound-subtitles-stapler/sss.cmake)
+add_subdirectory(src/ringworld)
 
 # Set include path
 include_directories(include include/lua lib/ lib/lanes/src)

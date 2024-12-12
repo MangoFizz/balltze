@@ -1,0 +1,3 @@
+[submodule "src/ringworld"]
+	path = src/ringworld
+	url = https://github.com/MangoFizz/ringworld
