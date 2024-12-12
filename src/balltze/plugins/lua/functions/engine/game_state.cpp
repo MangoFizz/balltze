@@ -10,6 +10,10 @@
 #include "../../types.hpp"
 #include "../../helpers/function_table.hpp"
 
+extern "C" {
+    #include <ringworld/units/units.h>
+}
+
 namespace Balltze::Plugins::Lua {
     static int engine_get_object(lua_State *state) noexcept {
         int args = lua_gettop(state);
@@ -163,7 +167,7 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
-    static int unit_enter_vehicle(lua_State *state) noexcept {
+    static int engine_unit_enter_vehicle(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 3) {
             auto unit_handle = get_engine_resource_handle(state, 1);
@@ -208,7 +212,7 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
-    static int unit_exit_vehicle(lua_State *state) noexcept {
+    static int engine_unit_exit_vehicle(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1) {
             auto unit_handle = get_engine_resource_handle(state, 1);
@@ -317,12 +321,25 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    static int engine_unit_delete_all_weapons(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 1) {
+            int unit_handle_value = luaL_checkinteger(state, 1);
+            unit_delete_all_weapons(unit_handle_value);
+            return 0;
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in function Engine.gameState.unitDeleteAllWeapons");
+        }
+    }
+
     static const luaL_Reg engine_game_state_functions[] = {
         {"getObject", engine_get_object},
         {"createObject", engine_create_object},
         {"deleteObject", engine_delete_object},
-        {"unitEnterVehicle", unit_enter_vehicle},
-        {"unitExitVehicle", unit_exit_vehicle},
+        {"unitEnterVehicle", engine_unit_enter_vehicle},
+        {"unitExitVehicle", engine_unit_exit_vehicle},
+        {"unitDeleteAllWeapons", engine_unit_delete_all_weapons},
         {"getPlayer", get_player},
         {"getPlayerByRconHandle", get_player_by_rcon_handle},
         {"getCameraType", engine_get_camera_type},
