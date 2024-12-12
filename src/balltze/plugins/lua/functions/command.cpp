@@ -155,7 +155,7 @@ namespace Balltze::Plugins::Lua {
     static int execute_command(lua_State *state) noexcept {
         auto *plugin = get_lua_plugin(state);
         if(!plugin) {
-            return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.createDirectory.");
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.command.executeCommand.");
         }
 
         int args = lua_gettop(state);
@@ -206,9 +206,39 @@ namespace Balltze::Plugins::Lua {
         return 0;
     }
 
+    static int load_settings(lua_State *state) noexcept {
+        auto *plugin = get_lua_plugin(state);
+        if(!plugin) {
+            return luaL_error(state, "Missing plugin upvalue in function Balltze.command.loadSettings.");
+        }
+        auto directory = plugin->directory();
+        auto config = Config::Config(directory / "settings.json");
+        for(auto &command : commands) {
+            auto command_key = std::string("commands.") + command->name();
+            if(command->plugin() && command->plugin() == reinterpret_cast<void *>(plugin)) {
+                if(config.exists(command_key)) {
+                    auto command_value = config.get<std::string>(command_key);
+                    auto arguments = split_arguments(command_value.value());
+                    
+                    auto arguments_alloc(std::make_unique<const char *[]>(arguments.size()));
+                    for(std::size_t i = 0; i < arguments.size(); i++) {
+                        arguments_alloc[i] = arguments[i].data();
+                    }
+
+                    bool res = command->call(arguments.size(), arguments_alloc.get());
+                    if(res == COMMAND_RESULT_FAILED_ERROR) {
+                        logger.error("Command {} failed to load from config", command->name());
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
     static const luaL_Reg command_functions[] = {
         {"registerCommand", register_command},
         {"executeCommand", execute_command},
+        {"loadSettings", load_settings},
         {nullptr, nullptr}
     };
 
