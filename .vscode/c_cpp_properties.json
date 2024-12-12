@@ -5,6 +5,7 @@
             "includePath": [
                 "/usr/i686-w64-mingw32/include/",
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/src/ringworld/include/*"
             ],
             "compilerPath": "/usr/sbin/i686-w64-mingw32-gcc",
             "cStandard": "c17",
