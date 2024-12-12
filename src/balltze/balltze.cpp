@@ -6,6 +6,7 @@
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
+#include <ringworld/ringworld.h>
 #include "features/features.hpp"
 #include "event/event.hpp"
 #include "memory/memory.hpp"
@@ -42,6 +43,8 @@ namespace Balltze {
                 Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
+
+                set_up_ringworld_hooks(PLATFORM_CLIENT);
 
                 firstTickListener = TickEvent::subscribe_const(+[](TickEvent const &context) {
                     set_up_text_hook();

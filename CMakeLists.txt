@@ -24,7 +24,7 @@ include(src/sound-subtitles-stapler/sss.cmake)
 add_subdirectory(src/ringworld)
 
 # Set include path
-include_directories(include include/lua lib/ lib/lanes/src)
+include_directories(include include/lua lib/ lib/lanes/src src/ringworld/include)
 
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
@@ -179,7 +179,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze lua53 fmt invader luacstruct lanes d3d9 gdiplus ws2_32)
+target_link_libraries(balltze ringworld lua53 fmt invader luacstruct lanes d3d9 gdiplus ws2_32)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
