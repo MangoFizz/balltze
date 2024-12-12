@@ -2011,6 +2011,13 @@ namespace Balltze::Engine {
      * @return Return a reference to the camera data.
      */
     BALLTZE_API CameraData &get_camera_data() noexcept;
+
+    /**
+     * Delete all weapons from a unit.
+     * @param unit The handle of the unit to delete all weapons from.
+     * @throws std::runtime_error if the object does not exist, or if the object is not a biped or vehicle.
+     */
+    BALLTZE_API void unit_delete_all_weapons(ObjectHandle unit);
 }
 
 #endif

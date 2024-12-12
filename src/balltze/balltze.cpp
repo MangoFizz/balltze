@@ -6,7 +6,7 @@
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
-#include <ringworld/ringworld.h>
+#include <ringworld/ringworld.hpp>
 #include "features/features.hpp"
 #include "event/event.hpp"
 #include "memory/memory.hpp"

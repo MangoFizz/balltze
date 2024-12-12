@@ -6,6 +6,7 @@
 #include <balltze/engine/tag_definitions/vehicle.hpp>
 #include <balltze/engine/game_state.hpp>
 #include <balltze/memory.hpp>
+#include <ringworld/units/units.h>
 
 namespace Balltze::Engine {
     BaseObject *ObjectTable::get_object(const ObjectHandle &object_handle) noexcept {
@@ -199,5 +200,20 @@ namespace Balltze::Engine {
             camera_coord_addr = reinterpret_cast<CameraData *>(*reinterpret_cast<std::byte **>(Memory::get_signature("camera_coord")->data()) - 0x8);
         }
         return **camera_coord_addr;
+    }
+
+    void unit_delete_all_weapons(ObjectHandle unit_handle) {
+        if(unit_handle.is_null()) {
+            throw std::runtime_error("invalid unit object handle");
+        }
+        auto &object_table = Engine::get_object_table();
+        auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(unit_handle));
+        if(!unit) {
+            throw std::runtime_error("unit object not found");
+        }
+        if(unit->type != Engine::OBJECT_TYPE_BIPED) {
+            throw std::runtime_error("invalid object type, expected biped");
+        }
+        ::unit_delete_all_weapons((::ObjectHandle)unit_handle.value);
     }
 }

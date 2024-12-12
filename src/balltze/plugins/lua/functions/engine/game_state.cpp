@@ -9,10 +9,7 @@
 #include "../../libraries.hpp"
 #include "../../types.hpp"
 #include "../../helpers/function_table.hpp"
-
-extern "C" {
-    #include <ringworld/units/units.h>
-}
+#include <ringworld/units/units.h>
 
 namespace Balltze::Plugins::Lua {
     static int engine_get_object(lua_State *state) noexcept {
@@ -324,8 +321,16 @@ namespace Balltze::Plugins::Lua {
     static int engine_unit_delete_all_weapons(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1) {
-            int unit_handle_value = luaL_checkinteger(state, 1);
-            unit_delete_all_weapons(unit_handle_value);
+            auto unit_handle = get_engine_resource_handle(state, 1);
+            if(!unit_handle) {
+                return luaL_error(state, "invalid argument #1, expected object handle in function Engine.gameState.unitDeleteAllWeapons");
+            }
+            try {
+                Engine::unit_delete_all_weapons(*unit_handle);
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, "%s in function Engine.gameState.unitDeleteAllWeapons", e.what());
+            }
             return 0;
         }
         else {
