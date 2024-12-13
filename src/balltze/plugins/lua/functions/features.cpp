@@ -21,19 +21,14 @@ namespace Balltze::Plugins::Lua {
         if(args == 3) {
             auto map_path = luaL_checkstring(state, 1);
             auto *tag_path = luaL_checkstring(state, 2);
-            auto *tag_class_string = luaL_checkstring(state, 3);
-            Engine::TagClassInt tag_class_int;
-
-            try {
-                tag_class_int = Engine::tag_class_from_string(tag_class_string);
-            }
-            catch(std::runtime_error &e) {
-                return luaL_error(state, e.what());
+            auto tag_class = get_tag_class(state, 3);
+            if(tag_class == Engine::TagClassInt::TAG_CLASS_NULL) {
+                return luaL_error(state, "invalid tag class in function Balltze.features.importTagFromMap.");
             }
 
             if(plugin->path_is_valid(map_path)) {
                 try {
-                    plugin->add_tag_import(map_path, tag_path, tag_class_int);
+                    plugin->add_tag_import(map_path, tag_path, tag_class);
                 }
                 catch(std::runtime_error &e) {
                     return luaL_error(state, e.what());
@@ -43,7 +38,7 @@ namespace Balltze::Plugins::Lua {
                 auto map_entry = Features::get_map_entry(map_path);
                 if(map_entry) {
                     try {
-                        plugin->add_tag_import(map_path, tag_path, tag_class_int);
+                        plugin->add_tag_import(map_path, tag_path, tag_class);
                     }
                     catch(std::runtime_error &e) {
                         return luaL_error(state, e.what());

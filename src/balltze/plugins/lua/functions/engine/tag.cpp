@@ -59,7 +59,7 @@ namespace Balltze::Plugins::Lua {
                 tag_entry = Engine::get_tag(tag_path, tag_class);
             }
             else {
-                return luaL_error(state, "Invalid tag class.");
+                return luaL_error(state, "invalid tag class in function Engine.tag.getTag.");
             }
         }
         else {
