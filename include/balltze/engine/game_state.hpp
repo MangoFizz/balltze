@@ -2026,6 +2026,16 @@ namespace Balltze::Engine {
      * @throws std::runtime_error if the object does not exist, or if the object is not a biped or vehicle.
      */
     BALLTZE_API void unit_add_weapon_to_inventory(ObjectHandle unit, ObjectHandle weapon, uint16_t param_3);
+
+    /**
+     * Attach an object to another object by its markers.
+     * @param object The object to attach.
+     * @param object_marker The marker on the object to attach.
+     * @param attachment The object to attach to.
+     * @param attachment_marker The marker on the attachment to attach to.
+     * @throws std::runtime_error if any of the objects do not exist.
+     */
+    BALLTZE_API void object_attach_to_marker(ObjectHandle object, std::optional<std::string> object_marker, ObjectHandle attachment, std::optional<std::string> attachment_marker);
 }
 
 #endif

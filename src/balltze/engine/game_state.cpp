@@ -234,4 +234,14 @@ namespace Balltze::Engine {
         }
         ::unit_add_weapon_to_inventory((::ObjectHandle)unit_handle.value, (::ObjectHandle)weapon_handle.value, param_3);
     }
+
+    void object_attach_to_marker(ObjectHandle object, std::optional<std::string> object_marker, ObjectHandle attachment, std::optional<std::string> attachment_marker) {
+        if(object.is_null()) {
+            throw std::runtime_error("invalid object handle");
+        }
+        if(attachment.is_null()) {
+            throw std::runtime_error("invalid attachment handle");
+        }
+        ::object_attach_to_marker((::ObjectHandle)object.value, object_marker.value_or("").c_str(), (::ObjectHandle)attachment.value, attachment_marker.value_or("").c_str());
+    }
 }

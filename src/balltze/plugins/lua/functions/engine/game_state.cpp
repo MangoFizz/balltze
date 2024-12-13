@@ -363,6 +363,32 @@ namespace Balltze::Plugins::Lua {
         }
     }
 
+    int engine_object_attach_to_marker(lua_State *state) noexcept {
+        int args = lua_gettop(state);
+        if(args == 4) {
+            auto object_handle = get_engine_resource_handle(state, 1);
+            if(!object_handle) {
+                return luaL_error(state, "invalid argument #1, expected object handle in function Engine.gameState.objectAttachToMarker");
+            }
+            std::string object_marker = luaL_optstring(state, 2, "");
+            auto attachment_handle = get_engine_resource_handle(state, 3);
+            if(!attachment_handle) {
+                return luaL_error(state, "invalid argument #3, expected object handle in function Engine.gameState.objectAttachToMarker");
+            }
+            std::string attachment_marker = luaL_optstring(state, 4, "");
+            try {
+                Engine::object_attach_to_marker(*object_handle, object_marker, *attachment_handle, attachment_marker);
+            }
+            catch(std::runtime_error &e) {
+                return luaL_error(state, "%s in function Engine.gameState.objectAttachToMarker", e.what());
+            }
+            return 0;
+        }
+        else {
+            return luaL_error(state, "invalid number of arguments in function Engine.gameState.objectAttachToMarker");
+        }
+    }
+
     static const luaL_Reg engine_game_state_functions[] = {
         {"getObject", engine_get_object},
         {"createObject", engine_create_object},
@@ -371,6 +397,7 @@ namespace Balltze::Plugins::Lua {
         {"unitExitVehicle", engine_unit_exit_vehicle},
         {"unitDeleteAllWeapons", engine_unit_delete_all_weapons},
         {"unitAddWeaponToInventory", engine_unit_add_weapon_to_inventory},
+        {"objectAttachToMarker", engine_object_attach_to_marker},
         {"getPlayer", get_player},
         {"getPlayerByRconHandle", get_player_by_rcon_handle},
         {"getCameraType", engine_get_camera_type},
