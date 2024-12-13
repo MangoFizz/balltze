@@ -163,14 +163,6 @@ namespace Balltze::Plugins {
             return;
         }
 
-        if(first_load) {
-            load_global_plugins();
-            if(last_map) {
-                load_map_plugins(*last_map);
-            }
-            first_load = false;
-        }
-
         if(reinit_plugins_on_next_tick) {
             logger.info("Reloading plugins...");
             reinitialize_all_plugins();
@@ -198,14 +190,14 @@ namespace Balltze::Plugins {
     static void plugins_map_load(MapLoadEvent const &ev) noexcept {
         static bool first_load = true;
         if(ev.time == EVENT_TIME_BEFORE) {
-            if(!first_load) {
+            if(first_load) {
+                load_global_plugins();
+                first_load = false;
+            }
+            else {
                 unload_map_plugins();
             }
-        }
-        else {
-            if(!first_load) {
-                load_map_plugins(ev.context.name);
-            }
+            load_map_plugins(ev.context.name);
             last_map = ev.context.name;
         }
     }
