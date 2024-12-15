@@ -21,7 +21,10 @@ include(lib/luacstruct/luacstruct.cmake)
 include(lib/invader/invader.cmake)
 include(lib/lanes/lanes.cmake)
 include(src/sound-subtitles-stapler/sss.cmake)
+
+# Set ringworld 
 add_subdirectory(src/ringworld)
+set_target_properties(ringworld PROPERTIES COMPILE_DEFINITIONS "RINGWORLD_ENABLE_ENHANCEMENTS")
 
 # Set include path
 include_directories(include include/lua lib/ lib/lanes/src src/ringworld/include)
