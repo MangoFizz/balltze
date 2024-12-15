@@ -154,8 +154,8 @@ namespace Balltze::Plugins::Lua {
         luacs_float_field(state, EngineWeaponObject, integrated_light_power, 0);
         luacs_nested_field(state, EngineWeaponObject, EngineResourceHandle, tracked_object, 0);
         luacs_int_field(state, EngineWeaponObject, alt_shots_loaded, 0);
-        luacs_nested_array_field(state, EngineWeaponObject, EngineWeaponTrigger, triggers, 0);
-        luacs_nested_array_field(state, EngineWeaponObject, EngineWeaponMagazine, magazines, 0);
+        luacs_nested_array_field(state, EngineWeaponObject, EngineGameStateWeaponTrigger, triggers, 0);
+        luacs_nested_array_field(state, EngineWeaponObject, EngineGameStateWeaponMagazine, magazines, 0);
         luacs_unsigned_field(state, EngineWeaponObject, last_trigger_fire_tick, 0);
         luacs_nested_field(state, EngineWeaponObject, EngineWeaponReloadStartData, reload_starting_point, 0);
         luacs_nested_field(state, EngineWeaponObject, EngineWeaponNetwork, network, 0);
