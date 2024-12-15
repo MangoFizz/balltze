@@ -78,24 +78,24 @@ for definitionName, definition in pairs(definitions) do
     for _, enum in ipairs(definition.enums) do
         local enumName = parser.snakeCaseToCamelCase(enum.name)
 
-        add("---@class EngineTagData" .. enumName .. "Enum : Enum \n\n")
+        add("---@class EngineTag" .. enumName .. "Enum : Enum \n\n")
 
         for _, value in ipairs(enum.values) do
-            add("---@class EngineTagData"  .. parser.snakeCaseToCamelCase(value) .. " : EngineTagData" .. enumName .. "Enum \n")
+            add("---@class EngineTag"  .. parser.snakeCaseToCamelCase(value) .. " : EngineTag" .. enumName .. "Enum \n")
         end
         add("\n")
 
-        add("---@alias EngineTagData" .. enumName .. " \n")
+        add("---@alias EngineTag" .. enumName .. " \n")
         for _, value in ipairs(enum.values) do
-            add("---| EngineTagData"  .. parser.snakeCaseToCamelCase(value) .. "\n")
+            add("---| EngineTag"  .. parser.snakeCaseToCamelCase(value) .. "\n")
         end
         add("\n")
 
-        add("---@class EngineTagData" .. enumName .. "Table \n")
+        add("---@class EngineTag" .. enumName .. "Table \n")
         for _, value in ipairs(enum.values) do
             -- substract the enum name prefix from the value
             local fieldName = parser.snakeCaseToLowerCamelCase(value:sub(enum.name:len() + 2))
-            add("---@field " .. fieldName .. " EngineTagData"  .. parser.snakeCaseToCamelCase(value) .. "\n")
+            add("---@field " .. fieldName .. " EngineTag"  .. parser.snakeCaseToCamelCase(value) .. "\n")
         end
         add("Engine.tag." .. parser.snakeCaseToLowerCamelCase(enumName) .. " = {} \n")
         add("\n")
@@ -158,7 +158,7 @@ for definitionName, definition in pairs(definitions) do
     add("\n")
 
     -- Write the file
-    glue.writefile(outputPath .. "//engineTagData" .. parser.snakeCaseToCamelCase(definitionName) .. ".lua", file, "t")
+    glue.writefile(outputPath .. "/engineTagData" .. parser.snakeCaseToCamelCase(definitionName) .. ".lua", file, "t")
 
     file = ""
 end
