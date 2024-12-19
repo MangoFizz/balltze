@@ -187,6 +187,7 @@ namespace Balltze::Plugins {
     NativePlugin::NativePlugin(std::filesystem::path dll_file) {
         m_filename = dll_file.filename().string();
         m_filepath = dll_file;
+        m_handle = nullptr;
         try {
             init();
         }
@@ -405,7 +406,7 @@ namespace Balltze::Plugins {
             throw std::runtime_error("plugin already loaded");
         }
 
-        if(m_state) {
+        if(!m_state) {
             init();
         }
 
@@ -483,6 +484,7 @@ namespace Balltze::Plugins {
     LuaPlugin::LuaPlugin(std::filesystem::path lua_file) {
         m_filename = lua_file.filename().string();
         m_filepath = lua_file;
+        m_state = nullptr;
         try {
             init();
         }
