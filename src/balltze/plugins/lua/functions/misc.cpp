@@ -184,33 +184,35 @@ namespace Balltze::Plugins::Lua {
     }
 
     static void check_timers(LuaPlugin *plugin) {
-        auto *state = plugin->state();
-        get_timers_registry_table(state);
-        lua_pushnil(state);
-        while(lua_next(state, -2) != 0) {
-            lua_getfield(state, -1, "timestamp");
-            auto *timestamp = reinterpret_cast<std::chrono::steady_clock::time_point *>(lua_touserdata(state, -1));
-            lua_pop(state, 1);
+        if(plugin->loaded()) {
+            auto *state = plugin->state();
+            get_timers_registry_table(state);
+            lua_pushnil(state);
+            while(lua_next(state, -2) != 0) {
+                lua_getfield(state, -1, "timestamp");
+                auto *timestamp = reinterpret_cast<std::chrono::steady_clock::time_point *>(lua_touserdata(state, -1));
+                lua_pop(state, 1);
 
-            lua_getfield(state, -1, "interval");
-            auto interval = lua_tonumber(state, -1);
-            lua_pop(state, 1);
+                lua_getfield(state, -1, "interval");
+                auto interval = lua_tonumber(state, -1);
+                lua_pop(state, 1);
 
-            auto now = std::chrono::steady_clock::now();
-            auto elapsed_time = now - *timestamp;
-            auto elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_time);
-            if(elapsed_seconds.count() >= interval) {
-                lua_getfield(state, -1, "function");
-                if(lua_pcall(state, 0, 0, 0) != 0) {
-                    logger.error("Error in timer function at plugin {}: {}", plugin->name(), plugin->get_error_message());
-                    plugin->print_traceback();
-                    lua_pop(state, 1);
+                auto now = std::chrono::steady_clock::now();
+                auto elapsed_time = now - *timestamp;
+                auto elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_time);
+                if(elapsed_seconds.count() >= interval) {
+                    lua_getfield(state, -1, "function");
+                    if(lua_pcall(state, 0, 0, 0) != 0) {
+                        logger.error("Error in timer function at plugin {}: {}", plugin->name(), plugin->get_error_message());
+                        plugin->print_traceback();
+                        lua_pop(state, 1);
+                    }
+                    *timestamp = now;
                 }
-                *timestamp = now;
+                lua_pop(state, 1);
             }
             lua_pop(state, 1);
         }
-        lua_pop(state, 1);
     }
 
     static const luaL_Reg misc_functions[] = {

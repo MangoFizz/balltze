@@ -32,6 +32,8 @@ namespace Balltze::Plugins {
 
         virtual void set_up_directory() = 0;
         virtual void update_metadata() = 0;
+        virtual void init() = 0;
+        virtual void dispose() = 0;
 
     public:
         std::string filename() const noexcept;
@@ -47,11 +49,10 @@ namespace Balltze::Plugins {
         void init_data_directory();
         bool loaded() const noexcept;
 
-        virtual void init() = 0;
+        virtual bool initialized() const noexcept = 0;
         virtual PluginLoadResult load() = 0;
         virtual void unload() = 0;
-        virtual void dispose() = 0;
-        ~Plugin();
+        virtual ~Plugin() = default;
     };
 
     class NativePlugin : public Plugin {
@@ -60,14 +61,16 @@ namespace Balltze::Plugins {
 
         void set_up_directory();
         void update_metadata();
+        void init();
+        void dispose();
 
     public:
         HMODULE handle();
-        void init();
+        bool initialized() const noexcept;
         PluginLoadResult load();
         void unload();
-        void dispose();
         NativePlugin(std::filesystem::path dlL_file);
+        ~NativePlugin();
     };
 
     class LuaPlugin : public Plugin {
@@ -78,6 +81,8 @@ namespace Balltze::Plugins {
 
         void set_up_directory();
         void update_metadata();
+        void init();
+        void unload();
 
     public:
         lua_State *state() noexcept;
@@ -90,11 +95,11 @@ namespace Balltze::Plugins {
         std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &imported_tags() const noexcept;
         void print_traceback();
         std::string get_error_message();
-        void init();
+        bool initialized() const noexcept;
         PluginLoadResult load();
-        void unload();
         void dispose();
         LuaPlugin(std::filesystem::path lua_file);
+        ~LuaPlugin();
     };
 
     std::filesystem::path get_plugins_path() noexcept;

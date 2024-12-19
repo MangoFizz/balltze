@@ -67,13 +67,7 @@ namespace Balltze::Plugins {
     }
 
     bool Plugin::loaded() const noexcept {
-        return m_loaded;
-    }
-
-    Plugin::~Plugin() {
-        if(m_loaded) {
-            logger.warning("Destroying plugin {} while it is still loaded.", m_filename);
-        }
+        return initialized() && m_loaded;
     }
 
     void NativePlugin::update_metadata() {
@@ -96,7 +90,14 @@ namespace Balltze::Plugins {
     }
 
     HMODULE NativePlugin::handle() {
+        if(!m_handle) {
+            logger.warning("Trying to get handle of unloaded native plugin {}.", m_filename);
+        }
         return m_handle;
+    }
+
+    bool NativePlugin::initialized() const noexcept {
+        return m_handle != nullptr;
     }
 
     void NativePlugin::init() {
@@ -114,17 +115,22 @@ namespace Balltze::Plugins {
     }
 
     PluginLoadResult NativePlugin::load() {
+        logger.info("Loading plugin {}...", m_filename);
+
         if(m_loaded) {
-            throw std::runtime_error("Plugin already loaded.");
+            throw std::runtime_error("tried to load a plugin that is already loaded");
         }
-
-        if(!m_handle) {
-            init();
-        }
-
         m_loaded = true;
 
-        logger.info("Loading plugin {}...", m_filename);
+        if(!m_handle) {
+            try {
+                init();
+            }
+            catch(std::runtime_error &e) {
+                logger.error("Failed to initialize plugin {}: {}", m_filename, e.what());
+                return PluginLoadResult::PLUGIN_LOAD_FAILURE;
+            }
+        }
 
         // check if plugin is compatible with the current version of Balltze
         if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
@@ -151,11 +157,11 @@ namespace Balltze::Plugins {
     }
 
     void NativePlugin::unload() {
-        if(!m_loaded) {
-            throw std::runtime_error("plugin not loaded");
-        }
         if(!m_handle) {
-            throw std::runtime_error("plugin not initialized");
+            throw std::runtime_error("tried to unload plugin that is not initialized");
+        }
+        if(!m_loaded) {
+            throw std::runtime_error("tried to unload plugin that is not loaded");
         }
 
         logger.info("Unloading plugin {}...", m_filename);
@@ -164,24 +170,18 @@ namespace Balltze::Plugins {
             auto unload_plugin = reinterpret_cast<plugin_unload_proc_t>(unload_proc);
             unload_plugin();
         }
-        else {
-            logger.warning("Could not find plugin_unload function in plugin {}.", m_filename);
-        }
         
-        m_loaded = false;
-
         dispose();
+        m_loaded = false;
     }
 
     void NativePlugin::dispose() {
-        if(m_loaded) {
-            throw std::runtime_error("plugin still loaded");
-        }
         if(!m_handle) {
             throw std::runtime_error("plugin not initialized");
         }
         logger.debug("Disposing plugin {}...", m_filename);
         FreeLibrary(m_handle);
+        m_handle = nullptr;
     }
 
     NativePlugin::NativePlugin(std::filesystem::path dll_file) {
@@ -194,6 +194,12 @@ namespace Balltze::Plugins {
         catch(std::runtime_error& e) {
             logger.error("Failed to initialize plugin {}: {}", m_filename, e.what());
             throw;
+        }
+    }
+
+    NativePlugin::~NativePlugin() {
+        if(m_handle) {
+            dispose();
         }
     }
 
@@ -282,6 +288,9 @@ namespace Balltze::Plugins {
     }
 
     lua_State* LuaPlugin::state() noexcept {
+        if(!m_state) {
+            logger.warning("Trying to get state of unloaded Lua plugin {}.", m_filename);
+        }
         return m_state;
     }
 
@@ -349,6 +358,10 @@ namespace Balltze::Plugins {
         return err;
     }
 
+    bool LuaPlugin::initialized() const noexcept {
+        return m_state != nullptr;
+    }
+
     void LuaPlugin::init() {
         if(m_state) {
             throw std::runtime_error("plugin already initialized");
@@ -402,19 +415,23 @@ namespace Balltze::Plugins {
     }
 
     PluginLoadResult LuaPlugin::load() {
+        logger.info("Loading plugin {}...", m_filename);
+
         if(m_loaded) {
-            throw std::runtime_error("plugin already loaded");
+            throw std::runtime_error("tried to load a plugin that is already loaded");
         }
+        m_loaded = true;
 
         if(!m_state) {
-            init();
+            try {
+                init();
+            }
+            catch(std::runtime_error &e) {
+                logger.error("Failed to initialize plugin '{}': {}", m_filename, e.what());
+                return PluginLoadResult::PLUGIN_LOAD_FAILURE;
+            }
         }
-
-        m_loaded = true;
         
-        logger.info("Loading plugin '{}'...", m_filename);
-
-        // check if plugin is compatible with the current version of Balltze
         if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
             return PluginLoadResult::PLUGIN_LOAD_INCOMPATIBLE;
         }
@@ -444,11 +461,11 @@ namespace Balltze::Plugins {
     }
 
     void LuaPlugin::unload() {
-        if(!m_loaded) {
-            throw std::runtime_error("plugin not loaded");
-        }
         if(!m_state) {
             throw std::runtime_error("plugin already disposed");
+        }
+        if(!m_loaded) {
+            throw std::runtime_error("tried to unload plugin that is not loaded");
         }
 
         logger.debug("Unloading Lua plugin '{}'...", m_filename);
@@ -456,29 +473,24 @@ namespace Balltze::Plugins {
         if(lua_isfunction(m_state, -1)) {
             auto res = lua_pcall(m_state, 0, 0, 0);
             if(res != LUA_OK) {
-                logger.error("Error while unloading plugin '{}': {}", m_filename, get_error_message());
+                logger.error("Error while unloading Lua plugin '{}': {}", m_filename, get_error_message());
                 print_traceback();
             }
         }
-        else {
-            logger.warning("Could not find PluginUnload function in plugin '{}'.", m_filename);
-        }
 
         Lua::remove_plugin_commands(this);
-        m_loaded = false;
 
         dispose();
+        m_loaded = false;
     }
 
     void LuaPlugin::dispose() {
-        if(m_loaded) {
-            throw std::runtime_error("plugin still loaded while tried to dispose");
-        }
         if(!m_state) {
             throw std::runtime_error("plugin already disposed");
         }
         logger.debug("Disposing Lua plugin '{}'...", m_filename);
         lua_close(m_state);
+        m_state = nullptr;
     }
 
     LuaPlugin::LuaPlugin(std::filesystem::path lua_file) {
@@ -491,6 +503,12 @@ namespace Balltze::Plugins {
         catch(std::runtime_error &e) {
             logger.error("Failed to initialize plugin '{}': {}", m_filename, e.what());
             throw;
+        }
+    }
+
+    LuaPlugin::~LuaPlugin() {
+        if(m_state) {
+            dispose();
         }
     }
 

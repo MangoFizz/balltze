@@ -123,7 +123,9 @@ namespace Balltze::Plugins {
         while(it != plugins.end()) {
             auto *plugin = it->get();
             if(plugin->reloadable()) {
-                plugin->unload();
+                if(plugin->loaded()) {
+                    plugin->unload();
+                }
                 it = plugins.erase(it);
             }
             else {
@@ -141,7 +143,6 @@ namespace Balltze::Plugins {
         }
 
         if(reinit_plugins_on_next_tick) {
-            logger.info("Reloading plugins...");
             reinitialize_all_plugins();
             load_global_plugins();
             if(last_map) {
@@ -158,8 +159,10 @@ namespace Balltze::Plugins {
         if(context.time == EVENT_TIME_AFTER) {
             auto lua_plugins = get_lua_plugins();
             for(auto &plugin : lua_plugins) {
-                auto *state = plugin->state();
-                lua_gc(state, LUA_GCCOLLECT, 0);
+                if(plugin->loaded()) {
+                    auto *state = plugin->state();
+                    lua_gc(state, LUA_GCCOLLECT, 0);
+                }
             }
         }
     }
@@ -217,11 +220,11 @@ namespace Balltze::Plugins {
         FrameEvent::subscribe_const(plugins_frame, EVENT_PRIORITY_HIGHEST);
         MapLoadEvent::subscribe_const(plugins_map_load, EVENT_PRIORITY_HIGHEST);
 
-        init_plugins();
-        reinit_plugins_on_next_tick = false;
+        reinit_plugins_on_next_tick = true;
 
         register_command("reload_plugins", "plugins", "Reloads all loaded reloadable plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
             reinit_plugins_on_next_tick = true;
+            logger.info("Reloading plugins...");
             return true;
         }, false, 0, 0);
     }
