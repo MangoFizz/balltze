@@ -252,7 +252,7 @@ namespace Balltze::Plugins::Lua {
                 }
                 else {
                     auto *player_entry = player_table.get_element(player_handle->index);
-                    if(player_entry->player_id != 0xFFFF) {
+                    if(player_entry && player_entry->player_id != 0xFFFF) {
                         player = player_entry;
                     }
                 }
