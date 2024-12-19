@@ -143,6 +143,7 @@ namespace Balltze::Plugins {
         }
 
         if(reinit_plugins_on_next_tick) {
+            logger.info("Reloading plugins...");
             reinitialize_all_plugins();
             load_global_plugins();
             if(last_map) {
@@ -220,11 +221,11 @@ namespace Balltze::Plugins {
         FrameEvent::subscribe_const(plugins_frame, EVENT_PRIORITY_HIGHEST);
         MapLoadEvent::subscribe_const(plugins_map_load, EVENT_PRIORITY_HIGHEST);
 
-        reinit_plugins_on_next_tick = true;
+        init_plugins();
+        reinit_plugins_on_next_tick = false;
 
         register_command("reload_plugins", "plugins", "Reloads all loaded reloadable plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
             reinit_plugins_on_next_tick = true;
-            logger.info("Reloading plugins...");
             return true;
         }, false, 0, 0);
     }
