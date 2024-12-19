@@ -112,7 +112,7 @@ namespace Balltze::Plugins {
 
     static void load_global_plugins() {
         for(auto &plugin : plugins) {
-            if(plugin_is_global(plugin.get())) {
+            if(plugin_is_global(plugin.get()) && !plugin->loaded()) {
                 load_plugin(plugin.get());
             }
         }
