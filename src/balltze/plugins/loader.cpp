@@ -118,35 +118,13 @@ namespace Balltze::Plugins {
         }
     }
 
-    static void reinitialize_plugin(Plugin *plugin) {
-        auto plugin_file = plugin->filepath();
-        auto it = plugins.begin();
-        while(it != plugins.end()) {
-            if(it->get() == plugin) {
-                plugins.erase(it);
-                break;
-            }
-            it++;
-        }
-        try {
-            if(plugin_file.extension() == ".dll") {
-                plugins.emplace_back(std::make_unique<NativePlugin>(plugin_file));
-            }
-            else if(plugin_file.extension() == ".lua") {
-                plugins.emplace_back(std::make_unique<LuaPlugin>(plugin_file));
-            }
-        }
-        catch(std::runtime_error &) {
-            logger.error("Failed to initialize plugin {}", plugin_file.filename().string());
-        }
-    }
-
     static void reinitialize_all_plugins() {
         auto it = plugins.begin();
         while(it != plugins.end()) {
             auto *plugin = it->get();
             if(plugin->reloadable()) {
                 plugin->unload();
+                plugin->dispose();
                 it = plugins.erase(it);
             }
             else {

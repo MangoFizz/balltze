@@ -147,11 +147,15 @@ namespace Balltze::Plugins {
             logger.warning("Could not find plugin_unload function in plugin {}.", m_filename);
         }
         
-        if(reloadable()) {
-            FreeLibrary(m_handle);
-        }
-
         m_loaded = false;
+    }
+
+    void NativePlugin::dispose() {
+        if(m_loaded) {
+            throw std::runtime_error("Plugin still loaded.");
+        }
+        logger.debug("Disposing plugin {}...", m_filename);
+        FreeLibrary(m_handle);
     }
 
     NativePlugin::NativePlugin(std::filesystem::path dll_file) {
@@ -376,12 +380,15 @@ namespace Balltze::Plugins {
         }
 
         Lua::remove_plugin_commands(this);
-        
-        if(reloadable()) {
-            lua_close(m_state);
-        }
-
         m_loaded = false;
+    }
+
+    void LuaPlugin::dispose() {
+        if(m_loaded) {
+            throw std::runtime_error("plugin still loaded while tried to dispose");
+        }
+        logger.debug("Disposing Lua plugin '{}'...", m_filename);
+        lua_close(m_state);
     }
 
     LuaPlugin::LuaPlugin(std::filesystem::path lua_file) {

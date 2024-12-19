@@ -49,6 +49,7 @@ namespace Balltze::Plugins {
 
         virtual PluginLoadResult load() = 0;
         virtual void unload() = 0;
+        virtual void dispose() = 0;
         ~Plugin();
     };
 
@@ -63,6 +64,7 @@ namespace Balltze::Plugins {
         HMODULE handle();
         PluginLoadResult load();
         void unload();
+        void dispose();
         NativePlugin(std::filesystem::path dlL_file);
     };
 
@@ -88,6 +90,7 @@ namespace Balltze::Plugins {
         std::string get_error_message();
         PluginLoadResult load();
         void unload();
+        void dispose();
         LuaPlugin(std::filesystem::path lua_file);
     };
 
