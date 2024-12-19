@@ -47,6 +47,7 @@ namespace Balltze::Plugins {
         void init_data_directory();
         bool loaded() const noexcept;
 
+        virtual void init() = 0;
         virtual PluginLoadResult load() = 0;
         virtual void unload() = 0;
         virtual void dispose() = 0;
@@ -62,6 +63,7 @@ namespace Balltze::Plugins {
 
     public:
         HMODULE handle();
+        void init();
         PluginLoadResult load();
         void unload();
         void dispose();
@@ -88,6 +90,7 @@ namespace Balltze::Plugins {
         std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &imported_tags() const noexcept;
         void print_traceback();
         std::string get_error_message();
+        void init();
         PluginLoadResult load();
         void unload();
         void dispose();

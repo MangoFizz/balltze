@@ -124,7 +124,6 @@ namespace Balltze::Plugins {
             auto *plugin = it->get();
             if(plugin->reloadable()) {
                 plugin->unload();
-                plugin->dispose();
                 it = plugins.erase(it);
             }
             else {

@@ -99,9 +99,27 @@ namespace Balltze::Plugins {
         return m_handle;
     }
 
+    void NativePlugin::init() {
+        if(m_handle) {
+            throw std::runtime_error("plugin already initialized");
+        }
+        m_handle = LoadLibraryA(m_filepath.string().c_str());
+        if(m_handle) {
+            update_metadata();
+            set_up_directory();
+        }
+        else {
+            throw std::runtime_error("could not load plugin");
+        }
+    }
+
     PluginLoadResult NativePlugin::load() {
         if(m_loaded) {
             throw std::runtime_error("Plugin already loaded.");
+        }
+
+        if(!m_handle) {
+            init();
         }
 
         m_loaded = true;
@@ -134,7 +152,10 @@ namespace Balltze::Plugins {
 
     void NativePlugin::unload() {
         if(!m_loaded) {
-            throw std::runtime_error("Plugin not loaded.");
+            throw std::runtime_error("plugin not loaded");
+        }
+        if(!m_handle) {
+            throw std::runtime_error("plugin not initialized");
         }
 
         logger.info("Unloading plugin {}...", m_filename);
@@ -148,11 +169,16 @@ namespace Balltze::Plugins {
         }
         
         m_loaded = false;
+
+        dispose();
     }
 
     void NativePlugin::dispose() {
         if(m_loaded) {
-            throw std::runtime_error("Plugin still loaded.");
+            throw std::runtime_error("plugin still loaded");
+        }
+        if(!m_handle) {
+            throw std::runtime_error("plugin not initialized");
         }
         logger.debug("Disposing plugin {}...", m_filename);
         FreeLibrary(m_handle);
@@ -161,13 +187,12 @@ namespace Balltze::Plugins {
     NativePlugin::NativePlugin(std::filesystem::path dll_file) {
         m_filename = dll_file.filename().string();
         m_filepath = dll_file;
-        m_handle = LoadLibraryA(dll_file.string().c_str());
-        if(m_handle) {
-            update_metadata();
-            set_up_directory();
+        try {
+            init();
         }
-        else {
-            throw std::runtime_error("Could not load DLL plugin.");
+        catch(std::runtime_error& e) {
+            logger.error("Failed to initialize plugin {}: {}", m_filename, e.what());
+            throw;
         }
     }
 
@@ -323,9 +348,65 @@ namespace Balltze::Plugins {
         return err;
     }
 
+    void LuaPlugin::init() {
+        if(m_state) {
+            throw std::runtime_error("plugin already initialized");
+        }
+        m_state = luaL_newstate();
+        if(m_state) {
+            // Open standard libraries and Balltze API
+            luaL_openlibs(m_state);
+            Lua::open_balltze_api(m_state);
+
+            // Remove os.exit, os.getenv and os.execute functions
+            lua_getglobal(m_state, "os");
+            lua_pushnil(m_state);
+            lua_setfield(m_state, -2, "exit");
+            lua_pushnil(m_state);
+            lua_setfield(m_state, -2, "getenv");
+            lua_pushnil(m_state);
+            lua_setfield(m_state, -2, "execute");
+            
+            // Get plugin directory
+            set_up_directory();
+                 
+            // Set package.path and package.cpath
+            lua_getglobal(m_state, "package");
+            auto new_lua_path = m_directory.string() + "\\modules\\?.lua";
+            lua_pushstring(m_state, new_lua_path.c_str());
+            lua_setfield(m_state, -2, "path");
+            auto new_lua_cpath = get_plugins_path().string() + "\\?.dll;" + m_directory.string() + "\\modules\\?.dll";
+            lua_pushstring(m_state, new_lua_cpath.c_str());
+            lua_setfield(m_state, -2, "cpath");
+            lua_pop(m_state, 1);
+
+            if(luaL_loadfile(m_state, m_filepath.string().c_str()) == LUA_OK) {
+                int res = lua_pcall(m_state, 0, 0, 0);
+                if(res != LUA_OK) {
+                    logger.error("Could not execute Lua plugin '{}': {}", m_filename, get_error_message());
+                    print_traceback();
+                    lua_close(m_state);
+                    throw std::runtime_error("Could not execute Lua plugin '" + m_filename + "'.");
+                }
+                update_metadata();
+            }
+            else {
+                lua_close(m_state);
+                throw std::runtime_error("could not read Lua plugin '" + m_filename + "'.");
+            }
+        }
+        else {
+            throw std::runtime_error("could not create Lua state for plugin '" + m_filename + "'.");
+        }
+    }
+
     PluginLoadResult LuaPlugin::load() {
         if(m_loaded) {
-            throw std::runtime_error("Plugin already loaded.");
+            throw std::runtime_error("plugin already loaded");
+        }
+
+        if(m_state) {
+            init();
         }
 
         m_loaded = true;
@@ -363,7 +444,10 @@ namespace Balltze::Plugins {
 
     void LuaPlugin::unload() {
         if(!m_loaded) {
-            throw std::runtime_error("Plugin not loaded.");
+            throw std::runtime_error("plugin not loaded");
+        }
+        if(!m_state) {
+            throw std::runtime_error("plugin already disposed");
         }
 
         logger.debug("Unloading Lua plugin '{}'...", m_filename);
@@ -381,11 +465,16 @@ namespace Balltze::Plugins {
 
         Lua::remove_plugin_commands(this);
         m_loaded = false;
+
+        dispose();
     }
 
     void LuaPlugin::dispose() {
         if(m_loaded) {
             throw std::runtime_error("plugin still loaded while tried to dispose");
+        }
+        if(!m_state) {
+            throw std::runtime_error("plugin already disposed");
         }
         logger.debug("Disposing Lua plugin '{}'...", m_filename);
         lua_close(m_state);
@@ -394,51 +483,12 @@ namespace Balltze::Plugins {
     LuaPlugin::LuaPlugin(std::filesystem::path lua_file) {
         m_filename = lua_file.filename().string();
         m_filepath = lua_file;
-        m_state = luaL_newstate();
-        if(m_state) {
-            // Open standard libraries and Balltze API
-            luaL_openlibs(m_state);
-            Lua::open_balltze_api(m_state);
-
-            // Remove os.exit, os.getenv and os.execute functions
-            lua_getglobal(m_state, "os");
-            lua_pushnil(m_state);
-            lua_setfield(m_state, -2, "exit");
-            lua_pushnil(m_state);
-            lua_setfield(m_state, -2, "getenv");
-            lua_pushnil(m_state);
-            lua_setfield(m_state, -2, "execute");
-            
-            // Get plugin directory
-            set_up_directory();
-                 
-            // Set package.path and package.cpath
-            lua_getglobal(m_state, "package");
-            auto new_lua_path = m_directory.string() + "\\modules\\?.lua";
-            lua_pushstring(m_state, new_lua_path.c_str());
-            lua_setfield(m_state, -2, "path");
-            auto new_lua_cpath = get_plugins_path().string() + "\\?.dll;" + m_directory.string() + "\\modules\\?.dll";
-            lua_pushstring(m_state, new_lua_cpath.c_str());
-            lua_setfield(m_state, -2, "cpath");
-            lua_pop(m_state, 1);
-
-            if(luaL_loadfile(m_state, lua_file.string().c_str()) == LUA_OK) {
-                int res = lua_pcall(m_state, 0, 0, 0);
-                if(res != LUA_OK) {
-                    logger.error("Could not execute Lua plugin '{}': {}", m_filename, get_error_message());
-                    print_traceback();
-                    lua_close(m_state);
-                    throw std::runtime_error("Could not execute Lua plugin '" + m_filename + "'.");
-                }
-                update_metadata();
-            }
-            else {
-                lua_close(m_state);
-                throw std::runtime_error("could not read Lua plugin '" + m_filename + "'.");
-            }
+        try {
+            init();
         }
-        else {
-            throw std::runtime_error("could not create Lua state for plugin '" + m_filename + "'.");
+        catch(std::runtime_error &e) {
+            logger.error("Failed to initialize plugin '{}': {}", m_filename, e.what());
+            throw;
         }
     }
 
