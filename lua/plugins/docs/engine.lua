@@ -66,6 +66,26 @@ function Engine.gameState.deleteObject(objectHandle) end
 ---@param seatIndex integer @The index of the seat
 function Engine.gameState.unitEnterVehicle(unitObjectHandle, vehicleObjectHandle, seatIndex) end
 
+-- Make a unit exit a vehicle
+---@param unitObjectHandle EngineObjectHandle|integer @The handle of the unit
+function Engine.gameState.unitExitVehicle(unitObjectHandle) end
+
+-- Delete all weapons from a unit
+---@param unitObjectHandle EngineObjectHandle|integer @The handle of the unit to delete all weapons from
+function Engine.gameState.unitDeleteAllWeapons(unitObjectHandle) end
+
+-- Add a weapon to a unit's inventory
+---@param unitObjectHandle EngineObjectHandle|integer @The handle of the unit to add the weapon to
+---@param weaponTagHandle EngineTagHandle|integer @The handle of the weapon to add to the unit's inventory
+function Engine.gameState.unitAddWeapon(unitObjectHandle, weaponTagHandle) end
+
+-- Attach an object to another object
+---@param objectHandle EngineObjectHandle|integer @The handle of the object to attach
+---@param objectMarker string|nil @The marker of the object to attach
+---@param attachmentObjectHandle EngineObjectHandle|integer @The handle of the object to attach to
+---@param attachmentMarker string|nil @The marker of the attachment object
+function Engine.gameState.attachObject(objectHandle, objectMarker, attachmentObjectHandle, attachmentMarker) end
+
 -- Get a player
 ---@param playerIndexOrHandle? EnginePlayerHandle|integer @The index or the handle of the player; If nil, the local player is returned
 ---@return MetaEnginePlayer @The player

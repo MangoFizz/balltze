@@ -104,6 +104,9 @@ function Balltze.command.registerCommand(name, category, help, paramsHelp, autos
 ---@param command string @The command to call
 function Balltze.command.executeCommand(command) end
 
+-- Load command settings
+function Balltze.command.loadSettings() end
+
 -------------------------------------------------------
 -- Balltze.event
 -------------------------------------------------------
@@ -784,6 +787,18 @@ function Balltze.memory.readByte(address) end
 ---@param address integer @The address to write to
 ---@param value integer @The value to write
 function Balltze.memory.writeByte(address, value) end
+
+-- Read a bit from memory
+---@param address integer @The address to read from
+---@param bit integer @The bit to read
+---@return integer @The value read
+function Balltze.memory.readBit(address, bit) end
+
+-- Write a bit to memory
+---@param address integer @The address to write to
+---@param bit integer @The bit to write
+---@param value integer @The value to write
+function Balltze.memory.writeBit(address, bit, value) end
 
 -------------------------------------------------------
 -- Balltze.misc
