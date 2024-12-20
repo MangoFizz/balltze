@@ -178,7 +178,7 @@ namespace Balltze::Plugins::Lua {
         for(const auto command : commands) {
             if(command->full_name() == command_name) {
                 Plugins::Plugin *command_plugin = reinterpret_cast<Plugins::Plugin *>(*command->plugin());
-                if(command->is_public() || plugin == command_plugin || plugin->filename() == "devkit-server.lua") {
+                if(command->is_public() || plugin == command_plugin || plugin->filename() == "balltze_devkit_server.lua") {
                     res = command->call(arg_count, arguments_alloc.get());
 
                     // Save if autosave is enabled
