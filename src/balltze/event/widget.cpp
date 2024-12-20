@@ -17,6 +17,11 @@ namespace Balltze::Event {
         bool dispatch_widget_create_before_event(Engine::TagHandle definition, const char *definition_path, bool is_root_widget, Engine::Widget *parent) {
             if(definition_path) {
                 auto widget_definition = Engine::get_tag(definition_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
+                if(!widget_definition) {
+                    // it seems that the game tries to open the pause menu on the loading screen when the connection is cancelled with the ESC key
+                    logger.debug("dispatch_widget_create_before_event: widget definition not found: {}", definition_path);
+                    return false;
+                }
                 definition = widget_definition->handle;
             }
             UIWidgetCreateEventContext args{nullptr, definition, is_root_widget, parent};
