@@ -35,6 +35,7 @@ namespace Balltze::Plugins::Lua {
         luacs_enum_field(state, EngineUIWidget, EngineUIWidgetType, type, 0);
         luacs_bool_field(state, EngineUIWidget, visible, 0);
         luacs_bool_field(state, EngineUIWidget, render_regardless_of_controller_index, 0);
+        luacs_bool_field(state, EngineUIWidget, never_receive_events, 0);
         luacs_bool_field(state, EngineUIWidget, pauses_game_time, 0);
         luacs_bool_field(state, EngineUIWidget, deleted, 0);
         luacs_unsigned_field(state, EngineUIWidget, creation_process_start_time, 0);

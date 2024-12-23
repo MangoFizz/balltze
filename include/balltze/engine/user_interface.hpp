@@ -457,7 +457,7 @@ namespace Balltze::Engine {
         /** Some flags */
         bool visible;
         bool render_regardless_of_controller_index;
-        PADDING(1);
+        bool never_receive_events;
         bool pauses_game_time; 
 
         bool deleted;
