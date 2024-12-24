@@ -53,7 +53,7 @@
 ---@field keycode integer
 
 ---@alias EngineWidgetNavigationSound
----| 'cursor'
----| 'forward'
----| 'back'
----| 'flag_failure'
+---| "cursor"
+---| "forward"
+---| "back"
+---| "flag_failure"

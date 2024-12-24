@@ -343,10 +343,10 @@
 ---@field limping2 boolean
 
 ---@alias BipedMovementState
----| 'moving'
----| 'idle'
----| 'gesturing'
----| 'unknown'
+---| "moving"
+---| "idle"
+---| "gesturing"
+---| "unknown"
 
 ---@class MetaEngineBipedNetworkDelta
 ---@field grenadeCounts table<integer, number>
@@ -590,33 +590,33 @@
 ---@class MetaEngineSoundSceneryObject: MetaEngineBaseObject
 
 ---@alias EngineNetworkPlayerColor
----| 'white'
----| 'black'
----| 'red'
----| 'blue'
----| 'gray'
----| 'yellow'
----| 'green'
----| 'pink'
----| 'purple'
----| 'cyan'
----| 'cobalt'
----| 'orange'
----| 'teal'
----| 'sage'
----| 'brown'
----| 'tan'
----| 'maroon'
----| 'salmon'
----| 'unknown'
+---| "white"
+---| "black"
+---| "red"
+---| "blue"
+---| "gray"
+---| "yellow"
+---| "green"
+---| "pink"
+---| "purple"
+---| "cyan"
+---| "cobalt"
+---| "orange"
+---| "teal"
+---| "sage"
+---| "brown"
+---| "tan"
+---| "maroon"
+---| "salmon"
+---| "unknown"
 
 ---@alias EnginePlayerObjectiveMode
----| 'race'
----| 'hill'
----| 'juggernaut'
----| 'ball'
----| 'none'
----| 'unknown'
+---| "race"
+---| "hill"
+---| "juggernaut"
+---| "ball"
+---| "none"
+---| "unknown"
 
 ---@class MetaEnginePlayerMultiplayerStatistics
 ---@field ctfFlagGrabs integer
@@ -698,11 +698,11 @@
 ---@field updatePosition MetaEnginePoint3D
 
 ---@alias EngineCameraType
----| 'first_person'
----| 'vehicle'
----| 'cinematic'
----| 'debug'
----| 'unknown'
+---| "first_person"
+---| "vehicle"
+---| "cinematic"
+---| "debug"
+---| "unknown"
 
 ---@class EngineCameraData
 ---@field position EnginePoint3D

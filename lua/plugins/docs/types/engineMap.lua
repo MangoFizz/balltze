@@ -7,20 +7,20 @@
 -------------------------------------------------------
 
 ---@alias EngineCacheFileEngine
----| 'xbox'
----| 'demo'
----| 'retail'
----| 'custom'
----| 'invader'
----| 'demo compressed'
----| 'retail compressed'
----| 'custom compressed'
----| 'unknown'
+---| "xbox"
+---| "demo"
+---| "retail"
+---| "custom"
+---| "invader"
+---| "demo compressed"
+---| "retail compressed"
+---| "custom compressed"
+---| "unknown"
 
 ---@alias EngineMapGameType
----| 'single_player'
----| 'multiplayer'
----| 'user_interface'
+---| "single_player"
+---| "multiplayer"
+---| "user_interface"
 
 ---@class EngineMapHeader
 ---@field engineType EngineCacheFileEngine

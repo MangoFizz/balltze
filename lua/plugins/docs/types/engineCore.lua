@@ -7,6 +7,6 @@
 -------------------------------------------------------
 
 ---@alias EngineEdition
----| 'retail'
----| 'demo'
----| 'custom'
+---| "retail"
+---| "demo"
+---| "custom"

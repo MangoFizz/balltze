@@ -7,22 +7,22 @@
 -------------------------------------------------------
 
 ---@alias EngineNetworkGameServerType
----| 'none'
----| 'dedicated'
----| 'local'
----| 'unknown'
+---| "none"
+---| "dedicated"
+---| "local"
+---| "unknown"
 
 ---@alias EngineNetworkGameType
----| 'ctf'
----| 'slayer'
----| 'oddball'
----| 'king'
----| 'race'
----| 'none'
+---| "ctf"
+---| "slayer"
+---| "oddball"
+---| "king"
+---| "race"
+---| "none"
 
 ---@alias EngineNetworkGameMessageHudChatType
----| 'none'
----| 'all'
----| 'team'
----| 'vehicle'
----| 'unknown'
+---| "none"
+---| "all"
+---| "team"
+---| "vehicle"
+---| "unknown"
