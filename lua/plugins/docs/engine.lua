@@ -84,7 +84,7 @@ function Engine.gameState.unitAddWeapon(unitObjectHandle, weaponTagHandle) end
 ---@param objectMarker string|nil @The marker of the object to attach
 ---@param attachmentObjectHandle EngineObjectHandle|integer @The handle of the object to attach to
 ---@param attachmentMarker string|nil @The marker of the attachment object
-function Engine.gameState.attachObject(objectHandle, objectMarker, attachmentObjectHandle, attachmentMarker) end
+function Engine.gameState.objectAttachToMarker(objectHandle, objectMarker, attachmentObjectHandle, attachmentMarker) end
 
 -- Get a player
 ---@param playerIndexOrHandle? EnginePlayerHandle|integer @The index or the handle of the player; If nil, the local player is returned
