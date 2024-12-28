@@ -20,7 +20,6 @@ include(lib/fmt/fmt.cmake)
 include(lib/luacstruct/luacstruct.cmake)
 include(lib/invader/invader.cmake)
 include(lib/lanes/lanes.cmake)
-include(src/sound-subtitles-stapler/sss.cmake)
 
 # Set ringworld 
 add_subdirectory(src/ringworld)
