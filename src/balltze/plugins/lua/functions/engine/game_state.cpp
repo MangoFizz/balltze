@@ -9,7 +9,6 @@
 #include "../../libraries.hpp"
 #include "../../types.hpp"
 #include "../../helpers/function_table.hpp"
-#include <ringworld/units/units.h>
 
 namespace Balltze::Plugins::Lua {
     static int engine_get_object(lua_State *state) noexcept {

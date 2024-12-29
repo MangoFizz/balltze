@@ -26,7 +26,7 @@ add_subdirectory(src/ringworld)
 set_target_properties(ringworld PROPERTIES COMPILE_DEFINITIONS "RINGWORLD_ENABLE_ENHANCEMENTS")
 
 # Set include path
-include_directories(include include/lua lib/ lib/lanes/src src/ringworld/include)
+include_directories(include include/lua lib/ lib/lanes/src src/ringworld/src)
 
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
