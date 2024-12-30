@@ -177,6 +177,6 @@ namespace Balltze::Features {
             logger.error("Failed to set up HUD meters shader: {}", e.what());
         }
 
-        register_command("hud_meters_force_xbox_shading", "features", "Set whether to force Xbox shading for HUD meters", "<setting: boolean>", force_xbox_shading_command, true, 0, 1);
+        register_command("hud_meters_force_xbox_shading", "features", "Set whether to force Xbox shading for HUD meters", "<setting: boolean>", force_xbox_shading_command, true, 0, 1, true, true);
     }
 }
