@@ -96,8 +96,8 @@ add_library(balltze SHARED
     src/balltze/features/loading_screen/loading_screen.cpp
     src/balltze/features/loading_screen/loading_screen.S
     src/balltze/features/loading_screen/loading_screen.rc
-    src/balltze/features/shaders/shader_transparent_chicago.cpp
-    src/balltze/features/shaders/shader_transparent_chicago.S
+    src/balltze/features/shaders/shader_transparent_generic.cpp
+    src/balltze/features/shaders/shader_transparent_generic.S
     src/balltze/features/shaders/shaders.rc
     src/balltze/features/sound_subtitles.cpp
     src/balltze/features/tags_handling/map.cpp

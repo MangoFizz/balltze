@@ -243,6 +243,14 @@ namespace Balltze::Memory {
                         m_cave.insert(&instruction[0], 3);
                         instruction_size = 3;
                     }
+                    else if(instruction[1] == 0x87) {
+                        m_cave.insert(instruction[0]); 
+                        m_cave.insert(instruction[1]); 
+                        auto original_offset = *reinterpret_cast<const std::uint32_t *>(&instruction[2]);
+                        auto offset = original_offset + calculate_32bit_jump(&m_cave.top(), &instruction[6]);
+                        m_cave.insert_address(offset);
+                        instruction_size = 6;
+                    }
                     else {
                         throw std::runtime_error("Unsupported movzx instruction.");
                     }
