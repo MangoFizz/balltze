@@ -6,42 +6,17 @@
 #include <balltze/command.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
+#include <event/events.h>
+#include <impl/interface/ui_widget.h>
 #include "../logger.hpp"
 
 namespace Balltze::Event {
-    extern "C" {
-        void widget_create_event_before_asm();
-        void widget_create_event_after_asm();
-        void *widget_create_function_override_return;
-
-        bool dispatch_widget_create_before_event(Engine::TagHandle definition, const char *definition_path, bool is_root_widget, Engine::Widget *parent) {
-            if(definition_path) {
-                auto widget_definition = Engine::get_tag(definition_path, Engine::TAG_CLASS_UI_WIDGET_DEFINITION);
-                if(!widget_definition) {
-                    // it seems that the game tries to open the pause menu on the loading screen when the connection is cancelled with the ESC key
-                    logger.debug("dispatch_widget_create_before_event: widget definition not found: {}", definition_path);
-                    return false;
-                }
-                definition = widget_definition->handle;
-            }
-            UIWidgetCreateEventContext args{nullptr, definition, is_root_widget, parent};
-            UIWidgetCreateEvent widget_create_event_before(EVENT_TIME_BEFORE, args);
-            widget_create_event_before.dispatch();
-            if(is_root_widget) {
-                return widget_create_event_before.cancelled();
-            }
-            return false;
-        }
-
-        void dispatch_widget_create_after_event(Engine::Widget *widget, bool is_root_widget, Engine::Widget *parent) {
-            if(!widget) {
-                logger.debug("dispatch_widget_create_after_event: widget is null");
-                return;
-            }
-            UIWidgetCreateEventContext args{widget, widget->definition_tag_handle, is_root_widget, parent};
-            UIWidgetCreateEvent widget_create_event_after(EVENT_TIME_AFTER, args);
-            widget_create_event_after.dispatch();
-        }
+    static void dispatch_widget_create_event(Engine::Widget *widget) {
+        UIWidgetCreateEventContext args{reinterpret_cast<Engine::Widget *>(widget), widget->definition_tag_handle.value, widget->parent_widget == nullptr, widget->parent_widget};
+        UIWidgetCreateEvent widget_create_event_before(EVENT_TIME_BEFORE, args);
+        widget_create_event_before.dispatch();
+        UIWidgetCreateEvent widget_create_event_after(EVENT_TIME_AFTER, args);
+        widget_create_event_after.dispatch();
     }
 
     static bool debug_widget_create_event(int arg_count, const char **args) {
@@ -57,7 +32,7 @@ namespace Balltze::Event {
                     auto &context = event.context;
                     auto time = event_time_to_string(event.time);
                     auto *tag = Engine::get_tag(context.definition_tag_handle);
-                    logger.debug("Widget create event ({}): widget: {}. is root: {}", time, tag->path, context.is_root_widget);
+                    logger.debug("Widget create event ({}): widget: {}; is root: {}", time, tag->path, context.is_root_widget);
                 });
             }
             else {
@@ -69,14 +44,6 @@ namespace Balltze::Event {
         }
         logger.info("debug_widget_create_event: {}", handle.has_value());
         return true;
-    }
-
-    void UIWidgetCreateEvent::cancel() {
-        if(!context.is_root_widget) {
-            logger.warning("UIWidgetCreateEvent::cancel: cannot cancel non-root widget create event");
-            return;
-        }
-        EventData<UIWidgetCreateEvent>::cancel();
     }
 
     template<>
@@ -91,21 +58,8 @@ namespace Balltze::Event {
             return;
         }
 
-        auto *widget_create_function_sig = Memory::get_signature("widget_create_function");
-        auto *widget_create_function_return_sig = Memory::get_signature("widget_create_function_return");
-        if(!widget_create_function_sig || !widget_create_function_return_sig) {
-            throw std::runtime_error("Could not find signatures for widget open event.");
-        }
+        ringworld_event_subscribe(RW_EVENT_WIDGET_LOADED, reinterpret_cast<RingworldEventCallback>(dispatch_widget_create_event));
 
-        try {
-            Memory::override_function(widget_create_function_sig->data(), widget_create_event_before_asm, widget_create_function_override_return);
-            Memory::hook_function(widget_create_function_return_sig->data(), std::nullopt, widget_create_event_after_asm, false);
-        }
-        catch(const std::runtime_error &e) {
-            throw std::runtime_error("failed to initialize widget open event: " + std::string(e.what()));
-        }
-
-        // Register debug command
         register_command("debug_widget_create_event", "debug", "Sets whenever to log widget open event.", "[enable: boolean]", debug_widget_create_event, true, 0, 1);
     }
 

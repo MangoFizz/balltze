@@ -26,9 +26,8 @@ namespace Balltze::Event {
         UIWidgetCreateEventContext context;
 
         bool cancellable() const {
-            return true;
+            return false;
         }
-        void cancel();
 
         UIWidgetCreateEvent(EventTime time, UIWidgetCreateEventContext context) : EventData(time), context(context) {}
     };
