@@ -34,14 +34,11 @@ namespace Balltze::Features {
 
         Event::MapLoadEvent::subscribe([](Event::MapLoadEvent &event) {
             if(event.time == Event::EVENT_TIME_BEFORE) {
-                logger.debug("Removing shader transparent generic instances...");
                 rasterizer_shader_transparent_generic_clear_instances();
             }
             else {
-                logger.debug("Loading shader transparent generic instances...");
                 auto transparent_generic_tags = Engine::find_tags({}, Engine::TAG_CLASS_SHADER_TRANSPARENT_GENERIC);
                 for(auto *tag : transparent_generic_tags) {
-                    logger.debug("Loading shader transparent generic: {}", tag->path);
                     rasterizer_shader_transparent_generic_get_instance(reinterpret_cast<ShaderTransparentGeneric *>(tag->data));
                 }
             }
