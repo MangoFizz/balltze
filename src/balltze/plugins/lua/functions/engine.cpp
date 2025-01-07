@@ -12,6 +12,7 @@ namespace Balltze::Plugins::Lua {
     void set_engine_game_state_functions(lua_State *state) noexcept;
     void set_engine_user_interface_functions(lua_State *state) noexcept;
     void set_engine_hsc_functions(lua_State *state) noexcept;
+    void set_engine_saved_games_functions(lua_State *state) noexcept;
 
     void set_engine_table(lua_State *state) noexcept {
         lua_newtable(state);
@@ -21,6 +22,7 @@ namespace Balltze::Plugins::Lua {
         set_engine_netgame_functions(state);
         set_engine_game_state_functions(state);
         set_engine_hsc_functions(state);
+        set_engine_saved_games_functions(state);
 
         if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
             set_engine_rasterizer_functions(state);

@@ -16,6 +16,7 @@
 #include "types/engine_rasterizer.hpp"
 #include "types/engine_map.hpp"
 #include "types/engine_user_interface.hpp"
+#include "types/ringworld_saved_games.hpp"
 #include "../../logger.hpp"
 
 namespace Balltze::Plugins::Lua {
@@ -31,6 +32,7 @@ namespace Balltze::Plugins::Lua {
         define_engine_rasterizer_types(state);
         define_engine_map_types(state);
         define_engine_user_interface_types(state);
+        define_ringworld_saved_games(state);
         define_balltze_event_types(state);
     }
 }

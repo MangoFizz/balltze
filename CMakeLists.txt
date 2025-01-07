@@ -59,6 +59,7 @@ add_library(balltze SHARED
     src/balltze/engine/script.S
     src/balltze/engine/tag.cpp
     src/balltze/engine/tag.S
+    src/balltze/engine/saved_games.cpp
     src/balltze/engine/user_interface.cpp
     src/balltze/engine/user_interface.S
     src/balltze/event/camera.cpp
@@ -137,6 +138,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/functions/engine/hsc.cpp
     src/balltze/plugins/lua/functions/engine/tag.cpp
     src/balltze/plugins/lua/functions/engine/user_interface.cpp
+    src/balltze/plugins/lua/functions/engine/saved_games.cpp
     src/balltze/plugins/lua/functions/chimera.cpp
     src/balltze/plugins/lua/functions/command.cpp
     src/balltze/plugins/lua/functions/config.cpp
@@ -165,6 +167,7 @@ add_library(balltze SHARED
     src/balltze/plugins/lua/types/engine_tag.cpp
     src/balltze/plugins/lua/types/engine_types.cpp
     src/balltze/plugins/lua/types/engine_user_interface.cpp
+    src/balltze/plugins/lua/types/ringworld_saved_games.cpp
     src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp

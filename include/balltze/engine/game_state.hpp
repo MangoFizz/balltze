@@ -1493,7 +1493,7 @@ namespace Balltze::Engine {
     static_assert(sizeof(AntennaVertex) == 0x20);
 
     enum NetworkPlayerColor : std::uint16_t {
-        NETWORK_COLOR_WHITE   = 0,
+        NETWORK_COLOR_WHITE = 0,
         NETWORK_COLOR_BLACK,
         NETWORK_COLOR_RED,
         NETWORK_COLOR_BLUE,
