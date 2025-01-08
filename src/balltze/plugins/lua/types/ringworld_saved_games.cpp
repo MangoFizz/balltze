@@ -346,7 +346,7 @@ namespace Balltze::Plugins::Lua {
     void define_ringworld_player_profile(lua_State *state) noexcept {
         luacs_newstruct(state, PlayerProfile);
         luacs_nested_field(state, PlayerProfile, PlayerProfileDetails, player_details, 0);
-        luacs_nested_field(state, PlayerProfile, ControlSettings, control_settings, 0);
+        luacs_nested_field(state, PlayerProfile, PlayerControlsSettings, control_settings, 0);
         luacs_nested_field(state, PlayerProfile, PlayerVideoSettings, video_settings, 0);
         luacs_nested_field(state, PlayerProfile, PlayerAudioSettings, audio_settings, 0);
         luacs_nested_field(state, PlayerProfile, PlayerNetworkSettings, network_settings, 0);
