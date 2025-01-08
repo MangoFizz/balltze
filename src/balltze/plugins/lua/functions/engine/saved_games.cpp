@@ -61,6 +61,6 @@ namespace Balltze::Plugins::Lua {
     };
 
     void set_engine_saved_games_functions(lua_State *state) noexcept {
-        create_functions_table(state, "savedProfile", engine_saved_games_functions);
+        create_functions_table(state, "savedGames", engine_saved_games_functions);
     }        
 }
