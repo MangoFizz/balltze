@@ -8,15 +8,31 @@
 #include <balltze/hook.hpp>
 #include <balltze/events/map_load.hpp>
 #include <balltze/engine/tag.hpp>
+#include <balltze/helpers/resources.hpp>
 #include <impl/rasterizer/rasterizer_shader_transparent_generic.h>
+#include "../../resources.hpp"
 #include "../../logger.hpp"
 
 namespace Balltze::Features {
     extern "C" {
-        void *switch_jmp_ret;
+        extern char *shader_transparent_generic_source;
+        
         void *switch_jmp = nullptr;
         void *switch_default = nullptr;
         void draw_shader_transparent_generic_hook();
+    }
+
+    static std::vector<std::byte> shader_source;
+
+    static bool load_source_from_resources() {
+        auto source = load_resource_data(get_current_module(), MAKEINTRESOURCEW(ID_SHADER_TRANSPARENT_GENERIC_SRC), L"HLSL");
+        if(!source) {
+            return false;
+        }
+        shader_source = std::move(source.value());
+        shader_source.push_back(std::byte{0}); // null-terminate the string
+        shader_transparent_generic_source = reinterpret_cast<char *>(shader_source.data());
+        return true;
     }
  
     void set_up_shader_transparent_generic_impl() {
@@ -28,6 +44,12 @@ namespace Balltze::Features {
             return;
         }
 
+        if(!load_source_from_resources()) {
+            logger.error("Could not load shader transparent generic source from resources");
+            return;
+        }
+
+        void *switch_jmp_ret;
         Memory::override_function(rasterizer_shader_switch_cmp_sig->data(), draw_shader_transparent_generic_hook, switch_jmp_ret, false);
         switch_jmp = rasterizer_shader_switch_jmp_sig->data();
         switch_default = rasterizer_shader_switch_default_sig->data();

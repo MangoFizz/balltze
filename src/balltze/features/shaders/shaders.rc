@@ -2,4 +2,5 @@
 
 #include "../../resources.hpp"
 
-ID_HUD_METERS_SHADER             CSO     "hud_meters.cso"
+ID_HUD_METERS_SHADER                    CSO     "hud_meters.cso"
+ID_SHADER_TRANSPARENT_GENERIC_SRC       HLSL    "../../../ringworld/src/impl/rasterizer/shaders/shader_transparent_generic.hlsl"
