@@ -16,10 +16,10 @@ namespace Balltze::Features {
     static float ui_aspect_ratio = 0;
     static float ui_displacement = 0;
 
-    static Memory::Hook *widescreen_ui_text_hook;
-    static Memory::Hook *widescreen_ui_text_2_hook;
-    static Memory::Hook *widescreen_input_text_hook;
-    static Memory::Hook *widescreen_mouse_hook;
+    static Memory::Hook *widescreen_ui_text_hook = nullptr;
+    static Memory::Hook *widescreen_ui_text_2_hook = nullptr;
+    static Memory::Hook *widescreen_input_text_hook = nullptr;
+    static Memory::Hook *widescreen_mouse_hook = nullptr;
 
     static EventListenerHandle<TickEvent> tick_listener_handler;
     static EventListenerHandle<MapLoadEvent> map_load_listener_handler;
@@ -150,8 +150,24 @@ namespace Balltze::Features {
                     enable_widescreen_override(true);
                 }
                 catch(std::runtime_error &e) {
-                    logger.error("Failed to set up widescreen override: {}", e.what());
-                    return;
+                    logger.error("Failed to set up UI widescreen override: {}", e.what());
+                    
+                    if(widescreen_ui_text_hook) {
+                        widescreen_ui_text_hook->release();
+                        widescreen_ui_text_hook = nullptr;
+                    }
+                    if(widescreen_ui_text_2_hook) {
+                        widescreen_ui_text_2_hook->release();
+                        widescreen_ui_text_2_hook = nullptr;
+                    }
+                    if(widescreen_input_text_hook) {
+                        widescreen_input_text_hook->release();
+                        widescreen_input_text_hook = nullptr;
+                    }
+                    if(widescreen_mouse_hook) {
+                        widescreen_mouse_hook->release();
+                        widescreen_mouse_hook = nullptr;
+                    }
                 }
                 first_tick.remove();
             }

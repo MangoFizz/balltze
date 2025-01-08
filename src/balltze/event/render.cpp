@@ -306,7 +306,10 @@ namespace Balltze::Event {
                 throw std::runtime_error("Could not find signature for navpoints render event");
             }
 
-            auto *address = Memory::follow_32bit_jump(render_navpoint_function_call_sig->data()) + 9;
+            auto *address = render_navpoint_function_call_sig->data();
+            if(*reinterpret_cast<std::uint8_t *>(address) == 0xE9) {
+                address = Memory::follow_32bit_jump(render_navpoint_function_call_sig->data()) + 9;
+            }
             Memory::hook_function(address, std::function<bool()>(navpoints_render_event_before_dispatcher), navpoints_render_event_after_dispatcher);
 
             navpoints_render_event_init_tick_event_handle.remove();
