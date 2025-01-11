@@ -27,6 +27,7 @@ namespace Balltze {
     using plugin_metadata_proc_t = PluginMetadata (*)();
     using plugin_load_proc_t = bool (*)();
     using plugin_unload_proc_t = void (*)();
+    using plugin_first_tick_proc_t = void (*)();
 
     BALLTZE_API std::filesystem::path get_plugin_path(PluginHandle);
 

@@ -29,6 +29,7 @@ namespace Balltze::Plugins {
         std::filesystem::path m_filepath;
         std::filesystem::path m_directory;
         bool m_loaded = false;
+        bool m_execute_first_tick = false;
 
         virtual void set_up_directory() = 0;
         virtual void update_metadata() = 0;
@@ -52,6 +53,7 @@ namespace Balltze::Plugins {
         virtual bool initialized() const noexcept = 0;
         virtual PluginLoadResult load() = 0;
         virtual void unload() = 0;
+        virtual void first_tick() = 0;
         virtual ~Plugin() = default;
     };
 
@@ -69,6 +71,7 @@ namespace Balltze::Plugins {
         bool initialized() const noexcept;
         PluginLoadResult load();
         void unload();
+        void first_tick();
         NativePlugin(std::filesystem::path dlL_file);
         ~NativePlugin();
     };
@@ -98,6 +101,7 @@ namespace Balltze::Plugins {
         bool initialized() const noexcept;
         PluginLoadResult load();
         void dispose();
+        void first_tick();
         LuaPlugin(std::filesystem::path lua_file);
         ~LuaPlugin();
     };

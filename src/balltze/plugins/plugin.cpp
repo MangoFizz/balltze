@@ -143,6 +143,7 @@ namespace Balltze::Plugins {
                 auto load_plugin = reinterpret_cast<plugin_load_proc_t>(load_proc);
                 bool result = load_plugin();
                 if(result) {
+                    m_execute_first_tick = true;
                     return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
                 }
             }
@@ -182,6 +183,21 @@ namespace Balltze::Plugins {
         logger.debug("Disposing plugin {}...", m_filename);
         FreeLibrary(m_handle);
         m_handle = nullptr;
+    }
+
+    void NativePlugin::first_tick() {
+        if(!m_handle) {
+            throw std::runtime_error("plugin not initialized");
+        }
+        if(!m_execute_first_tick) {
+            return;
+        }
+        auto first_tick_proc = GetProcAddress(m_handle, "plugin_first_tick");
+        if(first_tick_proc) {
+            auto first_tick = reinterpret_cast<plugin_first_tick_proc_t>(first_tick_proc);
+            first_tick();
+        }
+        m_execute_first_tick = false;
     }
 
     NativePlugin::NativePlugin(std::filesystem::path dll_file) {
@@ -444,6 +460,7 @@ namespace Balltze::Plugins {
                     bool result = lua_toboolean(m_state, -1);
                     lua_pop(m_state, 1);
                     if(result) {
+                        m_execute_first_tick = true;
                         return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
                     }
                 }
@@ -491,6 +508,24 @@ namespace Balltze::Plugins {
         logger.debug("Disposing Lua plugin '{}'...", m_filename);
         lua_close(m_state);
         m_state = nullptr;
+    }
+
+    void LuaPlugin::first_tick() {
+        if(!m_state) {
+            throw std::runtime_error("plugin not initialized");
+        }
+        if(!m_execute_first_tick) {
+            return;
+        }
+        lua_getglobal(m_state, "PluginFirstTick");
+        if(lua_isfunction(m_state, -1)) {
+            auto res = lua_pcall(m_state, 0, 0, 0);
+            if(res != LUA_OK) {
+                logger.error("Error while calling PluginFirstTick in Lua plugin '{}': {}", m_filename, get_error_message());
+                print_traceback();
+            }
+        }
+        m_execute_first_tick = false;
     }
 
     LuaPlugin::LuaPlugin(std::filesystem::path lua_file) {

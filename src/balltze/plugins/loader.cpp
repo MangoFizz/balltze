@@ -154,6 +154,12 @@ namespace Balltze::Plugins {
             }
             reinit_plugins_on_next_tick = false;
         }
+
+        for(auto &plugin : plugins) {
+            if(plugin->loaded()) {
+                plugin->first_tick();
+            }
+        }
     }
 
     static void plugins_frame(FrameEvent const &context) noexcept {
