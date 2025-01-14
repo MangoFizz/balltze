@@ -213,11 +213,14 @@ namespace Balltze::Features {
                             device->Present(NULL, NULL, NULL, NULL);
                         }
                         else if(hr == D3DERR_DEVICENOTRESET) {
-                            texture->Release();
-                            texture = nullptr;
-                            pixel_shader->Release();
-                            pixel_shader = nullptr;
-                            device = nullptr;
+                            if(texture) {
+                                texture->Release();
+                                texture = nullptr;
+                            }
+                            if(pixel_shader) {
+                                pixel_shader->Release();
+                                pixel_shader = nullptr;
+                            }
                         }
                     }
                 }
