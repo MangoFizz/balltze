@@ -10,12 +10,15 @@
 #include <balltze/engine/tag.hpp>
 #include <balltze/helpers/resources.hpp>
 #include <impl/rasterizer/rasterizer_shader_transparent_generic.h>
+#include "../../command/command.hpp"
 #include "../../resources.hpp"
 #include "../../logger.hpp"
 
 namespace Balltze::Features {
     extern "C" {
         extern char *shader_transparent_generic_source;
+        extern ShaderTransparentGenericInstances *shader_transparent_generic_instances;
+        extern ShaderTransparentGenericTagsCache *shader_transparent_generic_tags_cache;
         
         void *switch_jmp = nullptr;
         void *switch_default = nullptr;
@@ -59,11 +62,13 @@ namespace Balltze::Features {
                 rasterizer_shader_transparent_generic_clear_instances();
             }
             else {
-                auto transparent_generic_tags = Engine::find_tags({}, Engine::TAG_CLASS_SHADER_TRANSPARENT_GENERIC);
-                for(auto *tag : transparent_generic_tags) {
-                    rasterizer_shader_transparent_generic_get_instance(reinterpret_cast<ShaderTransparentGeneric *>(tag->data));
-                }
+                rasterizer_shader_transparent_generic_create_instances_for_current_map();
             }
         });
+
+        register_command("shader_transparent_generic_budget", "debug", "Prints the number of shader transparent generic instances", {}, [](int arg_count, const char **args) -> bool {
+            Engine::console_printf("Instances: %d/%d | Tags: %d/%d", shader_transparent_generic_instances->count, MAX_SHADER_TRANSPARENT_GENERIC_INSTANCES, shader_transparent_generic_tags_cache->count, MAX_SHADER_TRANSPARENT_GENERIC_PER_MAP);
+            return true;
+        }, false, 0, 0);
     }
 }
