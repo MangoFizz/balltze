@@ -10,6 +10,9 @@ project(balltze
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Minimum supported Windows version is 8.0
+add_definitions(-D_WIN32_WINNT=0x0602)
+
 # Set modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
