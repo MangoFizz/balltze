@@ -9,6 +9,7 @@ namespace Balltze {
     void set_up_commands();
     void set_up_commands_tab_completion();
     void set_up_commands_help();
+    void remove_commands_from_plugin(PluginHandle plugin);
 }
 
 #endif

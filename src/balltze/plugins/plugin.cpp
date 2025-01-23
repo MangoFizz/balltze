@@ -171,6 +171,8 @@ namespace Balltze::Plugins {
             auto unload_plugin = reinterpret_cast<plugin_unload_proc_t>(unload_proc);
             unload_plugin();
         }
+
+        remove_commands_from_plugin(this);
         
         dispose();
         m_loaded = false;

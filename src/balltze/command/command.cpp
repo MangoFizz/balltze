@@ -386,4 +386,15 @@ namespace Balltze {
         set_up_commands_tab_completion();
         set_up_commands_help();
     }
+
+    void remove_commands_from_plugin(PluginHandle plugin) {
+        for(auto it = commands.begin(); it != commands.end(); ) {
+            if((*it)->plugin() == plugin) {
+                it = commands.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+    }
 }
