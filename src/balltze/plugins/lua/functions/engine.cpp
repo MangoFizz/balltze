@@ -26,8 +26,8 @@ namespace Balltze::Plugins::Lua {
 
         if(get_balltze_side() == BALLTZE_SIDE_CLIENT) {
             set_engine_rasterizer_functions(state);
-            set_engine_user_interface_functions(state);
         }
+            set_engine_user_interface_functions(state);
         
         lua_setglobal(state, "Engine");
     }

@@ -59,6 +59,8 @@ namespace Balltze {
                 Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
+
+                set_up_ringworld_hooks(RW_PLATFORM_DEDICATED_SERVER);
             }
             else {
                 logger.fatal("failed to detect engine type");
