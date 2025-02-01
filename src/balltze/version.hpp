@@ -1,5 +1,5 @@
 #ifndef BALLTZE_VERSION
-#define BALLTZE_VERSION "1.3.2"
+#define BALLTZE_VERSION "1.3.3"
 #ifdef __cplusplus
 
 #include <semver.hpp>
