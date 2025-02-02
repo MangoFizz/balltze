@@ -93,6 +93,7 @@ add_library(balltze SHARED
     src/balltze/event/tick.cpp
     src/balltze/event/widget.cpp
     src/balltze/event/widget.S
+    src/balltze/features/fog_plane_reset_fix.cpp
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
     src/balltze/features/shaders/hud_meters.cpp

@@ -21,6 +21,7 @@ namespace Balltze::Features {
     void set_up_extended_decriptions_fix();
     void set_up_set_console_key_binding_command() noexcept;
     void set_up_hud_meters_shader();
+    void set_up_fog_plane_reset_fix() noexcept;
 
     inline void set_up_features() {
         try {
@@ -41,6 +42,7 @@ namespace Balltze::Features {
                     set_up_extended_decriptions_fix();
                     set_up_set_console_key_binding_command();
                     set_up_hud_meters_shader();
+                    set_up_fog_plane_reset_fix();
                     break;
                 }
             }
