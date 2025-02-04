@@ -16,6 +16,7 @@
 #include <balltze/engine/rasterizer.hpp>
 #include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
+#include <impl/rasterizer/rasterizer_dx9_render_target.h>
 #include "../../config/config.hpp"
 #include "../../config/chimera_preferences.hpp"
 #include "../../event/console_command.hpp"
@@ -85,16 +86,12 @@ namespace Balltze::Features {
             loading_screen_start_time = std::chrono::steady_clock::now();
         }
 
-        // Get current render target dimensions
-        IDirect3DSurface9 *surface;
-        device->GetRenderTarget(0, &surface);
-        D3DSURFACE_DESC desc;
-        surface->GetDesc(&desc);
+        auto *render_target = ::rasterizer_dx9_render_target_get(0);
 
         // Set up constants for pixel shader
         #define FLOAT_CAST(x) static_cast<float>(x)
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - *loading_screen_start_time);
-        float c_resolution[2] = {FLOAT_CAST(desc.Width), FLOAT_CAST(desc.Height)};
+        float c_resolution[2] = {FLOAT_CAST(render_target->width), FLOAT_CAST(render_target->height)};
         float c_duration = FLOAT_CAST(loading_screen_shader_effect_duration.count())  / 1000.0f;
         float c_elapsed = FLOAT_CAST(ms.count()) / 1000.0f;
         float c_opacity = FLOAT_CAST(alpha_channel) / 255.0f;
@@ -106,7 +103,7 @@ namespace Balltze::Features {
         device->SetPixelShaderConstantF(1, &c_duration, 1);
         device->SetPixelShaderConstantF(2, &c_elapsed, 1);
         device->SetPixelShaderConstantF(3, &c_opacity, 1);
-        sprite.draw(0, 0, desc.Width, desc.Height);
+        sprite.draw(0, 0, render_target->width, render_target->height);
         sprite.end();
 
         if(loading_screen_demo) {
