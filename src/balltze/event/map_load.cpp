@@ -16,8 +16,9 @@ namespace Balltze::Event {
 
         void dispatch_map_load_event_before(const char *map_name) {
             current_map_name = map_name;
-            if(current_map_name == "levels\\ui\\ui") {
-                current_map_name = "ui";
+            std::size_t pos = current_map_name.find_last_of('\\');
+            if(pos != std::string::npos) {
+                current_map_name = current_map_name.substr(pos + 1);
             }
             MapLoadEventContext args(current_map_name);
             MapLoadEvent event(EVENT_TIME_BEFORE, args);
