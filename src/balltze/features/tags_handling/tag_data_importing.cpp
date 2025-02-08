@@ -895,12 +895,14 @@ namespace Balltze::Features {
         auto &tag_data_header = get_tag_data_header();
         for(std::size_t i = 0; i < tag_data_header.tag_count; i++) {
             auto &current_tag = tag_data_header.tag_array[i];
-            resolve_tag_dependencies(&current_tag, [tag_handle, new_tag_handle, &current_tag](TagHandle dependency_handle) -> TagHandle {
-                if(dependency_handle == tag_handle && current_tag.handle != tag_handle) {
-                    return new_tag_handle;
-                }
-                return dependency_handle;
-            });
+            if(current_tag.data != nullptr) {
+                resolve_tag_dependencies(&current_tag, [tag_handle, new_tag_handle, &current_tag](TagHandle dependency_handle) -> TagHandle {
+                    if(dependency_handle == tag_handle && current_tag.handle != tag_handle) {
+                        return new_tag_handle;
+                    }
+                    return dependency_handle;
+                });
+            }
         }
     }
 
