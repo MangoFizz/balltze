@@ -144,7 +144,7 @@
 
 ---@class MetaEngineAngle: EngineAngle
 
----@class EngineFraction
+---@class EngineFraction: number
 
 ---@class MetaEngineFraction: EngineFraction
 
