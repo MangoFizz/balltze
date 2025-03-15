@@ -1,31 +1,32 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <impl/saved_games/player_profile.h>
+#include <impl/network/network_game.h>
 #include "../helpers/luacstruct.hpp"
 #include "../helpers/enum.hpp"
 
 namespace Balltze::Plugins::Lua {
     static void define_ringworld_saved_games_player_color_setting(lua_State *state) noexcept {
-        luacs_newenum(state, PlayerColorSetting);
-        luacs_enum_declare_value(state, "white", PLAYER_COLOR_WHITE);
-        luacs_enum_declare_value(state, "black", PLAYER_COLOR_BLACK);
-        luacs_enum_declare_value(state, "red", PLAYER_COLOR_RED);
-        luacs_enum_declare_value(state, "blue", PLAYER_COLOR_BLUE);
-        luacs_enum_declare_value(state, "gray", PLAYER_COLOR_GRAY);
-        luacs_enum_declare_value(state, "yellow", PLAYER_COLOR_YELLOW);
-        luacs_enum_declare_value(state, "green", PLAYER_COLOR_GREEN);
-        luacs_enum_declare_value(state, "pink", PLAYER_COLOR_PINK);
-        luacs_enum_declare_value(state, "purple", PLAYER_COLOR_PURPLE);
-        luacs_enum_declare_value(state, "cyan", PLAYER_COLOR_CYAN);
-        luacs_enum_declare_value(state, "cobalt", PLAYER_COLOR_COBALT);
-        luacs_enum_declare_value(state, "orange", PLAYER_COLOR_ORANGE);
-        luacs_enum_declare_value(state, "teal", PLAYER_COLOR_TEAL);
-        luacs_enum_declare_value(state, "sage", PLAYER_COLOR_SAGE);
-        luacs_enum_declare_value(state, "brown", PLAYER_COLOR_BROWN);
-        luacs_enum_declare_value(state, "tan", PLAYER_COLOR_TAN);
-        luacs_enum_declare_value(state, "maroon", PLAYER_COLOR_MAROON);
-        luacs_enum_declare_value(state, "salmon", PLAYER_COLOR_SALMON);
-        luacs_enum_declare_value(state, "random", PLAYER_COLOR_RANDOM);
+        luacs_newenum(state, NetworkGamePlayerColor);
+        luacs_enum_declare_value(state, "white", NETWORK_GAME_PLAYER_COLOR_WHITE);
+        luacs_enum_declare_value(state, "black", NETWORK_GAME_PLAYER_COLOR_BLACK);
+        luacs_enum_declare_value(state, "red", NETWORK_GAME_PLAYER_COLOR_RED);
+        luacs_enum_declare_value(state, "blue", NETWORK_GAME_PLAYER_COLOR_BLUE);
+        luacs_enum_declare_value(state, "gray", NETWORK_GAME_PLAYER_COLOR_GRAY);
+        luacs_enum_declare_value(state, "yellow", NETWORK_GAME_PLAYER_COLOR_YELLOW);
+        luacs_enum_declare_value(state, "green", NETWORK_GAME_PLAYER_COLOR_GREEN);
+        luacs_enum_declare_value(state, "pink", NETWORK_GAME_PLAYER_COLOR_PINK);
+        luacs_enum_declare_value(state, "purple", NETWORK_GAME_PLAYER_COLOR_PURPLE);
+        luacs_enum_declare_value(state, "cyan", NETWORK_GAME_PLAYER_COLOR_CYAN);
+        luacs_enum_declare_value(state, "cobalt", NETWORK_GAME_PLAYER_COLOR_COBALT);
+        luacs_enum_declare_value(state, "orange", NETWORK_GAME_PLAYER_COLOR_ORANGE);
+        luacs_enum_declare_value(state, "teal", NETWORK_GAME_PLAYER_COLOR_TEAL);
+        luacs_enum_declare_value(state, "sage", NETWORK_GAME_PLAYER_COLOR_SAGE);
+        luacs_enum_declare_value(state, "brown", NETWORK_GAME_PLAYER_COLOR_BROWN);
+        luacs_enum_declare_value(state, "tan", NETWORK_GAME_PLAYER_COLOR_TAN);
+        luacs_enum_declare_value(state, "maroon", NETWORK_GAME_PLAYER_COLOR_MAROON);
+        luacs_enum_declare_value(state, "salmon", NETWORK_GAME_PLAYER_COLOR_SALMON);
+        luacs_enum_declare_value(state, "random", NETWORK_GAME_PLAYER_COLOR_RANDOM);
         publish_enum(state, "Engine", "savedGames", "playerColors", -1); 
         lua_pop(state, 1);
     }
@@ -33,7 +34,7 @@ namespace Balltze::Plugins::Lua {
     static void define_ringworld_saved_games_player_details(lua_State *state) noexcept {
         luacs_newstruct(state, PlayerProfileDetails);
         luacs_declare_field(state, LUACS_TBYTEARRAY, NULL, "playerName", 1, OFFSET_OF(PlayerProfileDetails, player_name), sizeof(((PlayerProfileDetails *)0)->player_name), 0);
-        luacs_enum_field(state, PlayerProfileDetails, PlayerColorSetting, player_color, 0);
+        luacs_enum_field(state, PlayerProfileDetails, NetworkGamePlayerColor, player_color, 0);
         lua_pop(state, 1); 
     }
 

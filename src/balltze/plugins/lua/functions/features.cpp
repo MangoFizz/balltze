@@ -275,20 +275,10 @@ namespace Balltze::Plugins::Lua {
     }
 
     static int lua_set_ui_aspect_ratio(lua_State *state) noexcept {
-        int args = lua_gettop(state);
-        if(args == 2) {
-            std::uint16_t x = luaL_checknumber(state, 1);
-            std::uint16_t y = luaL_checknumber(state, 2);
-            Features::set_ui_aspect_ratio(x, y);
-        }
-        else {
-            luaL_error(state, "invalid number of arguments in function Balltze.features.setUIAspectRatio.");
-        }
         return 0;
     }
 
     static int lua_reset_ui_aspect_ratio(lua_State *state) noexcept {
-        Features::reset_ui_aspect_ratio();
         return 0;
     }
 

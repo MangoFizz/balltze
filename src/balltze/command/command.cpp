@@ -351,7 +351,7 @@ namespace Balltze {
         static auto *sapp_loader_hook_sig = Memory::get_signature("execute_console_command_sapp_loader_hook");
         static Memory::Hook *sapp_loader_hook_override = nullptr;
         if(!sapp_loader_hook_override && Memory::already_hooked(sapp_loader_hook_sig->data())) {
-            sapp_loader_hook_override = Memory::override_function(sapp_loader_hook_sig->data(), unknown_command_sapp_hook_override, unknown_command_sapp_hook_override_return);
+            sapp_loader_hook_override = Memory::override_function(sapp_loader_hook_sig->data(), unknown_command_sapp_hook_override, &unknown_command_sapp_hook_override_return);
         }
     }
 

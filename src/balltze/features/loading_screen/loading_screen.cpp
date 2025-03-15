@@ -17,6 +17,7 @@
 #include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
 #include <impl/rasterizer/rasterizer_dx9_render_target.h>
+#include <impl/interface/loading_screen.h>
 #include "../../config/config.hpp"
 #include "../../config/chimera_preferences.hpp"
 #include "../../event/console_command.hpp"
@@ -27,10 +28,8 @@
 using namespace std::chrono_literals;
 
 namespace Balltze::Features {
-    static constexpr auto loading_screen_fade_out_duration = 3000ms;
     static constexpr auto loading_screen_shader_effect_duration = 4000ms;
     static bool loading_screen_playback = false; 
-    static bool loading_screen_demo = false;
     static std::optional<std::chrono::steady_clock::time_point> loading_screen_start_time;
 
     static HBITMAP loading_screen_background;
@@ -38,9 +37,7 @@ namespace Balltze::Features {
     static IDirect3DTexture9 *texture = nullptr;
     static IDirect3DPixelShader9 *pixel_shader = nullptr;
     static Sprite sprite;
-    static std::uint8_t alpha_channel = 255;
-
-    static bool loading_screen_is_blocked = false;
+    static float last_alpha_value = 0;
 
     static HRESULT load_loading_screen_background_texture(IDirect3DDevice9 *device, IDirect3DTexture9 **texture) {
         return load_texture_from_resource(MAKEINTRESOURCEW(ID_LOADING_SCREEN_BACKGROUND), get_current_module(), device, texture);
@@ -55,35 +52,26 @@ namespace Balltze::Features {
         return hr;
     }
 
-    std::chrono::milliseconds loading_screen_background_actual_duration() {
-        float duration = static_cast<float>(loading_screen_shader_effect_duration.count());
-        return std::chrono::milliseconds(static_cast<std::int64_t>((duration * 1.5f) / (duration - 250) * duration));
-    }
+    static void draw_loading_screen_background(float alpha) {
+        if(!device || !texture) {
+            return;
+        }
+        
+        // Start playback when alpha changes from 0 to non-zero
+        if(last_alpha_value == 0.0f && alpha != 0.0f) {
+            loading_screen_playback = true;
+            loading_screen_start_time = std::chrono::steady_clock::now();
+        }
 
-    static void end_loading_screen_background() {
         if(!loading_screen_playback) {
             return;
         }
-        loading_screen_playback = false;
-        loading_screen_demo = false;
-        loading_screen_start_time = std::nullopt;
-    }
-
-    static void play_loading_screen_background() {
-        if(loading_screen_playback) {
+        
+        // Stop playback when alpha is 0
+        if(alpha == 0.0f) {
+            loading_screen_playback = false;
+            loading_screen_start_time = std::nullopt;
             return;
-        }
-        alpha_channel = 255;
-        loading_screen_playback = true;
-    }
-
-    static void draw_loading_screen_background() {
-        if(!device || !loading_screen_playback) {
-            return;
-        }
-
-        if(!loading_screen_start_time) {
-            loading_screen_start_time = std::chrono::steady_clock::now();
         }
 
         auto *render_target = ::rasterizer_dx9_render_target_get(0);
@@ -94,7 +82,7 @@ namespace Balltze::Features {
         float c_resolution[2] = {FLOAT_CAST(render_target->width), FLOAT_CAST(render_target->height)};
         float c_duration = FLOAT_CAST(loading_screen_shader_effect_duration.count())  / 1000.0f;
         float c_elapsed = FLOAT_CAST(ms.count()) / 1000.0f;
-        float c_opacity = FLOAT_CAST(alpha_channel) / 255.0f;
+        float c_opacity = alpha;
         #undef FLOAT_CAST
 
         sprite.begin();
@@ -106,20 +94,12 @@ namespace Balltze::Features {
         sprite.draw(0, 0, render_target->width, render_target->height);
         sprite.end();
 
-        if(loading_screen_demo) {
-            auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - *loading_screen_start_time);
-            if(time_elapsed > loading_screen_background_actual_duration()) { 
-                end_loading_screen_background();
-            }
-        }
+        last_alpha_value = alpha;
     }
 
     static void update_d3d9_device(Event::D3D9EndSceneEvent &event) {
         if(!device) {
             device = event.context.device;
-        }
-        if(event.time == Event::EVENT_TIME_BEFORE && loading_screen_demo) {
-            draw_loading_screen_background();
         }
 
         if(!texture) {
@@ -152,12 +132,6 @@ namespace Balltze::Features {
 
     static std::atomic<bool> map_load_thread_done = false;
 
-    static void draw_loading_screen() {
-        static auto loading_screen_render_function_sig = Memory::get_signature("loading_screen_render_function");
-        static auto draw_func = reinterpret_cast<void(*)()>(loading_screen_render_function_sig->data());
-        draw_func();
-    }
-
     extern "C" {
         void *load_map_function_address = nullptr;
         std::uint32_t load_map_function_result = false;
@@ -175,10 +149,6 @@ namespace Balltze::Features {
             std::thread map_load_thread(load_map_worker_asm, map_to_load);
 
             if(device && std::strcmp(map_to_load, "levels\\ui\\ui") != 0) {
-                if(!loading_screen_playback) {
-                    play_loading_screen_background();
-                }
-
                 map_load_thread.detach();
 
                 std::chrono::steady_clock::time_point timestamp = std::chrono::steady_clock::now();
@@ -205,7 +175,7 @@ namespace Balltze::Features {
                         auto hr = device->TestCooperativeLevel();
                         if(hr == D3D_OK) {
                             device->BeginScene();
-                            draw_loading_screen();
+                            ::loading_screen_render();
                             device->EndScene();
                             device->Present(NULL, NULL, NULL, NULL);
                         }
@@ -223,11 +193,6 @@ namespace Balltze::Features {
                 }
             }
             else {
-                // End loading screen if it is playing... just in case
-                if(loading_screen_playback) {
-                    end_loading_screen_background();
-                }
-
                 map_load_thread.join();
             }
 
@@ -238,56 +203,24 @@ namespace Balltze::Features {
         }
     }
 
-    std::uint32_t *game_loading_screen_flag = nullptr;
-
-    static void loading_screen_hook() {
-        bool are_we_in_loading_screen = *game_loading_screen_flag != 0;
-        if(!loading_screen_playback && are_we_in_loading_screen) {
-            play_loading_screen_background();
+    static bool loading_scree_enable_command(int arg_count, const char **args) {
+        auto &config = Config::get_config();
+        bool mute_ingame = logger.mute_ingame();
+        logger.mute_ingame(false);
+        if(arg_count == 1) {
+            bool enable = STR_TO_BOOL(args[0]);
+            config.set("loading_screen.enable", enable);
+            config.save();
+            logger.warning("You must restart the game for this change to take effect.");
         }
-        else if(!loading_screen_demo && loading_screen_playback && (!are_we_in_loading_screen || (loading_screen_is_blocked && *game_loading_screen_flag == 8))) {
-            end_loading_screen_background();
-        }
-        draw_loading_screen_background();
-    }
-
-    static bool loading_screen_render_hook(std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t, Engine::ColorARGBInt color_mask) {
-        alpha_channel = color_mask.alpha;
+        auto enable = config.get<bool>("loading_screen.enable");
+        logger.info("Loading screen is {}", enable.value_or(true) ? "enabled" : "disabled");
+        logger.mute_ingame(mute_ingame);
         return true;
     }
 
-    static void chimera_block_loading_screen_listener(Event::ConsoleCommandEvent const &event) {
-        if(event.time == Event::EVENT_TIME_BEFORE) {
-            return;
-        }
-
-        auto args = split_arguments(event.context.command);
-        auto command = args[0];
-        args.erase(args.begin());
-
-        if(command == "chimera_block_loading_screen") {
-            if(!args.empty()) {
-                loading_screen_is_blocked = STR_TO_BOOL(args.front().c_str());
-                logger.debug("chimera_block_loading_screen is now set to {}", loading_screen_is_blocked ? "true" : "false");
-            }
-        }
-    }
-
     void set_up_loading_screen() {
-        register_command("enable_loading_screen", "features", "Set whether to set up loading screen at startup", "<setting: boolean>", [](int arg_count, const char **args) -> bool {
-            auto &config = Config::get_config();
-            logger.mute_ingame(false);
-            if(arg_count == 1) {
-                bool enable = STR_TO_BOOL(args[0]);
-                config.set("loading_screen.enable", enable);
-                config.save();
-                logger.warning("You must restart the game for this change to take effect.");
-            }
-            auto enable = config.get<bool>("loading_screen.enable");
-            logger.info("Loading screen is {}", enable.value_or(true) ? "enabled" : "disabled");
-            logger.mute_ingame(true);
-            return true;
-        }, false, 0, 1);
+        register_command("enable_loading_screen", "features", "Set whether to set up loading screen at startup", "<setting: boolean>", loading_scree_enable_command, false, 0, 1);
 
         auto enable = Config::get_config().get<bool>("loading_screen.enable").value_or(true);
         if(!enable) {
@@ -298,36 +231,13 @@ namespace Balltze::Features {
         Event::D3D9DeviceResetEvent::subscribe(on_device_reset, Event::EVENT_PRIORITY_HIGHEST);
 
         auto behavior_flags_sig = Memory::get_signature("d3d9_device_behavior_flags");
-        if(!behavior_flags_sig) {
+        auto load_map_function_sig = Memory::get_signature("load_map_function");
+        if(!behavior_flags_sig || !load_map_function_sig) {
             logger.error("Failed to find signatures for loading screen.");
             return;
         }
         Memory::hook_function(behavior_flags_sig->data(), set_d3d9_device_multithreaded_flag, std::nullopt, false);
-
-        auto load_map_function_sig = Memory::get_signature("load_map_function");
-        auto loading_screen_handler_sig = Memory::get_signature("loading_screen_handler");
-        auto loading_screen_render_function_sig = Memory::get_signature("loading_screen_render_function");
-        auto loading_screen_render_function_call_sig = Memory::get_signature("loading_screen_background_render_call");
-        if(!load_map_function_sig || !loading_screen_handler_sig || !loading_screen_render_function_sig || !loading_screen_render_function_call_sig) {
-            logger.error("Failed to find signatures for loading screen.");
-            return;
-        }
-        game_loading_screen_flag = *reinterpret_cast<std::uint32_t **>(loading_screen_render_function_sig->data() + 1);
-        Memory::override_function(load_map_function_sig->data(), load_map_override_asm, load_map_function_address);
-        Memory::hook_function(loading_screen_handler_sig->data(), loading_screen_hook);
-        Memory::hook_function(loading_screen_render_function_call_sig->data(), std::function<bool()>(reinterpret_cast<bool (*)()>(loading_screen_render_hook)));
-
-        auto &preferences = Config::get_chimera_preferences();
-        auto settings = preferences.get_settings_for_command("chimera_block_loading_screen");
-        if(settings && !settings->empty()) {
-            loading_screen_is_blocked = STR_TO_BOOL(settings->front().c_str());
-        }
-        Event::ConsoleCommandEvent::subscribe_const(chimera_block_loading_screen_listener);
-
-        register_command("test_loading_screen", "debug", "Plays loading screen demo.", std::nullopt, [](int arg_count, const char **args) -> bool {
-            loading_screen_demo = true;
-            play_loading_screen_background();
-            return true;
-        }, false, 0, 0);
+        Memory::override_function(load_map_function_sig->data(), load_map_override_asm, &load_map_function_address);
+        Memory::override_function(reinterpret_cast<void *>(::loading_screen_draw_background), reinterpret_cast<void (*)()>(draw_loading_screen_background), nullptr);
     }
 }

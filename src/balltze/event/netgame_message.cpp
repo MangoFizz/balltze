@@ -84,7 +84,7 @@ namespace Balltze::Event {
             if(*reinterpret_cast<uint8_t *>(address) == 0xE9) {
                 address = Memory::follow_32bit_jump(address);
             }
-            auto *hook = Memory::override_function(address, override_function, network_game_decode_hud_message_call_override_return);
+            auto *hook = Memory::override_function(address, override_function, &network_game_decode_hud_message_call_override_return);
             Memory::Codecave &cave = hook->cave();
             auto *code = cave.data();
             for(size_t i = 5; i < 10; i++) {
@@ -134,7 +134,7 @@ namespace Balltze::Event {
         }
 
         try {
-            auto *hook = Memory::override_function(netgame_sound_sig->data(), netgame_sound_override, netgame_sound_fn_return);
+            auto *hook = Memory::override_function(netgame_sound_sig->data(), netgame_sound_override, &netgame_sound_fn_return);
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook network game sound event: " + std::string(e.what()));

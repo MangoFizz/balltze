@@ -66,7 +66,7 @@ namespace Balltze::Event {
         }
 
         try {
-            Memory::override_function(apply_damage_function_sig->data() + 6, object_damage_event, object_damage_function_address);
+            Memory::override_function(apply_damage_function_sig->data() + 6, object_damage_event, &object_damage_function_address);
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook object damage event: " + std::string(e.what()));

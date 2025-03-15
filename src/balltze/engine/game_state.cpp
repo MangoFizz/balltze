@@ -6,7 +6,7 @@
 #include <balltze/engine/tag_definitions/vehicle.hpp>
 #include <balltze/engine/game_state.hpp>
 #include <balltze/memory.hpp>
-#include <impl/units/units.h>
+#include <impl/unit/unit.h>
 
 namespace Balltze::Engine {
     BaseObject *ObjectTable::get_object(const ObjectHandle &object_handle) noexcept {

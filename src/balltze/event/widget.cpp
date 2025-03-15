@@ -6,7 +6,7 @@
 #include <balltze/command.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
-#include <event/events.h>
+#include <event/event.h>
 #include <impl/interface/ui_widget.h>
 #include "../logger.hpp"
 
@@ -126,7 +126,7 @@ namespace Balltze::Event {
         }
 
         try {
-            Memory::override_function(widget_back_function_sig->data(), widget_back_event_asm, widget_back_function_override_return);
+            Memory::override_function(widget_back_function_sig->data(), widget_back_event_asm, &widget_back_function_override_return);
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget close event: " + std::string(e.what()));
@@ -202,7 +202,7 @@ namespace Balltze::Event {
         }
 
         try {
-            Memory::override_function(widget_focus_function_sig->data(), widget_focus_event_asm, widget_focus_function_override_return);
+            Memory::override_function(widget_focus_function_sig->data(), widget_focus_event_asm, &widget_focus_function_override_return);
             std::function<bool()> mouse_focus_update_before = widget_mouse_focus_update_before_asm;
             Memory::hook_function(widget_mouse_focus_update_sig->data(), mouse_focus_update_before, widget_mouse_focus_update_after_asm, true);
         }
@@ -348,7 +348,7 @@ namespace Balltze::Event {
         }
 
         try {
-            Memory::override_function(widget_sound_function_sig->data(), widget_sound_event_asm, widget_sound_function_override_return);
+            Memory::override_function(widget_sound_function_sig->data(), widget_sound_event_asm, &widget_sound_function_override_return);
         }
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget sound event: " + std::string(e.what()));

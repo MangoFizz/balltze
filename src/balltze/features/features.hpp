@@ -16,11 +16,7 @@ namespace Balltze::Features {
     void set_up_map_textures_preloading() noexcept;
     void set_up_extended_limits();
     void set_up_echo_message_command();
-    void set_up_ui_widescreen_override() noexcept;
-    void set_up_shader_transparent_generic_impl();
-    void set_up_extended_decriptions_fix();
     void set_up_set_console_key_binding_command() noexcept;
-    void set_up_hud_meters_shader();
 
     inline void set_up_features() {
         try {
@@ -32,15 +28,11 @@ namespace Balltze::Features {
                     set_up_hud_button_prompts();
                     set_up_map_data_read_warden();
                     set_up_extended_limits();
-                    set_up_ui_widescreen_override();
                     set_up_sound_subtitles();
                     set_up_tag_data_importing();
                     set_up_loading_screen();
                     set_up_map_textures_preloading();
-                    set_up_shader_transparent_generic_impl();
-                    set_up_extended_decriptions_fix();
                     set_up_set_console_key_binding_command();
-                    set_up_hud_meters_shader();
                     break;
                 }
             }

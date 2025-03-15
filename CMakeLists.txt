@@ -10,9 +10,6 @@ project(balltze
 
 set(CMAKE_CXX_STANDARD 20)
 
-# Minimum supported Windows version is 8.0
-add_definitions(-D_WIN32_WINNT=0x0602)
-
 # Set modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -25,8 +22,10 @@ include(lib/invader/invader.cmake)
 include(lib/lanes/lanes.cmake)
 
 # Set ringworld 
+set(RINGWORLD_BUILD_STATIC ON CACHE BOOL "Build a static library instead of the standalone module")
+set(RINGWORLD_ENABLE_EVENTS_BUS ON CACHE BOOL "Enable the events bus")
+set(RINGWORLD_ENABLE_ENHANCEMENTS ON CACHE BOOL "Enable enhancements")
 add_subdirectory(src/ringworld)
-set_target_properties(ringworld PROPERTIES COMPILE_DEFINITIONS "RINGWORLD_ENABLE_ENHANCEMENTS")
 
 # Set include path
 include_directories(include include/lua lib/ lib/lanes/src src/ringworld/src)
@@ -95,14 +94,9 @@ add_library(balltze SHARED
     src/balltze/event/widget.S
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
-    src/balltze/features/shaders/hud_meters.cpp
-    src/balltze/features/shaders/hud_meters.S
     src/balltze/features/loading_screen/loading_screen.cpp
     src/balltze/features/loading_screen/loading_screen.S
     src/balltze/features/loading_screen/loading_screen.rc
-    src/balltze/features/shaders/shader_transparent_generic.cpp
-    src/balltze/features/shaders/shader_transparent_generic.S
-    src/balltze/features/shaders/shaders.rc
     src/balltze/features/sound_subtitles.cpp
     src/balltze/features/tags_handling/map.cpp
     src/balltze/features/tags_handling/tag_data_importing.cpp
@@ -110,13 +104,9 @@ add_library(balltze SHARED
     src/balltze/features/console_key_binding.cpp
     src/balltze/features/map_data_read_warden.cpp
     src/balltze/features/map_textures_preloading.cpp
-    src/balltze/features/user_interface_widescreen.cpp
-    src/balltze/features/user_interface_widescreen.S
     src/balltze/features/extended_limits.cpp
     src/balltze/features/extended_limits.S
     src/balltze/features/echo_message.cpp
-    src/balltze/features/extended_descriptions_fix.cpp
-    src/balltze/features/extended_descriptions_fix.S
     src/balltze/helpers/d3d9.cpp
     src/balltze/helpers/resources.cpp
     src/balltze/helpers/sprite_shader.rc
@@ -187,6 +177,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
+target_compile_definitions(balltze PRIVATE -D_WIN32_WINNT=0x0602 -DRINGWORLD_ENABLE_EVENTS_BUS)
 target_link_libraries(balltze ringworld lua53 fmt invader luacstruct lanes d3d9 gdiplus ws2_32)
 
 # Install Balltze

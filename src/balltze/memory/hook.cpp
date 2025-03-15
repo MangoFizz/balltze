@@ -586,7 +586,7 @@ namespace Balltze::Memory {
         return hook;
     }
 
-    Hook *override_function(void *instruction, std::function<void()> function, void *&original_instruction, bool do_not_hook) {
+    Hook *override_function(void *instruction, std::function<void()> function, void **original_instruction, bool do_not_hook) {
         for(auto &hook : hooks) {
             if(hook->m_instruction == instruction) {
                 throw std::runtime_error("address already hooked");
@@ -602,17 +602,20 @@ namespace Balltze::Memory {
 
         hook->m_cave.insert(0xE9);
         hook->m_cave.insert_address(calculate_32bit_jump(&hook->m_cave.top(), *reinterpret_cast<void **>(function.target<void(*)()>())));
-        original_instruction = &hook->m_cave.top() + 1;
-
-        std::uint8_t instruction_size;
-        try {
-            hook->copy_instructions(instruction, instruction_size);
+        
+        if(original_instruction) {
+            *original_instruction = &hook->m_cave.top() + 1;
+            
+            std::uint8_t instruction_size;
+            try {
+                hook->copy_instructions(instruction, instruction_size);
+            }
+            catch(std::runtime_error) {
+                throw;
+            }
+            hook->write_cave_return_jmp();
         }
-        catch(std::runtime_error) {
-            throw;
-        }
-
-        hook->write_cave_return_jmp();
+        
         if(!do_not_hook) {
             hook->hook();
         }
