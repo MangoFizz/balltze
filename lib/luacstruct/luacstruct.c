@@ -85,13 +85,19 @@
 #define __unused       __attribute__((__unused__))
 #endif
 
+/**
+ * If the platform version is Windows 7 (which will be always the case), define htonll and ntohll functions.
+ */
+
 #if _WIN32_WINNT == 0x0601
 
 uint64_t htonll(uint64_t value) {
+	if(BYTE_ORDER == BIG_ENDIAN) return value;
 	return ((uint64_t)htonl(value & 0xFFFFFFFF) << 32) | htonl(value >> 32);
 }
 
 uint64_t ntohll(uint64_t value) {
+	if(BYTE_ORDER == BIG_ENDIAN) return value;
 	return ((uint64_t)ntohl(value & 0xFFFFFFFF) << 32) | ntohl(value >> 32);
 }
 
