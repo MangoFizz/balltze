@@ -10,6 +10,9 @@ project(balltze
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Minimum supported platform is Windows 7
+add_definitions(-D_WIN32_WINNT=0x0601)
+
 # Set modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -23,8 +26,7 @@ include(lib/lanes/lanes.cmake)
 
 # Set ringworld 
 set(RINGWORLD_BUILD_STATIC ON CACHE BOOL "Build a static library instead of the standalone module")
-set(RINGWORLD_ENABLE_EVENTS_BUS ON CACHE BOOL "Enable the events bus")
-set(RINGWORLD_ENABLE_ENHANCEMENTS ON CACHE BOOL "Enable enhancements")
+add_definitions(-DRINGWORLD_ENABLE_EVENTS_BUS -DRINGWORLD_ENABLE_ENHANCEMENTS)
 add_subdirectory(src/ringworld)
 
 # Set include path
@@ -177,7 +179,6 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
-target_compile_definitions(balltze PRIVATE -D_WIN32_WINNT=0x0602 -DRINGWORLD_ENABLE_EVENTS_BUS)
 target_link_libraries(balltze ringworld lua53 fmt invader luacstruct lanes d3d9 gdiplus ws2_32)
 
 # Install Balltze

@@ -85,8 +85,20 @@
 #define __unused       __attribute__((__unused__))
 #endif
 
+#if _WIN32_WINNT == 0x0601
+
+uint64_t htonll(uint64_t value) {
+	return ((uint64_t)htonl(value & 0xFFFFFFFF) << 32) | htonl(value >> 32);
+}
+
+uint64_t ntohll(uint64_t value) {
+	return ((uint64_t)ntohl(value & 0xFFFFFFFF) << 32) | ntohl(value >> 32);
+}
+
+#endif
+
 SPLAY_HEAD(luacstruct_fields, luacstruct_field);
-TAILQ_HEAD(luacstruct_fields_sorted,luacstruct_field);
+TAILQ_HEAD(luacstruct_fields_sorted, luacstruct_field);
 
 struct luacstruct {
 	const char			*typename;
