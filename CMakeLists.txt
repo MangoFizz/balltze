@@ -99,7 +99,6 @@ add_library(balltze SHARED
     src/balltze/features/loading_screen/loading_screen.cpp
     src/balltze/features/loading_screen/loading_screen.S
     src/balltze/features/loading_screen/loading_screen.rc
-    src/balltze/features/sound_subtitles.cpp
     src/balltze/features/tags_handling/map.cpp
     src/balltze/features/tags_handling/tag_data_importing.cpp
     src/balltze/features/tags_handling/tag_data_importing.S
@@ -118,11 +117,8 @@ add_library(balltze SHARED
     src/balltze/memory/codefinder.cpp
     src/balltze/memory/hook.cpp
     src/balltze/memory/memory.cpp
-    src/balltze/output/draw_text.cpp
-    src/balltze/output/draw_text.S
     src/balltze/output/logger.cpp
     src/balltze/output/messaging.cpp
-    src/balltze/output/subtitles.cpp
     src/balltze/output/video.cpp
     src/balltze/output/video.S
     src/balltze/plugins/lua/functions/engine/core.cpp

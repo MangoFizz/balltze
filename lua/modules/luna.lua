@@ -1,6 +1,13 @@
-local luna = {_VERSION = "2.1.1"}
+local luna = {_VERSION = "2.7.0"}
 
 luna.string = {}
+
+local unpack = table.unpack or unpack
+local find = string.find
+local insert = table.insert
+local format = string.format
+local char = string.char
+local floor = math.floor
 
 --- Split a string into a table of substrings by `sep`, or by each character if `sep` is not provided.
 ---@param s string
@@ -21,10 +28,10 @@ function string.split(s, sep)
         for st, sp in function()
             return s:find(sep, position, true)
         end do
-            table.insert(elements, s:sub(position, st - 1))
+            insert(elements, s:sub(position, st - 1))
             position = sp + 1
         end
-        table.insert(elements, s:sub(position))
+        insert(elements, s:sub(position))
     end
     return elements
 end
@@ -81,10 +88,10 @@ end
 function string.tohex(s)
     assert(s ~= nil, "string.hex: s must not be nil")
     if type(s) == "number" then
-        return string.format("%08.8x", s)
+        return format("%08.8x", s)
     end
     return (s:gsub(".", function(c)
-        return string.format("%02x", string.byte(c))
+        return format("%02x", string.byte(c))
     end))
 end
 
@@ -95,7 +102,7 @@ end
 function string.fromhex(s)
     assert(s ~= nil, "string.fromhex: s must not be nil")
     return (s:gsub("..", function(cc)
-        return string.char(tonumber(cc, 16))
+        return char(tonumber(cc, 16))
     end))
 end
 
@@ -142,7 +149,7 @@ end
 function string.includes(s, substring)
     assert(s ~= nil, "string.includes: s must not be nil")
     assert(substring ~= nil, "string.includes: substring must not be nil")
-    return string.find(s, substring, 1, true) ~= nil
+    return find(s, substring, 1, true) ~= nil
 end
 
 --- Return a string with all lua pattern characters escaped.
@@ -152,6 +159,21 @@ end
 function string.escapep(s)
     assert(s ~= nil, "string.escape: s must not be nil")
     return (s:gsub("%%", "%%%%"):gsub("%z", "%%z"):gsub("([%^%$%(%)%.%[%]%*%+%-%?])", "%%%1"))
+end
+
+--- Return how many times a substring appears in a string.
+---@param s string
+---@param substring string
+---@return number
+---@nodiscard
+function string.count(s, substring)
+    assert(s ~= nil, "string.count: s must not be nil")
+    assert(substring ~= nil, "string.count: substring must not be nil")
+    local count = 0
+    for _ in s:gmatch(string.escapep(substring)) do
+        count = count + 1
+    end
+    return count
 end
 
 luna.string.split = string.split
@@ -166,6 +188,7 @@ luna.string.endswith = string.endswith
 luna.string.template = string.template
 luna.string.includes = string.includes
 luna.string.escapep = string.escapep
+luna.string.count = string.count
 
 luna.table = {}
 
@@ -221,16 +244,22 @@ function table.flip(t)
 end
 
 --- Returns the first element of `t` that satisfies the predicate `f`.
+--- If `f` is a value, it will return the first element that is equal to `f`.
 ---@generic K, V
 ---@param t table<K, V>
----@param f fun(v: V, k: K): boolean
+---@param f fun(v: V, k: K): boolean || `V`
 ---@return V?
 ---@nodiscard
 function table.find(t, f)
     assert(t ~= nil, "table.find: t must not be nil")
     assert(type(t) == "table" or type(t) == "userdata", "table.find: t must be a table")
     assert(f ~= nil, "table.find: f must not be nil")
-    assert(type(f) == "function", "table.find: f must be a function")
+    if type(f) ~= "function" then
+        local value = f
+        f = function(v)
+            return v == value
+        end
+    end
     ---@diagnostic disable-next-line: param-type-mismatch
     for k, v in pairs(t) do
         if f(v, k) then
@@ -353,6 +382,42 @@ function table.merge(...)
     return merged
 end
 
+--- Returns a table with all values extended from all tables passed as arguments.
+---@generic K, V
+---@param t table<K, V>
+---@vararg table<K, V>
+---@return V[]
+---@nodiscard
+function table.extend(t, ...)
+    assert(t ~= nil, "table.extend: t must not be nil")
+    assert(type(t) == "table" or type(t) == "userdata", "table.extend: t must be a table")
+    local extended = table.copy(t)
+    for _, t in ipairs {...} do
+        for _, v in pairs(t) do
+            extended[#extended + 1] = v
+        end
+    end
+    ---@diagnostic disable-next-line: return-type-mismatch
+    return extended
+end
+
+--- Append values to a table.
+--- It will append all given values to the end of the table.
+---@generic V
+---@param t V[]
+---@vararg V
+---@return V[]
+function table.append(t, ...)
+    assert(t ~= nil, "table.append: t must not be nil")
+    assert(type(t) == "table" or type(t) == "userdata", "table.append: t must be a table")
+    local appended = table.copy(t)
+    for _, v in ipairs {...} do
+        appended[#appended + 1] = v
+    end
+    ---@diagnostic disable-next-line: return-type-mismatch
+    return appended
+end
+
 --- Returns a table with all elements in reversed order.
 ---@generic T
 ---@param t T
@@ -413,6 +478,71 @@ function table.chunks(t, size)
     return chunks
 end
 
+--- Return the number of elements in a table.
+--- Optionally `v` can be provided to count the number of occurrences of `v` in `t`.
+---@generic T, V
+---@param t T
+---@param v? V
+---@return number
+function table.count(t, v)
+    assert(t ~= nil, "table.count: t must not be nil")
+    assert(type(t) == "table" or type(t) == "userdata", "table.count: t must be a table")
+    if v == nil then
+        return #t
+    end
+    local count = 0
+    ---@diagnostic disable-next-line: param-type-mismatch
+    for _, value in pairs(t) do
+        if value == v then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+--- Return the key of a value in a table.
+--- If the value is not found, it will return `nil`.
+---@generic K, V
+---@param t table<K, V>
+---@param v V
+---@return K?
+---@nodiscard
+function table.keyof(t, v)
+    assert(t ~= nil, "table.keyof: t must not be nil")
+    assert(type(t) == "table" or type(t) == "userdata", "table.keyof: t must be a table")
+    ---@diagnostic disable-next-line: param-type-mismatch
+    for k, value in pairs(t) do
+        if value == v then
+            return k
+        end
+    end
+end
+
+--- Return a flattened table from a nested table.
+--- All nested tables will be flattened into a single table.
+--- If `t` is not a table, it will return `t`.
+--- If `t` is a table with no nested tables, it will return `t`.
+---@generic K, V
+---@param t table<K, V>
+---@return V[]
+---@nodiscard
+function table.flatten(t)
+    assert(t ~= nil, "table.flatten: t must not be nil")
+    assert(type(t) == "table" or type(t) == "userdata", "table.flatten: t must be a table")
+    local flattened = {}
+    ---@diagnostic disable-next-line: param-type-mismatch
+    for _, v in pairs(t) do
+        if type(v) == "table" then
+            for _, value in pairs(table.flatten(v)) do
+                flattened[#flattened + 1] = value
+            end
+        else
+            flattened[#flattened + 1] = v
+        end
+    end
+    return flattened
+end
+
 luna.table.copy = table.copy
 luna.table.indexof = table.indexof
 luna.table.flip = table.flip
@@ -425,6 +555,30 @@ luna.table.merge = table.merge
 luna.table.reverse = table.reverse
 luna.table.slice = table.slice
 luna.table.chunks = table.chunks
+luna.table.count = table.count
+luna.table.keyof = table.keyof
+luna.table.flatten = table.flatten
+luna.table.extend = table.extend
+luna.table.append = table.append
+
+luna.math = {}
+
+--- Return a rounded number, optionally to a precision.
+---
+--- If `p` is not provided, it will round to the nearest integer.
+---@param n number
+---@param p? number
+---@return number
+---@nodiscard
+function math.round(n, p)
+    assert(n ~= nil, "math.round: n must not be nil")
+    assert(type(n) == "number", "math.round: n must be a number")
+    assert(p == nil or type(p) == "number", "math.round: p must be a number")
+    p = p or 1
+    return floor(n / p + .5) * p
+end
+
+luna.math.round = math.round
 
 luna.file = {}
 
@@ -505,7 +659,7 @@ function luna.file.frombytes(path, bytes)
     assert(bytes ~= nil, "file.frombytes: bytes must not be nil")
     local file = io.open(path, "wb")
     if file then
-        file:write(string.char(table.unpack(bytes)))
+        file:write(char(unpack(bytes)))
         file:close()
         return true
     end
@@ -558,12 +712,59 @@ function luna.binary.write(path, content)
     return false
 end
 
+luna.url = {}
+
+--- Return a table with all query parameters from a URL.
+--- If the URL has no query parameters, it will return an empty table.
+---@param url string
+---@return {[string]: string}
+---@nodiscard
+function luna.url.params(url)
+    assert(url ~= nil, "url.query: url must not be nil")
+    local query = {}
+    for key, value in url:gmatch "([^&=?]-)=([^&=?]*)" do
+        query[key] = value
+    end
+    return query
+end
+
+--- Return a URL string with all characters encoded to be an RFC compatible URL.
+---@param s string
+---@return string
+---@nodiscard
+function luna.url.encode(s)
+    assert(s ~= nil, "url.encode: s must not be nil")
+    return (s:gsub("[^%w%-_%.~]", function(c)
+        return format("%%%02X", c:byte())
+    end))
+end
+
+--- Return a URL string with all encoded characters decoded.
+---@param s string
+---@return string
+---@nodiscard
+function luna.url.decode(s)
+    assert(s ~= nil, "url.decode: s must not be nil")
+    return (s:gsub("%%(%x%x)", function(hex)
+        return char(tonumber(hex, 16))
+    end))
+end
+
 --- Return a boolean from `v` if it is a boolean like value.
 ---@param v string | boolean | number
 ---@return boolean
 function luna.bool(v)
     assert(v ~= nil, "bool: v must not be nil")
     return v == true or v == "true" or v == 1 or v == "1"
+end
+
+--- Return a bit (number as 0 or 1) from `v` if it is a boolean like value.
+---@param v string | boolean | number
+---@return integer
+---@nodiscard
+function luna.bit(v)
+    assert(v ~= nil, "bit: v must not be nil")
+    return luna.bool(v) and 1 or 0
 end
 
 --- Return an integer from `v` if possible.

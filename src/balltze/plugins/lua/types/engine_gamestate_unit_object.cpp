@@ -392,7 +392,7 @@ namespace Balltze::Plugins::Lua {
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, swarm_actor, 0);
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, swarm_next_unit, 0);
         luacs_nested_field(state, EngineUnitObject, EngineResourceHandle, swarm_previous_unit, 0);
-        luacs_nested_field(state, EngineUnitObject, EngineUnitFlags, unit_flags, 0);
+        luacs_nested_field(state, EngineUnitObject, EngineUnitObjectFlags, unit_flags, 0);
         luacs_nested_field(state, EngineUnitObject, EngineUnitControlFlags, unit_control_flags, 0);
         luacs_int_field(state, EngineUnitObject, shield_snapping, 0);
         luacs_int_field(state, EngineUnitObject, base_seat_index, 0);

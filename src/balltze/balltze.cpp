@@ -10,8 +10,6 @@
 #include "features/features.hpp"
 #include "event/event.hpp"
 #include "memory/memory.hpp"
-#include "output/draw_text.hpp"
-#include "output/subtitles.hpp"
 #include "plugins/loader.hpp"
 #include "command/command.hpp"
 #include "config/config.hpp"
@@ -22,7 +20,6 @@ namespace Balltze {
     Logger logger("Balltze");
     
     static BalltzeSide balltze_side;
-    static EventListenerHandle<TickEvent> firstTickListener;
 
     static void initialize_balltze() noexcept {
         logger.mute_ingame(true);
@@ -45,12 +42,6 @@ namespace Balltze {
                 load_commands_settings();
 
                 set_up_ringworld_hooks(RW_PLATFORM_GAME);
-
-                firstTickListener = TickEvent::subscribe_const(+[](TickEvent const &context) {
-                    set_up_text_hook();
-                    set_up_subtitles();
-                    firstTickListener.remove();
-                }, EVENT_PRIORITY_HIGHEST);
             }
             else if(balltze_side == BALLTZE_SIDE_DEDICATED_SERVER) {
                 logger.info("loading dedicated server...");
