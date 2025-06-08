@@ -44,6 +44,8 @@ extern "C" {
         LUACS_TBOOL,
         LUACS_TSTRING,
         LUACS_TSTRPTR,
+        LUACS_TWSTRING,
+	    LUACS_TWSTRPTR,
         LUACS_TBYTEARRAY,
         LUACS_TOBJREF,
         LUACS_TOBJENT,
@@ -59,7 +61,7 @@ extern "C" {
     int luacs_declare_const(lua_State *, const char *, int);
     int luacs_delstruct(lua_State *, const char *);
     int luacs_declare_field(lua_State *, enum luacstruct_type, const char *, const char *, size_t, int, int, unsigned);
-    int luacs_newobject0(lua_State *, const char *, void *);
+    int luacs_newobject1(lua_State *, const char *, void *);
     void *luacs_object_pointer(lua_State *, int, const char *);
     int luacs_object_typename(lua_State *);
     void *luacs_checkobject(lua_State *, int, const char *);
@@ -221,7 +223,7 @@ extern "C" {
         luacs_declare_field((_L), LUACS_TARRAY, #_tname, SNAKE_TO_CAMEL(#_field), sizeof(((_type *)0)->_field[0]), OFFSET_OF(_type, _field), _nitems(((_type *)0)->_field), _flags); \
     } 
 
-    #define luacs_newobject(_L, _typename, _ptr) luacs_newobject0((_L), #_typename, _ptr); 
+    #define luacs_newobject(_L, _typename, _ptr) luacs_newobject1((_L), #_typename, _ptr); 
 
     #define luacs_ctype_exists(_L, _typename) luacs_ctype_exists0((_L), #_typename)
 

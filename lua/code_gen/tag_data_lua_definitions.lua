@@ -330,7 +330,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
     indent(3)
     add("case Engine::TAG_CLASS_" .. classEnumName .. ": \n");
     indent(4)
-    add("luacs_newobject0(state, \"Engine" .. classCamelCaseName .. "Tag\", tag); \n");
+    add("luacs_newobject1(state, \"Engine" .. classCamelCaseName .. "Tag\", tag); \n");
     indent(4)
     add("break; \n");
 end

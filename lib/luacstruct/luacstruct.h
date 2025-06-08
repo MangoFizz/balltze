@@ -36,11 +36,13 @@ enum luacstruct_type {
 	LUACS_TUINT16,
 	LUACS_TUINT32,
 	LUACS_TUINT64,
-	LUACS_FLOAT,
+	LUACS_TFLOAT,
 	LUACS_TENUM,
 	LUACS_TBOOL,
 	LUACS_TSTRING,
 	LUACS_TSTRPTR,
+	LUACS_TWSTRING,
+	LUACS_TWSTRPTR,
 	LUACS_TBYTEARRAY,
 	LUACS_TOBJREF,
 	LUACS_TOBJENT,
@@ -60,14 +62,14 @@ extern "C" {
 #endif
 
 int	 luacs_newstruct0(lua_State *, const char *, const char *);
-bool luacs_ctype_exists0(lua_State *L, const char *tname);
 int	 luacs_declare_method(lua_State *, const char *, int (*)(lua_State *));
 int	 luacs_declare_const(lua_State *, const char *, int);
 int	 luacs_delstruct(lua_State *, const char *);
 int	 luacs_declare_field(lua_State *, enum luacstruct_type,
 	    const char *, const char *, size_t, int, int, unsigned);
-int	 luacs_newobject0(lua_State *, const char *, void *);
+int	 luacs_newobject(lua_State *, const char *, void *);
 void	*luacs_object_pointer(lua_State *, int, const char *);
+void	 luacs_object_clear(lua_State *, int);
 int	 luacs_object_typename(lua_State *);
 void	*luacs_checkobject(lua_State *, int, const char *);
 int	 luacs_newenum0(lua_State *, const char *, size_t);
@@ -84,133 +86,139 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 }
 #endif
 
-#ifndef __cplusplus
-#define STRUCT struct
-#define ENUM enum
-#else
-#define STRUCT
-#define ENUM
-#endif
-
-#define OFFSET_OF(_type, _field) \
-	(int32_t)((uintptr_t)&((STRUCT _type *)0)->_field)
-
 #define luacs_newstruct(_L, _typename)				\
 	do {							\
+		{ struct _typename; /* check valid for type */}	\
 		luacs_newstruct0((_L), #_typename, NULL);	\
-	} while(0/*CONSTCOND*/)
-#define luacs_newderivedstruct(_L, _typename, _base)		\
-	do {							\
-		luacs_newstruct0((_L), #_typename, #_base);	\
 	} while(0/*CONSTCOND*/)
 #define luacs_newenum(_L, _enumname)				\
 	do {							\
+		{ enum _enumname; /* check valid for enum */}	\
 		luacs_newenum0((_L), #_enumname,		\
-		    sizeof(ENUM _enumname));			\
+		    sizeof(enum _enumname));			\
 	} while(0/*CONSTCOND*/)
-	#define validintwidth(_w)	\
+#define validintwidth(_w)	\
 	((_w) == 1 || (_w) == 2 || (_w) == 4 || (_w) == 8)
 #define luacs_int_field(_L, _type, _field, _flags)		\
 	do {							\
 		static_assert(validintwidth(			\
-		    sizeof((STRUCT _type *)0)->_field),		\
+		    sizeof((struct _type *)0)->_field),		\
 		    "`"#_field"' is an unsupported int type");	\
-		ENUM luacstruct_type _itype;			\
-		switch(sizeof(((STRUCT _type *)0)->_field)) {	\
+		enum luacstruct_type _itype;			\
+		switch(sizeof(((struct _type *)0)->_field)) {	\
 		case 1:	_itype = LUACS_TINT8; break;		\
 		case 2:	_itype = LUACS_TINT16; break;		\
 		case 4:	_itype = LUACS_TINT32; break;		\
 		case 8:	_itype = LUACS_TINT64; break;		\
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
-		    sizeof(((STRUCT _type *)0)->_field),	\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    sizeof(((struct _type *)0)->_field),	\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_unsigned_field(_L, _type, _field, _flags)		\
 	do {							\
 		static_assert(validintwidth(			\
-		    sizeof((STRUCT _type *)0)->_field),		\
+		    sizeof((struct _type *)0)->_field),		\
 		    "`"#_field"' is an unsupported int type");	\
-		ENUM luacstruct_type _itype;			\
-		switch (sizeof(((STRUCT _type *)0)->_field)) {	\
+		enum luacstruct_type _itype;			\
+		switch (sizeof(((struct _type *)0)->_field)) {	\
 		case 1:	_itype = LUACS_TUINT8; break;		\
 		case 2:	_itype = LUACS_TUINT16; break;		\
 		case 4:	_itype = LUACS_TUINT32; break;		\
 		case 8:	_itype = LUACS_TUINT64; break;		\
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
-		    sizeof(((STRUCT _type *)0)->_field),	\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
-	} while (0/*CONSTCOND*/)
-#define luacs_float_field(_L, _type, _field, _flags)		\
-	do {							\
-		static_assert(sizeof(float) ==			\
-		    sizeof(((STRUCT _type *)0)->_field),	\
-		    "`"#_field"' is not a float value");		\
-		luacs_declare_field((_L), LUACS_FLOAT, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    sizeof(((struct _type *)0)->_field),	\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_enum_field(_L, _type, _etype, _field, _flags)	\
 	do {							\
 		static_assert(validintwidth(			\
-		    sizeof((STRUCT _type *)0)->_field),		\
+		    sizeof((struct _type *)0)->_field),		\
 		    "`"#_field"' is an unsupported int type");	\
 		luacs_declare_field((_L), LUACS_TENUM, #_etype,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_bool_field(_L, _type, _field, _flags)		\
 	do {							\
 		static_assert(sizeof(bool) ==			\
-		    sizeof(((STRUCT _type *)0)->_field),	\
+		    sizeof(((struct _type *)0)->_field),	\
 		    "`"#_field"' is not a bool value");		\
 		luacs_declare_field((_L), LUACS_TBOOL, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_bytearray_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TBYTEARRAY, NULL,\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_string_field(_L, _type, _field, _flags)		\
 	do {							\
 		luacs_declare_field((_L), LUACS_TSTRING, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_strptr_field(_L, _type, _field, _flags)		\
 	do {							\
 		static_assert(sizeof(char *) ==			\
-		    sizeof(((STRUCT _type *)0)->_field),	\
+		    sizeof(((struct _type *)0)->_field),	\
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TSTRPTR, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
+	} while (0/*CONSTCOND*/)
+/*
+ * Declare the wide char(wchar_t) string field.  Because Lua doesn't use
+ * wchar_t string, lua_cstruct convert the string into multi-byte chars
+ * by wcstombs(3) when mapping to Lua.  This means the string is encoded
+ * by the encoding specified by setlocale(3).
+ */
+#define luacs_wstring_field(_L, _type, _field, _flags)		\
+	do {							\
+		luacs_declare_field((_L), LUACS_TWSTRING, NULL,	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
+	} while (0/*CONSTCOND*/)
+#define luacs_wstrptr_field(_L, _type, _field, _flags)		\
+	do {							\
+		static_assert(sizeof(wchar_t *) ==		\
+		    sizeof(((struct _type *)0)->_field),	\
+		    "`"#_field"' is not a pointer value");	\
+		luacs_declare_field((_L), LUACS_TWSTRPTR, NULL,	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_objref_field(_L, _type, _tname, _field, _flags)	\
 	do {							\
 		static_assert(sizeof(void *) ==			\
-		    sizeof(((STRUCT _type *)0)->_field),	\
+		    sizeof(((struct _type *)0)->_field),	\
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TOBJREF, #_tname,\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_nested_field(_L, _type, _tname, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TOBJENT, #_tname,\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
 #define luacs_extref_field(_L, _type, _field, _flags)		\
 	do {							\
 		luacs_declare_field((_L), LUACS_TEXTREF, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field), 0, _flags);	\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field), 0, _flags);	\
 	} while (0/*CONSTCOND*/)
+/*
+ * When using Lua 5.1 and the pseudo value might reference the parent object,
+ * you need to explicitly clear the value or call luacs_object_clear().
+ * luacstruct uses a weak reference to manage the reference from the object to
+ * the pseudo values, but since a weak table in Lua 5.1 is not an ephemeron
+ * table, it doesn't work properly.
+ */
 #define luacs_pseudo_field(_L, _type, _field, _flags)		\
 	do {							\
 		luacs_declare_field((_L), LUACS_TEXTREF, NULL,	\
@@ -222,130 +230,112 @@ int	 luacs_newarraytype(lua_State *, const char *, enum luacstruct_type,
 #define luacs_int_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		static_assert(validintwidth(			\
-		    sizeof((STRUCT _type *)0)->_field[0]),	\
+		    sizeof((struct _type *)0)->_field[0]),	\
 		    "`"#_field"' is an unsupported int type");	\
-		ENUM luacstruct_type _itype;			\
-		switch(sizeof(((STRUCT _type *)0)->_field[0])) {\
+		enum luacstruct_type _itype;			\
+		switch(sizeof(((struct _type *)0)->_field[0])) {\
 		case 1:	_itype = LUACS_TINT8; break;		\
 		case 2:	_itype = LUACS_TINT16; break;		\
 		case 4:	_itype = LUACS_TINT32; break;		\
 		case 8:	_itype = LUACS_TINT64; break;		\
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
-		    sizeof(((STRUCT _type *)0)->_field[0]),	\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    sizeof(((struct _type *)0)->_field[0]),	\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_unsigned_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		static_assert(validintwidth(			\
-		    sizeof((STRUCT _type *)0)->_field[0]),	\
+		    sizeof((struct _type *)0)->_field[0]),	\
 		    "`"#_field"' is an unsupported int type");	\
-		ENUM luacstruct_type _itype;			\
-		switch (sizeof(((STRUCT _type *)0)->_field[0])){\
+		enum luacstruct_type _itype;			\
+		switch (sizeof(((struct _type *)0)->_field[0])){\
 		case 1:	_itype = LUACS_TUINT8; break;		\
 		case 2:	_itype = LUACS_TUINT16; break;		\
 		case 4:	_itype = LUACS_TUINT32; break;		\
 		case 8:	_itype = LUACS_TUINT64; break;		\
 		}						\
 		luacs_declare_field((_L), _itype, NULL,	#_field,\
-		    sizeof(((STRUCT _type *)0)->_field[0]),	\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
-	} while (0/*CONSTCOND*/)
-#define luacs_float_array_field(_L, _type, _field, _flags)	\
-	do {							\
-		static_assert(sizeof(float) ==			\
-		    sizeof(((STRUCT _type *)0)->_field[0]),	\
-		    "`"#_field"' is not a float value");		\
-		luacs_declare_field((_L), LUACS_FLOAT, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    sizeof(((struct _type *)0)->_field[0]),	\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_enum_array_field(_L, _type, _etype, _field, _flags)\
 	do {							\
 		static_assert(validintwidth(			\
-		    sizeof((STRUCT _type *)0)->_field[0]),	\
+		    sizeof((struct _type *)0)->_field[0]),	\
 		    "`"#_field"' is an unsupported int type");	\
 		luacs_declare_field((_L), LUACS_TENUM, #_etype,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_bool_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		static_assert(sizeof(bool) ==			\
-		    sizeof(((STRUCT _type *)0)->_field[0]),	\
+		    sizeof(((struct _type *)0)->_field[0]),	\
 		    "`"#_field"' is not a bool value");		\
 		luacs_declare_field((_L), LUACS_TBOOL, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_bytearray_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TBYTEARRAY, NULL,\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_string_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TSTRING, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_strptr_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		static_assert(sizeof(char *) ==			\
-		    sizeof(((STRUCT _type *)0)->_field[0]),	\
+		    sizeof(((struct _type *)0)->_field[0]),	\
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TSTRPTR, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 
 #define luacs_objref_array_field(_L, _type, _tname, _field, _flags)\
 	do {							\
 		static_assert(sizeof(void *) ==			\
-		    sizeof(((STRUCT _type *)0)->_field[0]),	\
+		    sizeof(((struct _type *)0)->_field[0]),	\
 		    "`"#_field"' is not a pointer value");	\
 		luacs_declare_field((_L), LUACS_TOBJREF, #_tname,\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_nested_array_field(_L, _type, _tname, _field, _flags)\
 	do {							\
 		luacs_declare_field((_L), LUACS_TOBJENT, #_tname,\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_extref_array_field(_L, _type, _field, _flags)	\
 	do {							\
 		luacs_declare_field((_L), LUACS_TEXTREF, NULL,	\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
 #define luacs_array_array_field(_L, _type, _tname, _field, _flags)\
 	do {							\
 		luacs_declare_field((_L), LUACS_TARRAY, #_tname,\
-		    #_field, sizeof(((STRUCT _type *)0)->_field[0]),\
-		    OFFSET_OF(STRUCT _type, _field),		\
-		    _nitems(((STRUCT _type *)0)->_field), _flags);\
+		    #_field, sizeof(((struct _type *)0)->_field[0]),\
+		    offsetof(struct _type, _field),		\
+		    _nitems(((struct _type *)0)->_field), _flags);\
 	} while (0/*CONSTCOND*/)
-#define luacs_newobject(_L, _typename, _ptr)				\
-	do {							\
-		luacs_newobject0((_L), #_typename, _ptr);	\
-	} while(0/*CONSTCOND*/)
-#define luacs_ctype_exists(_L, _typename)			\
-		luacs_ctype_exists0((_L), #_typename)
-
-
 
 #endif
