@@ -89,7 +89,7 @@ namespace Balltze::Lua {
         }
         m_plugin = reinterpret_cast<PluginHandle>(plugin);
         m_full_name = get_full_name();
-        commands.emplace_back(std::make_shared<Command>(*this));
+        commands.emplace_back(std::make_shared<ConsoleCommand>(*this));
     }
 
     static int register_command(lua_State *state) noexcept {
