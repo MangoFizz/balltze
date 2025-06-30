@@ -195,6 +195,7 @@ struct lua_State {
   unsigned short nCcalls;  /* number of nested C calls */
   l_signalT hookmask;
   lu_byte allowhook;
+  unsigned short nliveupval;  /* number of living upvalues */
 };
 
 
