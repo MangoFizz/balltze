@@ -65,7 +65,7 @@ add([[
 #include "engine_types.hpp"
 #include "engine_tag.hpp"
 
-namespace Balltze::Plugins::Lua {
+namespace Balltze::Lua {
 ]])
 
 for structName, _ in pairs(structs) do
@@ -104,17 +104,17 @@ add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
 
-#include "../helpers/luacstruct.hpp"
-#include "../helpers/enum.hpp"
-#include "../helpers/bitfield.hpp"
+#include "../../../libraries/luacstruct.hpp"
+#include "../../../helpers/enum.hpp"
+#include "../../../helpers/bitfield.hpp"
 #include "engine_tag_data.hpp"
 
-namespace Balltze::Plugins::Lua {
+namespace Balltze::Lua {
     #define define_tag_block(state, parentType, type) \
         using parentType##TagBlock##type = Engine::TagBlock<Engine::TagDefinitions::type>; \
         luacs_newstruct(state, parentType##TagBlock##type); \
         luacs_unsigned_field(state, parentType##TagBlock##type, count, LUACS_FREADONLY); \
-        luacs_declare_field(state, LUACS_TOBJREF, "Engine" #type, "elements", sizeof(((parentType##TagBlock##type *)0)->elements[0]), offsetof(parentType##TagBlock##type, elements), 65535, LUACS_FREADONLY); \
+        luacs_declare_field(state, LUACS_TOBJREF, "Engine" #type, "elements", sizeof(((parentType##TagBlock##type *)0)->elements[0]), offsetof(parentType##TagBlock##type, elements), 350, LUACS_FREADONLY); \
         lua_pop(state, 1);
 
 ]])

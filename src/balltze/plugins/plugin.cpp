@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "lua/api.hpp"
 #include "../config/config.hpp"
 #include "../logger.hpp"
 #include "../version.hpp"
-#include "lua/functions/command.hpp"
+#include "../lua/api/v1/api.hpp"
+#include "../lua/api/v1/plugin/commands.hpp"
 #include "plugin.hpp"
+
+namespace Balltze {
+    extern std::vector<std::shared_ptr<Command>> commands;
+}
 
 namespace Balltze::Plugins {
     static std::filesystem::path get_plugin_dll_path(HMODULE dll = NULL) {
@@ -497,7 +501,7 @@ namespace Balltze::Plugins {
             }
         }
 
-        Lua::remove_plugin_commands(this);
+        remove_plugin_commands(this);
 
         dispose();
         m_loaded = false;
@@ -572,5 +576,17 @@ namespace Balltze::Plugins {
             logger.error("Could not create plugins directory: {}", e.what());
             throw;
         }
+    }
+
+    void remove_plugin_commands(LuaPlugin *plugin) noexcept {
+        logger.debug("Removing commands from plugin {}", plugin->name());
+        for(auto it = commands.begin(); it != commands.end();) {
+            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
+                it = commands.erase(it);
+            }
+            else {
+                it++;
+            }
+        }   
     }
 }

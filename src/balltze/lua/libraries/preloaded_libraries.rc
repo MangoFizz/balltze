@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include "../../resources.hpp"
+
+ID_LUA_JSON_MODULE      LUA     "../../../../lua/modules/json.lua"
+ID_LUA_LUNA_MODULE      LUA     "../../../../lua/modules/luna.lua"
+ID_LUA_INSPECT_MODULE   LUA     "../../../../lua/modules/inspect.lua"
+ID_LUA_LANES_MODULE     LUA     "../../../../lua/modules/lanes.lua"

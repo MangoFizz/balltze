@@ -19,6 +19,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 # Include stuff
 include(lua/code_gen/tag_definitions.cmake)
 include(lib/lua/lua.cmake)
+include(lib/lua_fmt/lua_fmt.cmake)
+include(lib/lua_memory_snapshot/lua_memory_snapshot.cmake)
 include(lib/fmt/fmt.cmake)
 include(lib/luacstruct/luacstruct.cmake)
 include(lib/invader/invader.cmake)
@@ -30,7 +32,7 @@ add_definitions(-DRINGWORLD_ENABLE_EVENTS_BUS -DRINGWORLD_ENABLE_ENHANCEMENTS)
 add_subdirectory(src/ringworld)
 
 # Set include path
-include_directories(include include/lua lib/ lib/lanes/src src/ringworld/src)
+include_directories(include include/lua lib/ lib/lua lib/lanes/src src/ringworld/src)
 
 # Define Balltze export macro
 add_definitions(-DBALLTZE_EXPORTS)
@@ -111,7 +113,47 @@ add_library(balltze SHARED
     src/balltze/helpers/d3d9.cpp
     src/balltze/helpers/resources.cpp
     src/balltze/helpers/sprite_shader.rc
-    src/balltze/lua_library/library.cpp
+    src/balltze/lua/api/v1/api.cpp
+    src/balltze/lua/api/v1/functions/config.cpp
+    src/balltze/lua/api/v1/functions/devkit.cpp
+    src/balltze/lua/api/v1/functions/engine/core.cpp
+    src/balltze/lua/api/v1/functions/engine.cpp
+    src/balltze/lua/api/v1/functions/engine/game_state.cpp
+    src/balltze/lua/api/v1/functions/engine/hsc.cpp
+    src/balltze/lua/api/v1/functions/engine/map.cpp
+    src/balltze/lua/api/v1/functions/engine/netgame.cpp
+    src/balltze/lua/api/v1/functions/engine/rasterizer.cpp
+    src/balltze/lua/api/v1/functions/engine/saved_games.cpp
+    src/balltze/lua/api/v1/functions/engine/tag.cpp
+    src/balltze/lua/api/v1/functions/engine/user_interface.cpp
+    src/balltze/lua/api/v1/functions/features.cpp
+    src/balltze/lua/api/v1/functions/filesystem.cpp
+    src/balltze/lua/api/v1/functions/logger.cpp
+    src/balltze/lua/api/v1/functions/math.cpp
+    src/balltze/lua/api/v1/functions/memory.cpp
+    src/balltze/lua/api/v1/functions/misc.cpp
+    src/balltze/lua/api/v1/functions/output.cpp
+    src/balltze/lua/api/v1/plugin/chimera_library.cpp
+    src/balltze/lua/api/v1/plugin/commands.cpp
+    src/balltze/lua/api/v1/plugin/events.cpp
+    src/balltze/lua/api/v1/types/balltze_event.cpp
+    src/balltze/lua/api/v1/types/engine_gamestate_device_object.cpp
+    src/balltze/lua/api/v1/types/engine_gamestate_item_object.cpp
+    src/balltze/lua/api/v1/types/engine_gamestate_object.cpp
+    src/balltze/lua/api/v1/types/engine_gamestate_player.cpp
+    src/balltze/lua/api/v1/types/engine_gamestate_unit_object.cpp
+    src/balltze/lua/api/v1/types/engine_map.cpp
+    src/balltze/lua/api/v1/types/engine_rasterizer.cpp
+    src/balltze/lua/api/v1/types/engine_tag.cpp
+    src/balltze/lua/api/v1/types/engine_tag_data.cpp
+    src/balltze/lua/api/v1/types/engine_types.cpp
+    src/balltze/lua/api/v1/types/engine_user_interface.cpp
+    src/balltze/lua/api/v1/types/ringworld_saved_games.cpp
+    src/balltze/lua/debug/lua_state_snapshot.cpp
+    src/balltze/lua/helpers/registry.cpp
+    src/balltze/lua/helpers/table.cpp
+    src/balltze/lua/libraries/preloaded_libraries.cpp
+    src/balltze/lua/libraries/preloaded_libraries.rc
     src/balltze/math/bezier.cpp
     src/balltze/math/trig.cpp
     src/balltze/memory/codefinder.cpp
@@ -121,45 +163,6 @@ add_library(balltze SHARED
     src/balltze/output/messaging.cpp
     src/balltze/output/video.cpp
     src/balltze/output/video.S
-    src/balltze/plugins/lua/functions/engine/core.cpp
-    src/balltze/plugins/lua/functions/engine/game_state.cpp
-    src/balltze/plugins/lua/functions/engine/map.cpp
-    src/balltze/plugins/lua/functions/engine/netgame.cpp
-    src/balltze/plugins/lua/functions/engine/rasterizer.cpp
-    src/balltze/plugins/lua/functions/engine/hsc.cpp
-    src/balltze/plugins/lua/functions/engine/tag.cpp
-    src/balltze/plugins/lua/functions/engine/user_interface.cpp
-    src/balltze/plugins/lua/functions/engine/saved_games.cpp
-    src/balltze/plugins/lua/functions/chimera.cpp
-    src/balltze/plugins/lua/functions/command.cpp
-    src/balltze/plugins/lua/functions/config.cpp
-    src/balltze/plugins/lua/functions/engine.cpp
-    src/balltze/plugins/lua/functions/features.cpp
-    src/balltze/plugins/lua/functions/filesystem.cpp
-    src/balltze/plugins/lua/functions/event.cpp
-    src/balltze/plugins/lua/functions/logger.cpp
-    src/balltze/plugins/lua/functions/math.cpp
-    src/balltze/plugins/lua/functions/memory.cpp
-    src/balltze/plugins/lua/functions/misc.cpp
-    src/balltze/plugins/lua/functions/output.cpp
-    src/balltze/plugins/lua/helpers/registry.cpp
-    src/balltze/plugins/lua/helpers/table.cpp
-    src/balltze/plugins/lua/libraries/lua-fmt/lfmt.c
-    src/balltze/plugins/lua/libraries/preloaded_libraries.cpp
-    src/balltze/plugins/lua/libraries/preloaded_libraries.rc
-    src/balltze/plugins/lua/types/balltze_event.cpp
-    src/balltze/plugins/lua/types/engine_gamestate_device_object.cpp
-    src/balltze/plugins/lua/types/engine_gamestate_item_object.cpp
-    src/balltze/plugins/lua/types/engine_gamestate_object.cpp
-    src/balltze/plugins/lua/types/engine_gamestate_player.cpp
-    src/balltze/plugins/lua/types/engine_gamestate_unit_object.cpp
-    src/balltze/plugins/lua/types/engine_map.cpp
-    src/balltze/plugins/lua/types/engine_rasterizer.cpp
-    src/balltze/plugins/lua/types/engine_tag.cpp
-    src/balltze/plugins/lua/types/engine_types.cpp
-    src/balltze/plugins/lua/types/engine_user_interface.cpp
-    src/balltze/plugins/lua/types/ringworld_saved_games.cpp
-    src/balltze/plugins/lua/api.cpp
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
     src/balltze/balltze.cpp
@@ -175,7 +178,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze ringworld lua53 fmt invader luacstruct lanes d3d9 gdiplus ws2_32)
+target_link_libraries(balltze ringworld lua53 fmt invader luacstruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")

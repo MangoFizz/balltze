@@ -108,6 +108,7 @@ namespace Balltze::Plugins {
 
     std::filesystem::path get_plugins_path() noexcept;
     void init_plugins_path();
+    void remove_plugin_commands(LuaPlugin *plugin) noexcept;
 }
 
 #endif
