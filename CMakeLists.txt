@@ -23,6 +23,7 @@ include(lib/lua_fmt/lua_fmt.cmake)
 include(lib/lua_memory_snapshot/lua_memory_snapshot.cmake)
 include(lib/fmt/fmt.cmake)
 include(lib/luacstruct/luacstruct.cmake)
+include(lib/luastruct/luastruct.cmake)
 include(lib/invader/invader.cmake)
 include(lib/lanes/lanes.cmake)
 
@@ -178,7 +179,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze ringworld lua53 fmt invader luacstruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
+target_link_libraries(balltze ringworld lua53 fmt invader luacstruct luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
