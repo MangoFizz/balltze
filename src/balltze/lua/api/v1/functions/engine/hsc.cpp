@@ -4,7 +4,7 @@
 #include <balltze/engine.hpp>
 #include "../../../../helpers/function_table.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static int execute_script(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1 || args == 4 || args == 5) {

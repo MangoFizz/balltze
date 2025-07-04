@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include <impl/saved_games/player_profile.h>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     void push_ringworld_player_profile(lua_State *state, PlayerProfile *profile) noexcept;
     void define_ringworld_saved_games(lua_State *state) noexcept;
 }

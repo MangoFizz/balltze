@@ -8,7 +8,7 @@
 
 namespace fs = std::filesystem;
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     fs::path get_plugin_directory(lua_State *state) {
         auto *plugin = Plugins::get_lua_plugin(state);
         if(!plugin) {

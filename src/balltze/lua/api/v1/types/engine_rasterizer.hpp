@@ -7,7 +7,7 @@
 #include <balltze/engine.hpp>
 #include <balltze/event.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineCameraData = Engine::CameraData;
     using EngineResolution = Engine::Resolution;
     using EngineCameraType = Engine::CameraType;

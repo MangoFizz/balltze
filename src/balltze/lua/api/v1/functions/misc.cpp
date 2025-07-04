@@ -12,7 +12,7 @@
 #include "../../../helpers/table.hpp"
 #include "../../../libraries/preloaded_libraries.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using LuaPlugin = Plugins::LuaPlugin;
 
     static int lua_get_elapsed_milliseconds(lua_State *state) noexcept {

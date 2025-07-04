@@ -5,7 +5,7 @@
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_rasterizer.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_engine_resolution_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineResolution);
         luacs_unsigned_field(state, EngineResolution, width, 0);

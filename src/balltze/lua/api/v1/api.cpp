@@ -6,38 +6,42 @@
 #include "types.hpp"
 #include "api.hpp"
 
-namespace Balltze::Lua {
-    void set_logger_table(lua_State *state) noexcept;
-    void set_engine_table(lua_State *state) noexcept;
-    void set_event_table(lua_State *state) noexcept;
-    void set_features_table(lua_State *state) noexcept;
-    void set_command_table(lua_State *state) noexcept;
-    void set_chimera_table(lua_State *state) noexcept;
-    void set_output_table(lua_State *state) noexcept;
-    void set_math_table(lua_State *state) noexcept;
-    void set_misc_table(lua_State *state) noexcept;
-    void set_filesystem_table(lua_State *state) noexcept;
-    void set_config_table(lua_State *state) noexcept;
-    void set_memory_function(lua_State *state) noexcept;
-    void set_devkit_table(lua_State *state) noexcept;
+namespace Balltze::Lua::Api {
+    namespace V1 {
+        void set_logger_table(lua_State *state) noexcept;
+        void set_engine_table(lua_State *state) noexcept;
+        void set_event_table(lua_State *state) noexcept;
+        void set_features_table(lua_State *state) noexcept;
+        void set_command_table(lua_State *state) noexcept;
+        void set_chimera_table(lua_State *state) noexcept;
+        void set_output_table(lua_State *state) noexcept;
+        void set_math_table(lua_State *state) noexcept;
+        void set_misc_table(lua_State *state) noexcept;
+        void set_filesystem_table(lua_State *state) noexcept;
+        void set_config_table(lua_State *state) noexcept;
+        void set_memory_function(lua_State *state) noexcept;
+        void set_devkit_table(lua_State *state) noexcept;
 
-    void define_engine_structs(lua_State *state) noexcept {
-        define_engine_types(state);
-        define_engine_tag_types(state);
-        define_engine_tag_data_types(state);
-        define_engine_gamestate_object_types(state);
-        define_engine_gamestate_item_object_types(state);
-        define_engine_gamestate_device_object_types(state);
-        define_engine_gamestate_unit_object_types(state);
-        declare_engine_gamestate_player_types(state);
-        define_engine_rasterizer_types(state);
-        define_engine_map_types(state);
-        define_engine_user_interface_types(state);
-        define_ringworld_saved_games(state);
-        define_balltze_event_types(state);
+        void define_engine_structs(lua_State *state) noexcept {
+            define_engine_types(state);
+            define_engine_tag_types(state);
+            define_engine_tag_data_types(state);
+            define_engine_gamestate_object_types(state);
+            define_engine_gamestate_item_object_types(state);
+            define_engine_gamestate_device_object_types(state);
+            define_engine_gamestate_unit_object_types(state);
+            declare_engine_gamestate_player_types(state);
+            define_engine_rasterizer_types(state);
+            define_engine_map_types(state);
+            define_engine_user_interface_types(state);
+            define_ringworld_saved_games(state);
+            define_balltze_event_types(state);
+        }
     }
 
-    void open_balltze_api(lua_State *state) {
+    using namespace V1;
+
+    void open_balltze_api_v1(lua_State *state) {
         // Set up balltze registry table
         auto balltze_module = Balltze::get_current_module();
         lua_pushlightuserdata(state, balltze_module);
@@ -68,6 +72,6 @@ namespace Balltze::Lua {
         // Set up preloaded libraries
         set_preloaded_libraries(state);
 
-        Lua::define_engine_structs(state);
+        define_engine_structs(state);
     }
 }

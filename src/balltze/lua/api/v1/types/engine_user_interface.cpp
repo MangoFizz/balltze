@@ -6,7 +6,7 @@
 #include "engine_tag_data.hpp"
 #include "engine_types.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_engine_widget_navigation_sound_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineWidgetNavigationSound);
         luacs_enum_declare_value(state, "cursor", Engine::WIDGET_NAVIGATION_SOUND_CURSOR);

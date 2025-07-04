@@ -16,7 +16,7 @@ namespace Balltze::Event {
     extern std::string ip_address_int_to_string(std::uint32_t address_int) noexcept;
 }
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using namespace Event;
     using handle_t = std::size_t;
 

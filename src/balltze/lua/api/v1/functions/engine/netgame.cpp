@@ -5,7 +5,7 @@
 #include "../../../../helpers/function_table.hpp"
 #include "../../types.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static std::string network_game_server_type_to_string(Engine::NetworkGameServerType type) {
         switch(type) {
             case Engine::NETWORK_GAME_SERVER_NONE:

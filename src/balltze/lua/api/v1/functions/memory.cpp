@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include "../../../helpers/function_table.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     template <typename T>
     static int read_int(lua_State *state) noexcept {
         int args = lua_gettop(state);

@@ -8,7 +8,7 @@
 #include "engine_gamestate_object.hpp"
 #include "engine_gamestate_device_object.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_engine_device_object_state_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineDeviceObjectState);
         luacs_int_field(state, EngineDeviceObjectState, device_group_id, 0);

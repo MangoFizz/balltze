@@ -4,7 +4,7 @@
 #include <balltze/math.hpp>
 #include "../../../helpers/function_table.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static int lua_get_bezier_curve_point(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 4 || args == 5) {

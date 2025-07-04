@@ -2,10 +2,10 @@
 
 #include <cstring>
 #include <ctime>
-#include "../../../debug/lua_state_snapshot.hpp"
+#include "../../../debug/lua_state_debug.hpp"
 #include "../../../helpers/function_table.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     /**
      * Captures a snapshot of the Lua state and saves it to a file in the game's
      * directory. The snapshot includes all objects in the Lua state, their types,

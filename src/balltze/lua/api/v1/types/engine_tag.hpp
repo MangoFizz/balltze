@@ -7,7 +7,7 @@
 #include <lua.hpp>
 #include "engine_types.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineTagClass = Engine::TagClassInt;
     using EngineTag = Engine::Tag;
     using EngineTagDependency = Engine::TagDependency;

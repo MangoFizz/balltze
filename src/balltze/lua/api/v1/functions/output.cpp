@@ -6,7 +6,7 @@
 #include "../../../helpers/function_table.hpp"
 #include "../types.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static int lua_play_bik_video(lua_State *state) {
         int args = lua_gettop(state);
         if(args == 1) {

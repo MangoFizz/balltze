@@ -5,7 +5,7 @@
 #include "../../../libraries/luacstruct.hpp"
 #include "../../../helpers/enum.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_ringworld_saved_games_player_color_setting(lua_State *state) noexcept {
         luacs_newenum(state, NetworkGamePlayerColor);
         luacs_enum_declare_value(state, "white", NETWORK_GAME_PLAYER_COLOR_WHITE);

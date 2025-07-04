@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include <balltze/engine.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineUnitRecentDamager = Engine::UnitRecentDamager;
     using EngineUnitObjectFlags = Engine::UnitFlags;
     using EngineUnitControlFlags = Engine::UnitControlFlags;

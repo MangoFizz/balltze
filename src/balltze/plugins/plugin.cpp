@@ -392,7 +392,7 @@ namespace Balltze::Plugins {
         if(m_state) {
             // Open standard libraries and Balltze API
             luaL_openlibs(m_state);
-            Lua::open_balltze_api(m_state);
+            Lua::Api::open_balltze_api_v1(m_state);
 
             // Remove os.exit, os.getenv and os.execute functions
             lua_getglobal(m_state, "os");

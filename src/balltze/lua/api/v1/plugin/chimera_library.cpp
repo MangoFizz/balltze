@@ -15,7 +15,7 @@
 #include "../../../../logger.hpp"
 #include "../../../../plugins/loader.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     int populate_chimera_table(lua_State *state) noexcept;
 }
 
@@ -215,7 +215,7 @@ namespace Balltze::LuaLibrary {
             std::string script_name = lua_tostring(state, -1);
             if(script_name == "balltze.lua") {
                 balltze_chimera_script = state;
-                lua_register(state, "load_balltze_chimera_table", Lua::populate_chimera_table);
+                lua_register(state, "load_balltze_chimera_table", Lua::Api::V1::populate_chimera_table);
                 lua_getglobal(state, "set_callback");
                 lua_pushstring(state, "map load");
                 lua_pushstring(state, "load_balltze_chimera_table");
@@ -226,7 +226,7 @@ namespace Balltze::LuaLibrary {
                     lua_pop(state, 1);
                 }
                 lua_pop(state, 1);
-                Lua::populate_chimera_table(state);
+                Lua::Api::V1::populate_chimera_table(state);
                 return 0;
             }
         }
@@ -267,7 +267,7 @@ namespace Balltze::LuaLibrary {
     }
 }
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static lua_CFunction get_chimera_function(const char *name) noexcept {
         if(LuaLibrary::balltze_chimera_script) {
             lua_getglobal(LuaLibrary::balltze_chimera_script, name);

@@ -7,7 +7,7 @@
 #include <balltze/event.hpp>
 #include <balltze/engine/netgame_messages.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using BalltzeCameraEventContext = Event::CameraEventContext;
     using BalltzeGameInputEventContext = Event::GameInputEventContext;
     using BalltzeKeyboardEventContext = Event::KeyboardInputEventContext;

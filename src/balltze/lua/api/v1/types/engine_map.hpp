@@ -7,7 +7,7 @@
 #include <balltze/engine.hpp>
 #include <balltze/event.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineCacheFileEngine = Engine::CacheFileEngine;
     using EngineMapGameType = Engine::MapGameType;
     using EngineMapHeader = Engine::MapHeader;

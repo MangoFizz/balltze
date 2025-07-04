@@ -7,7 +7,7 @@
 #include <lua.hpp>
 #include <balltze/engine.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineResourceHandle = Engine::ResourceHandle;
     using EngineColorARGBInt = Engine::ColorARGBInt;
     using EngineColorARGB = Engine::ColorARGB;

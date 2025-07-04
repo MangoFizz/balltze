@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include <balltze/engine.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineDeviceObjectState = Engine::DeviceObjectState;
     using EngineDeviceObject = Engine::DeviceObject;
     using EngineDeviceMachineObjectFlags = Engine::DeviceMachineObjectFlags;

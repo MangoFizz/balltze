@@ -6,7 +6,7 @@
 #include "../../types/ringworld_saved_games.hpp"
 #include "../../../../helpers/function_table.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static int saved_games_reload_player_profile(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {

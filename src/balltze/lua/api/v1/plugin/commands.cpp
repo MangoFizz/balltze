@@ -11,7 +11,7 @@ namespace Balltze {
     extern std::vector<std::shared_ptr<Command>> commands;
 }
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using LuaPlugin = Plugins::LuaPlugin;
 
     static int lua_get_commands_table(lua_State *state) noexcept {

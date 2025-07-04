@@ -10,7 +10,7 @@
 #include "../../../helpers/function_table.hpp"
 #include "../types.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static int lua_import_tag_from_map(lua_State *state) {
         auto *plugin = Plugins::get_lua_plugin(state);
         if(!plugin) {

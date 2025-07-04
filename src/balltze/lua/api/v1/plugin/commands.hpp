@@ -7,7 +7,7 @@
 #include "../../../../command/command.hpp"
 #include "../../../../plugins/plugin.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     class ConsoleCommand : public Balltze::Command {
     public:
         CommandResult call(std::size_t arg_count, const char **args) const noexcept;

@@ -8,7 +8,7 @@
 #include "engine_gamestate_object.hpp"
 #include "engine_gamestate_unit_object.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_engine_unit_recent_damager_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineUnitRecentDamager);
         luacs_unsigned_field(state, EngineUnitRecentDamager, last_damage_time, 0);

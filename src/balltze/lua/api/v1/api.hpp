@@ -5,8 +5,13 @@
 
 #include <lua.hpp>
 
-namespace Balltze::Lua {
-    void open_balltze_api(lua_State *state);
+namespace Balltze::Lua::Api {
+    /**
+     * Opens the Balltze API version 1 in the given Lua state.
+     * 
+     * @param state The Lua state to open the API in.
+     */
+    void open_balltze_api_v1(lua_State *state);
 }
 
 #endif

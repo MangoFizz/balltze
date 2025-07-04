@@ -7,7 +7,7 @@
 #include "../../../helpers/function_table.hpp"
 #include "../../../libraries/lfmt.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     #define LUA_LOGGER_FUNCTION(name) \
         static int lua_logger_##name(lua_State *state) { \
             auto *plugin = Plugins::get_lua_plugin(state); \

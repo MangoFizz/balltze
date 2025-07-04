@@ -5,7 +5,7 @@
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_map.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_engine_cache_file_engine_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineCacheFileEngine);
         luacs_enum_declare_value(state, "XBOX", Engine::CACHE_FILE_XBOX);

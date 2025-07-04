@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include <balltze/engine.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineObjectNetworkRole = Engine::ObjectNetworkRole;
     using EngineGameStateObjectFlags = Engine::BaseObjectFlags;
     using EngineBaseObjectNetwork = Engine::BaseObjectNetwork;

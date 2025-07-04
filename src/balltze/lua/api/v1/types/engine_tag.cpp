@@ -4,7 +4,7 @@
 #include "../../../helpers/enum.hpp"
 #include "engine_tag.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using namespace Engine;
 
     static void define_engine_tag_class_enum(lua_State *state) noexcept {

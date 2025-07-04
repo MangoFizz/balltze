@@ -3,7 +3,7 @@
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_types.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using namespace Engine;
 
     static void define_engine_resource_handle_struct(lua_State *state) noexcept {

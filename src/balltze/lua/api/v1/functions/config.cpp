@@ -4,7 +4,7 @@
 #include <balltze/config.hpp>
 #include "../../../helpers/function_table.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static int save_config_file(lua_State *state) {
         int args = lua_gettop(state);
         if(args != 1) {

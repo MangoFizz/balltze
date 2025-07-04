@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include <balltze/engine/user_interface.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineInputDevice = Engine::InputDevice;
     using EngineUIWidget = Engine::Widget;
     using EngineWidgetNavigationSound = Engine::WidgetNavigationSound;

@@ -7,7 +7,7 @@
 #include "../../../../helpers/function_table.hpp"
 #include "../../types.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static int engine_get_object(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1 || args == 2) {

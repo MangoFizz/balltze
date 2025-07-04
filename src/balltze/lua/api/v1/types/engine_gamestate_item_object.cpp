@@ -8,7 +8,7 @@
 #include "engine_gamestate_object.hpp"
 #include "engine_gamestate_item_object.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_engine_item_object_struct(lua_State *state) noexcept {
         luacs_newderivedstruct(state, EngineItemObject, EngineBaseObject);
         luacs_unsigned_field(state, EngineItemObject, flags, 0);

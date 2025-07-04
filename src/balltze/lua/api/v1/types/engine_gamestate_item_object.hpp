@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include <balltze/engine.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     using EngineItemObject = Engine::ItemObject;
     using EngineGarbageObject = Engine::GarbageObject;
     using EngineWeaponState = Engine::WeaponState;

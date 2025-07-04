@@ -3,7 +3,7 @@
 #include <lua.hpp>
 #include <balltze/api.hpp>
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     void set_engine_core_functions(lua_State *state) noexcept;
     void set_engine_map_functions(lua_State *state) noexcept;
     void set_engine_netgame_functions(lua_State *state) noexcept;

@@ -7,7 +7,7 @@
 #include "engine_tag_data.hpp"
 #include "engine_gamestate_object.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     Engine::ObjectType get_object_type(lua_State *state, int index) noexcept {
         return static_cast<Engine::ObjectType>(luacs_checkenumvalue(state, index, EngineObjectType));
     }

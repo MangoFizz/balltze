@@ -7,7 +7,7 @@
 #include "engine_tag_data.hpp"
 #include "engine_gamestate_player.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     static void define_engine_player_multiplayer_statistics_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EnginePlayerMultiplayerStatistics);
         luacs_declare_field(state, LUACS_TINT16, NULL, "ctfFlagGrabs", sizeof(((EnginePlayerMultiplayerStatistics *)0)->ctf.flag_grabs), OFFSET_OF(EnginePlayerMultiplayerStatistics, ctf.flag_grabs), 0, 0);
