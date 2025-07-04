@@ -149,7 +149,7 @@ add_library(balltze SHARED
     src/balltze/lua/api/v1/types/engine_types.cpp
     src/balltze/lua/api/v1/types/engine_user_interface.cpp
     src/balltze/lua/api/v1/types/ringworld_saved_games.cpp
-    src/balltze/lua/debug/lua_state_snapshot.cpp
+    src/balltze/lua/debug/lua_state_debug.cpp
     src/balltze/lua/helpers/registry.cpp
     src/balltze/lua/helpers/table.cpp
     src/balltze/lua/libraries/preloaded_libraries.cpp

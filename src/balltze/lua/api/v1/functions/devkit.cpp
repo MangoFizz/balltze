@@ -38,8 +38,25 @@ namespace Balltze::Lua {
         return 0;
     }
 
+    /**
+     * Retrieves the size of the luacstruct registry in the Lua state.
+     * 
+     * @return The size of the luacstruct registry if found, otherwise nil.
+     */
+    int lua_devkit_get_luacstruct_registry_size(lua_State *state) {
+        auto size = get_luacstruct_registry_size(state);
+        if(size.has_value()) {
+            lua_pushinteger(state, static_cast<lua_Integer>(size.value()));
+        } 
+        else {
+            lua_pushnil(state);
+        }
+        return 1;
+    }
+
     static const luaL_Reg devkit_functions[] = {
         {"captureStateSnapshot", lua_devkit_capture_state_snapshot},
+        {"getLuacstructRegistrySize", lua_devkit_get_luacstruct_registry_size},
         {nullptr, nullptr}
     };
 

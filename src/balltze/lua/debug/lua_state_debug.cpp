@@ -5,11 +5,14 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <cstring>
 #include <lua.hpp>
 #include "../libraries/lua_memory_snapshot.hpp"
+#include "lua_state_debug.hpp"
 
 namespace Balltze::Lua {
     static std::ofstream snapshot_file;
+    static std::optional<size_t> luacstruct_registry_size;
     
     static std::string escape_csv_field(const char *str) {
         if(!str) {
@@ -94,5 +97,15 @@ namespace Balltze::Lua {
         snapshot_open(output_file.c_str());
         lua_memory_snapshot(state, snapshot_callback);
         snapshot_close();
+    }
+
+    std::optional<size_t> get_luacstruct_registry_size(lua_State *state) {
+        luacstruct_registry_size.reset();
+        lua_memory_snapshot(state, +[](const void *obj, int type, size_t size, const char *name, const char *desc, const char *value, const void *parent) {
+            if(type == 5 && name && std::strcmp(name, "luacstruct_registry") == 0) {
+                luacstruct_registry_size = size;
+            }
+        });
+        return luacstruct_registry_size;
     }
 }
