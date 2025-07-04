@@ -2,8 +2,8 @@
 
 #include <functional>
 #include <lua.hpp>
-#include <balltze/event.hpp>
-#include <balltze/engine/tag_definitions.hpp>
+#include <balltze/legacy_api/event.hpp>
+#include <balltze/legacy_api/engine/tag_definitions.hpp>
 #include <balltze/utils.hpp>
 #include "../../../../logger.hpp"
 #include "../../../../plugins/plugin.hpp"
@@ -12,12 +12,12 @@
 #include "../../../helpers/registry.hpp"
 #include "../types.hpp"
 
-namespace Balltze::Event {
+namespace Balltze::LegacyApi::Event {
     extern std::string ip_address_int_to_string(std::uint32_t address_int) noexcept;
 }
 
 namespace Balltze::Lua::Api::V1 {
-    using namespace Event;
+    using namespace LegacyApi::Event;
     using handle_t = std::size_t;
 
     static std::size_t tick_event_count = 0;

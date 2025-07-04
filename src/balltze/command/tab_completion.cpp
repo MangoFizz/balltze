@@ -3,14 +3,14 @@
 #include <cstdint>
 #include <vector>
 #include <map>
-#include <balltze/engine/script.hpp>
+#include <balltze/legacy_api/engine/script.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/plugin.hpp>
 #include <balltze/command.hpp>
 #include "../logger.hpp"
 
 namespace Balltze {
-    using HscFunctionEntry = Engine::HscFunctionEntry;
+    using HscFunctionEntry = LegacyApi::Engine::HscFunctionEntry;
 
     extern std::vector<std::shared_ptr<Command>> commands;
 
@@ -29,7 +29,7 @@ namespace Balltze {
         new_entries_list = std::vector<HscFunctionEntry *>(old_entries, old_entries + old_entry_count);
         for(const auto &command : commands) {
             auto &new_command = new_entries_added.emplace_back(std::make_unique<HscFunctionEntry>());
-            new_command->return_type = Engine::HSC_DATA_TYPE_VOID;
+            new_command->return_type = LegacyApi::Engine::HSC_DATA_TYPE_VOID;
             new_command->name = command->full_name();
             new_command->help_message = command->help();
             new_command->help_parameters = command->params_help();

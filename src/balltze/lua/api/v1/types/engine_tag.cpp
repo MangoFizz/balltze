@@ -5,7 +5,7 @@
 #include "engine_tag.hpp"
 
 namespace Balltze::Lua::Api::V1 {
-    using namespace Engine;
+    using namespace LegacyApi::Engine;
 
     static void define_engine_tag_class_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineTagClass);
@@ -97,7 +97,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    Engine::TagClassInt get_tag_class(lua_State *state, int index) noexcept {
+    LegacyApi::Engine::TagClassInt get_tag_class(lua_State *state, int index) noexcept {
         return luacs_checkenumvalue(state, index, EngineTagClass);
     }
 
@@ -120,7 +120,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_engine_tag_dependency(lua_State *state, Engine::TagDependency *tag_dependency) noexcept {
+    void push_engine_tag_dependency(lua_State *state, LegacyApi::Engine::TagDependency *tag_dependency) noexcept {
         luacs_newobject(state, EngineTagDependency, tag_dependency);
     }
 

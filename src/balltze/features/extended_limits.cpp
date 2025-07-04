@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/event.hpp>
+#include <balltze/legacy_api/event.hpp>
 #include <balltze/hook.hpp>
 #include "../config/config.hpp"
 #include "../logger.hpp"

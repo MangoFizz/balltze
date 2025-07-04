@@ -3,7 +3,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <balltze/config.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include <balltze/plugin.hpp>
 #include "config.hpp"
 
@@ -147,7 +147,7 @@ namespace Balltze::Config {
 
     std::filesystem::path get_balltze_directory() {
         try {
-            auto path = Engine::get_path() / "balltze";
+            auto path = LegacyApi::Engine::get_path() / "balltze";
             std::filesystem::create_directories(path);
             return path;
         }

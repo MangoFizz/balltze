@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include "../../../../helpers/function_table.hpp"
 #include "../../types.hpp"
 
 namespace Balltze::Lua::Api::V1 {
-    static std::string network_game_server_type_to_string(Engine::NetworkGameServerType type) {
+    static std::string network_game_server_type_to_string(LegacyApi::Engine::NetworkGameServerType type) {
         switch(type) {
-            case Engine::NETWORK_GAME_SERVER_NONE:
+            case LegacyApi::Engine::NETWORK_GAME_SERVER_NONE:
                 return "none";
-            case Engine::NETWORK_GAME_SERVER_DEDICATED:
+            case LegacyApi::Engine::NETWORK_GAME_SERVER_DEDICATED:
                 return "dedicated";
-            case Engine::NETWORK_GAME_SERVER_LOCAL:
+            case LegacyApi::Engine::NETWORK_GAME_SERVER_LOCAL:
                 return "local";
             default:
                 return "unknown";
@@ -22,7 +22,7 @@ namespace Balltze::Lua::Api::V1 {
     static int engine_get_server_type(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            auto server_type = Engine::network_game_get_server_type();
+            auto server_type = LegacyApi::Engine::network_game_get_server_type();
             auto server_type_string = network_game_server_type_to_string(server_type);
             lua_pushstring(state, server_type_string.c_str());
             return 1;
@@ -32,17 +32,17 @@ namespace Balltze::Lua::Api::V1 {
         }
     }
 
-    static std::string network_game_server_game_type_to_string(Engine::NetworkGameType gametype) {
+    static std::string network_game_server_game_type_to_string(LegacyApi::Engine::NetworkGameType gametype) {
         switch(gametype) {
-            case Engine::NETWORK_GAMETYPE_CTF:
+            case LegacyApi::Engine::NETWORK_GAMETYPE_CTF:
                 return "ctf";
-            case Engine::NETWORK_GAMETYPE_SLAYER:
+            case LegacyApi::Engine::NETWORK_GAMETYPE_SLAYER:
                 return "slayer";
-            case Engine::NETWORK_GAMETYPE_ODDBALL:
+            case LegacyApi::Engine::NETWORK_GAMETYPE_ODDBALL:
                 return "oddball";
-            case Engine::NETWORK_GAMETYPE_KING:
+            case LegacyApi::Engine::NETWORK_GAMETYPE_KING:
                 return "king";
-            case Engine::NETWORK_GAMETYPE_RACE:
+            case LegacyApi::Engine::NETWORK_GAMETYPE_RACE:
                 return "race";
             default:
                 return "none";
@@ -52,7 +52,7 @@ namespace Balltze::Lua::Api::V1 {
     static int engine_get_server_gametype(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            auto server_gametype = Engine::network_game_get_current_game_type();
+            auto server_gametype = LegacyApi::Engine::network_game_get_current_game_type();
             auto server_gametype_string = network_game_server_game_type_to_string(server_gametype);
             if(server_gametype_string == "none") {
                 lua_pushnil(state);
@@ -70,7 +70,7 @@ namespace Balltze::Lua::Api::V1 {
     static int engine_current_game_is_team(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            bool is_team_game = Engine::network_game_current_game_is_team();
+            bool is_team_game = LegacyApi::Engine::network_game_current_game_is_team();
             lua_pushboolean(state, is_team_game);
             return 1;
         }

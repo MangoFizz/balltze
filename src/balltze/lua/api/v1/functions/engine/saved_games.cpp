@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
-#include <balltze/engine/saved_games.hpp>
+#include <balltze/legacy_api/engine.hpp>
+#include <balltze/legacy_api/engine/saved_games.hpp>
 #include "../../types/ringworld_saved_games.hpp"
 #include "../../../../helpers/function_table.hpp"
 
@@ -10,7 +10,7 @@ namespace Balltze::Lua::Api::V1 {
     static int saved_games_reload_player_profile(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            Engine::saved_games_reload_player_profile();
+            LegacyApi::Engine::saved_games_reload_player_profile();
             return 0;
         }
         else {
@@ -21,7 +21,7 @@ namespace Balltze::Lua::Api::V1 {
     static int saved_games_read_player_profile(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            Engine::saved_games_read_player_profile();
+            LegacyApi::Engine::saved_games_read_player_profile();
             return 0;
         }
         else {
@@ -32,7 +32,7 @@ namespace Balltze::Lua::Api::V1 {
     static int saved_games_save_player_profile(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            Engine::saved_games_save_player_profile();
+            LegacyApi::Engine::saved_games_save_player_profile();
             return 0;
         }
         else {

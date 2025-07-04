@@ -4,7 +4,7 @@
 #include "engine_types.hpp"
 
 namespace Balltze::Lua::Api::V1 {
-    using namespace Engine;
+    using namespace LegacyApi::Engine;
 
     static void define_engine_resource_handle_struct(lua_State *state) noexcept {
         luacs_newstruct(state, EngineResourceHandle);
@@ -19,58 +19,58 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_resource_handle(lua_State *state, Engine::ResourceHandle *handle) noexcept {
+    void push_meta_engine_resource_handle(lua_State *state, LegacyApi::Engine::ResourceHandle *handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, handle);
     }
 
-    void push_engine_resource_handle(lua_State *state, Engine::ResourceHandle const &handle) noexcept {
+    void push_engine_resource_handle(lua_State *state, LegacyApi::Engine::ResourceHandle const &handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, NULL);
         auto *self = luacs_to_object(state, -1, EngineResourceHandle);
         *self = handle;
     }
 
-    void push_meta_engine_object_handle(lua_State *state, Engine::ObjectHandle *handle) noexcept {
+    void push_meta_engine_object_handle(lua_State *state, LegacyApi::Engine::ObjectHandle *handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, handle);
     }
 
-    void push_engine_object_handle(lua_State *state, Engine::ObjectHandle const &handle) noexcept {
+    void push_engine_object_handle(lua_State *state, LegacyApi::Engine::ObjectHandle const &handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, NULL);
         auto *self = luacs_to_object(state, -1, EngineResourceHandle);
         *self = handle;
     }
 
-    void push_meta_engine_tag_handle(lua_State *state, Engine::TagHandle *handle) noexcept {
+    void push_meta_engine_tag_handle(lua_State *state, LegacyApi::Engine::TagHandle *handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, handle);
     }
 
-    void push_engine_tag_handle(lua_State *state, Engine::TagHandle const &handle) noexcept {
+    void push_engine_tag_handle(lua_State *state, LegacyApi::Engine::TagHandle const &handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, NULL);
         auto *self = luacs_to_object(state, -1, EngineResourceHandle);
         *self = handle;
     }
 
-    void push_meta_engine_player_handle(lua_State *state, Engine::PlayerHandle *handle) noexcept {
+    void push_meta_engine_player_handle(lua_State *state, LegacyApi::Engine::PlayerHandle *handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, handle);
     }
 
-    void push_engine_player_handle(lua_State *state, Engine::PlayerHandle const &handle) noexcept {
+    void push_engine_player_handle(lua_State *state, LegacyApi::Engine::PlayerHandle const &handle) noexcept {
         luacs_newobject(state, EngineResourceHandle, NULL);
         auto *self = luacs_to_object(state, -1, EngineResourceHandle);
         *self = handle;
     }
 
-    std::optional<Engine::ResourceHandle> get_engine_resource_handle(lua_State *state, int index) noexcept {
-        std::optional<Engine::ResourceHandle> handle;
+    std::optional<LegacyApi::Engine::ResourceHandle> get_engine_resource_handle(lua_State *state, int index) noexcept {
+        std::optional<LegacyApi::Engine::ResourceHandle> handle;
         if(lua_istable(state, index) || lua_isuserdata(state, index)) {
             lua_getfield(state, index, "value");
             if(lua_isinteger(state, -1)) {
-                handle = Engine::ResourceHandle();
+                handle = LegacyApi::Engine::ResourceHandle();
                 handle->value = luaL_checkinteger(state, -1);
             }
             lua_pop(state, 1);
         }
         else if(lua_isinteger(state, index)) {
-            handle = Engine::ResourceHandle();
+            handle = LegacyApi::Engine::ResourceHandle();
             handle->value = luaL_checkinteger(state, index);
         }
         return handle;
@@ -85,17 +85,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt *color) noexcept {
+    void push_meta_engine_color_a_r_g_b_int(lua_State *state, LegacyApi::Engine::ColorARGBInt *color) noexcept {
         luacs_newobject(state, EngineColorARGBInt, color);
     }
 
-    void push_engine_color_a_r_g_b_int(lua_State *state, Engine::ColorARGBInt const &color) noexcept {
+    void push_engine_color_a_r_g_b_int(lua_State *state, LegacyApi::Engine::ColorARGBInt const &color) noexcept {
         luacs_newobject(state, EngineColorARGBInt, NULL);
         auto *self = luacs_to_object(state, -1, EngineColorARGBInt);
         *self = color;
     }
 
-    std::optional<Engine::ColorARGBInt> get_color_a_r_g_b_int(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::ColorARGBInt> get_color_a_r_g_b_int(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](std::uint8_t &field, const char *name) -> bool {
@@ -109,7 +109,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::ColorARGBInt color;
+            LegacyApi::Engine::ColorARGBInt color;
             bool success = true;
             success &= get_field(color.alpha, "alpha");
             success &= get_field(color.red, "red");
@@ -131,17 +131,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB *color) noexcept {
+    void push_meta_engine_color_a_r_g_b(lua_State *state, LegacyApi::Engine::ColorARGB *color) noexcept {
         luacs_newobject(state, EngineColorARGB, color);
     }
 
-    void push_engine_color_a_r_g_b(lua_State *state, Engine::ColorARGB const &color) noexcept {
+    void push_engine_color_a_r_g_b(lua_State *state, LegacyApi::Engine::ColorARGB const &color) noexcept {
         luacs_newobject(state, EngineColorARGB, NULL);
         auto *self = luacs_to_object(state, -1, EngineColorARGB);
         *self = color;
     }
 
-    std::optional<Engine::ColorARGB> get_color_a_r_g_b(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::ColorARGB> get_color_a_r_g_b(lua_State *state, int index) noexcept {
         if(lua_istable(state, index) || lua_isuserdata(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -155,7 +155,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::ColorARGB color;
+            LegacyApi::Engine::ColorARGB color;
             bool success = true;
             success &= get_field(color.alpha, "alpha");
             success &= get_field(color.red, "red");
@@ -179,17 +179,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_color_r_g_b(lua_State *state, Engine::ColorRGB *color) noexcept {
+    void push_meta_engine_color_r_g_b(lua_State *state, LegacyApi::Engine::ColorRGB *color) noexcept {
         luacs_newobject(state, EngineColorRGB, color);
     }
 
-    void push_engine_color_r_g_b(lua_State *state, Engine::ColorRGB const &color) noexcept {
+    void push_engine_color_r_g_b(lua_State *state, LegacyApi::Engine::ColorRGB const &color) noexcept {
         luacs_newobject(state, EngineColorRGB, NULL);
         auto *self = luacs_to_object(state, -1, EngineColorRGB);
         *self = color;
     }
 
-    std::optional<Engine::ColorRGB> get_color_r_g_b(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::ColorRGB> get_color_r_g_b(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -203,7 +203,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::ColorRGB color;
+            LegacyApi::Engine::ColorRGB color;
             bool success = true;
             success &= get_field(color.red, "red");
             success &= get_field(color.green, "green");
@@ -222,17 +222,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_point2_d(lua_State *state, Engine::Point2D *point) noexcept {
+    void push_meta_engine_point2_d(lua_State *state, LegacyApi::Engine::Point2D *point) noexcept {
         luacs_newobject(state, EnginePoint2D, point);
     }
 
-    void push_engine_point2_d(lua_State *state, Engine::Point2D const &point) noexcept {
+    void push_engine_point2_d(lua_State *state, LegacyApi::Engine::Point2D const &point) noexcept {
         luacs_newobject(state, EnginePoint2D, NULL);
         auto *self = luacs_to_object(state, -1, EnginePoint2D);
         *self = point;
     }
 
-    std::optional<Engine::Point2D> get_point2_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Point2D> get_point2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -246,7 +246,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Point2D point;
+            LegacyApi::Engine::Point2D point;
             bool success = true;
             success &= get_field(point.x, "x");
             success &= get_field(point.y, "y");
@@ -264,17 +264,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_point2_d_int(lua_State *state, Engine::Point2DInt *point) noexcept {
+    void push_meta_engine_point2_d_int(lua_State *state, LegacyApi::Engine::Point2DInt *point) noexcept {
         luacs_newobject(state, EnginePoint2DInt, point);
     }
 
-    void push_engine_point2_d_int(lua_State *state, Engine::Point2DInt const &point) noexcept {
+    void push_engine_point2_d_int(lua_State *state, LegacyApi::Engine::Point2DInt const &point) noexcept {
         luacs_newobject(state, EnginePoint2DInt, NULL);
         auto *self = luacs_to_object(state, -1, EnginePoint2DInt);
         *self = point;
     }
 
-    std::optional<Engine::Point2DInt> get_point2_d_int(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Point2DInt> get_point2_d_int(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](std::int16_t &field, const char *name) -> bool {
@@ -288,7 +288,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Point2DInt point;
+            LegacyApi::Engine::Point2DInt point;
             bool success = true;
             success &= get_field(point.x, "x");
             success &= get_field(point.y, "y");
@@ -307,17 +307,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_point3_d(lua_State *state, Engine::Point3D *point) noexcept {
+    void push_meta_engine_point3_d(lua_State *state, LegacyApi::Engine::Point3D *point) noexcept {
         luacs_newobject(state, EnginePoint3D, point);
     }
 
-    void push_engine_point3_d(lua_State *state, Engine::Point3D const &point) noexcept {
+    void push_engine_point3_d(lua_State *state, LegacyApi::Engine::Point3D const &point) noexcept {
         luacs_newobject(state, EnginePoint3D, NULL);
         auto *self = luacs_to_object(state, -1, EnginePoint3D);
         *self = point;
     }
 
-    std::optional<Engine::Point3D> get_point3_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Point3D> get_point3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -331,7 +331,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Point3D point;
+            LegacyApi::Engine::Point3D point;
             bool success = true;
             success &= get_field(point.x, "x");
             success &= get_field(point.y, "y");
@@ -352,17 +352,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D *rectangle) noexcept {
+    void push_meta_engine_rectangle2_d(lua_State *state, LegacyApi::Engine::Rectangle2D *rectangle) noexcept {
         luacs_newobject(state, EngineRectangle2D, rectangle);
     }
 
-    void push_engine_rectangle2_d(lua_State *state, Engine::Rectangle2D const &rectangle) noexcept {
+    void push_engine_rectangle2_d(lua_State *state, LegacyApi::Engine::Rectangle2D const &rectangle) noexcept {
         luacs_newobject(state, EngineRectangle2D, NULL);
         auto *self = luacs_to_object(state, -1, EngineRectangle2D);
         *self = rectangle;
     }
 
-    std::optional<Engine::Rectangle2D> get_rectangle2_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Rectangle2D> get_rectangle2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](std::int16_t &field, const char *name) -> bool {
@@ -376,7 +376,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Rectangle2D rectangle;
+            LegacyApi::Engine::Rectangle2D rectangle;
             bool success = true;
             success &= get_field(rectangle.left, "left");
             success &= get_field(rectangle.top, "top");
@@ -398,17 +398,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF *rectangle) noexcept {
+    void push_meta_engine_rectangle2_d_f(lua_State *state, LegacyApi::Engine::Rectangle2DF *rectangle) noexcept {
         luacs_newobject(state, EngineRectangle2DF, rectangle);
     }
 
-    void push_engine_rectangle2_d_f(lua_State *state, Engine::Rectangle2DF const &rectangle) noexcept {
+    void push_engine_rectangle2_d_f(lua_State *state, LegacyApi::Engine::Rectangle2DF const &rectangle) noexcept {
         luacs_newobject(state, EngineRectangle2DF, NULL);
         auto *self = luacs_to_object(state, -1, EngineRectangle2DF);
         *self = rectangle;
     }
 
-    std::optional<Engine::Rectangle2DF> get_rectangle2_d_f(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Rectangle2DF> get_rectangle2_d_f(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -422,7 +422,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Rectangle2DF rectangle;
+            LegacyApi::Engine::Rectangle2DF rectangle;
             bool success = true;
             success &= get_field(rectangle.left, "left");
             success &= get_field(rectangle.top, "top");
@@ -442,17 +442,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_euler2_d(lua_State *state, Engine::Euler2D *euler) noexcept {
+    void push_meta_engine_euler2_d(lua_State *state, LegacyApi::Engine::Euler2D *euler) noexcept {
         luacs_newobject(state, EngineEuler2D, euler);
     }
     
-    void push_engine_euler2_d(lua_State *state, Engine::Euler2D const &euler) noexcept {
+    void push_engine_euler2_d(lua_State *state, LegacyApi::Engine::Euler2D const &euler) noexcept {
         luacs_newobject(state, EngineEuler2D, NULL);
         auto *self = luacs_to_object(state, -1, EngineEuler2D);
         *self = euler;
     }
 
-    std::optional<Engine::Euler2D> get_euler2_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Euler2D> get_euler2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -466,7 +466,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Euler2D euler;
+            LegacyApi::Engine::Euler2D euler;
             bool success = true;
             success &= get_field(euler.yaw, "yaw");
             success &= get_field(euler.pitch, "pitch");
@@ -485,17 +485,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_euler3_d(lua_State *state, Engine::Euler3D *euler) noexcept {
+    void push_meta_engine_euler3_d(lua_State *state, LegacyApi::Engine::Euler3D *euler) noexcept {
         luacs_newobject(state, EngineEuler3D, euler);
     }
 
-    void push_engine_euler3_d(lua_State *state, Engine::Euler3D const &euler) noexcept {
+    void push_engine_euler3_d(lua_State *state, LegacyApi::Engine::Euler3D const &euler) noexcept {
         luacs_newobject(state, EngineEuler3D, NULL);
         auto *self = luacs_to_object(state, -1, EngineEuler3D);
         *self = euler;
     }
 
-    std::optional<Engine::Euler3D> get_euler3_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Euler3D> get_euler3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -509,7 +509,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Euler3D euler;
+            LegacyApi::Engine::Euler3D euler;
             bool success = true;
             success &= get_field(euler.yaw, "yaw");
             success &= get_field(euler.pitch, "pitch");
@@ -529,17 +529,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3DPYR *euler) noexcept {
+    void push_meta_engine_euler3_d_p_y_r(lua_State *state, LegacyApi::Engine::Euler3DPYR *euler) noexcept {
         luacs_newobject(state, EngineEuler3DPYR, euler);
     }
 
-    void push_engine_euler3_d_p_y_r(lua_State *state, Engine::Euler3DPYR const &euler) noexcept {
+    void push_engine_euler3_d_p_y_r(lua_State *state, LegacyApi::Engine::Euler3DPYR const &euler) noexcept {
         luacs_newobject(state, EngineEuler3DPYR, NULL);
         auto *self = luacs_to_object(state, -1, EngineEuler3DPYR);
         *self = euler;
     }
 
-    std::optional<Engine::Euler3DPYR> get_euler3_d_p_y_r(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Euler3DPYR> get_euler3_d_p_y_r(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -553,7 +553,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Euler3DPYR euler;
+            LegacyApi::Engine::Euler3DPYR euler;
             bool success = true;
             success &= get_field(euler.pitch, "pitch");
             success &= get_field(euler.yaw, "yaw");
@@ -572,17 +572,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_vector2_d(lua_State *state, Engine::Vector2D *vector) noexcept {
+    void push_meta_engine_vector2_d(lua_State *state, LegacyApi::Engine::Vector2D *vector) noexcept {
         luacs_newobject(state, EngineVector2D, vector);
     }
 
-    void push_engine_vector2_d(lua_State *state, Engine::Vector2D const &vector) noexcept {
+    void push_engine_vector2_d(lua_State *state, LegacyApi::Engine::Vector2D const &vector) noexcept {
         luacs_newobject(state, EngineVector2D, NULL);
         auto *self = luacs_to_object(state, -1, EngineVector2D);
         *self = vector;
     }
 
-    std::optional<Engine::Vector2D> get_vector2_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Vector2D> get_vector2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -596,7 +596,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Vector2D vector;
+            LegacyApi::Engine::Vector2D vector;
             bool success = true;
             success &= get_field(vector.i, "i");
             success &= get_field(vector.j, "j");
@@ -615,17 +615,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_vector3_d(lua_State *state, Engine::Vector3D *vector) noexcept {
+    void push_meta_engine_vector3_d(lua_State *state, LegacyApi::Engine::Vector3D *vector) noexcept {
         luacs_newobject(state, EngineVector3D, vector);
     }
 
-    void push_engine_vector3_d(lua_State *state, Engine::Vector3D const &vector) noexcept {
+    void push_engine_vector3_d(lua_State *state, LegacyApi::Engine::Vector3D const &vector) noexcept {
         luacs_newobject(state, EngineVector3D, NULL);
         auto *self = luacs_to_object(state, -1, EngineVector3D);
         *self = vector;
     }
 
-    std::optional<Engine::Vector3D> get_vector3_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Vector3D> get_vector3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -639,7 +639,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Vector3D vector;
+            LegacyApi::Engine::Vector3D vector;
             bool success = true;
             success &= get_field(vector.i, "i");
             success &= get_field(vector.j, "j");
@@ -660,17 +660,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_quaternion(lua_State *state, Engine::Quaternion *quaternion) noexcept {
+    void push_meta_engine_quaternion(lua_State *state, LegacyApi::Engine::Quaternion *quaternion) noexcept {
         luacs_newobject(state, EngineQuaternion, quaternion);
     }
 
-    void push_engine_quaternion(lua_State *state, Engine::Quaternion const &quaternion) noexcept {
+    void push_engine_quaternion(lua_State *state, LegacyApi::Engine::Quaternion const &quaternion) noexcept {
         luacs_newobject(state, EngineQuaternion, NULL);
         auto *self = luacs_to_object(state, -1, EngineQuaternion);
         *self = quaternion;
     }
 
-    std::optional<Engine::Quaternion> get_quaternion(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Quaternion> get_quaternion(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -684,7 +684,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Quaternion quaternion;
+            LegacyApi::Engine::Quaternion quaternion;
             bool success = true;
             success &= get_field(quaternion.i, "i");
             success &= get_field(quaternion.j, "j");
@@ -704,17 +704,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_plane3_d(lua_State *state, Engine::Plane3D *plane) noexcept {
+    void push_meta_engine_plane3_d(lua_State *state, LegacyApi::Engine::Plane3D *plane) noexcept {
         luacs_newobject(state, EnginePlane3D, plane);
     }
 
-    void push_engine_plane3_d(lua_State *state, Engine::Plane3D const &plane) noexcept {
+    void push_engine_plane3_d(lua_State *state, LegacyApi::Engine::Plane3D const &plane) noexcept {
         luacs_newobject(state, EnginePlane3D, NULL);
         auto *self = luacs_to_object(state, -1, EnginePlane3D);
         *self = plane;
     }
 
-    std::optional<Engine::Plane3D> get_plane3_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Plane3D> get_plane3_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -728,7 +728,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Plane3D plane;
+            LegacyApi::Engine::Plane3D plane;
             bool success = true;
             lua_getfield(state, index, "vector");
             auto vector = get_vector3_d(state, -1);
@@ -753,17 +753,17 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_plane2_d(lua_State *state, Engine::Plane2D *plane) noexcept {
+    void push_meta_engine_plane2_d(lua_State *state, LegacyApi::Engine::Plane2D *plane) noexcept {
         luacs_newobject(state, EnginePlane2D, plane);
     }
 
-    void push_engine_plane2_d(lua_State *state, Engine::Plane2D const &plane) noexcept {
+    void push_engine_plane2_d(lua_State *state, LegacyApi::Engine::Plane2D const &plane) noexcept {
         luacs_newobject(state, EnginePlane2D, NULL);
         auto *self = luacs_to_object(state, -1, EnginePlane2D);
         *self = plane;
     }
 
-    std::optional<Engine::Plane2D> get_plane2_d(lua_State *state, int index) noexcept {
+    std::optional<LegacyApi::Engine::Plane2D> get_plane2_d(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
             auto get_field = [state, table](float &field, const char *name) -> bool {
@@ -777,7 +777,7 @@ namespace Balltze::Lua::Api::V1 {
                 return false;
             };
             
-            Engine::Plane2D plane;
+            LegacyApi::Engine::Plane2D plane;
             bool success = true;
             lua_getfield(state, index, "vector");
             auto vector = get_vector2_d(state, -1);
@@ -814,7 +814,7 @@ namespace Balltze::Lua::Api::V1 {
     std::optional<EngineMatrix> get_matrix(lua_State *state, int index) noexcept {
         if(lua_istable(state, index)) {
             auto table = lua_absindex(state, index);
-            auto get_field = [state, table](std::size_t index, Engine::Vector3D &field) -> bool {
+            auto get_field = [state, table](std::size_t index, LegacyApi::Engine::Vector3D &field) -> bool {
                 lua_geti(state, table, index);
                 auto vector = get_vector3_d(state, -1);
                 if(vector.has_value()) {

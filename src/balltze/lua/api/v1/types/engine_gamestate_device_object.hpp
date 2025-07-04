@@ -4,16 +4,16 @@
 #define BALLTZE__LUA__API__TYPES__ENGINE_GAMESTATE_DEVICE_OBJECT_HPP
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 
 namespace Balltze::Lua::Api::V1 {
-    using EngineDeviceObjectState = Engine::DeviceObjectState;
-    using EngineDeviceObject = Engine::DeviceObject;
-    using EngineDeviceMachineObjectFlags = Engine::DeviceMachineObjectFlags;
-    using EngineDeviceMachineObject = Engine::DeviceMachineObject;
-    using EngineDeviceControlObjectFlags = Engine::DeviceControlObjectFlags;
-    using EngineDeviceControlObject = Engine::DeviceControlObject;
-    using EngineDeviceLightFixtureObject = Engine::DeviceLightFixtureObject;
+    using EngineDeviceObjectState = LegacyApi::Engine::DeviceObjectState;
+    using EngineDeviceObject = LegacyApi::Engine::DeviceObject;
+    using EngineDeviceMachineObjectFlags = LegacyApi::Engine::DeviceMachineObjectFlags;
+    using EngineDeviceMachineObject = LegacyApi::Engine::DeviceMachineObject;
+    using EngineDeviceControlObjectFlags = LegacyApi::Engine::DeviceControlObjectFlags;
+    using EngineDeviceControlObject = LegacyApi::Engine::DeviceControlObject;
+    using EngineDeviceLightFixtureObject = LegacyApi::Engine::DeviceLightFixtureObject;
 
     void push_engine_device_object_state(lua_State *state, EngineDeviceObjectState *object_state) noexcept;
 

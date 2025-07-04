@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include <balltze/helpers/string_literal.hpp>
 #include "../../../../../logger.hpp"
 #include "../../../../helpers/function_table.hpp"
@@ -21,8 +21,8 @@ namespace Balltze::Lua::Api::V1 {
                 return 1;
             }
 
-            auto &object_table = Engine::get_object_table();
-            Engine::BaseObject *object;
+            auto &object_table = LegacyApi::Engine::get_object_table();
+            LegacyApi::Engine::BaseObject *object;
             if(object_handle->id != 0) {
                 object = object_table.get_object(*object_handle);
             }
@@ -44,40 +44,40 @@ namespace Balltze::Lua::Api::V1 {
                 }
 
                 switch(object->type) {
-                    case Engine::OBJECT_TYPE_BIPED:
-                        push_engine_biped_object(state, reinterpret_cast<Engine::BipedObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_BIPED:
+                        push_engine_biped_object(state, reinterpret_cast<LegacyApi::Engine::BipedObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_VEHICLE:
-                        push_engine_vehicle_object(state, reinterpret_cast<Engine::VehicleObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_VEHICLE:
+                        push_engine_vehicle_object(state, reinterpret_cast<LegacyApi::Engine::VehicleObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_WEAPON:
-                        push_engine_weapon_object(state, reinterpret_cast<Engine::WeaponObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_WEAPON:
+                        push_engine_weapon_object(state, reinterpret_cast<LegacyApi::Engine::WeaponObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_EQUIPMENT:
-                        push_engine_equipment_object(state, reinterpret_cast<Engine::EquipmentObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_EQUIPMENT:
+                        push_engine_equipment_object(state, reinterpret_cast<LegacyApi::Engine::EquipmentObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_GARBAGE:
-                        push_engine_garbage_object(state, reinterpret_cast<Engine::GarbageObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_GARBAGE:
+                        push_engine_garbage_object(state, reinterpret_cast<LegacyApi::Engine::GarbageObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_PROJECTILE:
-                        push_engine_projectile_object(state, reinterpret_cast<Engine::ProjectileObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_PROJECTILE:
+                        push_engine_projectile_object(state, reinterpret_cast<LegacyApi::Engine::ProjectileObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_SCENERY:
+                    case LegacyApi::Engine::OBJECT_TYPE_SCENERY:
                         push_engine_object(state, object);
                         break;
-                    case Engine::OBJECT_TYPE_DEVICE_MACHINE:
-                        push_engine_device_machine_object(state, reinterpret_cast<Engine::DeviceMachineObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_DEVICE_MACHINE:
+                        push_engine_device_machine_object(state, reinterpret_cast<LegacyApi::Engine::DeviceMachineObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_DEVICE_CONTROL:
-                        push_engine_device_control_object(state, reinterpret_cast<Engine::DeviceControlObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_DEVICE_CONTROL:
+                        push_engine_device_control_object(state, reinterpret_cast<LegacyApi::Engine::DeviceControlObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_DEVICE_LIGHT_FIXTURE:
-                        push_engine_device_light_fixture_object(state, reinterpret_cast<Engine::DeviceLightFixtureObject *>(object));
+                    case LegacyApi::Engine::OBJECT_TYPE_DEVICE_LIGHT_FIXTURE:
+                        push_engine_device_light_fixture_object(state, reinterpret_cast<LegacyApi::Engine::DeviceLightFixtureObject *>(object));
                         break;
-                    case Engine::OBJECT_TYPE_PLACEHOLDER:
+                    case LegacyApi::Engine::OBJECT_TYPE_PLACEHOLDER:
                         push_engine_object(state, object);
                         break;
-                    case Engine::OBJECT_TYPE_SOUND_SCENERY:
+                    case LegacyApi::Engine::OBJECT_TYPE_SOUND_SCENERY:
                         push_engine_object(state, object);
                         break;
                     default:
@@ -104,7 +104,7 @@ namespace Balltze::Lua::Api::V1 {
             if(!object_tag_handle || object_tag_handle->is_null()) {
                 return luaL_error(state, "Invalid object tag handle in function Engine.gameState.createObject.");
             }
-            Engine::ObjectHandle parent_object_handle = Engine::ObjectHandle::null();
+            LegacyApi::Engine::ObjectHandle parent_object_handle = LegacyApi::Engine::ObjectHandle::null();
             if(!lua_isnil(state, 2)) {
                 auto handle  = get_engine_resource_handle(state, 2);
                 if(!handle) {
@@ -117,9 +117,9 @@ namespace Balltze::Lua::Api::V1 {
                 return luaL_error(state, "Invalid position in function Engine.gameState.createObject.");
             }
 
-            auto &object_table = Engine::get_object_table();
+            auto &object_table = LegacyApi::Engine::get_object_table();
             auto object_handle = object_table.create_object(*object_tag_handle, *position, parent_object_handle);
-            if(object_handle != Engine::ObjectHandle::null()) {
+            if(object_handle != LegacyApi::Engine::ObjectHandle::null()) {
                 auto *object = object_table.get_object(object_handle);
                 if(object) {
                     push_engine_object_handle(state, object_handle);
@@ -142,7 +142,7 @@ namespace Balltze::Lua::Api::V1 {
         int args = lua_gettop(state);
 
         if(args == 1) {
-            auto &object_table = Engine::get_object_table();
+            auto &object_table = LegacyApi::Engine::get_object_table();
             auto object_handle = get_engine_resource_handle(state, 1);
             if(!object_handle || object_handle->is_null()) {
                 return luaL_error(state, "Invalid object handle in function Engine.gameState.deleteObject.");
@@ -173,23 +173,23 @@ namespace Balltze::Lua::Api::V1 {
                 return luaL_error(state, "invalid vehicle object handle in function Engine.gameState.unitEnterVehicle");
             }
 
-            auto &object_table = Engine::get_object_table();
-            auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(*unit_handle));
+            auto &object_table = LegacyApi::Engine::get_object_table();
+            auto *unit = reinterpret_cast<LegacyApi::Engine::UnitObject *>(object_table.get_object(*unit_handle));
             if(!unit) {
                 return luaL_error(state, "invalid unit handle in function Engine.gameState.unitEnterVehicle");
             }
-            if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
+            if(!unit->type == LegacyApi::Engine::OBJECT_TYPE_BIPED && !unit->type == LegacyApi::Engine::OBJECT_TYPE_VEHICLE) {
                 return luaL_error(state, "invalid object type in function Engine.gameState.unitEnterVehicle, expected biped or vehicle");
             }
             
             try {
                 if(lua_isinteger(state, 3)) {
                     auto seat_index = luaL_checkinteger(state, 3);
-                    Engine::unit_scripting_enter_vehicle(*unit_handle, *vehicle_handle, seat_index);
+                    LegacyApi::Engine::unit_scripting_enter_vehicle(*unit_handle, *vehicle_handle, seat_index);
                 }
                 else if(lua_isstring(state, 3)) {
                     auto seat_label = luaL_checkstring(state, 3);
-                    Engine::unit_scripting_enter_vehicle(*unit_handle, *vehicle_handle, seat_label);
+                    LegacyApi::Engine::unit_scripting_enter_vehicle(*unit_handle, *vehicle_handle, seat_label);
                 }
                 else {
                     return luaL_error(state, "invalid seat index or label in function Engine.gameState.unitEnterVehicle, expected integer or string");
@@ -212,16 +212,16 @@ namespace Balltze::Lua::Api::V1 {
             if(!unit_handle || unit_handle->is_null()) {
                 return luaL_error(state, "invalid unit object handle in function Engine.gameState.exitVehicle");
             }
-            auto &object_table = Engine::get_object_table();
-            auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(*unit_handle));
+            auto &object_table = LegacyApi::Engine::get_object_table();
+            auto *unit = reinterpret_cast<LegacyApi::Engine::UnitObject *>(object_table.get_object(*unit_handle));
             if(!unit) {
                 return luaL_error(state, "invalid unit handle in function Engine.gameState.exitVehicle");
             }
-            if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
+            if(!unit->type == LegacyApi::Engine::OBJECT_TYPE_BIPED && !unit->type == LegacyApi::Engine::OBJECT_TYPE_VEHICLE) {
                 return luaL_error(state, "invalid object type in function Engine.gameState.exitVehicle, expected biped or vehicle");
             }
             try {
-                Engine::unit_scripting_exit_vehicle(*unit_handle);
+                LegacyApi::Engine::unit_scripting_exit_vehicle(*unit_handle);
                 return 0;
             }
             catch(std::runtime_error &e) {
@@ -236,8 +236,8 @@ namespace Balltze::Lua::Api::V1 {
     static int get_player(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0 || args == 1) {
-            auto &player_table = Engine::get_player_table();
-            Engine::Player *player = nullptr;
+            auto &player_table = LegacyApi::Engine::get_player_table();
+            LegacyApi::Engine::Player *player = nullptr;
             if(args == 1) {
                 auto player_handle = get_engine_resource_handle(state, 1);
                 if(!player_handle || player_handle->is_null()) {
@@ -273,9 +273,9 @@ namespace Balltze::Lua::Api::V1 {
     static int get_player_by_rcon_handle(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args > 0) {
-            auto &player_table = Engine::get_player_table();
+            auto &player_table = LegacyApi::Engine::get_player_table();
             auto rcon_handle = luaL_checkinteger(state, 1);
-            Engine::Player *player = player_table.get_player_by_rcon_handle(rcon_handle);
+            LegacyApi::Engine::Player *player = player_table.get_player_by_rcon_handle(rcon_handle);
             if(player) {
                 push_meta_engine_player(state, player);
             }
@@ -293,7 +293,7 @@ namespace Balltze::Lua::Api::V1 {
     static int engine_get_camera_data(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            auto &camera_data = Engine::get_camera_data();
+            auto &camera_data = LegacyApi::Engine::get_camera_data();
             push_meta_engine_camera_data(state, &camera_data);
             return 1;
         }
@@ -305,7 +305,7 @@ namespace Balltze::Lua::Api::V1 {
     static int engine_get_camera_type(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            auto camera_type = Engine::get_camera_type();
+            auto camera_type = LegacyApi::Engine::get_camera_type();
             lua_pushinteger(state, camera_type);
             return 1;
         }
@@ -322,7 +322,7 @@ namespace Balltze::Lua::Api::V1 {
                 return luaL_error(state, "invalid argument #1, expected object handle in function Engine.gameState.unitDeleteAllWeapons");
             }
             try {
-                Engine::unit_delete_all_weapons(*unit_handle);
+                LegacyApi::Engine::unit_delete_all_weapons(*unit_handle);
             }
             catch(std::runtime_error &e) {
                 return luaL_error(state, "%s in function Engine.gameState.unitDeleteAllWeapons", e.what());
@@ -347,7 +347,7 @@ namespace Balltze::Lua::Api::V1 {
             }
             auto weapon_slot = luaL_checkinteger(state, 3);
             try {
-                Engine::unit_add_weapon_to_inventory(*unit_handle, *weapon_handle, weapon_slot);
+                LegacyApi::Engine::unit_add_weapon_to_inventory(*unit_handle, *weapon_handle, weapon_slot);
             }
             catch(std::runtime_error &e) {
                 return luaL_error(state, "%s in function Engine.gameState.unitAddWeaponToInventory", e.what());
@@ -373,7 +373,7 @@ namespace Balltze::Lua::Api::V1 {
             }
             std::string attachment_marker = luaL_optstring(state, 4, "");
             try {
-                Engine::object_attach_to_marker(*object_handle, object_marker, *attachment_handle, attachment_marker);
+                LegacyApi::Engine::object_attach_to_marker(*object_handle, object_marker, *attachment_handle, attachment_marker);
             }
             catch(std::runtime_error &e) {
                 return luaL_error(state, "%s in function Engine.gameState.objectAttachToMarker", e.what());

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/game_state.hpp>
+#include <balltze/legacy_api/engine/game_state.hpp>
 #include "../../../helpers/bitfield.hpp"
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_types.hpp"
@@ -22,40 +22,40 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_player_multiplayer_statistics(lua_State *state, Engine::PlayerMultiplayerStatistics *statistics) noexcept {
+    void push_meta_engine_player_multiplayer_statistics(lua_State *state, LegacyApi::Engine::PlayerMultiplayerStatistics *statistics) noexcept {
         luacs_newobject(state, EnginePlayerMultiplayerStatistics, statistics);
     }
 
     void define_engine_network_player_color_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineNetworkPlayerColor);
-        luacs_enum_declare_value(state, "WHITE", Engine::NETWORK_COLOR_WHITE);
-        luacs_enum_declare_value(state, "BLACK", Engine::NETWORK_COLOR_BLACK);
-        luacs_enum_declare_value(state, "RED", Engine::NETWORK_COLOR_RED);
-        luacs_enum_declare_value(state, "BLUE", Engine::NETWORK_COLOR_BLUE);
-        luacs_enum_declare_value(state, "GRAY", Engine::NETWORK_COLOR_GRAY);
-        luacs_enum_declare_value(state, "YELLOW", Engine::NETWORK_COLOR_YELLOW);
-        luacs_enum_declare_value(state, "GREEN", Engine::NETWORK_COLOR_GREEN);
-        luacs_enum_declare_value(state, "PINK", Engine::NETWORK_COLOR_PINK);
-        luacs_enum_declare_value(state, "PURPLE", Engine::NETWORK_COLOR_PURPLE);
-        luacs_enum_declare_value(state, "CYAN", Engine::NETWORK_COLOR_CYAN);
-        luacs_enum_declare_value(state, "COBALT", Engine::NETWORK_COLOR_COBALT);
-        luacs_enum_declare_value(state, "ORANGE", Engine::NETWORK_COLOR_ORANGE);
-        luacs_enum_declare_value(state, "TEAL", Engine::NETWORK_COLOR_TEAL);
-        luacs_enum_declare_value(state, "SAGE", Engine::NETWORK_COLOR_SAGE);
-        luacs_enum_declare_value(state, "BROWN", Engine::NETWORK_COLOR_BROWN);
-        luacs_enum_declare_value(state, "TAN", Engine::NETWORK_COLOR_TAN);
-        luacs_enum_declare_value(state, "MAROON", Engine::NETWORK_COLOR_MAROON);
-        luacs_enum_declare_value(state, "SALMON", Engine::NETWORK_COLOR_SALMON);
+        luacs_enum_declare_value(state, "WHITE", LegacyApi::Engine::NETWORK_COLOR_WHITE);
+        luacs_enum_declare_value(state, "BLACK", LegacyApi::Engine::NETWORK_COLOR_BLACK);
+        luacs_enum_declare_value(state, "RED", LegacyApi::Engine::NETWORK_COLOR_RED);
+        luacs_enum_declare_value(state, "BLUE", LegacyApi::Engine::NETWORK_COLOR_BLUE);
+        luacs_enum_declare_value(state, "GRAY", LegacyApi::Engine::NETWORK_COLOR_GRAY);
+        luacs_enum_declare_value(state, "YELLOW", LegacyApi::Engine::NETWORK_COLOR_YELLOW);
+        luacs_enum_declare_value(state, "GREEN", LegacyApi::Engine::NETWORK_COLOR_GREEN);
+        luacs_enum_declare_value(state, "PINK", LegacyApi::Engine::NETWORK_COLOR_PINK);
+        luacs_enum_declare_value(state, "PURPLE", LegacyApi::Engine::NETWORK_COLOR_PURPLE);
+        luacs_enum_declare_value(state, "CYAN", LegacyApi::Engine::NETWORK_COLOR_CYAN);
+        luacs_enum_declare_value(state, "COBALT", LegacyApi::Engine::NETWORK_COLOR_COBALT);
+        luacs_enum_declare_value(state, "ORANGE", LegacyApi::Engine::NETWORK_COLOR_ORANGE);
+        luacs_enum_declare_value(state, "TEAL", LegacyApi::Engine::NETWORK_COLOR_TEAL);
+        luacs_enum_declare_value(state, "SAGE", LegacyApi::Engine::NETWORK_COLOR_SAGE);
+        luacs_enum_declare_value(state, "BROWN", LegacyApi::Engine::NETWORK_COLOR_BROWN);
+        luacs_enum_declare_value(state, "TAN", LegacyApi::Engine::NETWORK_COLOR_TAN);
+        luacs_enum_declare_value(state, "MAROON", LegacyApi::Engine::NETWORK_COLOR_MAROON);
+        luacs_enum_declare_value(state, "SALMON", LegacyApi::Engine::NETWORK_COLOR_SALMON);
         lua_pop(state, 1);
     }
 
     void lua_define_player_objective_mode_enum(lua_State *state) noexcept {
         luacs_newenum(state, EnginePlayerObjectiveMode);
-        luacs_enum_declare_value(state, "RACE", Engine::PLAYER_OBJECTIVE_MODE_RACE);
-        luacs_enum_declare_value(state, "HILL", Engine::PLAYER_OBJECTIVE_MODE_HILL);
-        luacs_enum_declare_value(state, "JUGGERNAUT", Engine::PLAYER_OBJECTIVE_MODE_JUGGERNAUT);
-        luacs_enum_declare_value(state, "BALL", Engine::PLAYER_OBJECTIVE_MODE_BALL);
-        luacs_enum_declare_value(state, "NONE", Engine::PLAYER_OBJECTIVE_MODE_NONE);
+        luacs_enum_declare_value(state, "RACE", LegacyApi::Engine::PLAYER_OBJECTIVE_MODE_RACE);
+        luacs_enum_declare_value(state, "HILL", LegacyApi::Engine::PLAYER_OBJECTIVE_MODE_HILL);
+        luacs_enum_declare_value(state, "JUGGERNAUT", LegacyApi::Engine::PLAYER_OBJECTIVE_MODE_JUGGERNAUT);
+        luacs_enum_declare_value(state, "BALL", LegacyApi::Engine::PLAYER_OBJECTIVE_MODE_BALL);
+        luacs_enum_declare_value(state, "NONE", LegacyApi::Engine::PLAYER_OBJECTIVE_MODE_NONE);
         lua_pop(state, 1);
     }
 
@@ -129,7 +129,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_meta_engine_player(lua_State *state, Engine::Player *player) noexcept {
+    void push_meta_engine_player(lua_State *state, LegacyApi::Engine::Player *player) noexcept {
         luacs_newobject(state, EnginePlayer, player);
     }
 

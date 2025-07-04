@@ -6,7 +6,7 @@
 #include <string>
 #include <map>
 #include <d3d9.h>
-#include "../engine/data_types.hpp"
+#include "../legacy_api/engine/data_types.hpp"
 #include "../api.hpp"
 
 namespace Balltze {
@@ -39,7 +39,7 @@ namespace Balltze {
     public:
         void begin();
         void end();
-        bool draw(const Engine::Point2D *position, const Engine::Point2D *center, float angle, const Engine::Vector2D *scale, const Engine::ColorARGBInt *color);
+        bool draw(const LegacyApi::Engine::Point2D *position, const LegacyApi::Engine::Point2D *center, float angle, const LegacyApi::Engine::Vector2D *scale, const LegacyApi::Engine::ColorARGBInt *color);
         bool draw(float pos_x, float pos_y, float width, float height);
         void update_texture(IDirect3DTexture9 *texture);
         Sprite(IDirect3DTexture9 *texture);

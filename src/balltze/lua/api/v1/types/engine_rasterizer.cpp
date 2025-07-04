@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/rasterizer.hpp>
+#include <balltze/legacy_api/engine/rasterizer.hpp>
 #include "../../../helpers/bitfield.hpp"
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_rasterizer.hpp"
@@ -13,11 +13,11 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_resolution(lua_State *state, Engine::Resolution *data) noexcept {
+    void push_meta_engine_resolution(lua_State *state, LegacyApi::Engine::Resolution *data) noexcept {
         luacs_newobject(state, EngineResolution, data);
     }
 
-    void push_engine_resolution(lua_State *state, Engine::Resolution const *data) noexcept {
+    void push_engine_resolution(lua_State *state, LegacyApi::Engine::Resolution const *data) noexcept {
         luacs_newobject(state, EngineResolution, NULL);
         auto *self = luacs_to_object(state, -1, EngineResolution);
         *self = *data;
@@ -25,10 +25,10 @@ namespace Balltze::Lua::Api::V1 {
 
     static void define_camera_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineCameraType);
-        luacs_enum_declare_value(state, "CAMERA_FIRST_PERSON", Engine::CAMERA_FIRST_PERSON);
-        luacs_enum_declare_value(state, "CAMERA_VEHICLE", Engine::CAMERA_VEHICLE);
-        luacs_enum_declare_value(state, "CAMERA_CINEMATIC", Engine::CAMERA_CINEMATIC);
-        luacs_enum_declare_value(state, "CAMERA_DEBUG", Engine::CAMERA_DEBUG);
+        luacs_enum_declare_value(state, "CAMERA_FIRST_PERSON", LegacyApi::Engine::CAMERA_FIRST_PERSON);
+        luacs_enum_declare_value(state, "CAMERA_VEHICLE", LegacyApi::Engine::CAMERA_VEHICLE);
+        luacs_enum_declare_value(state, "CAMERA_CINEMATIC", LegacyApi::Engine::CAMERA_CINEMATIC);
+        luacs_enum_declare_value(state, "CAMERA_DEBUG", LegacyApi::Engine::CAMERA_DEBUG);
         lua_pop(state, 1);
     }
 
@@ -41,7 +41,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_meta_engine_camera_data(lua_State *state, Engine::CameraData *data) noexcept {
+    void push_meta_engine_camera_data(lua_State *state, LegacyApi::Engine::CameraData *data) noexcept {
         luacs_newobject(state, EngineCameraData, data);
     }
 
@@ -56,7 +56,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_rasterizer_vertex(lua_State *state, Engine::ScreenQuad::Vertex *data) noexcept {
+    void push_meta_engine_rasterizer_vertex(lua_State *state, LegacyApi::Engine::ScreenQuad::Vertex *data) noexcept {
         luacs_newobject(state, EngineRasterizerVertex, data);
     }
 
@@ -69,7 +69,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_rasterizer_quad(lua_State *state, Engine::ScreenQuad *data) noexcept {
+    void push_meta_engine_rasterizer_quad(lua_State *state, LegacyApi::Engine::ScreenQuad *data) noexcept {
         luacs_newobject(state, EngineRasterizerQuad, data);
     }
 

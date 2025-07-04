@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <windows.h>
-#include <balltze/event.hpp>
-#include <balltze/engine/rasterizer.hpp>
+#include <balltze/legacy_api/event.hpp>
+#include <balltze/legacy_api/engine/rasterizer.hpp>
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
 #include <ringworld.h>
 #include "features/features.hpp"
-#include "event/event.hpp"
+#include "legacy_api/event/event.hpp"
 #include "memory/memory.hpp"
 #include "plugins/loader.hpp"
 #include "command/command.hpp"
 #include "config/config.hpp"
 
 namespace Balltze {
-    using namespace Event;
-    
+    using namespace LegacyApi::Event;
+
     Logger logger("Balltze");
     
     static BalltzeSide balltze_side;
@@ -35,7 +35,7 @@ namespace Balltze {
             balltze_side = Memory::find_signatures();
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
-                Event::set_up_events();
+                LegacyApi::Event::set_up_events();
                 Features::set_up_features();
                 Plugins::set_up_plugins();
                 set_up_commands();
@@ -45,7 +45,7 @@ namespace Balltze {
             }
             else if(balltze_side == BALLTZE_SIDE_DEDICATED_SERVER) {
                 logger.info("loading dedicated server...");
-                Event::set_up_events();
+                LegacyApi::Event::set_up_events();
                 Features::set_up_features();
                 Plugins::set_up_plugins();
                 set_up_commands();

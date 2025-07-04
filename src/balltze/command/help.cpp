@@ -3,15 +3,15 @@
 #include <cstdint>
 #include <vector>
 #include <map>
-#include <balltze/engine/script.hpp>
+#include <balltze/legacy_api/engine/script.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/plugin.hpp>
 #include <balltze/command.hpp>
-#include "../event/console_command.hpp"
+#include "../legacy_api/event/console_command.hpp"
 #include "../logger.hpp"
 
 namespace Balltze {
-    using HscFunctionEntry = Engine::HscFunctionEntry;
+    using HscFunctionEntry = LegacyApi::Engine::HscFunctionEntry;
 
     extern std::vector<std::shared_ptr<Command>> commands;
 
@@ -25,15 +25,15 @@ namespace Balltze {
     static std::vector<HscFunctionEntry *> new_entries_list;
     static std::vector<std::unique_ptr<HscFunctionEntry>> new_entries_added;
 
-    static void on_console_command_event(Event::ConsoleCommandEvent &event) {
-        if(event.time == Event::EVENT_TIME_BEFORE) {
+    static void on_console_command_event(LegacyApi::Event::ConsoleCommandEvent &event) {
+        if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
             old_entry_count = *entry_count;
             old_entries = *entries_ptr_1;
 
             new_entries_list = std::vector<HscFunctionEntry *>(old_entries, old_entries + old_entry_count);
             for(const auto &command : commands) {
                 auto &new_command = new_entries_added.emplace_back(std::make_unique<HscFunctionEntry>());
-                new_command->return_type = Engine::HSC_DATA_TYPE_VOID;
+                new_command->return_type = LegacyApi::Engine::HSC_DATA_TYPE_VOID;
                 new_command->name = command->full_name();
                 new_command->help_message = command->help();
                 new_command->help_parameters = command->params_help();
@@ -73,6 +73,6 @@ namespace Balltze {
         entries_ptr_3 = reinterpret_cast<HscFunctionEntry ***>(command_list_address_3->data());
         entry_count = reinterpret_cast<std::uint16_t *>(command_list_count->data());
 
-        Event::ConsoleCommandEvent::subscribe(on_console_command_event);
+        LegacyApi::Event::ConsoleCommandEvent::subscribe(on_console_command_event);
     }
 }

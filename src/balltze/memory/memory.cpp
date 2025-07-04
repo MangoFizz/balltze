@@ -8,7 +8,7 @@
 #include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/command.hpp>
-#include <balltze/engine/core.hpp>
+#include <balltze/legacy_api/engine/core.hpp>
 #include "../logger.hpp"
 #include "codefinder.hpp"
 #include "memory.hpp"

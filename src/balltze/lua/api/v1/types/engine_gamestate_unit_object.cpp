@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/game_state.hpp>
+#include <balltze/legacy_api/engine/game_state.hpp>
 #include "../../../helpers/bitfield.hpp"
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_types.hpp"
@@ -75,101 +75,101 @@ namespace Balltze::Lua::Api::V1 {
 
     static void define_engine_unit_throwing_grenade_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitThrowingGrenadeState);
-        luacs_enum_declare_value(state, "NONE", Engine::UNIT_THROWING_GRENADE_STATE_NONE);
-        luacs_enum_declare_value(state, "BEGIN", Engine::UNIT_THROWING_GRENADE_STATE_BEGIN);
-        luacs_enum_declare_value(state, "IN_HAND", Engine::UNIT_THROWING_GRENADE_STATE_IN_HAND);
-        luacs_enum_declare_value(state, "RELEASED", Engine::UNIT_THROWING_GRENADE_STATE_RELEASED);
+        luacs_enum_declare_value(state, "NONE", LegacyApi::Engine::UNIT_THROWING_GRENADE_STATE_NONE);
+        luacs_enum_declare_value(state, "BEGIN", LegacyApi::Engine::UNIT_THROWING_GRENADE_STATE_BEGIN);
+        luacs_enum_declare_value(state, "IN_HAND", LegacyApi::Engine::UNIT_THROWING_GRENADE_STATE_IN_HAND);
+        luacs_enum_declare_value(state, "RELEASED", LegacyApi::Engine::UNIT_THROWING_GRENADE_STATE_RELEASED);
         lua_pop(state, 1);
     }
 
     static void define_engine_unit_animation_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitAnimationState);
-        luacs_enum_declare_value(state, "INVALID", Engine::UNI_ANIMATION_STATE_INVALID);
-        luacs_enum_declare_value(state, "IDLE", Engine::UNI_ANIMATION_STATE_IDLE);
-        luacs_enum_declare_value(state, "GESTURE", Engine::UNI_ANIMATION_STATE_GESTURE);
-        luacs_enum_declare_value(state, "TURN_LEFT", Engine::UNI_ANIMATION_STATE_TURN_LEFT);
-        luacs_enum_declare_value(state, "TURN_RIGHT", Engine::UNI_ANIMATION_STATE_TURN_RIGHT);
-        luacs_enum_declare_value(state, "MOVE_FRONT", Engine::UNI_ANIMATION_STATE_MOVE_FRONT);
-        luacs_enum_declare_value(state, "MOVE_BACK", Engine::UNI_ANIMATION_STATE_MOVE_BACK);
-        luacs_enum_declare_value(state, "MOVE_LEFT", Engine::UNI_ANIMATION_STATE_MOVE_LEFT);
-        luacs_enum_declare_value(state, "MOVE_RIGHT", Engine::UNI_ANIMATION_STATE_MOVE_RIGHT);
-        luacs_enum_declare_value(state, "STUNNED_FRONT", Engine::UNI_ANIMATION_STATE_STUNNED_FRONT);
-        luacs_enum_declare_value(state, "STUNNED_BACK", Engine::UNI_ANIMATION_STATE_STUNNED_BACK);
-        luacs_enum_declare_value(state, "STUNNED_LEFT", Engine::UNI_ANIMATION_STATE_STUNNED_LEFT);
-        luacs_enum_declare_value(state, "STUNNED_RIGHT", Engine::UNI_ANIMATION_STATE_STUNNED_RIGHT);
-        luacs_enum_declare_value(state, "SLIDE_FRONT", Engine::UNI_ANIMATION_STATE_SLIDE_FRONT);
-        luacs_enum_declare_value(state, "SLIDE_BACK", Engine::UNI_ANIMATION_STATE_SLIDE_BACK);
-        luacs_enum_declare_value(state, "SLIDE_LEFT", Engine::UNI_ANIMATION_STATE_SLIDE_LEFT);
-        luacs_enum_declare_value(state, "SLIDE_RIGHT", Engine::UNI_ANIMATION_STATE_SLIDE_RIGHT);
-        luacs_enum_declare_value(state, "READY", Engine::UNI_ANIMATION_STATE_READY);
-        luacs_enum_declare_value(state, "PUT_AWAY", Engine::UNI_ANIMATION_STATE_PUT_AWAY);
-        luacs_enum_declare_value(state, "AIM_STILL", Engine::UNI_ANIMATION_STATE_AIM_STILL);
-        luacs_enum_declare_value(state, "AIM_MOVE", Engine::UNI_ANIMATION_STATE_AIM_MOVE);
-        luacs_enum_declare_value(state, "AIRBORNE", Engine::UNI_ANIMATION_STATE_AIRBORNE);
-        luacs_enum_declare_value(state, "LAND_SOFT", Engine::UNI_ANIMATION_STATE_LAND_SOFT);
-        luacs_enum_declare_value(state, "LAND_HARD", Engine::UNI_ANIMATION_STATE_LAND_HARD);
-        luacs_enum_declare_value(state, "UNKNOWN23", Engine::UNI_ANIMATION_STATE_UNKNOWN23);
-        luacs_enum_declare_value(state, "AIRBORNE_DEAD", Engine::UNI_ANIMATION_STATE_AIRBORNE_DEAD);
-        luacs_enum_declare_value(state, "LANDING_DEAD", Engine::UNI_ANIMATION_STATE_LANDING_DEAD);
-        luacs_enum_declare_value(state, "SEAT_ENTER", Engine::UNI_ANIMATION_STATE_SEAT_ENTER);
-        luacs_enum_declare_value(state, "SEAT_EXIT", Engine::UNI_ANIMATION_STATE_SEAT_EXIT);
-        luacs_enum_declare_value(state, "CUSTOM_ANIMATION", Engine::UNI_ANIMATION_STATE_CUSTOM_ANIMATION);
-        luacs_enum_declare_value(state, "IMPULSE", Engine::UNI_ANIMATION_STATE_IMPULSE);
-        luacs_enum_declare_value(state, "MELEE", Engine::UNI_ANIMATION_STATE_MELEE);
-        luacs_enum_declare_value(state, "MELEE_AIRBORNE", Engine::UNI_ANIMATION_STATE_MELEE_AIRBORNE);
-        luacs_enum_declare_value(state, "MELEE_CONTINUOUS", Engine::UNI_ANIMATION_STATE_MELEE_CONTINUOUS);
-        luacs_enum_declare_value(state, "THROW_GRENADE", Engine::UNI_ANIMATION_STATE_THROW_GRENADE);
-        luacs_enum_declare_value(state, "RESSURECT_FRONT", Engine::UNI_ANIMATION_STATE_RESSURECT_FRONT);
-        luacs_enum_declare_value(state, "RESSURECT_BACK", Engine::UNI_ANIMATION_STATE_RESSURECT_BACK);
-        luacs_enum_declare_value(state, "FEEDING", Engine::UNI_ANIMATION_STATE_FEEDING);
-        luacs_enum_declare_value(state, "SURPRISE_FRONT", Engine::UNI_ANIMATION_STATE_SURPRISE_FRONT);
-        luacs_enum_declare_value(state, "SURPRISE_BACK", Engine::UNI_ANIMATION_STATE_SURPRISE_BACK);
-        luacs_enum_declare_value(state, "LEAP_START", Engine::UNI_ANIMATION_STATE_LEAP_START);
-        luacs_enum_declare_value(state, "LEAP_AIRBORNE", Engine::UNI_ANIMATION_STATE_LEAP_AIRBORNE);
-        luacs_enum_declare_value(state, "LEAP_MELEE", Engine::UNI_ANIMATION_STATE_LEAP_MELEE);
-        luacs_enum_declare_value(state, "UNKNOWN42", Engine::UNI_ANIMATION_STATE_UNKNOWN42);
-        luacs_enum_declare_value(state, "BERSERK", Engine::UNI_ANIMATION_STATE_BERSERK);
-        luacs_enum_declare_value(state, "YELO_SEAT_BOARDING", Engine::UNI_ANIMATION_STATE_YELO_SEAT_BOARDING);
-        luacs_enum_declare_value(state, "YELO_SEAT_EJECTING", Engine::UNI_ANIMATION_STATE_YELO_SEAT_EJECTING);
-        luacs_enum_declare_value(state, "YELO_MOUNTING", Engine::UNI_ANIMATION_STATE_YELO_MOUNTING);
-        luacs_enum_declare_value(state, "YELO_TRANSFORMING", Engine::UNI_ANIMATION_STATE_YELO_TRANSFORMING);
+        luacs_enum_declare_value(state, "INVALID", LegacyApi::Engine::UNI_ANIMATION_STATE_INVALID);
+        luacs_enum_declare_value(state, "IDLE", LegacyApi::Engine::UNI_ANIMATION_STATE_IDLE);
+        luacs_enum_declare_value(state, "GESTURE", LegacyApi::Engine::UNI_ANIMATION_STATE_GESTURE);
+        luacs_enum_declare_value(state, "TURN_LEFT", LegacyApi::Engine::UNI_ANIMATION_STATE_TURN_LEFT);
+        luacs_enum_declare_value(state, "TURN_RIGHT", LegacyApi::Engine::UNI_ANIMATION_STATE_TURN_RIGHT);
+        luacs_enum_declare_value(state, "MOVE_FRONT", LegacyApi::Engine::UNI_ANIMATION_STATE_MOVE_FRONT);
+        luacs_enum_declare_value(state, "MOVE_BACK", LegacyApi::Engine::UNI_ANIMATION_STATE_MOVE_BACK);
+        luacs_enum_declare_value(state, "MOVE_LEFT", LegacyApi::Engine::UNI_ANIMATION_STATE_MOVE_LEFT);
+        luacs_enum_declare_value(state, "MOVE_RIGHT", LegacyApi::Engine::UNI_ANIMATION_STATE_MOVE_RIGHT);
+        luacs_enum_declare_value(state, "STUNNED_FRONT", LegacyApi::Engine::UNI_ANIMATION_STATE_STUNNED_FRONT);
+        luacs_enum_declare_value(state, "STUNNED_BACK", LegacyApi::Engine::UNI_ANIMATION_STATE_STUNNED_BACK);
+        luacs_enum_declare_value(state, "STUNNED_LEFT", LegacyApi::Engine::UNI_ANIMATION_STATE_STUNNED_LEFT);
+        luacs_enum_declare_value(state, "STUNNED_RIGHT", LegacyApi::Engine::UNI_ANIMATION_STATE_STUNNED_RIGHT);
+        luacs_enum_declare_value(state, "SLIDE_FRONT", LegacyApi::Engine::UNI_ANIMATION_STATE_SLIDE_FRONT);
+        luacs_enum_declare_value(state, "SLIDE_BACK", LegacyApi::Engine::UNI_ANIMATION_STATE_SLIDE_BACK);
+        luacs_enum_declare_value(state, "SLIDE_LEFT", LegacyApi::Engine::UNI_ANIMATION_STATE_SLIDE_LEFT);
+        luacs_enum_declare_value(state, "SLIDE_RIGHT", LegacyApi::Engine::UNI_ANIMATION_STATE_SLIDE_RIGHT);
+        luacs_enum_declare_value(state, "READY", LegacyApi::Engine::UNI_ANIMATION_STATE_READY);
+        luacs_enum_declare_value(state, "PUT_AWAY", LegacyApi::Engine::UNI_ANIMATION_STATE_PUT_AWAY);
+        luacs_enum_declare_value(state, "AIM_STILL", LegacyApi::Engine::UNI_ANIMATION_STATE_AIM_STILL);
+        luacs_enum_declare_value(state, "AIM_MOVE", LegacyApi::Engine::UNI_ANIMATION_STATE_AIM_MOVE);
+        luacs_enum_declare_value(state, "AIRBORNE", LegacyApi::Engine::UNI_ANIMATION_STATE_AIRBORNE);
+        luacs_enum_declare_value(state, "LAND_SOFT", LegacyApi::Engine::UNI_ANIMATION_STATE_LAND_SOFT);
+        luacs_enum_declare_value(state, "LAND_HARD", LegacyApi::Engine::UNI_ANIMATION_STATE_LAND_HARD);
+        luacs_enum_declare_value(state, "UNKNOWN23", LegacyApi::Engine::UNI_ANIMATION_STATE_UNKNOWN23);
+        luacs_enum_declare_value(state, "AIRBORNE_DEAD", LegacyApi::Engine::UNI_ANIMATION_STATE_AIRBORNE_DEAD);
+        luacs_enum_declare_value(state, "LANDING_DEAD", LegacyApi::Engine::UNI_ANIMATION_STATE_LANDING_DEAD);
+        luacs_enum_declare_value(state, "SEAT_ENTER", LegacyApi::Engine::UNI_ANIMATION_STATE_SEAT_ENTER);
+        luacs_enum_declare_value(state, "SEAT_EXIT", LegacyApi::Engine::UNI_ANIMATION_STATE_SEAT_EXIT);
+        luacs_enum_declare_value(state, "CUSTOM_ANIMATION", LegacyApi::Engine::UNI_ANIMATION_STATE_CUSTOM_ANIMATION);
+        luacs_enum_declare_value(state, "IMPULSE", LegacyApi::Engine::UNI_ANIMATION_STATE_IMPULSE);
+        luacs_enum_declare_value(state, "MELEE", LegacyApi::Engine::UNI_ANIMATION_STATE_MELEE);
+        luacs_enum_declare_value(state, "MELEE_AIRBORNE", LegacyApi::Engine::UNI_ANIMATION_STATE_MELEE_AIRBORNE);
+        luacs_enum_declare_value(state, "MELEE_CONTINUOUS", LegacyApi::Engine::UNI_ANIMATION_STATE_MELEE_CONTINUOUS);
+        luacs_enum_declare_value(state, "THROW_GRENADE", LegacyApi::Engine::UNI_ANIMATION_STATE_THROW_GRENADE);
+        luacs_enum_declare_value(state, "RESSURECT_FRONT", LegacyApi::Engine::UNI_ANIMATION_STATE_RESSURECT_FRONT);
+        luacs_enum_declare_value(state, "RESSURECT_BACK", LegacyApi::Engine::UNI_ANIMATION_STATE_RESSURECT_BACK);
+        luacs_enum_declare_value(state, "FEEDING", LegacyApi::Engine::UNI_ANIMATION_STATE_FEEDING);
+        luacs_enum_declare_value(state, "SURPRISE_FRONT", LegacyApi::Engine::UNI_ANIMATION_STATE_SURPRISE_FRONT);
+        luacs_enum_declare_value(state, "SURPRISE_BACK", LegacyApi::Engine::UNI_ANIMATION_STATE_SURPRISE_BACK);
+        luacs_enum_declare_value(state, "LEAP_START", LegacyApi::Engine::UNI_ANIMATION_STATE_LEAP_START);
+        luacs_enum_declare_value(state, "LEAP_AIRBORNE", LegacyApi::Engine::UNI_ANIMATION_STATE_LEAP_AIRBORNE);
+        luacs_enum_declare_value(state, "LEAP_MELEE", LegacyApi::Engine::UNI_ANIMATION_STATE_LEAP_MELEE);
+        luacs_enum_declare_value(state, "UNKNOWN42", LegacyApi::Engine::UNI_ANIMATION_STATE_UNKNOWN42);
+        luacs_enum_declare_value(state, "BERSERK", LegacyApi::Engine::UNI_ANIMATION_STATE_BERSERK);
+        luacs_enum_declare_value(state, "YELO_SEAT_BOARDING", LegacyApi::Engine::UNI_ANIMATION_STATE_YELO_SEAT_BOARDING);
+        luacs_enum_declare_value(state, "YELO_SEAT_EJECTING", LegacyApi::Engine::UNI_ANIMATION_STATE_YELO_SEAT_EJECTING);
+        luacs_enum_declare_value(state, "YELO_MOUNTING", LegacyApi::Engine::UNI_ANIMATION_STATE_YELO_MOUNTING);
+        luacs_enum_declare_value(state, "YELO_TRANSFORMING", LegacyApi::Engine::UNI_ANIMATION_STATE_YELO_TRANSFORMING);
         lua_pop(state, 1);
     }
 
     static void define_engine_unit_replacement_animation_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitReplacementAnimationState);
-        luacs_enum_declare_value(state, "NONE", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_NONE);
-        luacs_enum_declare_value(state, "DISARM", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_DISARM);
-        luacs_enum_declare_value(state, "WEAPON_DROP", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_DROP);
-        luacs_enum_declare_value(state, "WEAPON_READY", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_READY);
-        luacs_enum_declare_value(state, "WEAPON_PUT_AWAY", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_PUT_AWAY);
-        luacs_enum_declare_value(state, "WEAPON_RELOAD1", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_RELOAD1);
-        luacs_enum_declare_value(state, "WEAPON_RELOAD2", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_RELOAD2);
-        luacs_enum_declare_value(state, "MELEE", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_MELEE);
-        luacs_enum_declare_value(state, "THROW_GRENADE", Engine::UNIT_REPLACEMENT_ANIMATION_STATE_THROW_GRENADE);
+        luacs_enum_declare_value(state, "NONE", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_NONE);
+        luacs_enum_declare_value(state, "DISARM", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_DISARM);
+        luacs_enum_declare_value(state, "WEAPON_DROP", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_DROP);
+        luacs_enum_declare_value(state, "WEAPON_READY", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_READY);
+        luacs_enum_declare_value(state, "WEAPON_PUT_AWAY", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_PUT_AWAY);
+        luacs_enum_declare_value(state, "WEAPON_RELOAD1", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_RELOAD1);
+        luacs_enum_declare_value(state, "WEAPON_RELOAD2", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_WEAPON_RELOAD2);
+        luacs_enum_declare_value(state, "MELEE", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_MELEE);
+        luacs_enum_declare_value(state, "THROW_GRENADE", LegacyApi::Engine::UNIT_REPLACEMENT_ANIMATION_STATE_THROW_GRENADE);
         lua_pop(state, 1);
     }
 
     static void define_engine_unit_overlay_animation_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitOverlayAnimationState);
-        luacs_enum_declare_value(state, "NONE", Engine::UNIT_OVERLAY_ANIMATION_STATE_NONE);
-        luacs_enum_declare_value(state, "FIRE1", Engine::UNIT_OVERLAY_ANIMATION_STATE_FIRE1);
-        luacs_enum_declare_value(state, "FIRE2", Engine::UNIT_OVERLAY_ANIMATION_STATE_FIRE2);
-        luacs_enum_declare_value(state, "CHARGED1", Engine::UNIT_OVERLAY_ANIMATION_STATE_CHARGED1);
-        luacs_enum_declare_value(state, "CHARGED2", Engine::UNIT_OVERLAY_ANIMATION_STATE_CHARGED2);
-        luacs_enum_declare_value(state, "CHAMBER1", Engine::UNIT_OVERLAY_ANIMATION_STATE_CHAMBER1);
-        luacs_enum_declare_value(state, "CHAMBER2", Engine::UNIT_OVERLAY_ANIMATION_STATE_CHAMBER2);
+        luacs_enum_declare_value(state, "NONE", LegacyApi::Engine::UNIT_OVERLAY_ANIMATION_STATE_NONE);
+        luacs_enum_declare_value(state, "FIRE1", LegacyApi::Engine::UNIT_OVERLAY_ANIMATION_STATE_FIRE1);
+        luacs_enum_declare_value(state, "FIRE2", LegacyApi::Engine::UNIT_OVERLAY_ANIMATION_STATE_FIRE2);
+        luacs_enum_declare_value(state, "CHARGED1", LegacyApi::Engine::UNIT_OVERLAY_ANIMATION_STATE_CHARGED1);
+        luacs_enum_declare_value(state, "CHARGED2", LegacyApi::Engine::UNIT_OVERLAY_ANIMATION_STATE_CHARGED2);
+        luacs_enum_declare_value(state, "CHAMBER1", LegacyApi::Engine::UNIT_OVERLAY_ANIMATION_STATE_CHAMBER1);
+        luacs_enum_declare_value(state, "CHAMBER2", LegacyApi::Engine::UNIT_OVERLAY_ANIMATION_STATE_CHAMBER2);
         lua_pop(state, 1);
     }
 
     static void define_engine_unit_base_seat_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitBaseSeat);
-        luacs_enum_declare_value(state, "ASLEEP", Engine::UNIT_BASE_SEAT_ASLEEP);
-        luacs_enum_declare_value(state, "ALERT", Engine::UNIT_BASE_SEAT_ALERT);
-        luacs_enum_declare_value(state, "STAND", Engine::UNIT_BASE_SEAT_STAND);
-        luacs_enum_declare_value(state, "CROUCH", Engine::UNIT_BASE_SEAT_CROUCH);
-        luacs_enum_declare_value(state, "FLEE", Engine::UNIT_BASE_SEAT_FLEE);
-        luacs_enum_declare_value(state, "FLAMING", Engine::UNIT_BASE_SEAT_FLAMING);
+        luacs_enum_declare_value(state, "ASLEEP", LegacyApi::Engine::UNIT_BASE_SEAT_ASLEEP);
+        luacs_enum_declare_value(state, "ALERT", LegacyApi::Engine::UNIT_BASE_SEAT_ALERT);
+        luacs_enum_declare_value(state, "STAND", LegacyApi::Engine::UNIT_BASE_SEAT_STAND);
+        luacs_enum_declare_value(state, "CROUCH", LegacyApi::Engine::UNIT_BASE_SEAT_CROUCH);
+        luacs_enum_declare_value(state, "FLEE", LegacyApi::Engine::UNIT_BASE_SEAT_FLEE);
+        luacs_enum_declare_value(state, "FLAMING", LegacyApi::Engine::UNIT_BASE_SEAT_FLAMING);
         lua_pop(state, 1);
     }
 
@@ -228,90 +228,90 @@ namespace Balltze::Lua::Api::V1 {
 
     static void define_engine_unit_speech_priority_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitSpeechPriority);
-        luacs_enum_declare_value(state, "NONE", Engine::UNIT_SPEECH_PRIORITY_NONE);
-        luacs_enum_declare_value(state, "IDLE", Engine::UNIT_SPEECH_PRIORITY_IDLE);
-        luacs_enum_declare_value(state, "PAIN", Engine::UNIT_SPEECH_PRIORITY_PAIN);
-        luacs_enum_declare_value(state, "TALK", Engine::UNIT_SPEECH_PRIORITY_TALK);
-        luacs_enum_declare_value(state, "COMMUNICATE", Engine::UNIT_SPEECH_PRIORITY_COMMUNICATE);
-        luacs_enum_declare_value(state, "SHOUT", Engine::UNIT_SPEECH_PRIORITY_SHOUT);
-        luacs_enum_declare_value(state, "SCRIPT", Engine::UNIT_SPEECH_PRIORITY_SCRIPT);
-        luacs_enum_declare_value(state, "INVOLUNTARY", Engine::UNIT_SPEECH_PRIORITY_INVOLUNTARY);
-        luacs_enum_declare_value(state, "EXLAIM", Engine::UNIT_SPEECH_PRIORITY_EXLAIM);
-        luacs_enum_declare_value(state, "SCREAM", Engine::UNIT_SPEECH_PRIORITY_SCREAM);
-        luacs_enum_declare_value(state, "DEATH", Engine::UNIT_SPEECH_PRIORITY_DEATH);
+        luacs_enum_declare_value(state, "NONE", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_NONE);
+        luacs_enum_declare_value(state, "IDLE", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_IDLE);
+        luacs_enum_declare_value(state, "PAIN", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_PAIN);
+        luacs_enum_declare_value(state, "TALK", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_TALK);
+        luacs_enum_declare_value(state, "COMMUNICATE", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_COMMUNICATE);
+        luacs_enum_declare_value(state, "SHOUT", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_SHOUT);
+        luacs_enum_declare_value(state, "SCRIPT", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_SCRIPT);
+        luacs_enum_declare_value(state, "INVOLUNTARY", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_INVOLUNTARY);
+        luacs_enum_declare_value(state, "EXLAIM", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_EXLAIM);
+        luacs_enum_declare_value(state, "SCREAM", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_SCREAM);
+        luacs_enum_declare_value(state, "DEATH", LegacyApi::Engine::UNIT_SPEECH_PRIORITY_DEATH);
         lua_pop(state, 1);
     }
 
     static void define_engine_unit_scream_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineUnitScreamType);
-        luacs_enum_declare_value(state, "FEAR", Engine::UNIT_SCREAM_TYPE_FEAR);
-        luacs_enum_declare_value(state, "ENEMY_GRENADE", Engine::UNIT_SCREAM_TYPE_ENEMY_GRENADE);
-        luacs_enum_declare_value(state, "PAIN", Engine::UNIT_SCREAM_TYPE_PAIN);
-        luacs_enum_declare_value(state, "MAIMED_LIMB", Engine::UNIT_SCREAM_TYPE_MAIMED_LIMB);
-        luacs_enum_declare_value(state, "MAIMED_HEAD", Engine::UNIT_SCREAM_TYPE_MAIMED_HEAD);
-        luacs_enum_declare_value(state, "RESSURECTION", Engine::UNIT_SCREAM_TYPE_RESSURECTION);
+        luacs_enum_declare_value(state, "FEAR", LegacyApi::Engine::UNIT_SCREAM_TYPE_FEAR);
+        luacs_enum_declare_value(state, "ENEMY_GRENADE", LegacyApi::Engine::UNIT_SCREAM_TYPE_ENEMY_GRENADE);
+        luacs_enum_declare_value(state, "PAIN", LegacyApi::Engine::UNIT_SCREAM_TYPE_PAIN);
+        luacs_enum_declare_value(state, "MAIMED_LIMB", LegacyApi::Engine::UNIT_SCREAM_TYPE_MAIMED_LIMB);
+        luacs_enum_declare_value(state, "MAIMED_HEAD", LegacyApi::Engine::UNIT_SCREAM_TYPE_MAIMED_HEAD);
+        luacs_enum_declare_value(state, "RESSURECTION", LegacyApi::Engine::UNIT_SCREAM_TYPE_RESSURECTION);
         lua_pop(state, 1);
     }
 
     static void define_engine_ai_communication_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineAiCommunicationType);
-        luacs_enum_declare_value(state, "DEATH", Engine::AI_COMMUNICATION_TYPE_DEATH);
-        luacs_enum_declare_value(state, "SPREE", Engine::AI_COMMUNICATION_TYPE_SPREE);
-        luacs_enum_declare_value(state, "HURT", Engine::AI_COMMUNICATION_TYPE_HURT);
-        luacs_enum_declare_value(state, "DAMAGE", Engine::AI_COMMUNICATION_TYPE_DAMAGE);
-        luacs_enum_declare_value(state, "SIGHTED_ENEMY", Engine::AI_COMMUNICATION_TYPE_SIGHTED_ENEMY);
-        luacs_enum_declare_value(state, "FOUND_ENEMY", Engine::AI_COMMUNICATION_TYPE_FOUND_ENEMY);
-        luacs_enum_declare_value(state, "UNEXPECTED_ENEMY", Engine::AI_COMMUNICATION_TYPE_UNEXPECTED_ENEMY);
-        luacs_enum_declare_value(state, "FOUND_DEAD_FRIEND", Engine::AI_COMMUNICATION_TYPE_FOUND_DEAD_FRIEND);
-        luacs_enum_declare_value(state, "ALLEGIANCE_CHANGED", Engine::AI_COMMUNICATION_TYPE_ALLEGIANCE_CHANGED);
-        luacs_enum_declare_value(state, "GRENADE_THROWING", Engine::AI_COMMUNICATION_TYPE_GRENADE_THROWING);
-        luacs_enum_declare_value(state, "GRENADE_STARTLE", Engine::AI_COMMUNICATION_TYPE_GRENADE_STARTLE);
-        luacs_enum_declare_value(state, "GRENADE_SIGHTED", Engine::AI_COMMUNICATION_TYPE_GRENADE_SIGHTED);
-        luacs_enum_declare_value(state, "GRENADE_DANGER", Engine::AI_COMMUNICATION_TYPE_GRENADE_DANGER);
-        luacs_enum_declare_value(state, "LOST_CONTACT", Engine::AI_COMMUNICATION_TYPE_LOST_CONTACT);
-        luacs_enum_declare_value(state, "BLOCKED", Engine::AI_COMMUNICATION_TYPE_BLOCKED);
-        luacs_enum_declare_value(state, "ALERT_NONCOMBAT", Engine::AI_COMMUNICATION_TYPE_ALERT_NONCOMBAT);
-        luacs_enum_declare_value(state, "SEARCH_START", Engine::AI_COMMUNICATION_TYPE_SEARCH_START);
-        luacs_enum_declare_value(state, "SEARCH_QUERY", Engine::AI_COMMUNICATION_TYPE_SEARCH_QUERY);
-        luacs_enum_declare_value(state, "SEARCH_REPORT", Engine::AI_COMMUNICATION_TYPE_SEARCH_REPORT);
-        luacs_enum_declare_value(state, "SEARCH_ABANDON", Engine::AI_COMMUNICATION_TYPE_SEARCH_ABANDON);
-        luacs_enum_declare_value(state, "SEARCH_GROUP_ABANDON", Engine::AI_COMMUNICATION_TYPE_SEARCH_GROUP_ABANDON);
-        luacs_enum_declare_value(state, "UNCOVER_START", Engine::AI_COMMUNICATION_TYPE_UNCOVER_START);
-        luacs_enum_declare_value(state, "ADVANCE", Engine::AI_COMMUNICATION_TYPE_ADVANCE);
-        luacs_enum_declare_value(state, "RETREAT", Engine::AI_COMMUNICATION_TYPE_RETREAT);
-        luacs_enum_declare_value(state, "COVER", Engine::AI_COMMUNICATION_TYPE_COVER);
-        luacs_enum_declare_value(state, "SIGHTED_FRIEND_PLAYER", Engine::AI_COMMUNICATION_TYPE_SIGHTED_FRIEND_PLAYER);
-        luacs_enum_declare_value(state, "SHOOTING", Engine::AI_COMMUNICATION_TYPE_SHOOTING);
-        luacs_enum_declare_value(state, "SHOOTING_VEHICLE", Engine::AI_COMMUNICATION_TYPE_SHOOTING_VEHICLE);
-        luacs_enum_declare_value(state, "SHOOTING_BERSERK", Engine::AI_COMMUNICATION_TYPE_SHOOTING_BERSERK);
-        luacs_enum_declare_value(state, "SHOOTING_GROUP", Engine::AI_COMMUNICATION_TYPE_SHOOTING_GROUP);
-        luacs_enum_declare_value(state, "SHOOTING_TRAITOR", Engine::AI_COMMUNICATION_TYPE_SHOOTING_TRAITOR);
-        luacs_enum_declare_value(state, "FLEE", Engine::AI_COMMUNICATION_TYPE_FLEE);
-        luacs_enum_declare_value(state, "FLEE_LEADER_DIED", Engine::AI_COMMUNICATION_TYPE_FLEE_LEADER_DIED);
-        luacs_enum_declare_value(state, "FLEE_IDLE", Engine::AI_COMMUNICATION_TYPE_FLEE_IDLE);
-        luacs_enum_declare_value(state, "ATTEMPTED_FLEE", Engine::AI_COMMUNICATION_TYPE_ATTEMPTED_FLEE);
-        luacs_enum_declare_value(state, "HIDING_FINISHED", Engine::AI_COMMUNICATION_TYPE_HIDING_FINISHED);
-        luacs_enum_declare_value(state, "VEHICLE_ENTRY", Engine::AI_COMMUNICATION_TYPE_VEHICLE_ENTRY);
-        luacs_enum_declare_value(state, "VEHICLE_EXIT", Engine::AI_COMMUNICATION_TYPE_VEHICLE_EXIT);
-        luacs_enum_declare_value(state, "VEHICLE_WOOHOO", Engine::AI_COMMUNICATION_TYPE_VEHICLE_WOOHOO);
-        luacs_enum_declare_value(state, "VEHICLE_SCARED", Engine::AI_COMMUNICATION_TYPE_VEHICLE_SCARED);
-        luacs_enum_declare_value(state, "VEHICLE_FALLING", Engine::AI_COMMUNICATION_TYPE_VEHICLE_FALLING);
-        luacs_enum_declare_value(state, "SURPRISE", Engine::AI_COMMUNICATION_TYPE_SURPRISE);
-        luacs_enum_declare_value(state, "BERSERK", Engine::AI_COMMUNICATION_TYPE_BERSERK);
-        luacs_enum_declare_value(state, "MELEE", Engine::AI_COMMUNICATION_TYPE_MELEE);
-        luacs_enum_declare_value(state, "DIVE", Engine::AI_COMMUNICATION_TYPE_DIVE);
-        luacs_enum_declare_value(state, "UNCONVER_EXCLAMATION", Engine::AI_COMMUNICATION_TYPE_UNCONVER_EXCLAMATION);
-        luacs_enum_declare_value(state, "FALLING", Engine::AI_COMMUNICATION_TYPE_FALLING);
-        luacs_enum_declare_value(state, "LEAP", Engine::AI_COMMUNICATION_TYPE_LEAP);
-        luacs_enum_declare_value(state, "POSTCOMBAT_ALONE", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_ALONE);
-        luacs_enum_declare_value(state, "POSTCOMBAT_UNSCATHED", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_UNSCATHED);
-        luacs_enum_declare_value(state, "POSTCOMBAT_WOUNDED", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_WOUNDED);
-        luacs_enum_declare_value(state, "POSTCOMBAT_MASSACRE", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_MASSACRE);
-        luacs_enum_declare_value(state, "POSTCOMBAT_TRIUMPH", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_TRIUMPH);
-        luacs_enum_declare_value(state, "POSTCOMBAT_CHECK_ENEMY", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_CHECK_ENEMY);
-        luacs_enum_declare_value(state, "POSTCOMBAT_CHECK_FRIEND", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_CHECK_FRIEND);
-        luacs_enum_declare_value(state, "POSTCOMBAT_SHOOT_CORPSE", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_SHOOT_CORPSE);
-        luacs_enum_declare_value(state, "POSTCOMBAT_CELEBRATE", Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_CELEBRATE);
+        luacs_enum_declare_value(state, "DEATH", LegacyApi::Engine::AI_COMMUNICATION_TYPE_DEATH);
+        luacs_enum_declare_value(state, "SPREE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SPREE);
+        luacs_enum_declare_value(state, "HURT", LegacyApi::Engine::AI_COMMUNICATION_TYPE_HURT);
+        luacs_enum_declare_value(state, "DAMAGE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_DAMAGE);
+        luacs_enum_declare_value(state, "SIGHTED_ENEMY", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SIGHTED_ENEMY);
+        luacs_enum_declare_value(state, "FOUND_ENEMY", LegacyApi::Engine::AI_COMMUNICATION_TYPE_FOUND_ENEMY);
+        luacs_enum_declare_value(state, "UNEXPECTED_ENEMY", LegacyApi::Engine::AI_COMMUNICATION_TYPE_UNEXPECTED_ENEMY);
+        luacs_enum_declare_value(state, "FOUND_DEAD_FRIEND", LegacyApi::Engine::AI_COMMUNICATION_TYPE_FOUND_DEAD_FRIEND);
+        luacs_enum_declare_value(state, "ALLEGIANCE_CHANGED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_ALLEGIANCE_CHANGED);
+        luacs_enum_declare_value(state, "GRENADE_THROWING", LegacyApi::Engine::AI_COMMUNICATION_TYPE_GRENADE_THROWING);
+        luacs_enum_declare_value(state, "GRENADE_STARTLE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_GRENADE_STARTLE);
+        luacs_enum_declare_value(state, "GRENADE_SIGHTED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_GRENADE_SIGHTED);
+        luacs_enum_declare_value(state, "GRENADE_DANGER", LegacyApi::Engine::AI_COMMUNICATION_TYPE_GRENADE_DANGER);
+        luacs_enum_declare_value(state, "LOST_CONTACT", LegacyApi::Engine::AI_COMMUNICATION_TYPE_LOST_CONTACT);
+        luacs_enum_declare_value(state, "BLOCKED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_BLOCKED);
+        luacs_enum_declare_value(state, "ALERT_NONCOMBAT", LegacyApi::Engine::AI_COMMUNICATION_TYPE_ALERT_NONCOMBAT);
+        luacs_enum_declare_value(state, "SEARCH_START", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SEARCH_START);
+        luacs_enum_declare_value(state, "SEARCH_QUERY", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SEARCH_QUERY);
+        luacs_enum_declare_value(state, "SEARCH_REPORT", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SEARCH_REPORT);
+        luacs_enum_declare_value(state, "SEARCH_ABANDON", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SEARCH_ABANDON);
+        luacs_enum_declare_value(state, "SEARCH_GROUP_ABANDON", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SEARCH_GROUP_ABANDON);
+        luacs_enum_declare_value(state, "UNCOVER_START", LegacyApi::Engine::AI_COMMUNICATION_TYPE_UNCOVER_START);
+        luacs_enum_declare_value(state, "ADVANCE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_ADVANCE);
+        luacs_enum_declare_value(state, "RETREAT", LegacyApi::Engine::AI_COMMUNICATION_TYPE_RETREAT);
+        luacs_enum_declare_value(state, "COVER", LegacyApi::Engine::AI_COMMUNICATION_TYPE_COVER);
+        luacs_enum_declare_value(state, "SIGHTED_FRIEND_PLAYER", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SIGHTED_FRIEND_PLAYER);
+        luacs_enum_declare_value(state, "SHOOTING", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SHOOTING);
+        luacs_enum_declare_value(state, "SHOOTING_VEHICLE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SHOOTING_VEHICLE);
+        luacs_enum_declare_value(state, "SHOOTING_BERSERK", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SHOOTING_BERSERK);
+        luacs_enum_declare_value(state, "SHOOTING_GROUP", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SHOOTING_GROUP);
+        luacs_enum_declare_value(state, "SHOOTING_TRAITOR", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SHOOTING_TRAITOR);
+        luacs_enum_declare_value(state, "FLEE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_FLEE);
+        luacs_enum_declare_value(state, "FLEE_LEADER_DIED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_FLEE_LEADER_DIED);
+        luacs_enum_declare_value(state, "FLEE_IDLE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_FLEE_IDLE);
+        luacs_enum_declare_value(state, "ATTEMPTED_FLEE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_ATTEMPTED_FLEE);
+        luacs_enum_declare_value(state, "HIDING_FINISHED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_HIDING_FINISHED);
+        luacs_enum_declare_value(state, "VEHICLE_ENTRY", LegacyApi::Engine::AI_COMMUNICATION_TYPE_VEHICLE_ENTRY);
+        luacs_enum_declare_value(state, "VEHICLE_EXIT", LegacyApi::Engine::AI_COMMUNICATION_TYPE_VEHICLE_EXIT);
+        luacs_enum_declare_value(state, "VEHICLE_WOOHOO", LegacyApi::Engine::AI_COMMUNICATION_TYPE_VEHICLE_WOOHOO);
+        luacs_enum_declare_value(state, "VEHICLE_SCARED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_VEHICLE_SCARED);
+        luacs_enum_declare_value(state, "VEHICLE_FALLING", LegacyApi::Engine::AI_COMMUNICATION_TYPE_VEHICLE_FALLING);
+        luacs_enum_declare_value(state, "SURPRISE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_SURPRISE);
+        luacs_enum_declare_value(state, "BERSERK", LegacyApi::Engine::AI_COMMUNICATION_TYPE_BERSERK);
+        luacs_enum_declare_value(state, "MELEE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_MELEE);
+        luacs_enum_declare_value(state, "DIVE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_DIVE);
+        luacs_enum_declare_value(state, "UNCONVER_EXCLAMATION", LegacyApi::Engine::AI_COMMUNICATION_TYPE_UNCONVER_EXCLAMATION);
+        luacs_enum_declare_value(state, "FALLING", LegacyApi::Engine::AI_COMMUNICATION_TYPE_FALLING);
+        luacs_enum_declare_value(state, "LEAP", LegacyApi::Engine::AI_COMMUNICATION_TYPE_LEAP);
+        luacs_enum_declare_value(state, "POSTCOMBAT_ALONE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_ALONE);
+        luacs_enum_declare_value(state, "POSTCOMBAT_UNSCATHED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_UNSCATHED);
+        luacs_enum_declare_value(state, "POSTCOMBAT_WOUNDED", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_WOUNDED);
+        luacs_enum_declare_value(state, "POSTCOMBAT_MASSACRE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_MASSACRE);
+        luacs_enum_declare_value(state, "POSTCOMBAT_TRIUMPH", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_TRIUMPH);
+        luacs_enum_declare_value(state, "POSTCOMBAT_CHECK_ENEMY", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_CHECK_ENEMY);
+        luacs_enum_declare_value(state, "POSTCOMBAT_CHECK_FRIEND", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_CHECK_FRIEND);
+        luacs_enum_declare_value(state, "POSTCOMBAT_SHOOT_CORPSE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_SHOOT_CORPSE);
+        luacs_enum_declare_value(state, "POSTCOMBAT_CELEBRATE", LegacyApi::Engine::AI_COMMUNICATION_TYPE_POSTCOMBAT_CELEBRATE);
         lua_pop(state, 1);
     }
 
@@ -495,9 +495,9 @@ namespace Balltze::Lua::Api::V1 {
 
     static void define_engine_biped_movement_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineBipedMovementState);
-        luacs_enum_declare_value(state, "MOVING", Engine::BIPED_MOVEMENT_STATE_MOVING);
-        luacs_enum_declare_value(state, "IDLE", Engine::BIPED_MOVEMENT_STATE_IDLE);
-        luacs_enum_declare_value(state, "GESTURING", Engine::BIPED_MOVEMENT_STATE_GESTURING);
+        luacs_enum_declare_value(state, "MOVING", LegacyApi::Engine::BIPED_MOVEMENT_STATE_MOVING);
+        luacs_enum_declare_value(state, "IDLE", LegacyApi::Engine::BIPED_MOVEMENT_STATE_IDLE);
+        luacs_enum_declare_value(state, "GESTURING", LegacyApi::Engine::BIPED_MOVEMENT_STATE_GESTURING);
         lua_pop(state, 1);
     }
 

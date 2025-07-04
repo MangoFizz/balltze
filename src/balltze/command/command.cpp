@@ -6,9 +6,9 @@
 #include <balltze/command.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
-#include <balltze/engine/core.hpp>
+#include <balltze/legacy_api/engine/core.hpp>
 #include "../config/config.hpp"
-#include "../event/console_command.hpp"
+#include "../legacy_api/event/console_command.hpp"
 #include "../plugins/loader.hpp"
 #include "../version.hpp"
 #include "../logger.hpp"
@@ -326,13 +326,13 @@ namespace Balltze {
 
         switch(res) {
             case CommandResult::COMMAND_RESULT_FAILED_NOT_ENOUGH_ARGUMENTS:
-                Engine::console_printf("Command %s failed: not enough arguments", command_name.c_str());
+                LegacyApi::Engine::console_printf("Command %s failed: not enough arguments", command_name.c_str());
                 break;
             case CommandResult::COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS:
-                Engine::console_printf("Command %s failed: too many arguments", command_name.c_str());
+                LegacyApi::Engine::console_printf("Command %s failed: too many arguments", command_name.c_str());
                 break;
             case CommandResult::COMMAND_RESULT_FAILED_ERROR:
-                Engine::console_printf("Command %s failed: error", command_name.c_str());
+                LegacyApi::Engine::console_printf("Command %s failed: error", command_name.c_str());
                 break;
             default:
                 break;
@@ -355,7 +355,7 @@ namespace Balltze {
         }
     }
 
-    static void dispatch_commands(Event::ConsoleCommandEvent &event) {
+    static void dispatch_commands(LegacyApi::Event::ConsoleCommandEvent &event) {
         static auto *unknown_command_message_print = Memory::get_signature("console_unknown_command_message_print_call");
 
         if(restore_unknown_command_message_print) {
@@ -363,7 +363,7 @@ namespace Balltze {
             restore_unknown_command_message_print = false;
         }
 
-        if(event.time == Event::EVENT_TIME_BEFORE) {
+        if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
             if(execute_command(event.context.command) != COMMAND_RESULT_FAILED_ERROR_NOT_FOUND) {
                 Memory::fill_with_nops(unknown_command_message_print->data(), 5);
                 restore_unknown_command_message_print = true;
@@ -377,11 +377,11 @@ namespace Balltze {
     void set_up_commands() {
         register_command("version", "balltze", "Prints the current version of Balltze", std::nullopt, [](int arg_count, const char **args) -> bool {
             auto version = balltze_version.to_string();
-            Engine::console_printf("Balltze version %s", version.c_str());
+            LegacyApi::Engine::console_printf("Balltze version %s", version.c_str());
             return true;
         }, false, 0, 0);
 
-        Event::ConsoleCommandEvent::subscribe(dispatch_commands, Event::EVENT_PRIORITY_DEFAULT);
+        LegacyApi::Event::ConsoleCommandEvent::subscribe(dispatch_commands, LegacyApi::Event::EVENT_PRIORITY_DEFAULT);
 
         set_up_commands_tab_completion();
         set_up_commands_help();

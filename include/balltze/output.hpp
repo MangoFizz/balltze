@@ -6,8 +6,8 @@
 #include <filesystem>
 #include <chrono>
 #include <variant>
-#include "engine/data_types.hpp"
-#include "engine/tag.hpp"
+#include "legacy_api/engine/data_types.hpp"
+#include "legacy_api/engine/tag.hpp"
 #include "api.hpp"
 
 namespace Balltze {

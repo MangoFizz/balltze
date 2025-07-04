@@ -50,7 +50,7 @@ namespace Balltze::Config {
     }
 
     ChimeraPreferences &get_chimera_preferences() noexcept {
-        static ChimeraPreferences preferences(Engine::get_path() / "chimera" / "preferences.txt");
+        static ChimeraPreferences preferences(LegacyApi::Engine::get_path() / "chimera" / "preferences.txt");
         return preferences;
     }
 }

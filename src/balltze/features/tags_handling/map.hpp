@@ -6,13 +6,13 @@
 #include <cstdint>
 #include <optional>
 #include <filesystem>
-#include <balltze/engine/map.hpp>
+#include <balltze/legacy_api/engine/map.hpp>
 
 namespace Balltze::Features {
     struct MapEntry {
         bool multiplayer;
         std::optional<std::uint32_t> crc32;
-        std::optional<Engine::CacheFileEngine> engine;
+        std::optional<LegacyApi::Engine::CacheFileEngine> engine;
         std::string name;
         std::optional<std::uint32_t> index;
         

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/map.hpp>
+#include <balltze/legacy_api/engine/map.hpp>
 #include "../../../helpers/bitfield.hpp"
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_map.hpp"
@@ -8,22 +8,22 @@
 namespace Balltze::Lua::Api::V1 {
     static void define_engine_cache_file_engine_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineCacheFileEngine);
-        luacs_enum_declare_value(state, "XBOX", Engine::CACHE_FILE_XBOX);
-        luacs_enum_declare_value(state, "DEMO", Engine::CACHE_FILE_DEMO);
-        luacs_enum_declare_value(state, "RETAIL", Engine::CACHE_FILE_RETAIL);
-        luacs_enum_declare_value(state, "CUSTOM_EDITION", Engine::CACHE_FILE_CUSTOM_EDITION);
-        luacs_enum_declare_value(state, "INVADER", Engine::CACHE_FILE_INVADER);
-        luacs_enum_declare_value(state, "DEMO_COMPRESSED", Engine::CACHE_FILE_DEMO_COMPRESSED);
-        luacs_enum_declare_value(state, "RETAIL_COMPRESSED", Engine::CACHE_FILE_RETAIL_COMPRESSED);
-        luacs_enum_declare_value(state, "CUSTOM_EDITION_COMPRESSED", Engine::CACHE_FILE_CUSTOM_EDITION_COMPRESSED);
+        luacs_enum_declare_value(state, "XBOX", LegacyApi::Engine::CACHE_FILE_XBOX);
+        luacs_enum_declare_value(state, "DEMO", LegacyApi::Engine::CACHE_FILE_DEMO);
+        luacs_enum_declare_value(state, "RETAIL", LegacyApi::Engine::CACHE_FILE_RETAIL);
+        luacs_enum_declare_value(state, "CUSTOM_EDITION", LegacyApi::Engine::CACHE_FILE_CUSTOM_EDITION);
+        luacs_enum_declare_value(state, "INVADER", LegacyApi::Engine::CACHE_FILE_INVADER);
+        luacs_enum_declare_value(state, "DEMO_COMPRESSED", LegacyApi::Engine::CACHE_FILE_DEMO_COMPRESSED);
+        luacs_enum_declare_value(state, "RETAIL_COMPRESSED", LegacyApi::Engine::CACHE_FILE_RETAIL_COMPRESSED);
+        luacs_enum_declare_value(state, "CUSTOM_EDITION_COMPRESSED", LegacyApi::Engine::CACHE_FILE_CUSTOM_EDITION_COMPRESSED);
         lua_pop(state, 1);
     }
 
     static void define_engine_map_game_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineMapGameType);
-        luacs_enum_declare_value(state, "SINGLE_PLAYER", Engine::MAP_SINGLE_PLAYER);
-        luacs_enum_declare_value(state, "MULTIPLAYER", Engine::MAP_MULTIPLAYER);
-        luacs_enum_declare_value(state, "USER_INTERFACE", Engine::MAP_USER_INTERFACE);
+        luacs_enum_declare_value(state, "SINGLE_PLAYER", LegacyApi::Engine::MAP_SINGLE_PLAYER);
+        luacs_enum_declare_value(state, "MULTIPLAYER", LegacyApi::Engine::MAP_MULTIPLAYER);
+        luacs_enum_declare_value(state, "USER_INTERFACE", LegacyApi::Engine::MAP_USER_INTERFACE);
         lua_pop(state, 1);
     }
 
@@ -42,7 +42,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_meta_engine_map_header(lua_State *state, Engine::MapHeader *data) noexcept {
+    void push_meta_engine_map_header(lua_State *state, LegacyApi::Engine::MapHeader *data) noexcept {
         luacs_newobject(state, EngineMapHeader, data);
     }
 

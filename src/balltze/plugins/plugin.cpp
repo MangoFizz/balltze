@@ -342,16 +342,16 @@ namespace Balltze::Plugins {
         return nullptr;
     }
 
-    void LuaPlugin::add_tag_import(std::string map_name_or_path, std::string tag_path, Engine::TagClassInt tag_class) {
+    void LuaPlugin::add_tag_import(std::string map_name_or_path, std::string tag_path, LegacyApi::Engine::TagClassInt tag_class) {
         if(m_tag_imports.find(map_name_or_path) == m_tag_imports.end()) {
-            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, Engine::TagClassInt>>();
+            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>();
         }
         m_tag_imports[map_name_or_path].push_back(std::make_pair(tag_path, tag_class));
     }
 
     void LuaPlugin::import_all_tags(std::string map_name_or_path) {
         if(m_tag_imports.find(map_name_or_path) == m_tag_imports.end()) {
-            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, Engine::TagClassInt>>();
+            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>();
         }
     }
 
@@ -359,7 +359,7 @@ namespace Balltze::Plugins {
         m_tag_imports.clear();
     }
 
-    std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &LuaPlugin::imported_tags() const noexcept {
+    std::map<std::string, std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>> const &LuaPlugin::imported_tags() const noexcept {
         return m_tag_imports;
     }
 

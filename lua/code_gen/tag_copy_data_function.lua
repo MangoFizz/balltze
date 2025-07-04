@@ -53,12 +53,12 @@ add([[
 #include <functional>
 #include <cstdint>
 #include <cstddef>
-#include <balltze/engine/tag.hpp>
-#include <balltze/engine/tag_definitions.hpp>
+#include <balltze/legacy_api/engine/tag.hpp>
+#include <balltze/legacy_api/engine/tag_definitions.hpp>
 
 namespace Balltze::Features {
-    using namespace Engine;
-    using namespace Engine::TagDefinitions;
+    using namespace LegacyApi::Engine;
+    using namespace LegacyApi::Engine::TagDefinitions;
 
     template<typename T>
     static void displace_offset(T &value, std::ptrdiff_t offset) {

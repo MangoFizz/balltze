@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <chrono>
-#include <balltze/events/map_load.hpp>
-#include <balltze/engine/tag.hpp>
-#include <balltze/engine/rasterizer.hpp>
+#include <balltze/legacy_api/events/map_load.hpp>
+#include <balltze/legacy_api/engine/tag.hpp>
+#include <balltze/legacy_api/engine/rasterizer.hpp>
 #include <balltze/memory.hpp>
 #include "../config/config.hpp"
 #include "../logger.hpp"
 
 namespace Balltze::Features {
-    using namespace Engine;
+    using namespace LegacyApi::Engine;
 
     static bool preload_map_textures = false;
     static std::size_t min_map_size;
 
-    static void on_map_file_load(Event::MapFileLoadEvent &event) {
-        if(event.time == Event::EVENT_TIME_BEFORE) {
+    static void on_map_file_load(LegacyApi::Event::MapFileLoadEvent &event) {
+        if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
             if(event.context.map_name != "ui") {
                 auto map_size = std::filesystem::file_size(event.context.map_path);
                 preload_map_textures = map_size > MIB_SIZE * 384;
@@ -26,8 +26,8 @@ namespace Balltze::Features {
         }
     }
 
-    static void on_map_load(Event::MapLoadEvent &event) {
-        if(event.time == Event::EVENT_TIME_AFTER && preload_map_textures) {
+    static void on_map_load(LegacyApi::Event::MapLoadEvent &event) {
+        if(event.time == LegacyApi::Event::EVENT_TIME_AFTER && preload_map_textures) {
             logger.info("Preloading map textures...");
             auto start = std::chrono::steady_clock::now();
             std::size_t count = 0;
@@ -52,16 +52,16 @@ namespace Balltze::Features {
         }
     }
 
-    Event::EventListenerHandle<Event::TickEvent> map_textures_preloading_listener;
+    LegacyApi::Event::EventListenerHandle<LegacyApi::Event::TickEvent> map_textures_preloading_listener;
 
     void set_up_map_textures_preloading() noexcept {
-        map_textures_preloading_listener = Event::TickEvent::subscribe([](Event::TickEvent &event) {
+        map_textures_preloading_listener = LegacyApi::Event::TickEvent::subscribe([](LegacyApi::Event::TickEvent &event) {
             auto &config = Config::get_config();
             auto enable = config.get<bool>("preload_map_textures.enable").value_or(false);
             if(enable) {
                 min_map_size = config.get<std::size_t>("preload_map_textures.min_map_size").value_or(384);
-                Event::MapLoadEvent::subscribe(on_map_load, Event::EVENT_PRIORITY_LOWEST);
-                Event::MapFileLoadEvent::subscribe(on_map_file_load, Event::EVENT_PRIORITY_LOWEST);
+                LegacyApi::Event::MapLoadEvent::subscribe(on_map_load, LegacyApi::Event::EVENT_PRIORITY_LOWEST);
+                LegacyApi::Event::MapFileLoadEvent::subscribe(on_map_file_load, LegacyApi::Event::EVENT_PRIORITY_LOWEST);
             }
             map_textures_preloading_listener.remove();
         });

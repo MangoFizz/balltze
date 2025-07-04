@@ -5,17 +5,17 @@
 
 #include <vector>
 #include <cstdint>
-#include "engine/data_types.hpp"
+#include "legacy_api/engine/data_types.hpp"
 
 #define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679
 #define RADIAN(degree) degree * PI / 180.0f
 #define DEGREE(radian) radian * 180.0f / PI
 
 namespace Balltze::Math {
-    using Point2D = Engine::Point2D;
-    using Point3D = Engine::Point3D;
-    using Quaternion = Engine::Quaternion;
-    using RotationMatrix = Engine::RotationMatrix;
+    using Point2D = LegacyApi::Engine::Point2D;
+    using Point3D = LegacyApi::Engine::Point3D;
+    using Quaternion = LegacyApi::Engine::Quaternion;
+    using RotationMatrix = LegacyApi::Engine::RotationMatrix;
     using Curve = std::vector<Point2D>;
 
     /**

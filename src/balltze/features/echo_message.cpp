@@ -2,9 +2,9 @@
 
 #include <optional>
 #include <balltze/command.hpp>
-#include <balltze/engine/netgame.hpp>
-#include <balltze/engine/netgame_messages.hpp>
-#include <balltze/event.hpp>
+#include <balltze/legacy_api/engine/netgame.hpp>
+#include <balltze/legacy_api/engine/netgame_messages.hpp>
+#include <balltze/legacy_api/event.hpp>
 #include "../logger.hpp"
 
 namespace Balltze::Features {
@@ -12,17 +12,17 @@ namespace Balltze::Features {
         const wchar_t *ping = L"PING";
         switch(get_balltze_side()) {
             case BALLTZE_SIDE_CLIENT: {
-                auto message = Engine::NetworkGameMessages::HudChat(Engine::NetworkGameMessages::HudChatType::CUSTOM, Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(ping));
+                auto message = LegacyApi::Engine::NetworkGameMessages::HudChat(LegacyApi::Engine::NetworkGameMessages::HudChatType::CUSTOM, LegacyApi::Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(ping));
                 char buffer[sizeof(message) + 16];
-                uint32_t size = Engine::network_game_encode_message(buffer, Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
-                Engine::network_game_client_send_message(buffer, size);
+                uint32_t size = LegacyApi::Engine::network_game_encode_message(buffer, LegacyApi::Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
+                LegacyApi::Engine::network_game_client_send_message(buffer, size);
                 break;
             }
             case BALLTZE_SIDE_DEDICATED_SERVER: {
-                auto message = Engine::NetworkGameMessages::HudChat(Engine::NetworkGameMessages::HudChatType::CUSTOM, -1, const_cast<wchar_t *>(ping));
+                auto message = LegacyApi::Engine::NetworkGameMessages::HudChat(LegacyApi::Engine::NetworkGameMessages::HudChatType::CUSTOM, -1, const_cast<wchar_t *>(ping));
                 char buffer[sizeof(message) + 16];
-                uint32_t size = Engine::network_game_encode_message(buffer, Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
-                Engine::network_game_server_send_message_to_all_machines(buffer, size, true, true, false, true, 2);
+                uint32_t size = LegacyApi::Engine::network_game_encode_message(buffer, LegacyApi::Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
+                LegacyApi::Engine::network_game_server_send_message_to_all_machines(buffer, size, true, true, false, true, 2);
                 break;
             }
         }
@@ -33,17 +33,17 @@ namespace Balltze::Features {
         const wchar_t *pong = L"PONG";
         switch(get_balltze_side()) {
             case BALLTZE_SIDE_CLIENT: {
-                auto message = Engine::NetworkGameMessages::HudChat(Engine::NetworkGameMessages::HudChatType::CUSTOM, Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(pong));
+                auto message = LegacyApi::Engine::NetworkGameMessages::HudChat(LegacyApi::Engine::NetworkGameMessages::HudChatType::CUSTOM, LegacyApi::Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(pong));
                 char buffer[sizeof(message) + 16];
-                uint32_t size = Engine::network_game_encode_message(buffer, Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
-                Engine::network_game_client_send_message(buffer, size);
+                uint32_t size = LegacyApi::Engine::network_game_encode_message(buffer, LegacyApi::Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
+                LegacyApi::Engine::network_game_client_send_message(buffer, size);
                 break;
             }
             case BALLTZE_SIDE_DEDICATED_SERVER: {
-                auto message = Engine::NetworkGameMessages::HudChat(Engine::NetworkGameMessages::HudChatType::CUSTOM, -1, const_cast<wchar_t *>(pong));
+                auto message = LegacyApi::Engine::NetworkGameMessages::HudChat(LegacyApi::Engine::NetworkGameMessages::HudChatType::CUSTOM, -1, const_cast<wchar_t *>(pong));
                 char buffer[sizeof(message) + 16];
-                uint32_t size = Engine::network_game_encode_message(buffer, Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
-                Engine::network_game_server_send_message_to_machine(machine_id, buffer, size, true, true, false, true, 2);
+                uint32_t size = LegacyApi::Engine::network_game_encode_message(buffer, LegacyApi::Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
+                LegacyApi::Engine::network_game_server_send_message_to_machine(machine_id, buffer, size, true, true, false, true, 2);
                 break;
             }
         }
@@ -55,10 +55,10 @@ namespace Balltze::Features {
     }
 
     void set_up_echo_message_command() {
-        Event::NetworkGameChatMessageEvent::subscribe([](Event::NetworkGameChatMessageEvent &event) {
+        LegacyApi::Event::NetworkGameChatMessageEvent::subscribe([](LegacyApi::Event::NetworkGameChatMessageEvent &event) {
             auto &context = event.context;
-            if(event.time == Event::EVENT_TIME_BEFORE) {
-                if(context.chat_message->msg_type == Engine::NetworkGameMessages::HudChatType::CUSTOM) {
+            if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
+                if(context.chat_message->msg_type == LegacyApi::Engine::NetworkGameMessages::HudChatType::CUSTOM) {
                     if(std::wcsncmp(context.chat_message->message, L"PING", 4) == 0) {
                         std::string msg_str;
                         size_t wstr_len = std::wcslen(context.chat_message->message);
@@ -79,7 +79,7 @@ namespace Balltze::Features {
                     }
                 }
             }
-        }, Event::EVENT_PRIORITY_HIGHEST);
+        }, LegacyApi::Event::EVENT_PRIORITY_HIGHEST);
 
         register_command("send_ping_message", "debug", "Send a ping message through the chat.", std::nullopt, ping_packet_command, false, 0, 0);
     }

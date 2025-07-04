@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include "../../../../helpers/function_table.hpp"
 #include "../../types.hpp"
 
@@ -9,7 +9,7 @@ namespace Balltze::Lua::Api::V1 {
     static int execute_script(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            push_engine_resolution(state, &Engine::get_resolution());
+            push_engine_resolution(state, &LegacyApi::Engine::get_resolution());
             return 1;
         }
         else {

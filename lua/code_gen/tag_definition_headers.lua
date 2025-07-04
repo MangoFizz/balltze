@@ -43,7 +43,7 @@ local function generateHeader(definitionName, tagDefinition, dependencies)
 #ifndef BALLTZE_API__ENGINE__TAG_DEFINITION__]] .. definitionName:upper() .. [[_HPP
 #define BALLTZE_API__ENGINE__TAG_DEFINITION__]] .. definitionName:upper() .. [[_HPP
 
-#include "../../memory.hpp"
+#include "../../../memory.hpp"
 #include "../tag.hpp"
 #include "../script.hpp"
 #include "enum.hpp"
@@ -64,7 +64,7 @@ local function generateHeader(definitionName, tagDefinition, dependencies)
 
     add([[
 
-namespace Balltze::Engine::TagDefinitions { 
+namespace Balltze::LegacyApi::Engine::TagDefinitions { 
 ]])
     
     for _, enum in ipairs(tagDefinition.enums) do
@@ -356,11 +356,11 @@ for definitionName, definition in pairs(definitions) do
 
     -- Generate little endian header
     local header = generateHeader(definitionName, definition, definitionDependencies)
-    glue.writefile(outputDirectory .. "/engine/tag_definitions/" .. definitionName .. ".hpp", header, "t")
+    glue.writefile(outputDirectory .. "/legacy_api/engine/tag_definitions/" .. definitionName .. ".hpp", header, "t")
 
     -- Generate big endian header
     local header = generateBigEndianHeader(definitionName, definition, definitionDependencies)
-    glue.writefile(outputDirectory .. "/hek/tag_definitions/" .. definitionName .. ".hpp", header, "t")
+    glue.writefile(outputDirectory .. "/legacy_api/hek/tag_definitions/" .. definitionName .. ".hpp", header, "t")
 end
 
 -- Generate header collection
@@ -371,5 +371,5 @@ for _, file in ipairs(files) do
     table.insert(headers_list, definitionName .. ".hpp")
 end
 local collection = generateHeaderCollection(headers_list)
-glue.writefile(outputDirectory .. "/engine/tag_definitions.hpp", collection, "t")
-glue.writefile(outputDirectory .. "/hek/tag_definitions.hpp", collection, "t")
+glue.writefile(outputDirectory .. "/legacy_api/engine/tag_definitions.hpp", collection, "t")
+glue.writefile(outputDirectory .. "/legacy_api/hek/tag_definitions.hpp", collection, "t")

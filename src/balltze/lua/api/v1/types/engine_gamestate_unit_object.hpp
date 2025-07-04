@@ -4,37 +4,37 @@
 #define BALLTZE__LUA__API__TYPES__ENGINE_GAMESTATE_UNIT_OBJECT_HPP
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 
 namespace Balltze::Lua::Api::V1 {
-    using EngineUnitRecentDamager = Engine::UnitRecentDamager;
-    using EngineUnitObjectFlags = Engine::UnitFlags;
-    using EngineUnitControlFlags = Engine::UnitControlFlags;
-    using EngineUnitThrowingGrenadeState = Engine::UnitThrowingGrenadeState;
-    using EngineUnitAnimationState = Engine::UnitAnimationState;
-    using EngineUnitReplacementAnimationState = Engine::UnitReplacementAnimationState;
-    using EngineUnitOverlayAnimationState = Engine::UnitOverlayAnimationState;
-    using EngineUnitBaseSeat = Engine::UnitBaseSeat;
-    using EngineUnitAnimationStateData = Engine::UnitAnimationStateData;
-    using EngineUnitAnimationFlags = Engine::UnitAnimationFlags;
-    using EngineUnitAnimationData = Engine::UnitAnimationData;
-    using EngineUnitSpeechPriority = Engine::UnitSpeechPriority;
-    using EngineUnitScreamType = Engine::UnitScreamType;
-    using EngineAiCommunicationType = Engine::AiCommunicationType;
-    using EngineAiCommunicationPacket = Engine::AiCommunicationPacket;
-    using EngineUnitSpeech = Engine::UnitSpeech;
-    using EngineUnitSpeechData = Engine::UnitSpeechData;
-    using EngineUnitControlData = Engine::UnitControlData;
-    using EngineUnitObject = Engine::UnitObject;
-    using EngineBipedObjectFlags = Engine::BipedFlags;
-    using EngineBipedMovementState = Engine::BipedMovementState;
-    using EngineBipedNetworkDelta = Engine::BipedNetworkDelta;
-    using EngineBipedNetwork = Engine::BipedNetwork;
-    using EngineBipedObject = Engine::BipedObject;
-    using EngineVehicleObjectFlags = Engine::VehicleFlags;
-    using EngineVehicleNetworkData = Engine::VehicleNetworkData;
-    using EngineVehicleNetwork = Engine::VehicleNetwork;
-    using EngineVehicleObject = Engine::VehicleObject;
+    using EngineUnitRecentDamager = LegacyApi::Engine::UnitRecentDamager;
+    using EngineUnitObjectFlags = LegacyApi::Engine::UnitFlags;
+    using EngineUnitControlFlags = LegacyApi::Engine::UnitControlFlags;
+    using EngineUnitThrowingGrenadeState = LegacyApi::Engine::UnitThrowingGrenadeState;
+    using EngineUnitAnimationState = LegacyApi::Engine::UnitAnimationState;
+    using EngineUnitReplacementAnimationState = LegacyApi::Engine::UnitReplacementAnimationState;
+    using EngineUnitOverlayAnimationState = LegacyApi::Engine::UnitOverlayAnimationState;
+    using EngineUnitBaseSeat = LegacyApi::Engine::UnitBaseSeat;
+    using EngineUnitAnimationStateData = LegacyApi::Engine::UnitAnimationStateData;
+    using EngineUnitAnimationFlags = LegacyApi::Engine::UnitAnimationFlags;
+    using EngineUnitAnimationData = LegacyApi::Engine::UnitAnimationData;
+    using EngineUnitSpeechPriority = LegacyApi::Engine::UnitSpeechPriority;
+    using EngineUnitScreamType = LegacyApi::Engine::UnitScreamType;
+    using EngineAiCommunicationType = LegacyApi::Engine::AiCommunicationType;
+    using EngineAiCommunicationPacket = LegacyApi::Engine::AiCommunicationPacket;
+    using EngineUnitSpeech = LegacyApi::Engine::UnitSpeech;
+    using EngineUnitSpeechData = LegacyApi::Engine::UnitSpeechData;
+    using EngineUnitControlData = LegacyApi::Engine::UnitControlData;
+    using EngineUnitObject = LegacyApi::Engine::UnitObject;
+    using EngineBipedObjectFlags = LegacyApi::Engine::BipedFlags;
+    using EngineBipedMovementState = LegacyApi::Engine::BipedMovementState;
+    using EngineBipedNetworkDelta = LegacyApi::Engine::BipedNetworkDelta;
+    using EngineBipedNetwork = LegacyApi::Engine::BipedNetwork;
+    using EngineBipedObject = LegacyApi::Engine::BipedObject;
+    using EngineVehicleObjectFlags = LegacyApi::Engine::VehicleFlags;
+    using EngineVehicleNetworkData = LegacyApi::Engine::VehicleNetworkData;
+    using EngineVehicleNetwork = LegacyApi::Engine::VehicleNetwork;
+    using EngineVehicleObject = LegacyApi::Engine::VehicleObject;
 
     void push_engine_unit_recent_damager(lua_State *state, EngineUnitRecentDamager *damager) noexcept;
 

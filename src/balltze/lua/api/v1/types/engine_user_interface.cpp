@@ -9,19 +9,19 @@
 namespace Balltze::Lua::Api::V1 {
     static void define_engine_widget_navigation_sound_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineWidgetNavigationSound);
-        luacs_enum_declare_value(state, "cursor", Engine::WIDGET_NAVIGATION_SOUND_CURSOR);
-        luacs_enum_declare_value(state, "back", Engine::WIDGET_NAVIGATION_SOUND_BACK);
-        luacs_enum_declare_value(state, "forward", Engine::WIDGET_NAVIGATION_SOUND_FORWARD);
-        luacs_enum_declare_value(state, "flagFailure", Engine::WIDGET_NAVIGATION_SOUND_FLAG_FAILURE);
+        luacs_enum_declare_value(state, "cursor", LegacyApi::Engine::WIDGET_NAVIGATION_SOUND_CURSOR);
+        luacs_enum_declare_value(state, "back", LegacyApi::Engine::WIDGET_NAVIGATION_SOUND_BACK);
+        luacs_enum_declare_value(state, "forward", LegacyApi::Engine::WIDGET_NAVIGATION_SOUND_FORWARD);
+        luacs_enum_declare_value(state, "flagFailure", LegacyApi::Engine::WIDGET_NAVIGATION_SOUND_FLAG_FAILURE);
         publish_enum(state, "Engine", "userInterface", "navigationSound", -1); 
         lua_pop(state, 1);
     }
 
     static void define_engine_input_device_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineInputDevice);
-        luacs_enum_declare_value(state, "keyboard", Engine::INPUT_DEVICE_KEYBOARD);
-        luacs_enum_declare_value(state, "mouse", Engine::INPUT_DEVICE_MOUSE);
-        luacs_enum_declare_value(state, "gamepad", Engine::INPUT_DEVICE_GAMEPAD);
+        luacs_enum_declare_value(state, "keyboard", LegacyApi::Engine::INPUT_DEVICE_KEYBOARD);
+        luacs_enum_declare_value(state, "mouse", LegacyApi::Engine::INPUT_DEVICE_MOUSE);
+        luacs_enum_declare_value(state, "gamepad", LegacyApi::Engine::INPUT_DEVICE_GAMEPAD);
         publish_enum(state, "Engine", "userInterface", "inputDevice", -1); 
         lua_pop(state, 1);
     }
@@ -56,12 +56,12 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_meta_engine_widget(lua_State *state, Engine::Widget *widget) noexcept {
+    void push_meta_engine_widget(lua_State *state, LegacyApi::Engine::Widget *widget) noexcept {
         luacs_newobject(state, EngineUIWidget, widget);
     }
 
-    Engine::Widget *from_meta_engine_widget(lua_State *state, int index) noexcept {
-        return reinterpret_cast<Engine::Widget *>(luacs_checkobject(state, index, "EngineUIWidget"));
+    LegacyApi::Engine::Widget *from_meta_engine_widget(lua_State *state, int index) noexcept {
+        return reinterpret_cast<LegacyApi::Engine::Widget *>(luacs_checkobject(state, index, "EngineUIWidget"));
     }
 
     static void define_engine_input_buffered_key_modifier_enum(lua_State *state) noexcept {
@@ -81,12 +81,12 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_meta_engine_input_buffered_key(lua_State *state, Engine::InputGlobals::BufferedKey *key) noexcept {
+    void push_meta_engine_input_buffered_key(lua_State *state, LegacyApi::Engine::InputGlobals::BufferedKey *key) noexcept {
         luacs_newobject(state, EngineInputBufferedKey, key);
     }
     
-    Engine::InputGlobals::BufferedKey *from_meta_engine_input_buffered_key(lua_State *state, int index) noexcept {
-        return reinterpret_cast<Engine::InputGlobals::BufferedKey *>(luacs_checkobject(state, index, "EngineInputBufferedKey"));
+    LegacyApi::Engine::InputGlobals::BufferedKey *from_meta_engine_input_buffered_key(lua_State *state, int index) noexcept {
+        return reinterpret_cast<LegacyApi::Engine::InputGlobals::BufferedKey *>(luacs_checkobject(state, index, "EngineInputBufferedKey"));
     }
 
     static void define_engine_input_mouse_button_enum(lua_State *state) noexcept {

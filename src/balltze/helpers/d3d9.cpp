@@ -154,15 +154,15 @@ namespace Balltze {
         m_is_sprite_drawn = false;
     }
 
-    static Engine::Point2D rotate_point(const Engine::Point2D &point, const Engine::Point2D &center, float angle) {
-        Engine::Point2D rotated_point;
+    static LegacyApi::Engine::Point2D rotate_point(const LegacyApi::Engine::Point2D &point, const LegacyApi::Engine::Point2D &center, float angle) {
+        LegacyApi::Engine::Point2D rotated_point;
         double rads = angle * PI / 180.0;
         rotated_point.x = center.x + (point.x - center.x) * cos(rads) - (point.y - center.y) * sin(rads);
         rotated_point.y = center.y + (point.x - center.x) * sin(rads) + (point.y - center.y) * cos(rads);
         return rotated_point;
     }
 
-    bool Sprite::draw(const Engine::Point2D *position, const Engine::Point2D *center, float angle, const Engine::Vector2D *scale, const Engine::ColorARGBInt *color) {
+    bool Sprite::draw(const LegacyApi::Engine::Point2D *position, const LegacyApi::Engine::Point2D *center, float angle, const LegacyApi::Engine::Vector2D *scale, const LegacyApi::Engine::ColorARGBInt *color) {
         if(!m_is_sprite_drawn) {
             throw std::logic_error("Call to Sprite::draw() without Sprite::begin()");
         }
@@ -172,7 +172,7 @@ namespace Balltze {
             throw std::runtime_error("Failed to get device from texture!");
         }
 
-        Engine::Rectangle2DF dest_rect;
+        LegacyApi::Engine::Rectangle2DF dest_rect;
         D3DSURFACE_DESC desc;
         m_texture->GetLevelDesc(0, &desc);
 
@@ -181,12 +181,12 @@ namespace Balltze {
         auto width = desc.Width * scale->i;
         auto height = desc.Height * scale->j;
 
-        Engine::Point2D top_left = { x, y };
-        Engine::Point2D top_right = { x + width, y };
-        Engine::Point2D bottom_left = { x, y + height };
-        Engine::Point2D bottom_right = { x + width, y + height };
+        LegacyApi::Engine::Point2D top_left = { x, y };
+        LegacyApi::Engine::Point2D top_right = { x + width, y };
+        LegacyApi::Engine::Point2D bottom_left = { x, y + height };
+        LegacyApi::Engine::Point2D bottom_right = { x + width, y + height };
 
-        Engine::Point2D final_center = { x, y };
+        LegacyApi::Engine::Point2D final_center = { x, y };
         if(center) {
             final_center = *center;
         }

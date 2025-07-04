@@ -3,8 +3,8 @@
 #include <chrono>
 #include <lua.hpp>
 #include <clipboardxx/clipboardxx.hpp>
-#include <balltze/events/render.hpp>
-#include <balltze/events/tick.hpp>
+#include <balltze/legacy_api/events/render.hpp>
+#include <balltze/legacy_api/events/tick.hpp>
 #include "../../../../plugins/loader.hpp"
 #include "../../../../logger.hpp"
 #include "../../../helpers/function_table.hpp"
@@ -231,8 +231,8 @@ namespace Balltze::Lua::Api::V1 {
     void set_misc_table(lua_State *state) noexcept {
         create_functions_table(state, "misc", misc_functions);
 
-        static auto tickHandler = Event::TickEvent::subscribe_const([](const Event::TickEvent &event) {
-            if(event.time == Event::EVENT_TIME_BEFORE) {
+        static auto tickHandler = LegacyApi::Event::TickEvent::subscribe_const([](const LegacyApi::Event::TickEvent &event) {
+            if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
                 auto plugins = Plugins::get_lua_plugins();
                 for(auto *plugin : plugins) {
                     check_timers(plugin);
@@ -240,8 +240,8 @@ namespace Balltze::Lua::Api::V1 {
             }
         });
 
-        static auto frameHandler = Event::FrameEvent::subscribe_const([](const Event::FrameEvent &event) {
-            if(event.time == Event::EVENT_TIME_AFTER) {
+        static auto frameHandler = LegacyApi::Event::FrameEvent::subscribe_const([](const LegacyApi::Event::FrameEvent &event) {
+            if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
                 auto plugins = Plugins::get_lua_plugins();
                 for(auto *plugin : plugins) {
                     check_timers(plugin);

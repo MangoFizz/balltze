@@ -269,7 +269,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int get_profiles_path(lua_State *state) {
-        lua_pushstring(state, Engine::get_path().string().c_str());
+        lua_pushstring(state, LegacyApi::Engine::get_path().string().c_str());
         return 1;
     }
 

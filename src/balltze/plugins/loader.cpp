@@ -5,12 +5,12 @@
 #include <filesystem>
 #include <memory>
 #include <balltze/command.hpp>
-#include <balltze/event.hpp>
+#include <balltze/legacy_api/event.hpp>
 #include "../logger.hpp"
 #include "loader.hpp"
 
 namespace Balltze::Plugins {
-    using namespace Event;
+    using namespace LegacyApi::Event;
 
     static std::vector<std::unique_ptr<Plugin>> plugins;
     static bool reinit_plugins_on_next_tick;

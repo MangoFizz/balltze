@@ -7,8 +7,8 @@
 #include <lua.hpp>
 #include <clipboardxx/clipboardxx.hpp>
 #include <balltze/api.hpp>
-#include <balltze/engine.hpp>
-#include <balltze/event.hpp>
+#include <balltze/legacy_api/engine.hpp>
+#include <balltze/legacy_api/event.hpp>
 #include <balltze/features.hpp>
 #include <balltze/utils.hpp>
 #include "../../../../version.hpp"
@@ -35,7 +35,7 @@ namespace Balltze::LuaLibrary {
 
     static std::vector<std::unique_ptr<Script>> scripts;
     static bool allow_tag_data_import = true;
-    static std::optional<Event::EventListenerHandle<Event::MapLoadEvent>> map_load_listener_handle;
+    static std::optional<LegacyApi::Event::EventListenerHandle<LegacyApi::Event::MapLoadEvent>> map_load_listener_handle;
 
     static Script *get_script(lua_State *state) noexcept {
         for(auto &script : scripts) {
@@ -82,9 +82,9 @@ namespace Balltze::LuaLibrary {
             std::string map_name = luaL_checkstring(state, 1);
             std::string tag_path = luaL_checkstring(state, 2);
             const char *tag_class_name = luaL_checkstring(state, 3);
-            auto tag_class = Engine::tag_class_from_string(tag_class_name);
+            auto tag_class = LegacyApi::Engine::tag_class_from_string(tag_class_name);
 
-            if(tag_class == Engine::TAG_CLASS_NULL) {
+            if(tag_class == LegacyApi::Engine::TAG_CLASS_NULL) {
                 luaL_error(state, "invalid tag class in balltze import_tag_data function");
             }
 
@@ -103,31 +103,31 @@ namespace Balltze::LuaLibrary {
     static int lua_unit_enter_vehicle(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 3) {
-            Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
-            Engine::ObjectHandle vehicle_handle(luaL_checkinteger(state, 2));
+            LegacyApi::Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
+            LegacyApi::Engine::ObjectHandle vehicle_handle(luaL_checkinteger(state, 2));
             // TODO Add support for using seat labels too instead of seat indices
             int seat_index = luaL_checkinteger(state, 3);
-            auto &object_table = Engine::get_object_table();
-            auto *unit = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(unit_handle));
-            auto *vehicle = reinterpret_cast<Engine::UnitObject *>(object_table.get_object(vehicle_handle));
+            auto &object_table = LegacyApi::Engine::get_object_table();
+            auto *unit = reinterpret_cast<LegacyApi::Engine::UnitObject *>(object_table.get_object(unit_handle));
+            auto *vehicle = reinterpret_cast<LegacyApi::Engine::UnitObject *>(object_table.get_object(vehicle_handle));
             if(!unit) {
                 return luaL_error(state, "invalid unit handle in balltze unit_enter_vehicle");
             }
-            if(!unit->type == Engine::OBJECT_TYPE_BIPED && !unit->type == Engine::OBJECT_TYPE_VEHICLE) {
+            if(!unit->type == LegacyApi::Engine::OBJECT_TYPE_BIPED && !unit->type == LegacyApi::Engine::OBJECT_TYPE_VEHICLE) {
                 return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected biped or vehicle");
             }
             if(!vehicle) {
                 return luaL_error(state, "invalid vehicle handle in balltze unit_enter_vehicle");
             }
-            if(!vehicle->type == Engine::OBJECT_TYPE_VEHICLE) {
+            if(!vehicle->type == LegacyApi::Engine::OBJECT_TYPE_VEHICLE) {
                 return luaL_error(state, "invalid object type in balltze unit_enter_vehicle, expected vehicle");
             }
-            auto vehicle_tag = Engine::get_tag(vehicle->tag_handle);
-            auto vehicle_tag_data = reinterpret_cast<Engine::TagDefinitions::Vehicle *>(vehicle_tag->data);
+            auto vehicle_tag = LegacyApi::Engine::get_tag(vehicle->tag_handle);
+            auto vehicle_tag_data = reinterpret_cast<LegacyApi::Engine::TagDefinitions::Vehicle *>(vehicle_tag->data);
             if(seat_index >= vehicle_tag_data->seats.count) {
                 return luaL_error(state, "invalid seat index in ballte unit_enter_vehicle");
             }
-            Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, vehicle_tag_data->seats.elements[seat_index].label.string);
+            LegacyApi::Engine::unit_scripting_enter_vehicle(unit_handle, vehicle_handle, vehicle_tag_data->seats.elements[seat_index].label.string);
         }
         else {
             return luaL_error(state, "invalid number of arguments in balltze unit_enter_vehicle");
@@ -138,8 +138,8 @@ namespace Balltze::LuaLibrary {
     static int lua_unit_exit_vehicle(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 1) {
-            Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
-            Engine::unit_scripting_exit_vehicle(unit_handle);
+            LegacyApi::Engine::ObjectHandle unit_handle(luaL_checkinteger(state, 1));
+            LegacyApi::Engine::unit_scripting_exit_vehicle(unit_handle);
         }
         else {
             return luaL_error(state, "invalid number of arguments in balltze unit_exit_vehicle");
@@ -182,8 +182,8 @@ namespace Balltze::LuaLibrary {
         return 0;
     }
 
-    static void on_map_load(Event::MapLoadEvent const &event) noexcept {
-        if(event.time == Event::EVENT_TIME_AFTER) {
+    static void on_map_load(LegacyApi::Event::MapLoadEvent const &event) noexcept {
+        if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
             return;
         }
         allow_tag_data_import = true;
@@ -257,7 +257,7 @@ namespace Balltze::LuaLibrary {
 
         // Subscribe to events
         if(!map_load_listener_handle) {
-            map_load_listener_handle = Event::MapLoadEvent::subscribe_const(on_map_load, Event::EVENT_PRIORITY_LOWEST);
+            map_load_listener_handle = LegacyApi::Event::MapLoadEvent::subscribe_const(on_map_load, LegacyApi::Event::EVENT_PRIORITY_LOWEST);
         }
 
         auto *script = scripts.emplace_back(std::make_unique<Script>()).get();

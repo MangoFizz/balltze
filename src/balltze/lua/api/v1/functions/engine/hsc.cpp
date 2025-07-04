@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include "../../../../helpers/function_table.hpp"
 
 namespace Balltze::Lua::Api::V1 {
@@ -9,7 +9,7 @@ namespace Balltze::Lua::Api::V1 {
         int args = lua_gettop(state);
         if(args == 1 || args == 4 || args == 5) {
             const char *script = luaL_checkstring(state, 1);
-            Engine::execute_script(script);
+            LegacyApi::Engine::execute_script(script);
             return 0;
         }
         else {

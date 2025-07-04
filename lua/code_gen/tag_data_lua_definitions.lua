@@ -60,30 +60,30 @@ add([[
 #define BALLTZE__PLUGINS__LUA__TYPES__ENGINE_TAG_DATA_HPP
 
 #include <memory>
-#include <balltze/engine/tag.hpp>
-#include <balltze/engine/tag_definitions.hpp>
+#include <balltze/legacy_api/engine/tag.hpp>
+#include <balltze/legacy_api/engine/tag_definitions.hpp>
 #include "engine_types.hpp"
 #include "engine_tag.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
 ]])
 
 for structName, _ in pairs(structs) do
     local camelCaseName = definitionParser.snakeCaseToCamelCase(structName)
     indent(1)
-    add("using Engine" .. camelCaseName .. " = Engine::TagDefinitions::" .. camelCaseName .. "; \n")
+    add("using Engine" .. camelCaseName .. " = LegacyApi::Engine::TagDefinitions::" .. camelCaseName .. "; \n")
 end
 
 for bitfieldName, _ in pairs(bitfields) do
     local camelCaseName = definitionParser.snakeCaseToCamelCase(bitfieldName)
     indent(1)
-    add("using Engine" .. camelCaseName .. " = Engine::TagDefinitions::" .. camelCaseName .. "; \n")
+    add("using Engine" .. camelCaseName .. " = LegacyApi::Engine::TagDefinitions::" .. camelCaseName .. "; \n")
 end
 
 for enumName, _ in pairs(enums) do
     local camelCaseName = definitionParser.snakeCaseToCamelCase(enumName)
     indent(1)
-    add("using Engine" .. camelCaseName .. " = Engine::TagDefinitions::" .. camelCaseName .. "; \n");
+    add("using Engine" .. camelCaseName .. " = LegacyApi::Engine::TagDefinitions::" .. camelCaseName .. "; \n");
 end
 
 add([[
@@ -109,9 +109,9 @@ add([[
 #include "../../../helpers/bitfield.hpp"
 #include "engine_tag_data.hpp"
 
-namespace Balltze::Lua {
+namespace Balltze::Lua::Api::V1 {
     #define define_tag_block(state, parentType, type) \
-        using parentType##TagBlock##type = Engine::TagBlock<Engine::TagDefinitions::type>; \
+        using parentType##TagBlock##type = LegacyApi::Engine::TagBlock<LegacyApi::Engine::TagDefinitions::type>; \
         luacs_newstruct(state, parentType##TagBlock##type); \
         luacs_unsigned_field(state, parentType##TagBlock##type, count, LUACS_FREADONLY); \
         luacs_declare_field(state, LUACS_TOBJREF, "Engine" #type, "elements", sizeof(((parentType##TagBlock##type *)0)->elements[0]), offsetof(parentType##TagBlock##type, elements), 350, LUACS_FREADONLY); \
@@ -281,7 +281,7 @@ for enumName, enum in pairs(enums) do
         local valueName = value:upper()
         local lowerCamelCase = definitionParser.snakeCaseToLowerCamelCase(value:match(sneakCaseName .. "_(.+)"))
         indent(2)
-        add("luacs_enum_declare_value(state, \"" .. lowerCamelCase .. "\", Engine::TagDefinitions::" .. valueName .. "); \n")
+        add("luacs_enum_declare_value(state, \"" .. lowerCamelCase .. "\", LegacyApi::Engine::TagDefinitions::" .. valueName .. "); \n")
     end
     indent(2)
     add("publish_enum(state, \"Engine\", \"tag\", \"" .. lowerCamelCaseName .. "\", -1); \n")
@@ -316,7 +316,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
 end
 
 add([[
-    void push_meta_engine_tag(lua_State *state, Engine::Tag *tag) noexcept {
+    void push_meta_engine_tag(lua_State *state, LegacyApi::Engine::Tag *tag) noexcept {
         switch(tag->primary_class) {
 ]])
 
@@ -328,7 +328,7 @@ for _, class in ipairs(definitionParser.tagClasses) do
         classCamelCaseName = "TagCollectionTag"
     end
     indent(3)
-    add("case Engine::TAG_CLASS_" .. classEnumName .. ": \n");
+    add("case LegacyApi::Engine::TAG_CLASS_" .. classEnumName .. ": \n");
     indent(4)
     add("luacs_newobject1(state, \"Engine" .. classCamelCaseName .. "Tag\", tag); \n");
     indent(4)

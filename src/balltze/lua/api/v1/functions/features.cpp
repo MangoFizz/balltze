@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine/tag.hpp>
-#include <balltze/events/map_load.hpp>
+#include <balltze/legacy_api/engine/tag.hpp>
+#include <balltze/legacy_api/events/map_load.hpp>
 #include <balltze/features.hpp>
 #include "../../../../features/tags_handling/map.hpp"
 #include "../../../../plugins/loader.hpp"
@@ -22,7 +22,7 @@ namespace Balltze::Lua::Api::V1 {
             auto map_path = luaL_checkstring(state, 1);
             auto *tag_path = luaL_checkstring(state, 2);
             auto tag_class = get_tag_class(state, 3);
-            if(tag_class == Engine::TagClassInt::TAG_CLASS_NULL) {
+            if(tag_class == LegacyApi::Engine::TagClassInt::TAG_CLASS_NULL) {
                 return luaL_error(state, "invalid tag class in function Balltze.features.importTagFromMap.");
             }
 
@@ -113,14 +113,14 @@ namespace Balltze::Lua::Api::V1 {
 
         int args = lua_gettop(state);
         if(args == 1 || args == 2) {
-            Engine::TagHandle tag_handle;
+            LegacyApi::Engine::TagHandle tag_handle;
             if(args == 1 && (lua_isnumber(state, 1) || lua_istable(state, 1) || lua_isuserdata(state, 1))) {
                 auto handle = get_engine_resource_handle(state, 1);
                 if(!handle || handle->is_null()) {
                     return luaL_error(state, "Invalid tag handle in function Balltze.features.reloadTagData.");
                 }
                 tag_handle = *handle;
-                auto *tag = Engine::get_tag(tag_handle);
+                auto *tag = LegacyApi::Engine::get_tag(tag_handle);
                 if(!tag) {
                     return luaL_error(state, "Could not find tag in function Balltze.features.reloadTagData.");
                 }
@@ -128,8 +128,8 @@ namespace Balltze::Lua::Api::V1 {
             else {
                 const char *tag_path = luaL_checkstring(state, 1);
                 auto *tag_class_string = luaL_checkstring(state, 2);
-                Engine::TagClassInt tag_class_int = Engine::tag_class_from_string(tag_class_string);
-                auto *tag = Engine::get_tag(tag_path, tag_class_int);
+                LegacyApi::Engine::TagClassInt tag_class_int = LegacyApi::Engine::tag_class_from_string(tag_class_string);
+                auto *tag = LegacyApi::Engine::get_tag(tag_path, tag_class_int);
                 if(tag) {
                     tag_handle = tag->handle;
                 }
@@ -228,7 +228,7 @@ namespace Balltze::Lua::Api::V1 {
             auto map_path = luaL_checkstring(state, 1);
             auto tag_path = luaL_checkstring(state, 2);
             auto tag_class_string = luaL_checkstring(state, 3);
-            auto tag_class_int = Engine::tag_class_from_string(tag_class_string);
+            auto tag_class_int = LegacyApi::Engine::tag_class_from_string(tag_class_string);
             try {
                 auto *tag = Features::get_imported_tag(map_path, tag_path, tag_class_int);
                 push_meta_engine_tag(state, tag);
@@ -243,8 +243,8 @@ namespace Balltze::Lua::Api::V1 {
         }
     }
 
-    static void on_map_load(Event::MapLoadEvent &event) {
-        if(event.time == Event::EVENT_TIME_AFTER) {
+    static void on_map_load(LegacyApi::Event::MapLoadEvent &event) {
+        if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
             return;
         }
         auto plugins = Plugins::get_lua_plugins();
@@ -298,6 +298,6 @@ namespace Balltze::Lua::Api::V1 {
 
     void set_features_table(lua_State *state) noexcept {
         create_functions_table(state, "features", features_functions);
-        Event::MapLoadEvent::subscribe(on_map_load, Event::EVENT_PRIORITY_LOWEST);
+        LegacyApi::Event::MapLoadEvent::subscribe(on_map_load, LegacyApi::Event::EVENT_PRIORITY_LOWEST);
     }
 }

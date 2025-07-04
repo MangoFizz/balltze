@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
-#include <balltze/engine/core.hpp>
+#include <balltze/legacy_api/engine/core.hpp>
 #include <fmt/chrono.h>
 #include <fmt/core.h>
 #include <fmt/os.h>
@@ -45,7 +45,7 @@ namespace Balltze {
         }
     }
 
-    static Engine::ColorARGB color_for_log_level(Logger::LogLevel level) noexcept {
+    static LegacyApi::Engine::ColorARGB color_for_log_level(Logger::LogLevel level) noexcept {
         switch(level) {
             case Logger::LOG_LEVEL_DEBUG:
                 return {0.65, 1.0, 1.0, 1.0};
@@ -241,7 +241,7 @@ namespace Balltze {
         if(!content.empty()) {
             auto color = color_for_log_level(stream.m_level);
             auto text = fmt::format(fmt::runtime(stream.m_ingame_format), name, content);
-            Engine::console_print(text, color);
+            LegacyApi::Engine::console_print(text, color);
         }
     }
 }

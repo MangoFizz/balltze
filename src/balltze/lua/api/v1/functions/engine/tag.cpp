@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include "../../../../helpers/function_table.hpp"
 #include "../../types.hpp"
 
@@ -9,7 +9,7 @@ namespace Balltze::Lua::Api::V1 {
     static int engine_get_tag_data_header(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            auto tag_data_header = Engine::get_tag_data_header();
+            auto tag_data_header = LegacyApi::Engine::get_tag_data_header();
             
             lua_newtable(state);
 
@@ -47,12 +47,12 @@ namespace Balltze::Lua::Api::V1 {
             return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTag.");
         }
 
-        Engine::Tag *tag_entry = nullptr;
+        LegacyApi::Engine::Tag *tag_entry = nullptr;
         if(lua_type(state, 1) == LUA_TSTRING) {
             const char *tag_path = luaL_checkstring(state, 1);
             auto tag_class = get_tag_class(state, 2);
-            if(tag_class != Engine::TagClassInt::TAG_CLASS_NULL) {
-                tag_entry = Engine::get_tag(tag_path, tag_class);
+            if(tag_class != LegacyApi::Engine::TagClassInt::TAG_CLASS_NULL) {
+                tag_entry = LegacyApi::Engine::get_tag(tag_path, tag_class);
             }
             else {
                 return luaL_error(state, "invalid tag class in function Engine.tag.getTag.");
@@ -64,10 +64,10 @@ namespace Balltze::Lua::Api::V1 {
                 return luaL_error(state, "Invalid tag handle in function Engine.tag.getTag.");
             }
             if(tag_handle->id != 0) {
-                tag_entry = Engine::get_tag(*tag_handle);
+                tag_entry = LegacyApi::Engine::get_tag(*tag_handle);
             }
             else {
-                tag_entry = Engine::get_tag(tag_handle->index);
+                tag_entry = LegacyApi::Engine::get_tag(tag_handle->index);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Balltze::Lua::Api::V1 {
         int args = lua_gettop(state);
         if(args == 1 || args == 2) {
             std::optional<std::string> path_keyword;
-            std::optional<Engine::TagClassInt> tag_class;
+            std::optional<LegacyApi::Engine::TagClassInt> tag_class;
             if(args >= 1 && !lua_isnil(state, 1)) {
                 if(lua_isstring(state, 1)) {
                     path_keyword = luaL_checkstring(state, 1); 
@@ -97,7 +97,7 @@ namespace Balltze::Lua::Api::V1 {
             if(args == 2 && !lua_isnil(state, 2)) {
                 tag_class = get_tag_class(state, 2);
             }
-            auto tags = Engine::find_tags(path_keyword, tag_class);
+            auto tags = LegacyApi::Engine::find_tags(path_keyword, tag_class);
             lua_newtable(state);
             for(std::size_t i = 0; i < tags.size(); i++) {
                 push_meta_engine_tag(state, tags[i]);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/game_state.hpp>
+#include <balltze/legacy_api/engine/game_state.hpp>
 #include "../../../helpers/bitfield.hpp"
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_types.hpp"

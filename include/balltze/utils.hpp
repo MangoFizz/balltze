@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <intrin.h>
 #include <cstdio>
-#include "engine/core.hpp"
+#include "legacy_api/engine/core.hpp"
 #include "api.hpp"
 
 namespace Balltze {

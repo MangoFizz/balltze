@@ -2,11 +2,11 @@
 
 #include <cstring>
 #include <balltze/config.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include "map.hpp"
 
 namespace Balltze::Features {
-    using namespace Engine;
+    using namespace LegacyApi::Engine;
 
     static constexpr const char *tmp_format = "tmp_%zu.map";
 
@@ -48,7 +48,7 @@ namespace Balltze::Features {
                 std::filesystem::create_directory(*path);
             }
             else {
-                path = Engine::get_path() / "chimera" / std::filesystem::path("maps");
+                path = LegacyApi::Engine::get_path() / "chimera" / std::filesystem::path("maps");
             }
         }
         return *path;
@@ -65,7 +65,7 @@ namespace Balltze::Features {
     std::filesystem::path path_for_tmp(std::size_t tmp) noexcept {
         char tmp_name[64];
         std::snprintf(tmp_name, sizeof(tmp_name), tmp_format, tmp);
-        return Engine::get_path() / "chimera" / "tmp" / tmp_name;
+        return LegacyApi::Engine::get_path() / "chimera" / "tmp" / tmp_name;
     }
 
     bool same_string_case_insensitive(const char *a, const char *b) noexcept {

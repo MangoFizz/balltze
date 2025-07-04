@@ -10,7 +10,7 @@
 #include <utility>
 #include <windows.h>
 #include <lua.hpp>
-#include <balltze/engine/tag.hpp>
+#include <balltze/legacy_api/engine/tag.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/plugin.hpp>
 
@@ -80,7 +80,7 @@ namespace Balltze::Plugins {
     private:
         lua_State *m_state;
         std::vector<std::unique_ptr<Logger>> m_loggers;
-        std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> m_tag_imports;
+        std::map<std::string, std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>> m_tag_imports;
 
         void set_up_directory();
         void update_metadata();
@@ -92,10 +92,10 @@ namespace Balltze::Plugins {
         void add_logger(std::string name);
         void remove_logger(std::string name);
         Logger *get_logger(std::string name) noexcept;
-        void add_tag_import(std::string map_name_or_path, std::string tag_path, Engine::TagClassInt tag_class);
+        void add_tag_import(std::string map_name_or_path, std::string tag_path, LegacyApi::Engine::TagClassInt tag_class);
         void import_all_tags(std::string map_name_or_path);
         void clear_tag_imports() noexcept;
-        std::map<std::string, std::vector<std::pair<std::string, Engine::TagClassInt>>> const &imported_tags() const noexcept;
+        std::map<std::string, std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>> const &imported_tags() const noexcept;
         void print_traceback();
         std::string get_error_message();
         bool initialized() const noexcept;

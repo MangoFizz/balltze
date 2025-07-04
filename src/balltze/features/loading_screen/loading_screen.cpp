@@ -12,15 +12,15 @@
 #include <balltze/command.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/memory.hpp>
-#include <balltze/event.hpp>
-#include <balltze/engine/rasterizer.hpp>
+#include <balltze/legacy_api/event.hpp>
+#include <balltze/legacy_api/engine/rasterizer.hpp>
 #include <balltze/helpers/d3d9.hpp>
 #include <balltze/helpers/resources.hpp>
 #include <impl/rasterizer/rasterizer_dx9_render_target.h>
 #include <impl/interface/loading_screen.h>
 #include "../../config/config.hpp"
 #include "../../config/chimera_preferences.hpp"
-#include "../../event/console_command.hpp"
+#include "../../legacy_api/event/console_command.hpp"
 #include "../../output/video.hpp"
 #include "../../logger.hpp"
 #include "../../resources.hpp"
@@ -97,7 +97,7 @@ namespace Balltze::Features {
         last_alpha_value = alpha;
     }
 
-    static void update_d3d9_device(Event::D3D9EndSceneEvent &event) {
+    static void update_d3d9_device(LegacyApi::Event::D3D9EndSceneEvent &event) {
         if(!device) {
             device = event.context.device;
         }
@@ -120,7 +120,7 @@ namespace Balltze::Features {
         }
     }
 
-    static void on_device_reset(Event::D3D9DeviceResetEvent &event) {
+    static void on_device_reset(LegacyApi::Event::D3D9DeviceResetEvent &event) {
         if(texture) {
             texture->Release();
             texture = nullptr;
@@ -155,13 +155,13 @@ namespace Balltze::Features {
 
                 // Continue rendering loading screen until map_load_thread is done
                 while(!map_load_thread_done) {
-                    if(!Engine::network_game_is_server() && Engine::network_game_is_client() && std::chrono::steady_clock::now() - timestamp > 3s) {
+                    if(!LegacyApi::Engine::network_game_is_server() && LegacyApi::Engine::network_game_is_client() && std::chrono::steady_clock::now() - timestamp > 3s) {
                         logger.debug("Sending chat message to prevent the server from timing out...");
                         const wchar_t *wort = L"wort wort wort";
-                        auto message = Engine::NetworkGameMessages::HudChat(Engine::NetworkGameMessages::HudChatType::CUSTOM, Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(wort));
+                        auto message = LegacyApi::Engine::NetworkGameMessages::HudChat(LegacyApi::Engine::NetworkGameMessages::HudChatType::CUSTOM, LegacyApi::Engine::network_game_get_local_rcon_id(), const_cast<wchar_t *>(wort));
                         char buffer[sizeof(message) + std::wcslen(wort) * 2];
-                        uint32_t size = Engine::network_game_encode_message(buffer, Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
-                        Engine::network_game_client_send_message(buffer, size);
+                        uint32_t size = LegacyApi::Engine::network_game_encode_message(buffer, LegacyApi::Engine::NETWORK_GAME_MESSAGE_TYPE_HUD_CHAT, &message);
+                        LegacyApi::Engine::network_game_client_send_message(buffer, size);
                         timestamp = std::chrono::steady_clock::now();
                     }
 
@@ -227,8 +227,8 @@ namespace Balltze::Features {
             return;
         }
 
-        Event::D3D9EndSceneEvent::subscribe(update_d3d9_device, Event::EVENT_PRIORITY_HIGHEST);
-        Event::D3D9DeviceResetEvent::subscribe(on_device_reset, Event::EVENT_PRIORITY_HIGHEST);
+        LegacyApi::Event::D3D9EndSceneEvent::subscribe(update_d3d9_device, LegacyApi::Event::EVENT_PRIORITY_HIGHEST);
+        LegacyApi::Event::D3D9DeviceResetEvent::subscribe(on_device_reset, LegacyApi::Event::EVENT_PRIORITY_HIGHEST);
 
         auto behavior_flags_sig = Memory::get_signature("d3d9_device_behavior_flags");
         auto load_map_function_sig = Memory::get_signature("load_map_function");

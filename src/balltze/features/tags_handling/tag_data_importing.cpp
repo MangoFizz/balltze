@@ -10,10 +10,10 @@
 #include <numeric>
 #include <optional>
 
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include <balltze/utils.hpp>
 #include <balltze/command.hpp>
-#include <balltze/event.hpp>
+#include <balltze/legacy_api/event.hpp>
 #include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
@@ -25,8 +25,8 @@
 
 namespace Balltze::Features {
     namespace fs = std::filesystem;
-    using namespace Engine;
-    using namespace Engine::TagDefinitions;
+    using namespace LegacyApi::Engine;
+    using namespace LegacyApi::Engine::TagDefinitions;
 
     class VirtualTagData;
     class MapCache;
@@ -246,11 +246,11 @@ namespace Balltze::Features {
          * Get tag entry of the original tag for a tag copy
          */
         Tag *get_original_tag_for_copy(TagHandle tag_copy_handle) {
-            auto *tag_copy = Engine::get_tag(tag_copy_handle);
+            auto *tag_copy = LegacyApi::Engine::get_tag(tag_copy_handle);
             for(auto &[original_tag_handle, copies] : m_tags_copies) {
                 for(auto &copy : copies) {
                     if(copy == tag_copy_handle) {
-                        return Engine::get_tag(original_tag_handle);
+                        return LegacyApi::Engine::get_tag(original_tag_handle);
                     }
                 }
             }
@@ -267,9 +267,9 @@ namespace Balltze::Features {
             for(auto &[original_tag_handle, copies] : m_tags_copies) {
                 if(original_tag_handle == original_tag_handle) {
                     for(auto &copy : copies) {
-                        auto *original_tag = Engine::get_tag(original_tag_handle);
+                        auto *original_tag = LegacyApi::Engine::get_tag(original_tag_handle);
                         auto copy_path = std::string(original_tag->path) + "\\" + name;
-                        auto *tag = Engine::get_tag(copy);
+                        auto *tag = LegacyApi::Engine::get_tag(copy);
                         if(tag->path == copy_path) {
                             return tag;
                         }
@@ -494,7 +494,7 @@ namespace Balltze::Features {
         }
 
         std::optional<TagHandle> get_origin_tag_handle(TagHandle handle) {
-            auto *tag = Engine::get_tag(handle);
+            auto *tag = LegacyApi::Engine::get_tag(handle);
             for(auto &[origin_handle, virtual_handle] : m_tag_handles_translations) {
                 if(handle == virtual_handle) {
                     auto *origin_tag = this->get_raw_tag(origin_handle);
@@ -514,7 +514,7 @@ namespace Balltze::Features {
          */
         Tag *get_tag(std::string const &tag_path, TagClassInt tag_class) {
             for(auto &[origin_handle, tag_handle] : m_tag_handles_translations) {
-                auto *tag = Engine::get_tag(tag_handle);
+                auto *tag = LegacyApi::Engine::get_tag(tag_handle);
                 if(std::strcmp(tag->path, tag_path.c_str()) == 0 && tag->primary_class == tag_class) {
                     return tag;
                 }
@@ -595,13 +595,13 @@ namespace Balltze::Features {
         virtual_tag_data->update_tag_data_header();
     }
 
-    void on_map_file_load(Event::MapFileLoadEvent const &event) {
+    void on_map_file_load(LegacyApi::Event::MapFileLoadEvent const &event) {
         // Get map file path
         map_file_path = event.context.map_path; 
     }
 
-    void prepare_to_load_map(Event::MapLoadEvent const &event) {
-        if(event.time == Event::EVENT_TIME_BEFORE) {
+    void prepare_to_load_map(LegacyApi::Event::MapLoadEvent const &event) {
+        if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
             logger.info("Preparing to load map {}", map_file_path.string());
             preloaded_secondary_maps_cache.clear();
         }
@@ -615,7 +615,7 @@ namespace Balltze::Features {
         return file_path;
     }
 
-    void on_read_map_file_data(Event::MapFileDataReadEvent &event) {      
+    void on_read_map_file_data(LegacyApi::Event::MapFileDataReadEvent &event) {      
         if(secondary_maps_cache.empty() && preloaded_secondary_maps_cache.empty()) {
             return;
         }
@@ -628,7 +628,7 @@ namespace Balltze::Features {
         auto file_path = get_path_from_file_handle(file_descriptor);
         auto file_name = file_path.filename();
 
-        if(event.time == Event::EVENT_TIME_BEFORE) {
+        if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
             if(!map_cache || file_name.stem().string() != map_cache->name()) {
                 return;
             }
@@ -918,9 +918,9 @@ namespace Balltze::Features {
     }
 
     void set_up_tag_data_importing() {
-        Event::MapLoadEvent::subscribe_const(prepare_to_load_map, Event::EVENT_PRIORITY_HIGHEST);
-        Event::MapFileLoadEvent::subscribe(on_map_file_load);
-        Event::MapFileDataReadEvent::subscribe(on_read_map_file_data);
+        LegacyApi::Event::MapLoadEvent::subscribe_const(prepare_to_load_map, LegacyApi::Event::EVENT_PRIORITY_HIGHEST);
+        LegacyApi::Event::MapFileLoadEvent::subscribe(on_map_file_load);
+        LegacyApi::Event::MapFileDataReadEvent::subscribe(on_read_map_file_data);
 
         auto *model_data_buffer_alloc_sig = Memory::get_signature("model_data_buffer_alloc");
         auto *model_data_buffer_alloc_hook = Memory::hook_function(model_data_buffer_alloc_sig->data(), on_model_data_buffer_alloc_asm);
@@ -930,7 +930,7 @@ namespace Balltze::Features {
 
         register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps.", std::nullopt, [](int arg_count, const char **args) -> bool {
             if(secondary_maps_cache.empty()) {
-                Engine::console_print("No tag data imported from secondary maps");
+                LegacyApi::Engine::console_print("No tag data imported from secondary maps");
                 return true;
             }
             std::string maps_loaded;
@@ -943,11 +943,11 @@ namespace Balltze::Features {
                     maps_loaded += ", ";
                 }
             }
-            Engine::console_print("Imported tag data summary");
-            Engine::console_printf("Maps loaded: %zu (%s)", secondary_maps_cache.size(), maps_loaded.c_str());
-            Engine::console_printf("Tags imported: %zu", virtual_tag_data->tag_count() - map_cache->tag_data_header().tag_count);
-            Engine::console_printf("Imported tag data size: %.2fMiB / %.2fMiB", static_cast<float>(virtual_tag_data->tag_data_size()) / MIB_SIZE, static_cast<float>(virtual_tag_data_buffer_size) / MIB_SIZE);
-            Engine::console_printf("Cached tag data size: %.2f MiB", static_cast<float>(cached_data) / MIB_SIZE);
+            LegacyApi::Engine::console_print("Imported tag data summary");
+            LegacyApi::Engine::console_printf("Maps loaded: %zu (%s)", secondary_maps_cache.size(), maps_loaded.c_str());
+            LegacyApi::Engine::console_printf("Tags imported: %zu", virtual_tag_data->tag_count() - map_cache->tag_data_header().tag_count);
+            LegacyApi::Engine::console_printf("Imported tag data size: %.2fMiB / %.2fMiB", static_cast<float>(virtual_tag_data->tag_data_size()) / MIB_SIZE, static_cast<float>(virtual_tag_data_buffer_size) / MIB_SIZE);
+            LegacyApi::Engine::console_printf("Cached tag data size: %.2f MiB", static_cast<float>(cached_data) / MIB_SIZE);
             return true;
         }, false, 0, 0);
     }

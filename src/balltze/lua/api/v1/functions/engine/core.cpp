@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
+#include <balltze/legacy_api/engine.hpp>
 #include "../../../../helpers/function_table.hpp"
 #include "../../../../libraries/lfmt.hpp"
 #include "../../types.hpp"
@@ -30,7 +30,7 @@ namespace Balltze::Lua::Api::V1 {
                 message = luaL_checkstring(state, 1); 
             }
 
-            Engine::console_print(message, *color);
+            LegacyApi::Engine::console_print(message, *color);
         }
         else {
             return luaL_error(state, "Invalid number of arguments in function Engine.core.consolePrint.");
@@ -41,7 +41,7 @@ namespace Balltze::Lua::Api::V1 {
     static int engine_get_tick_count(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args == 0) {
-            lua_pushinteger(state, Engine::get_tick_count());
+            lua_pushinteger(state, LegacyApi::Engine::get_tick_count());
             return 1;
         }
         else {

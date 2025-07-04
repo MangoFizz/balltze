@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/event.hpp>
+#include <balltze/legacy_api/event.hpp>
 #include <balltze/hook.hpp>
 #include "../config/config.hpp"
 
 namespace Balltze::Features {
-    using namespace Event;
+    using namespace LegacyApi::Event;
 
     // workaround for config files not working at startup. FIXME.
     static std::optional<int> get_pause_button() {
@@ -22,11 +22,11 @@ namespace Balltze::Features {
         return pause_button;
     }
 
-    static void on_game_input(Event::GameInputEvent &event) {
-        if(event.context.device == Engine::INPUT_DEVICE_GAMEPAD) {
+    static void on_game_input(LegacyApi::Event::GameInputEvent &event) {
+        if(event.context.device == LegacyApi::Engine::INPUT_DEVICE_GAMEPAD) {
             auto pause_button = get_pause_button();
             if(pause_button && pause_button == event.context.button.gamepad_button && !event.context.mapped) {
-                Engine::open_pause_menu();
+                LegacyApi::Engine::open_pause_menu();
             }
         }
     }

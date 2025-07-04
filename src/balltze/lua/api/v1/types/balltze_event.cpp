@@ -8,12 +8,12 @@
 #include "engine_tag_data.hpp"
 #include "balltze_event.hpp"
 
-namespace Balltze::Event {
+namespace Balltze::LegacyApi::Event {
     extern std::string ip_address_int_to_string(std::uint32_t address_int) noexcept;
 }
 
 namespace Balltze::Lua::Api::V1 {
-    using namespace Event;
+    using namespace LegacyApi::Event;
 
     static void define_balltze_camera_event_context_struct(lua_State *state) noexcept {
         luacs_newstruct(state, BalltzeCameraEventContext);
@@ -235,7 +235,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_extref_field(state, BalltzeServerConnectEventContext, password, 0);
         luacs_declare_method(state, "formattedAddress", +[](lua_State *state) -> int {
             auto *self = luacs_to_object(state, 1, BalltzeServerConnectEventContext);
-            lua_pushstring(state, Event::ip_address_int_to_string(self->address).c_str());
+            lua_pushstring(state, LegacyApi::Event::ip_address_int_to_string(self->address).c_str());
             return 1;
         });
         lua_pop(state, 1);

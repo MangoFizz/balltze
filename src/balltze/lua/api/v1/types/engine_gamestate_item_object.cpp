@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/game_state.hpp>
+#include <balltze/legacy_api/engine/game_state.hpp>
 #include "../../../helpers/bitfield.hpp"
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_types.hpp"
@@ -40,17 +40,17 @@ namespace Balltze::Lua::Api::V1 {
 
     static void define_weapon_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineWeaponState);
-        luacs_enum_declare_value(state, "IDLE", Engine::WEAPON_STATE_IDLE);
-        luacs_enum_declare_value(state, "FIRE1", Engine::WEAPON_STATE_FIRE1);
-        luacs_enum_declare_value(state, "FIRE2", Engine::WEAPON_STATE_FIRE2);
-        luacs_enum_declare_value(state, "CHAMBER1", Engine::WEAPON_STATE_CHAMBER1);
-        luacs_enum_declare_value(state, "CHAMBER2", Engine::WEAPON_STATE_CHAMBER2);
-        luacs_enum_declare_value(state, "RELOAD1", Engine::WEAPON_STATE_RELOAD1);
-        luacs_enum_declare_value(state, "RELOAD2", Engine::WEAPON_STATE_RELOAD2);
-        luacs_enum_declare_value(state, "CHARGED1", Engine::WEAPON_STATE_CHARGED1);
-        luacs_enum_declare_value(state, "CHARGED2", Engine::WEAPON_STATE_CHARGED2);
-        luacs_enum_declare_value(state, "READY", Engine::WEAPON_STATE_READY);
-        luacs_enum_declare_value(state, "PUT_AWAY", Engine::WEAPON_STATE_PUT_AWAY);
+        luacs_enum_declare_value(state, "IDLE", LegacyApi::Engine::WEAPON_STATE_IDLE);
+        luacs_enum_declare_value(state, "FIRE1", LegacyApi::Engine::WEAPON_STATE_FIRE1);
+        luacs_enum_declare_value(state, "FIRE2", LegacyApi::Engine::WEAPON_STATE_FIRE2);
+        luacs_enum_declare_value(state, "CHAMBER1", LegacyApi::Engine::WEAPON_STATE_CHAMBER1);
+        luacs_enum_declare_value(state, "CHAMBER2", LegacyApi::Engine::WEAPON_STATE_CHAMBER2);
+        luacs_enum_declare_value(state, "RELOAD1", LegacyApi::Engine::WEAPON_STATE_RELOAD1);
+        luacs_enum_declare_value(state, "RELOAD2", LegacyApi::Engine::WEAPON_STATE_RELOAD2);
+        luacs_enum_declare_value(state, "CHARGED1", LegacyApi::Engine::WEAPON_STATE_CHARGED1);
+        luacs_enum_declare_value(state, "CHARGED2", LegacyApi::Engine::WEAPON_STATE_CHARGED2);
+        luacs_enum_declare_value(state, "READY", LegacyApi::Engine::WEAPON_STATE_READY);
+        luacs_enum_declare_value(state, "PUT_AWAY", LegacyApi::Engine::WEAPON_STATE_PUT_AWAY);
         lua_pop(state, 1);
     }
 
@@ -77,10 +77,10 @@ namespace Balltze::Lua::Api::V1 {
 
     static void define_weapon_magazine_state_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineGameStateWeaponMagazineState);
-        luacs_enum_declare_value(state, "IDLE", Engine::WEAPON_MAGAZINE_STATE_IDLE);
-        luacs_enum_declare_value(state, "CHAMBERING_START", Engine::WEAPON_MAGAZINE_STATE_CHAMBERING_START);
-        luacs_enum_declare_value(state, "CHAMBERING_FINISH", Engine::WEAPON_MAGAZINE_STATE_CHAMBERING_FINISH);
-        luacs_enum_declare_value(state, "CHAMBERING", Engine::WEAPON_MAGAZINE_STATE_CHAMBERING);
+        luacs_enum_declare_value(state, "IDLE", LegacyApi::Engine::WEAPON_MAGAZINE_STATE_IDLE);
+        luacs_enum_declare_value(state, "CHAMBERING_START", LegacyApi::Engine::WEAPON_MAGAZINE_STATE_CHAMBERING_START);
+        luacs_enum_declare_value(state, "CHAMBERING_FINISH", LegacyApi::Engine::WEAPON_MAGAZINE_STATE_CHAMBERING_FINISH);
+        luacs_enum_declare_value(state, "CHAMBERING", LegacyApi::Engine::WEAPON_MAGAZINE_STATE_CHAMBERING);
         lua_pop(state, 1);
     }
 

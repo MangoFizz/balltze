@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <balltze/engine/game_state.hpp>
+#include <balltze/legacy_api/engine/game_state.hpp>
 #include "../../../helpers/bitfield.hpp"
 #include "../../../libraries/luacstruct.hpp"
 #include "engine_types.hpp"
@@ -8,27 +8,27 @@
 #include "engine_gamestate_object.hpp"
 
 namespace Balltze::Lua::Api::V1 {
-    Engine::ObjectType get_object_type(lua_State *state, int index) noexcept {
-        return static_cast<Engine::ObjectType>(luacs_checkenumvalue(state, index, EngineObjectType));
+    LegacyApi::Engine::ObjectType get_object_type(lua_State *state, int index) noexcept {
+        return static_cast<LegacyApi::Engine::ObjectType>(luacs_checkenumvalue(state, index, EngineObjectType));
     }
 
     static void define_engine_base_object_attachment_type_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineBaseObjectAttachmentType);
-        luacs_enum_declare_value(state, "INVALID", Engine::OBJECT_ATTACHMENT_TYPE_INVALID);
-        luacs_enum_declare_value(state, "LIGHT", Engine::OBJECT_ATTACHMENT_TYPE_LIGHT);
-        luacs_enum_declare_value(state, "LOOPING_SOUND", Engine::OBJECT_ATTACHMENT_TYPE_LOOPING_SOUND);
-        luacs_enum_declare_value(state, "EFFECT", Engine::OBJECT_ATTACHMENT_TYPE_EFFECT);
-        luacs_enum_declare_value(state, "CONTRAIL", Engine::OBJECT_ATTACHMENT_TYPE_CONTRAIL);
-        luacs_enum_declare_value(state, "PARTICLE", Engine::OBJECT_ATTACHMENT_TYPE_PARTICLE);
+        luacs_enum_declare_value(state, "INVALID", LegacyApi::Engine::OBJECT_ATTACHMENT_TYPE_INVALID);
+        luacs_enum_declare_value(state, "LIGHT", LegacyApi::Engine::OBJECT_ATTACHMENT_TYPE_LIGHT);
+        luacs_enum_declare_value(state, "LOOPING_SOUND", LegacyApi::Engine::OBJECT_ATTACHMENT_TYPE_LOOPING_SOUND);
+        luacs_enum_declare_value(state, "EFFECT", LegacyApi::Engine::OBJECT_ATTACHMENT_TYPE_EFFECT);
+        luacs_enum_declare_value(state, "CONTRAIL", LegacyApi::Engine::OBJECT_ATTACHMENT_TYPE_CONTRAIL);
+        luacs_enum_declare_value(state, "PARTICLE", LegacyApi::Engine::OBJECT_ATTACHMENT_TYPE_PARTICLE);
         lua_pop(state, 1);
     }
 
     static void define_engine_object_network_role_enum(lua_State *state) noexcept {
         luacs_newenum(state, EngineObjectNetworkRole);
-        luacs_enum_declare_value(state, "MASTER", Engine::OBJECT_NETWORK_ROLE_MASTER);
-        luacs_enum_declare_value(state, "PUPPET", Engine::OBJECT_NETWORK_ROLE_PUPPET);
-        luacs_enum_declare_value(state, "LOCALLY_CONTROLLED_PUPPET", Engine::OBJECT_NETWORK_ROLE_LOCALLY_CONTROLLED_PUPPET);
-        luacs_enum_declare_value(state, "LOCAL_ONLY", Engine::OBJECT_NETWORK_ROLE_LOCAL_ONLY);
+        luacs_enum_declare_value(state, "MASTER", LegacyApi::Engine::OBJECT_NETWORK_ROLE_MASTER);
+        luacs_enum_declare_value(state, "PUPPET", LegacyApi::Engine::OBJECT_NETWORK_ROLE_PUPPET);
+        luacs_enum_declare_value(state, "LOCALLY_CONTROLLED_PUPPET", LegacyApi::Engine::OBJECT_NETWORK_ROLE_LOCALLY_CONTROLLED_PUPPET);
+        luacs_enum_declare_value(state, "LOCAL_ONLY", LegacyApi::Engine::OBJECT_NETWORK_ROLE_LOCAL_ONLY);
         lua_pop(state, 1);
     }
 
@@ -57,7 +57,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_engine_object_flags(lua_State *state, Engine::BaseObjectFlags *flags) noexcept {
+    void push_engine_object_flags(lua_State *state, LegacyApi::Engine::BaseObjectFlags *flags) noexcept {
         luacs_newobject(state, EngineGameStateObjectFlags, flags); 
     }
 
@@ -74,7 +74,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_engine_object_network(lua_State *state, Engine::BaseObjectNetwork *network) noexcept {
+    void push_engine_object_network(lua_State *state, LegacyApi::Engine::BaseObjectNetwork *network) noexcept {
         luacs_newobject(state, EngineBaseObjectNetwork, network); 
     }
 
@@ -105,7 +105,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_engine_object_vitals_flags(lua_State *state, Engine::BaseObjectVitalsFlags *flags) noexcept {
+    void push_engine_object_vitals_flags(lua_State *state, LegacyApi::Engine::BaseObjectVitalsFlags *flags) noexcept {
         luacs_newobject(state, EngineBaseObjectVitalsFlags, flags); 
     }
 
@@ -127,7 +127,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_engine_object_vitals(lua_State *state, Engine::BaseObjectVitals *vitals) noexcept {
+    void push_engine_object_vitals(lua_State *state, LegacyApi::Engine::BaseObjectVitals *vitals) noexcept {
         luacs_newobject(state, EngineBaseObjectVitals, vitals); 
     }
 
@@ -139,7 +139,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_engine_object_attachments_data(lua_State *state, Engine::BaseObjectAttachmentsData *data) noexcept {
+    void push_engine_object_attachments_data(lua_State *state, LegacyApi::Engine::BaseObjectAttachmentsData *data) noexcept {
         luacs_newobject(state, EngineBaseObjectAttachmentsData, data); 
     }
 
@@ -157,7 +157,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_engine_object_region_destroyeds(lua_State *state, Engine::BaseObjectRegionDestroyeds *destroyeds) noexcept {
+    void push_engine_object_region_destroyeds(lua_State *state, LegacyApi::Engine::BaseObjectRegionDestroyeds *destroyeds) noexcept {
         luacs_newobject(state, EngineBaseObjectRegionDestroyeds, destroyeds); 
     }
 
@@ -168,7 +168,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_engine_object_block_reference(lua_State *state, Engine::BaseObjectBlockReference *reference) noexcept {
+    void push_engine_object_block_reference(lua_State *state, LegacyApi::Engine::BaseObjectBlockReference *reference) noexcept {
         luacs_newobject(state, EngineBaseObjectBlockReference, reference); 
     }
 
@@ -182,7 +182,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1); 
     }
 
-    void push_engine_object_valid_out_going_functions(lua_State *state, Engine::ObjectValidOutGoingFunctions *functions) noexcept {
+    void push_engine_object_valid_out_going_functions(lua_State *state, LegacyApi::Engine::ObjectValidOutGoingFunctions *functions) noexcept {
         luacs_newobject(state, EngineObjectValidOutGoingFunctions, functions); 
     }
 
@@ -239,7 +239,7 @@ namespace Balltze::Lua::Api::V1 {
         lua_pop(state, 1);
     }
 
-    void push_engine_object(lua_State *state, Engine::BaseObject *object) noexcept {
+    void push_engine_object(lua_State *state, LegacyApi::Engine::BaseObject *object) noexcept {
         luacs_newobject(state, EngineBaseObject, object); 
     }
 

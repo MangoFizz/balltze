@@ -4,15 +4,15 @@
 #define BALLTZE__LUA__API__TYPES__ENGINE_MAP_HPP
 
 #include <lua.hpp>
-#include <balltze/engine.hpp>
-#include <balltze/event.hpp>
+#include <balltze/legacy_api/engine.hpp>
+#include <balltze/legacy_api/event.hpp>
 
 namespace Balltze::Lua::Api::V1 {
-    using EngineCacheFileEngine = Engine::CacheFileEngine;
-    using EngineMapGameType = Engine::MapGameType;
-    using EngineMapHeader = Engine::MapHeader;
+    using EngineCacheFileEngine = LegacyApi::Engine::CacheFileEngine;
+    using EngineMapGameType = LegacyApi::Engine::MapGameType;
+    using EngineMapHeader = LegacyApi::Engine::MapHeader;
 
-    void push_meta_engine_map_header(lua_State *state, Engine::MapHeader *data) noexcept;
+    void push_meta_engine_map_header(lua_State *state, LegacyApi::Engine::MapHeader *data) noexcept;
 
     void define_engine_map_types(lua_State *state) noexcept;
 }
