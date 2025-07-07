@@ -70,9 +70,23 @@ enum {
 	luastruct_new_struct_array_field(state, #field, &array_desc, offsetof(struct type, field), true, false); \
 }
 
-#define LUAS_OBJECT(state, type, data, read_only) { \
+#define LUAS_ENUM_FIELD(state, type, field, field_type, flags) { \
+	{ struct type; } \
+	{ struct field_type; } \
+	luastruct_new_struct_field(state, #field, LUAST_ENUM, #field_type, offsetof(struct type, field), flags & LUAS_FIELD_POINTER, flags & LUAS_FIELD_READONLY); \
+}
+
+#define LUAS_METHOD_FIELD(state, type, name, method) { \
+	{ struct type; } \
+	luastruct_new_struct_method(state, name, method); \
+}
+
+#define LUAS_PUSH_OBJECT(state, type, data, read_only) { \
 	{ struct type; } \
 	luastruct_new_object(state, #type, (void *)data, read_only); \
 }
+
+#define LUAS_CHECK_OBJECT(state, idx, type) \
+	luastruct_check_object(state, idx, #type); \
 
 #endif

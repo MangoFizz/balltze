@@ -13,22 +13,11 @@ static const char *ARRAY_METATABLE_NAME = "luastruct_array";
 LuastructTypeInfo *get_type_info(lua_State *state, LuastructType type, const char *type_name);
 size_t get_type_size(lua_State *state, LuastructType type, void *type_info);
 
-static int get_array_size(lua_State *state, LuastructArrayDesc *desc) {
-    if(desc->count_getter) {
-        if(desc->count_getter(state) == 0) {
-            return luaL_error(state, "Failed to get array size");
-        }
-        if(!lua_isinteger(state, -1)) {
-            return luaL_error(state, "Array size is not an integer");
-        }
-        int size = lua_tointeger(state, -1);
-        lua_pop(state, 1);
-        if(size <= 0) {
-            return luaL_error(state, "Array size is negative");
-        }
-        return size;
+static int get_array_size(lua_State *state, LuastructArray *array) {
+    if(array->array_info->count_getter) {
+        return array->array_info->count_getter(state, array);
     }
-    return desc->array_size;
+    return array->array_info->array_size;
 }
 
 int luastruct_array__index(lua_State *state) {
@@ -38,13 +27,13 @@ int luastruct_array__index(lua_State *state) {
     }
 
     int index = luaL_checkinteger(state, 2);
-    if(index < 1 || index > get_array_size(state, array->array_info)) {
+    if(index < 1 || index > get_array_size(state, array)) {
         lua_pushnil(state);
         return 1;
     }
 
     LuastructArrayDesc *array_info = array->array_info;
-    LUAS_DEBUG_MSG("Accessing index #%d of array at 0x%.8X of type \"%s\"\n", index, array->data, luastruct_name_for_type(array_info->elements_type));
+    LUAS_DEBUG_MSG("Accessing index #%d of array at 0x%.8X of type \"%s\"\n", index, array->data, luastruct_name_for_type(array_info->elements_type, array_info->elements_type_info));
     
     void *data;
     if(array_info->elements_are_pointers) {
@@ -52,6 +41,8 @@ int luastruct_array__index(lua_State *state) {
     } 
     else {
         if(array_info->elements_size == 0) {
+            printf("Array elements size is 0, calculating...\n");
+            printf("Array type: %s\n", ((LuastructTypeInfo *)array_info->elements_type_info)->name);
             array_info->elements_size = get_type_size(state, array_info->elements_type, array_info->elements_type_info);
         }
         data = array->data + (index - 1) * array_info->elements_size;
@@ -107,12 +98,12 @@ int luastruct_array__newindex(lua_State *state) {
     }
 
     int index = luaL_checkinteger(state, 2);
-    if(index < 1 || index > get_array_size(state, array->array_info)) {
+    if(index < 1 || index > get_array_size(state, array)) {
         return luaL_error(state, "Tried to set an index out of bounds: %d", index);
     }
 
     LuastructArrayDesc *array_info = array->array_info;
-    LUAS_DEBUG_MSG("Setting index #%d of array at 0x%.8X of type \"%s\"\n", index, array->data, luastruct_name_for_type(array_info->elements_type));
+    LUAS_DEBUG_MSG("Setting index #%d of array at 0x%.8X of type \"%s\"\n", index, array->data, luastruct_name_for_type(array_info->elements_type, array_info->elements_type_info));
 
     if(array_info->elements_are_readonly) {
         return luaL_error(state, "Array is read-only");
@@ -230,7 +221,7 @@ int luastruct_array__len(lua_State *state) {
         return luaL_error(state, "Array is NULL in __len method");
     }
 
-    int size = get_array_size(state, array->array_info);
+    int size = get_array_size(state, array);
     lua_pushinteger(state, size);
     return 1;
 }
@@ -246,7 +237,7 @@ int luastruct_array__next(lua_State *state) {
         index = luaL_checkinteger(state, 2);
     }
     index++;
-    if(index < 1 || index > get_array_size(state, array->array_info)) {
+    if(index < 1 || index > get_array_size(state, array)) {
         lua_pushnil(state);
         return 1;
     }
@@ -270,7 +261,7 @@ int luastruct_array__pairs(lua_State *state) {
     return 3;
 }
 
-void luastruct_new_dynamic_array_desc(lua_State *state, LuastructType type, const char *type_name, lua_CFunction count_getter, bool elements_are_pointers, bool readonly, LuastructArrayDesc *desc) {
+void luastruct_new_dynamic_array_desc(lua_State *state, LuastructType type, const char *type_name, LuastructArrayCounterFunction count_getter, bool elements_are_pointers, bool readonly, LuastructArrayDesc *desc) {
     desc->count_getter = count_getter;
     desc->array_size = 0; 
     desc->elements_type = type;
@@ -290,9 +281,11 @@ void luastruct_new_static_array_desc(lua_State *state, LuastructType type, const
     desc->elements_are_readonly = readonly;
 }
 
-int luastruct_new_array(lua_State *state, void *data, LuastructArrayDesc *array_info) {
+int luastruct_new_array(lua_State *state, void *data, void *parent, size_t offset, LuastructArrayDesc *array_info) {
     LuastructArray *array = lua_newuserdata(state, sizeof(LuastructArray));
     array->data = data;
+    array->context.parent = parent;
+    array->context.offset = offset;
     array->array_info = array_info;
 
     if(luaL_newmetatable(state, ARRAY_METATABLE_NAME) != 0) {

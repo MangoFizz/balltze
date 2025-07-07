@@ -14,6 +14,13 @@ extern "C" {
 #define LUASTRUCT_TYPENAME_LENGTH 64
 
 static const char *STRUCT_METATABLE_NAME = "luastruct_struct";
+static const char *ENUM_METATABLE_NAME = "luastruct_enum";
+static const char *ENUM_VARIANT_METATABLE_NAME = "luastruct_enum_variant";
+static const char *OBJECT_METATABLE_NAME = "luastruct_object";
+
+struct LuastructArray;
+
+typedef size_t (*LuastructArrayCounterFunction)(lua_State *L, struct LuastructArray *array);
 
 typedef enum LuastructType {
 	LUAST_STRUCT,
@@ -28,7 +35,8 @@ typedef enum LuastructType {
 	LUAST_UINT64,
 	LUAST_FLOAT,
 	LUAST_BOOL,
-	LUAST_STRING,
+	LUAST_CHAR,
+	LUAST_STRING_LITERAL, // Used for string literals (const char *), not regular strings 
 	LUAST_BITFIELD,
 	LUAST_EXTREF,
 	LUAST_OBJREF,
@@ -47,7 +55,7 @@ typedef struct LuastructArrayDesc {
 	 * This also implies that the array is dynamic and the 
 	 * way to access the elements is through a pointer.
 	 */
-	lua_CFunction count_getter; 
+	LuastructArrayCounterFunction count_getter; 
 	/**
 	 * If the count_getter is NULL then the array is static
 	 * and this field will be used to determine the size 
@@ -80,6 +88,7 @@ typedef struct LuastructStructField {
 			uint8_t offset;
 		} bitfield;
 		LuastructArrayDesc array;
+		lua_CFunction method; 
 	};
 } LuastructStructField;
 
@@ -101,6 +110,7 @@ typedef struct LuastructEnumVariant {
 	char name[LUASTRUCT_TYPENAME_LENGTH];
 	intmax_t value;
 	struct LuastructEnumVariant *next;
+	struct LuastructEnum *enum_info; // Type info for the enum variant
 } LuastructEnumVariant;
 
 typedef struct LuastructEnum {
@@ -118,8 +128,14 @@ typedef struct LuastructStructObject {
 	bool delete_on_gc;
 } LuastructStructObject;
 
+typedef struct LuastructArrayContext {
+	void *parent;
+	size_t offset;
+} LuastructArrayContext;
+
 typedef struct LuastructArray {
 	void *data;
+	LuastructArrayContext context;
 	LuastructArrayDesc *array_info;
 } LuastructArray;
 
@@ -146,6 +162,31 @@ int luastruct_new_enum(lua_State *state, const char *name, size_t size);
  * @return the number of values pushed onto the stack.
  */
 int luastruct_new_enum_variant(lua_State *state, const char *name, int32_t value);
+
+/**
+ * Get an enum type by its name.
+ * @param state Lua state.
+ * @param name Name of the enum type.
+ * @return the number of values pushed onto the stack.
+ */
+LuastructEnum *luastruct_get_enum(lua_State *state, const char *name);
+
+/**
+ * Get an enum variant by its value.
+ * @param state Lua state.
+ * @param enum_type The enum type.
+ * @param value The value of the enum variant.
+ */
+int luastruct_get_enum_variant_by_value(lua_State *state, const LuastructEnum *enum_type, int32_t value);
+
+/**
+ * Get an enum variant by its name.
+ * @param state Lua state.
+ * @param enum_type The enum type.
+ * @param name The name of the enum variant.
+ * @return the number of values pushed onto the stack.
+ */
+int luastruct_get_enum_variant_by_name(lua_State *state, const LuastructEnum *enum_type, const char *name);
 
 /**
  * Create a new struct type.
@@ -190,6 +231,14 @@ void luastruct_new_struct_field(lua_State *state, const char *name, LuastructTyp
 void luastruct_new_struct_bit_field(lua_State *state, const char *name, LuastructType type, uint32_t offset, uint32_t bit_offset, bool pointer, bool readonly);
 
 /**
+ * Creates a new method field in a struct.
+ * @param state The Lua state.
+ * @param name The name of the method.
+ * @param method A Lua C function that implements the method.
+ */
+void luastruct_new_struct_method(lua_State *state, const char *name, lua_CFunction method);
+
+/**
  * Creates a new dynamic array descriptor.
  * @param state The Lua state.
  * @param type The type of the elements in the array.
@@ -199,7 +248,7 @@ void luastruct_new_struct_bit_field(lua_State *state, const char *name, Luastruc
  * @param readonly Whether the array is read-only.
  * @param desc A pointer to the LuastructArrayDesc structure to populate with the array descriptor.
  */
-void luastruct_new_dynamic_array_desc(lua_State *state, LuastructType type, const char *type_name, lua_CFunction count_getter, bool elements_are_pointers, bool readonly, LuastructArrayDesc *desc);
+void luastruct_new_dynamic_array_desc(lua_State *state, LuastructType type, const char *type_name, LuastructArrayCounterFunction count_getter, bool elements_are_pointers, bool readonly, LuastructArrayDesc *desc);
 
 /**
  * Creates a new static array descriptor.
@@ -233,6 +282,15 @@ void luastruct_new_struct_array_field(lua_State *state, const char *name, Luastr
  * @return The number of values pushed onto the stack.
  */
 int luastruct_new_object(lua_State *state, const char *type_name, void *data, bool readonly);
+
+/**
+ * Get an object from the Lua stack.
+ * @param state Lua state.
+ * @param data Pointer to the data of the object.
+ * @param readonly Whether the object is read-only.
+ * @return The number of values pushed onto the stack.
+ */
+void *luastruct_check_object(lua_State *state, int idx, const char *type_name);
 
 #ifdef __cplusplus
 }

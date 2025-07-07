@@ -310,7 +310,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "tabThruItemListItemsNextVertical", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_NEXT_VERTICAL);
         luacs_enum_declare_value(state, "tabThruItemListItemsPrevHorizontal", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_HORIZONTAL);
         luacs_enum_declare_value(state, "tabThruItemListItemsPrevVertical", BalltzeUIWidgetListTabType::TAB_THRU_ITEM_LIST_ITEMS_PREV_VERTICAL);
-        publish_enum(state, "Balltze", "event", "uiWidgetListTabTypes", -1);
+        publish_luacstruct_enum(state, "Balltze", "event", "uiWidgetListTabTypes", -1);
         lua_pop(state, 1);
     }
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__LUA__API__V1__API_HPP
-#define BALLTZE__LUA__API__V1__API_HPP
+#ifndef BALLTZE__LUA__API__V2__API_HPP
+#define BALLTZE__LUA__API__V2__API_HPP
 
 #include <lua.hpp>
 
@@ -11,7 +11,7 @@ namespace Balltze::Lua::Api {
      * 
      * @param state The Lua state to open the API in.
      */
-    void open_balltze_api_v1(lua_State *state);
+    void open_balltze_api_v2(lua_State *state);
 }
 
 #endif

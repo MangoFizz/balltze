@@ -17,7 +17,8 @@ add_definitions(-D_WIN32_WINNT=0x0601)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Include stuff
-include(lua/code_gen/tag_definitions.cmake)
+include(lua/code_gen/legacy_tags_definitions/legacy_tags_definitions.cmake)
+include(lua/code_gen/ringworld_tags_definitions/ringworld_tags_definitions.cmake)
 include(lib/lua/lua.cmake)
 include(lib/lua_fmt/lua_fmt.cmake)
 include(lib/lua_memory_snapshot/lua_memory_snapshot.cmake)
@@ -150,6 +151,12 @@ add_library(balltze SHARED
     src/balltze/lua/api/v1/types/engine_types.cpp
     src/balltze/lua/api/v1/types/engine_user_interface.cpp
     src/balltze/lua/api/v1/types/ringworld_saved_games.cpp
+    src/balltze/lua/api/v2/functions/ringworld/tag.cpp
+    src/balltze/lua/api/v2/functions/ringworld.cpp
+    src/balltze/lua/api/v2/types/ringworld/tag_data.cpp
+    src/balltze/lua/api/v2/types/ringworld/tag.cpp
+    src/balltze/lua/api/v2/types/ringworld/types.cpp
+    src/balltze/lua/api/v2/api.cpp
     src/balltze/lua/debug/lua_state_debug.cpp
     src/balltze/lua/helpers/registry.cpp
     src/balltze/lua/helpers/table.cpp

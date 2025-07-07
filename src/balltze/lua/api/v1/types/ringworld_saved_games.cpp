@@ -27,7 +27,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "maroon", NETWORK_GAME_PLAYER_COLOR_MAROON);
         luacs_enum_declare_value(state, "salmon", NETWORK_GAME_PLAYER_COLOR_SALMON);
         luacs_enum_declare_value(state, "random", NETWORK_GAME_PLAYER_COLOR_RANDOM);
-        publish_enum(state, "Engine", "savedGames", "playerColors", -1); 
+        publish_luacstruct_enum(state, "Engine", "savedGames", "playerColors", -1); 
         lua_pop(state, 1);
     }
 
@@ -69,7 +69,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "lookRight", CONTROLS_ACTION_LOOK_RIGHT);
         luacs_enum_declare_value(state, "showRules", CONTROLS_ACTION_SHOW_RULES);
         luacs_enum_declare_value(state, "showPlayerNames", CONTROLS_ACTION_SHOW_PLAYER_NAMES);
-        publish_enum(state, "Engine", "savedGames", "playerControlsActions", -1); 
+        publish_luacstruct_enum(state, "Engine", "savedGames", "playerControlsActions", -1); 
         lua_pop(state, 1);
     }
 
@@ -184,7 +184,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_field(state, PlayerControlsKeyboardSettings, PlayerControlsAction, unknown_4, 0);
         luacs_enum_field(state, PlayerControlsKeyboardSettings, PlayerControlsAction, unknown_5, 0);
         luacs_enum_field(state, PlayerControlsKeyboardSettings, PlayerControlsAction, unknown_6, 0);
-        publish_enum(state, "Engine", "savedGames", "playerControlsKeyboardSettings", -1);
+        publish_luacstruct_enum(state, "Engine", "savedGames", "playerControlsKeyboardSettings", -1);
         lua_pop(state, 1);
     }
 
@@ -220,7 +220,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_field(state, PlayerControlsGamepadButtonsSettings, PlayerControlsAction, button_8, 0);
         luacs_enum_field(state, PlayerControlsGamepadButtonsSettings, PlayerControlsAction, button_9, 0);
         luacs_enum_field(state, PlayerControlsGamepadButtonsSettings, PlayerControlsAction, button_10, 0);
-        publish_enum(state, "Engine", "savedGames", "playerControlsGamepadButtonsSettings", -1);
+        publish_luacstruct_enum(state, "Engine", "savedGames", "playerControlsGamepadButtonsSettings", -1);
         lua_pop(state, 1);
     }
 
@@ -267,7 +267,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "button12", DINPUT_BUTTON_12);
         luacs_enum_declare_value(state, "button13", DINPUT_BUTTON_13);
         luacs_enum_declare_value(state, "button14", DINPUT_BUTTON_14);
-        publish_enum(state, "Engine", "savedGames", "directInputButtons", -1);
+        publish_luacstruct_enum(state, "Engine", "savedGames", "directInputButtons", -1);
         lua_pop(state, 1);
     }
 

@@ -12,7 +12,7 @@
 #define COLUMN_WIDTH 64  
 #define TABLE_BORDER "+----------------------------------------------------------------+"
 
-const char *luastruct_name_for_type(LuastructType type) {
+const char *luastruct_name_for_type(LuastructType type, LuastructTypeInfo *type_info) {
     switch(type) {
         case LUAST_INT8:
             return "int8";
@@ -34,11 +34,17 @@ const char *luastruct_name_for_type(LuastructType type) {
             return "float";
         case LUAST_BOOL:
             return "bool";
-        case LUAST_STRING:
+        case LUAST_STRING_LITERAL:
             return "string";
         case LUAST_STRUCT:
+            if(type_info && type_info->name[0] != '\0') {
+                return type_info->name;
+            }
             return "struct";
         case LUAST_ENUM:
+            if(type_info && type_info->name[0] != '\0') {
+                return type_info->name;
+            }
             return "enum";
         case LUAST_BITFIELD:
             return "bitfield";
@@ -79,7 +85,7 @@ void luastruct_print_registered_types(lua_State *state) {
         LuastructStruct *value = lua_touserdata(state, -1);
         
         char row[128];
-        const char *type_string = luastruct_name_for_type(value->type_info.type);
+        const char *type_string = luastruct_name_for_type(value->type_info.type, &value->type_info);
         if(value->super) {
             snprintf(row, sizeof(row), "%s %s extends %s", type_string, key, value->super->type_info.name);
         }
@@ -112,13 +118,13 @@ void luastruct_print_struct_definition(lua_State *state, const char *name) {
 
     LuastructStructField *field = st->fields;
     while(field) {
-        const char *type = luastruct_name_for_type(field->type);
+        const char *type = luastruct_name_for_type(field->type, field->type_info);
         if(field->type == LUAST_BITFIELD) {
             type = luastruct_type_for_bitfield(field->bitfield.size);
         }
         else if(field->type == LUAST_ARRAY) {
             LuastructArrayDesc *array = &field->array;
-            type = luastruct_name_for_type(array->elements_type);
+            type = luastruct_name_for_type(array->elements_type, array->elements_type_info);
         }
 
         char buffer[32];

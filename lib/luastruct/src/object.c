@@ -8,12 +8,11 @@
 #include "luastruct.h"
 #include "debug.h"
 
-static const char *OBJECT_METATABLE_NAME = "luastruct_object";
 static const char *OBJECT_REGISTRY_KEY_FORMAT = "%.8X_%s";
 static const char *OBJECT_REGISTRY_NAME = "luastruct_objects";
 
 int luastruct_get_type(lua_State *state, const char *name);
-int luastruct_new_array(lua_State *state, void *data, LuastructArrayDesc *array_info);
+int luastruct_new_array(lua_State *state, void *data, void *parent, size_t offset, LuastructArrayDesc *array_info);
 
 int luastruct_get_objects_registry(lua_State *state) {
     lua_getfield(state, LUA_REGISTRYINDEX, OBJECT_REGISTRY_NAME);
@@ -114,20 +113,47 @@ int luastruct_object__index(lua_State *state) {
                 case LUAST_BOOL:
                     lua_pushboolean(state, *(bool *)(data));
                     break;
+                case LUAST_CHAR:
+                    char str[2] = { *(char *)(data), '\0' };
+                    lua_pushstring(state, str);
+                    break;
                 case LUAST_STRUCT:
                     luastruct_new_object(state, ((LuastructTypeInfo *)field->type_info)->name, data, readonly);
                     break;
                 case LUAST_ENUM: {
                     LuastructEnum *enum_type = field->type_info;
-                    LuastructEnumVariant *variant = enum_type->variants;
-                    while(variant) {
-                        
-                        variant = variant->next;
+                    int32_t value = 0;
+                    switch(enum_type->size) {
+                        case 1:
+                            value = *(int8_t *)(data);
+                            break;
+                        case 2:
+                            value = *(int16_t *)(data);
+                            break;
+                        case 4:
+                            value = *(int32_t *)(data);
+                            break;
+                        default:
+                            LUAS_DEBUG_MSG("Invalid enum size: %d\n", enum_type->size);
+                            break;
                     }
+                    luastruct_get_enum_variant_by_value(state, enum_type, value);
                     break;
                 }
                 case LUAST_ARRAY:
-                    luastruct_new_array(state, data, &field->array);
+                    luastruct_new_array(state, data, obj->data, field->offset, &field->array);
+
+                    /**
+                     * If the array is of type char and not pointers, push it as a string.
+                     */
+                    if(field->array.elements_type == LUAST_CHAR && !field->array.elements_are_pointers) {
+                        int string_length = luaL_len(state, -1);
+                        char buffer[string_length + 1];
+                        strncpy(buffer, data, string_length);
+                        buffer[string_length] = '\0';
+                        lua_pushstring(state, buffer);
+                        lua_replace(state, -2); 
+                    }
                     break;
                 case LUAST_BITFIELD: {
                     switch(field->bitfield.size) {
@@ -145,6 +171,18 @@ int luastruct_object__index(lua_State *state) {
                     }
                     break;
                 }
+                case LUAST_METHOD: {
+                    lua_pushcfunction(state, field->method);
+                    break;
+                }
+                case LUAST_STRING_LITERAL:
+                    if(data == NULL) {
+                        lua_pushnil(state);
+                    } 
+                    else {
+                        lua_pushstring(state, *(const char **)data);
+                    }
+                    break;
                 default:
                     return luaL_error(state, "Unknown field type: %d", field->type);
             }
@@ -255,18 +293,79 @@ int luastruct_object__newindex(lua_State *state) {
                 }
                 case LUAST_ENUM: {
                     LuastructEnum *enum_type = field->type_info;
-                    switch(enum_type->size) {
-                        case LUAS_ENUM_INT8:
-                            *(int8_t *)(data) = luaL_checkinteger(state, 3);
+                    switch(lua_type(state, 3)) {
+                        case LUA_TSTRING: {
+                            const char *name = luaL_checkstring(state, 3);
+                            luastruct_get_enum_variant_by_name(state, enum_type, name);
+                            if(lua_isnil(state, -1)) {
+                                return luaL_error(state, "Invalid enum variant name: %s", name);
+                            }
+                            LuastructEnumVariant *variant = luaL_checkudata(state, -1, ENUM_VARIANT_METATABLE_NAME);
+                            LUAS_ASSERT(state, variant != NULL, "Invalid enum variant");
+                            switch(enum_type->size) {
+                                case LUAS_ENUM_INT8:
+                                    *(int8_t *)(data) = variant->value;
+                                    break;
+                                case LUAS_ENUM_INT16:
+                                    *(int16_t *)(data) = variant->value;
+                                    break;
+                                case LUAS_ENUM_INT32:
+                                    *(int32_t *)(data) = variant->value;
+                                    break;
+                                default:
+                                    LUAS_DEBUG_MSG("Invalid enum size: %d\n", enum_type->size);
+                                    break;
+                            }
+                            lua_pop(state, 1); // Pop the variant
                             break;
-                        case LUAS_ENUM_INT16:
-                            *(int16_t *)(data) = luaL_checkinteger(state, 3);
+                        }
+                        case LUA_TNUMBER: {
+                            int32_t value = luaL_checkinteger(state, 3);
+                            luastruct_get_enum_variant_by_value(state, enum_type, value);
+                            if(lua_isnil(state, -1)) {
+                                return luaL_error(state, "Invalid enum variant value: %d", value);
+                            }
+                            LuastructEnumVariant *variant = luaL_checkudata(state, -1, ENUM_VARIANT_METATABLE_NAME);
+                            LUAS_ASSERT(state, variant != NULL, "Invalid enum variant");
+                            switch(enum_type->size) {
+                                case LUAS_ENUM_INT8:
+                                    *(int8_t *)(data) = variant->value;
+                                    break;
+                                case LUAS_ENUM_INT16:
+                                    *(int16_t *)(data) = variant->value;
+                                    break;
+                                case LUAS_ENUM_INT32:
+                                    *(int32_t *)(data) = variant->value;
+                                    break;
+                            }
                             break;
-                        case LUAS_ENUM_INT32:
-                            *(int32_t *)(data) = luaL_checkinteger(state, 3);
+                        }
+                        case LUA_TUSERDATA: {
+                            LuastructEnumVariant *variant = luaL_checkudata(state, 3, ENUM_VARIANT_METATABLE_NAME);
+                            if(!variant) {
+                                return luaL_error(state, "Invalid enum variant");
+                            }
+                            if(enum_type != variant->enum_info) {
+                                return luaL_error(state, "Invalid enum variant type: expected %s, got %s", enum_type->type_info.name, variant->enum_info->type_info.name);
+                            }
+                            switch(enum_type->size) {
+                                case LUAS_ENUM_INT8:
+                                    *(int8_t *)(data) = variant->value;
+                                    break;
+                                case LUAS_ENUM_INT16:
+                                    *(int16_t *)(data) = variant->value;
+                                    break;
+                                case LUAS_ENUM_INT32:
+                                    *(int32_t *)(data) = variant->value;
+                                    break;
+                                default:
+                                    LUAS_DEBUG_MSG("Invalid enum size: %d\n", enum_type->size);
+                                    break;
+                            }
                             break;
+                        }
                         default:
-                            return luaL_error(state, "Invalid enum type");
+                            return luaL_error(state, "Invalid value type for enum: expected string or number");
                     }
                     break;
                 }
@@ -288,6 +387,10 @@ int luastruct_object__newindex(lua_State *state) {
                     }
                     break;
                 }
+                case LUAST_METHOD:
+                    return luaL_error(state, "Cannot set method field: %s", field_name);
+                case LUAST_STRING_LITERAL: 
+                    return luaL_error(state, "Cannot set string field directly: %s", field_name);
                 default:
                     return luaL_error(state, "Unknown field type: %d", field->type);
             }
@@ -403,17 +506,17 @@ int luastruct_new_object(lua_State *state, const char *type_name, void *data, bo
         return luaL_error(state, "Invalid type for object: %s", type_name);
     }
 
-    if(luastruct_get_object(state, data, readonly) != 0) {
-        LuastructStructObject *obj = lua_touserdata(state, -1);
-        LuastructTypeInfo *obj_type_info = obj->type;
-        if(!obj->invalid) {
-            if(obj_type_info->type != type_info->type) {
-                return luaL_error(state, "An object of a different type already exists at this address: %s != %s", obj_type_info->name, type_info->name);
-            }
-            LUAS_DEBUG_MSG("Using existing object of type \"%s\" at 0x%.8X (%s)\n", obj_type_info->name, data, readonly ? "ro" : "rw");
-            return 1;
-        }
-    }
+    // if(luastruct_get_object(state, data, readonly) != 0) {
+    //     LuastructStructObject *obj = lua_touserdata(state, -1);
+    //     LuastructTypeInfo *obj_type_info = obj->type;
+    //     if(!obj->invalid) {
+    //         if(obj_type_info->type != type_info->type) {
+    //             return luaL_error(state, "An object of a different type already exists at this address: %s != %s", obj_type_info->name, type_info->name);
+    //         }
+    //         LUAS_DEBUG_MSG("Using existing object of type \"%s\" at 0x%.8X (%s)\n", obj_type_info->name, data, readonly ? "ro" : "rw");
+    //         return 1;
+    //     }
+    // }
 
     LUAS_DEBUG_MSG("Creating object of type \"%s\" at 0x%.8X (%s)\n", type_name, data, readonly ? "ro" : "rw");
 
@@ -462,12 +565,27 @@ int luastruct_new_object(lua_State *state, const char *type_name, void *data, bo
     }
     lua_setmetatable(state, -2);
     
-    char object_key[LUASTRUCT_TYPENAME_LENGTH];
-    get_object_key(object_key, data, readonly);
-    luastruct_get_objects_registry(state);
-    lua_pushvalue(state, -2);
-    lua_setfield(state, -2, object_key);
-    lua_pop(state, 1);
+    // char object_key[LUASTRUCT_TYPENAME_LENGTH];
+    // get_object_key(object_key, data, readonly);
+    // luastruct_get_objects_registry(state);
+    // lua_pushvalue(state, -2);
+    // lua_setfield(state, -2, object_key);
+    // lua_pop(state, 1);
 
     return 1;
+}
+
+void *luastruct_check_object(lua_State *state, int idx, const char *type_name) {
+    if(!lua_isuserdata(state, idx)) {
+        luaL_error(state, "Expected userdata at index %d, got %s", idx, lua_typename(state, lua_type(state, idx)));
+    }
+    LuastructStructObject *obj = lua_touserdata(state, idx);
+    if(!obj || obj->invalid) {
+        luaL_error(state, "Object is invalid at index %d", idx);
+    }
+    LuastructTypeInfo *type_info = obj->type;
+    if(strcmp(type_info->name, type_name) != 0) {
+        luaL_error(state, "Expected object of type %s at index %d, got %s", type_name, idx, type_info->name);
+    }
+    return obj->data;
 }

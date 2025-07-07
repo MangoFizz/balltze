@@ -57,13 +57,13 @@ endforeach()
 # Tell CMake how to generate the tag struct headers
 set(LUA_ENVIRONMENT_SCRIPT ${CMAKE_SOURCE_DIR}/lua/env.lua)
 set(LUA_COMMNAD ${CMAKE_COMMAND} -E env LUA_INIT="@${LUA_ENVIRONMENT_SCRIPT}" ${LUA_EXECUTABLE})
-set(TAG_DEFINITION_PARSER_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/parse_tag_definition.lua)
-set(TAG_DEFINITION_HEADERS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_definition_headers.lua)
-set(TAG_REBASE_OFFSETS_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_rebase_offsets_function.lua)
-set(TAG_RESOLVE_DEPENDENCIES_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_resolve_dependencies_function.lua)
-set(TAG_LUA_TAG_DEFINITIONS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_data_lua_definitions.lua)
-set(TAG_COPY_DATA_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_copy_data_function.lua)
-set(TAG_LUA_ANNOTATIONS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/tag_data_lua_annotations.lua)
+set(TAG_DEFINITION_PARSER_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/legacy_tags_definitions/parse_tag_definition.lua)
+set(TAG_DEFINITION_HEADERS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/legacy_tags_definitions/tag_definition_headers.lua)
+set(TAG_REBASE_OFFSETS_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/legacy_tags_definitions/tag_rebase_offsets_function.lua)
+set(TAG_RESOLVE_DEPENDENCIES_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/legacy_tags_definitions/tag_resolve_dependencies_function.lua)
+set(TAG_LUA_TAG_DEFINITIONS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/legacy_tags_definitions/tag_data_lua_definitions.lua)
+set(TAG_COPY_DATA_FUNCTION_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/legacy_tags_definitions/tag_copy_data_function.lua)
+set(TAG_LUA_ANNOTATIONS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/legacy_tags_definitions/tag_data_lua_annotations.lua)
 
 add_custom_command(
     OUTPUT ${TAG_DEFINITION_HPP_FILES} ${TAG_DEFINITIONS_HPP_COLLECTION} ${TAG_FILE_DEFINITIONS_HPP_COLLECTION}

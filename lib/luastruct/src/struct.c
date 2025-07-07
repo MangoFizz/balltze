@@ -4,6 +4,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include "luastruct.h"
+#include "debug.h"
 
 const char *types_registry_name = "luastruct_types";
 
@@ -71,16 +72,12 @@ LuastructTypeInfo *get_type_info(lua_State *state, LuastructType type, const cha
             if(type_name == NULL) {
                 luaL_error(state, "Type name required for struct/enum field");
             }
-            luastruct_get_type(state, type_name);
-            if(lua_isnil(state, -1)) {
-                lua_pop(state, 1);
-                return NULL;
+            int res = luastruct_get_type(state, type_name);
+            if(res == 0 || lua_isnil(state, -1)) {
+                luaL_error(state, "Failed to get type info for type: %s", type_name);
             }
             void *info = lua_touserdata(state, -1);
             lua_pop(state, 1);
-            if(info == NULL) {
-                luaL_error(state, "Type info is NULL");
-            }
             return info;
         default:
             return NULL;
@@ -106,16 +103,12 @@ size_t get_type_size(lua_State *state, LuastructType type, void *type_info) {
         case LUAST_BOOL:
             return sizeof(bool);
         case LUAST_STRUCT: {
-            if(type_info == NULL) {
-                return luaL_error(state, "Type info is NULL");
-            }
+            LUAS_ASSERT(state, type_info != NULL, "Type info is NULL while getting size of struct");
             LuastructStruct *st = type_info;
             return st->size;
         }
         case LUAST_ENUM: {
-            if(type_info == NULL) {
-                return luaL_error(state, "Type info is NULL");
-            }
+            LUAS_ASSERT(state, type_info != NULL, "Type info is NULL while getting size of enum");
             LuastructEnum *enum_type = type_info;
             switch(enum_type->size) {
                 case LUAS_ENUM_INT8:
@@ -224,8 +217,8 @@ void luastruct_new_struct_field(lua_State *state, const char *name, LuastructTyp
         if(!type_name) {
             luaL_error(state, "Type name required for struct/enum field");
         }
-        luastruct_get_type(state, type_name);
-        if(lua_isnil(state, -1)) {
+        int res = luastruct_get_type(state, type_name);
+        if(res == 0) {
             luaL_error(state, "Type not found: %s", type_name);
         }
         field.type_info = lua_touserdata(state, -1);
@@ -311,4 +304,25 @@ void luastruct_new_struct_bit_field(lua_State *state, const char *name, Luastruc
     insert_struct_field(st, &field);
 }
 
+void luastruct_new_struct_method(lua_State *state, const char *name, lua_CFunction method) {
+    LuastructStruct *st = luastruct_check_struct(state, -1);
+    if(!st) {
+        luaL_error(state, "Invalid struct object");
+    }
 
+    if(strlen(name) >= LUASTRUCT_TYPENAME_LENGTH) {
+        luaL_error(state, "Method name too long: %s", name);
+    }
+
+    LuastructStructField field;
+    strncpy(field.field_name, name, LUASTRUCT_TYPENAME_LENGTH);
+    field.field_name[strlen(field.field_name)] = '\0';
+    field.type = LUAST_METHOD;
+    field.type_info = NULL;
+    field.offset = INT32_MAX;
+    field.pointer = false;
+    field.readonly = false;
+    field.method = method;
+
+    insert_struct_field(st, &field);
+}

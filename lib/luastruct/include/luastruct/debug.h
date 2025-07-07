@@ -33,10 +33,10 @@ extern "C" {
     } while(false)
 #endif
 
-#define LUAS_ASSERT(state, condition, message) \
+#define LUAS_ASSERT(state, condition, fmt, ...) \
     do { \
         if(!(condition)) { \
-            luaL_error(state, "Assertion failed: %s", message); \
+            luaL_error(state, "Assertion failed: " fmt, ##__VA_ARGS__); \
         } \
     } while(false)
 
@@ -45,7 +45,7 @@ extern "C" {
  * @param type The LuastructType value for which the name is to be retrieved.
  * @return A constant string representing the name of the specified LuastructType.
  */
-const char *luastruct_name_for_type(LuastructType type);
+const char *luastruct_name_for_type(LuastructType type, LuastructTypeInfo *type_info);
 
 /**
  * Print to stdout the registered types in the Lua state.

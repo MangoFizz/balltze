@@ -169,6 +169,118 @@ namespace Balltze::Lua::Api::V2 {
     std::optional<VectorIJK> get_vector_ijk(lua_State *state, int idx) noexcept;
 
     /**
+     * Push a Quaternion to the Lua stack.
+     * @param state Lua state
+     * @param quaternion The Quaternion to push
+     * @param readonly If true, the quaternion will be read-only in Lua
+     */
+    void push_quaternion(lua_State *state, const Quaternion &quaternion, bool readonly = false) noexcept;
+
+    /**
+     * Get a Quaternion from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional Quaternion, empty if the value is not a valid quaternion
+     */
+    std::optional<Quaternion> get_quaternion(lua_State *state, int idx) noexcept;
+
+    /**
+     * Push a VectorPYR to the Lua stack.
+     * @param state Lua state
+     * @param vector The VectorPYR to push
+     * @param readonly If true, the vector will be read-only in Lua
+     */
+    void push_vector_pyr(lua_State *state, const VectorPYR &vector, bool readonly = false) noexcept;
+
+    /**
+     * Get a VectorPYR from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional VectorPYR, empty if the value is not a valid vector
+     */
+    std::optional<VectorPYR> get_vector_pyr(lua_State *state, int idx) noexcept;
+
+    /**
+     * Push a VectorPY to the Lua stack.
+     * @param state Lua state
+     * @param vector The VectorPY to push
+     * @param readonly If true, the vector will be read-only in Lua
+     */
+    void push_vector_py(lua_State *state, const VectorPY &vector, bool readonly = false) noexcept;
+
+    /**
+     * Get a VectorPY from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional VectorPY, empty if the value is not a valid vector
+     */
+    std::optional<VectorPY> get_vector_py(lua_State *state, int idx) noexcept;
+
+    /**
+     * Push a Plane2D to the Lua stack.
+     * @param state Lua state
+     * @param plane The Plane2D to push
+     * @param readonly If true, the plane will be read-only in Lua
+     */
+    void push_plane_2d(lua_State *state, const Plane2D &plane, bool readonly = false) noexcept;
+
+    /**
+     * Get a Plane2D from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional Plane2D, empty if the value is not a valid plane
+     */
+    std::optional<Plane2D> get_plane_2d(lua_State *state, int idx) noexcept;
+
+    /**
+     * Push a Plane3D to the Lua stack.
+     * @param state Lua state
+     * @param plane The Plane3D to push
+     * @param readonly If true, the plane will be read-only in Lua
+     */
+    void push_plane_3d(lua_State *state, const Plane3D &plane, bool readonly = false) noexcept; 
+
+    /**
+     * Get a Plane3D from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional Plane3D, empty if the value is not a valid plane
+     */
+    std::optional<Plane3D> get_plane_3d(lua_State *state, int idx) noexcept;
+
+    /**
+     * Push a ScenarioScriptNodeValue to the Lua stack.
+     * @param state Lua state
+     * @param value The ScenarioScriptNodeValue to push
+     * @param readonly If true, the value will be read-only in Lua
+     */
+    void push_scenario_script_node_value(lua_State *state, const ScenarioScriptNodeValue &value, bool readonly) noexcept;
+
+    /**
+     * Get a ScenarioScriptNodeValue from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional ScenarioScriptNodeValue, empty if the value is not a valid node value
+     */
+    std::optional<ScenarioScriptNodeValue> get_scenario_script_node_value(lua_State *state, int idx) noexcept;
+
+    /**
+     * Push a Matrix to the Lua stack.
+     * @param state Lua state
+     * @param matrix The Matrix to push
+     * @param readonly If true, the matrix will be read-only in Lua
+     */
+    void push_matrix(lua_State *state, const Matrix &matrix, bool readonly = false) noexcept;
+
+    /**
+     * Get a Matrix from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional Matrix, empty if the value is not a valid matrix
+     */
+    std::optional<Matrix> get_matrix(lua_State *state, int idx) noexcept;
+
+    /**
      * Define all ringworld basic types in the Lua state.
      * @param state Lua state
      * @note This function should be called to register all types from the functions of this header.

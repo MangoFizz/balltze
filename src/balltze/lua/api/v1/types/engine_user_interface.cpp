@@ -13,7 +13,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "back", LegacyApi::Engine::WIDGET_NAVIGATION_SOUND_BACK);
         luacs_enum_declare_value(state, "forward", LegacyApi::Engine::WIDGET_NAVIGATION_SOUND_FORWARD);
         luacs_enum_declare_value(state, "flagFailure", LegacyApi::Engine::WIDGET_NAVIGATION_SOUND_FLAG_FAILURE);
-        publish_enum(state, "Engine", "userInterface", "navigationSound", -1); 
+        publish_luacstruct_enum(state, "Engine", "userInterface", "navigationSound", -1); 
         lua_pop(state, 1);
     }
 
@@ -22,7 +22,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "keyboard", LegacyApi::Engine::INPUT_DEVICE_KEYBOARD);
         luacs_enum_declare_value(state, "mouse", LegacyApi::Engine::INPUT_DEVICE_MOUSE);
         luacs_enum_declare_value(state, "gamepad", LegacyApi::Engine::INPUT_DEVICE_GAMEPAD);
-        publish_enum(state, "Engine", "userInterface", "inputDevice", -1); 
+        publish_luacstruct_enum(state, "Engine", "userInterface", "inputDevice", -1); 
         lua_pop(state, 1);
     }
 
@@ -69,7 +69,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "shift", EngineInputBufferedKeyModifier::MODIFIER_SHIFT);
         luacs_enum_declare_value(state, "ctrl", EngineInputBufferedKeyModifier::MODIFIER_CTRL);
         luacs_enum_declare_value(state, "alt", EngineInputBufferedKeyModifier::MODIFIER_ALT);
-        publish_enum(state, "Engine", "userInterface", "inputBufferedKeyModifier", -1); 
+        publish_luacstruct_enum(state, "Engine", "userInterface", "inputBufferedKeyModifier", -1); 
         lua_pop(state, 1);
     }
 
@@ -95,7 +95,7 @@ namespace Balltze::Lua::Api::V1 {
         luacs_enum_declare_value(state, "middle", EngineInputMouseButton::MOUSE_BUTTON_MIDDLE);
         luacs_enum_declare_value(state, "right", EngineInputMouseButton::MOUSE_BUTTON_RIGHT);
         luacs_enum_declare_value(state, "doubleLeft", EngineInputMouseButton::MOUSE_BUTTON_DOUBLE_LEFT);
-        publish_enum(state, "Engine", "userInterface", "inputMouseButton", -1); 
+        publish_luacstruct_enum(state, "Engine", "userInterface", "inputMouseButton", -1); 
         lua_pop(state, 1);
     }
 

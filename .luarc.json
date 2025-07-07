@@ -1,10 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
-    "diagnostics.libraryFiles": "Enable",
-    "workspace.library": [
-        "lua/plugin/docs/"
-    ],
     "workspace.useGitIgnore": false,
     "runtime.version": "Lua 5.3",
-    "runtime.path": ["lua/modules/?.lua", "lua/?.lua", "lua/modules/?.lua"]
+    "runtime.path": ["lua/modules/?.lua", "lua/?.lua", "?.lua"]
 }

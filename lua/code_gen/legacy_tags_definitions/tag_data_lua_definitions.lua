@@ -284,7 +284,7 @@ for enumName, enum in pairs(enums) do
         add("luacs_enum_declare_value(state, \"" .. lowerCamelCase .. "\", LegacyApi::Engine::TagDefinitions::" .. valueName .. "); \n")
     end
     indent(2)
-    add("publish_enum(state, \"Engine\", \"tag\", \"" .. lowerCamelCaseName .. "\", -1); \n")
+    add("publish_luacstruct_enum(state, \"Engine\", \"tag\", \"" .. lowerCamelCaseName .. "\", -1); \n")
     indent(2)
     add("lua_pop(state, 1); \n")
     indent(1)

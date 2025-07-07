@@ -8,9 +8,6 @@
 #include "luastruct.h"
 #include "debug.h"
 
-static const char *ENUM_METATABLE_NAME = "luastruct_enum";
-static const char *ENUM_VARIANT_METATABLE_NAME = "luastruct_enum_variant";
-
 int luastruct_get_type(lua_State *state, const char *name);
 
 void free_enum_variants_recursively(LuastructEnumVariant *variant) {
@@ -167,7 +164,29 @@ int luastruct_new_enum_variant(lua_State *state, const char *name, int32_t value
     return 0;
 }
 
-int luastruct_get_enum_variant(lua_State *state, const LuastructEnum *enum_type, int32_t value) {
+LuastructEnum *luastruct_get_enum(lua_State *state, const char *name) {
+    if(!name || strlen(name) == 0) {
+        luaL_error(state, "Invalid enum name");
+    }
+
+    luastruct_get_types_registry(state);
+    lua_getfield(state, -1, name);
+    if(lua_isnil(state, -1)) {
+        lua_pop(state, 2);
+        return NULL;
+    }
+
+    LuastructEnum *enum_type = luaL_checkudata(state, -1, ENUM_METATABLE_NAME);
+    if(!enum_type) {
+        lua_pop(state, 2);
+        return NULL;
+    }
+
+    lua_pop(state, 1); // Pop the registry
+    return enum_type;
+}
+
+int luastruct_get_enum_variant_by_value(lua_State *state, const LuastructEnum *enum_type, int32_t value) {
     if(!enum_type || !enum_type->variants) {
         return luaL_error(state, "Invalid enum type or no variants defined");
     }
@@ -186,3 +205,23 @@ int luastruct_get_enum_variant(lua_State *state, const LuastructEnum *enum_type,
     lua_pushnil(state);
     return 1;
 } 
+
+int luastruct_get_enum_variant_by_name(lua_State *state, const LuastructEnum *enum_type, const char *name) {
+    if(!enum_type || !enum_type->variants) {
+        return luaL_error(state, "Invalid enum type or no variants defined");
+    }
+
+    LuastructEnumVariant *variant = enum_type->variants;
+    while(variant) {
+        if(strcmp(variant->name, name) == 0) {
+            lua_pushlightuserdata(state, variant);
+            get_enum_variant_metatable(state);
+            lua_setmetatable(state, -2);
+            return 1;
+        }
+        variant = variant->next;
+    }
+
+    lua_pushnil(state);
+    return 1;
+}
