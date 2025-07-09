@@ -20,22 +20,7 @@ namespace Balltze::Lua::Api {
     using namespace V2;
 
     void open_balltze_api_v2(lua_State *state) {
-        // Set up balltze registry table
-        // auto balltze_module = Balltze::get_current_module();
-        // lua_pushlightuserdata(state, balltze_module);
-        // lua_newtable(state);
-        // lua_settable(state, LUA_REGISTRYINDEX);
-
-        // Set up Balltze funcion tables
-        // lua_newtable(state);
-        // lua_setglobal(state, "Balltze");
-
-        // Set up ringworld table
         set_ringworld_table(state);
-
-        // Set up preloaded libraries
-        // set_preloaded_libraries(state);
-
         define_types(state);
     }
 }

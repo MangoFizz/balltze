@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__EVENTS__WIDGET_HPP
-#define BALLTZE_API__EVENTS__WIDGET_HPP
+#ifndef BALLTZE_LEGACY_API__EVENTS__WIDGET_HPP
+#define BALLTZE_LEGACY_API__EVENTS__WIDGET_HPP
 
 #include <balltze/legacy_api/engine/user_interface.hpp>
 #include "../event.hpp"

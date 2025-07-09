@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__ENGINE__GAME_STATE_HPP
-#define BALLTZE_API__ENGINE__GAME_STATE_HPP
+#ifndef BALLTZE_LEGACY_API__ENGINE__GAME_STATE_HPP
+#define BALLTZE_LEGACY_API__ENGINE__GAME_STATE_HPP
 
 #include <cstdint>
 #include <balltze/legacy_api/engine/tag_definitions/scenario.hpp>

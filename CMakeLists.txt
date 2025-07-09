@@ -53,6 +53,9 @@ add_library(balltze SHARED
     src/balltze/config/chimera_preferences.cpp
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
+    src/balltze/events/events.cpp
+    src/balltze/events/frame.cpp
+    src/balltze/events/tick.cpp
     src/balltze/legacy_api/engine/core.cpp
     src/balltze/legacy_api/engine/core.S
     src/balltze/legacy_api/engine/data_types.cpp

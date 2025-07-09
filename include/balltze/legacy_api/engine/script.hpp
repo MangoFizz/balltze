@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__ENGINE__SCRIPT_HPP
-#define BALLTZE_API__ENGINE__SCRIPT_HPP
+#ifndef BALLTZE_LEGACY_API__ENGINE__SCRIPT_HPP
+#define BALLTZE_LEGACY_API__ENGINE__SCRIPT_HPP
 
 #include <cstdint>
 #include "../../memory.hpp"

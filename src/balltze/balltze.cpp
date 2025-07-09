@@ -7,6 +7,7 @@
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
 #include <ringworld.h>
+#include "events/events.hpp"
 #include "features/features.hpp"
 #include "legacy_api/event/event.hpp"
 #include "memory/memory.hpp"
@@ -36,6 +37,7 @@ namespace Balltze {
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
                 LegacyApi::Event::set_up_events();
+                Events::set_up_events_handlers();
                 Features::set_up_features();
                 Plugins::set_up_plugins();
                 set_up_commands();

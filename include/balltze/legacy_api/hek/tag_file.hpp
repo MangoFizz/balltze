@@ -6,8 +6,8 @@
  * Structures from Invader.
  */
 
-#ifndef BALLTZE_API__HEK__TAG_FILE_HPP
-#define BALLTZE_API__HEK__TAG_FILE_HPP
+#ifndef BALLTZE_LEGACY_API__HEK__TAG_FILE_HPP
+#define BALLTZE_LEGACY_API__HEK__TAG_FILE_HPP
 
 #include <optional>
 #include "../../api.hpp"

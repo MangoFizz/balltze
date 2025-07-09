@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__EVENTS__SOUND_PLAYBACK_HPP
-#define BALLTZE_API__EVENTS__SOUND_PLAYBACK_HPP
+#ifndef BALLTZE_LEGACY_API__EVENTS__SOUND_PLAYBACK_HPP
+#define BALLTZE_LEGACY_API__EVENTS__SOUND_PLAYBACK_HPP
 
 #include "../engine/tag.hpp"
 #include "../engine/tag_definitions/sound.hpp"

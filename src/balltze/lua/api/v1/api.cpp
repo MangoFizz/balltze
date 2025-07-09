@@ -69,9 +69,6 @@ namespace Balltze::Lua::Api {
         // Set up engine table
         set_engine_table(state);
 
-        // Set up preloaded libraries
-        set_preloaded_libraries(state);
-
         define_engine_structs(state);
     }
 }

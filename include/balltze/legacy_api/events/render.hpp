@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__EVENTS__RENDER_HPP
-#define BALLTZE_API__EVENTS__RENDER_HPP
+#ifndef BALLTZE_LEGACY_API__EVENTS__RENDER_HPP
+#define BALLTZE_LEGACY_API__EVENTS__RENDER_HPP
 
 #include "../engine/tag_definitions/bitmap.hpp"
 #include "../engine/user_interface.hpp"

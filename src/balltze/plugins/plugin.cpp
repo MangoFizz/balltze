@@ -6,6 +6,7 @@
 #include "../lua/api/v1/api.hpp"
 #include "../lua/api/v1/plugin/commands.hpp"
 #include "../lua/api/v2/api.hpp"
+#include "../lua/libraries/preloaded_libraries.hpp"
 #include "plugin.hpp"
 
 namespace Balltze {
@@ -395,6 +396,9 @@ namespace Balltze::Plugins {
             luaL_openlibs(m_state);
             Lua::Api::open_balltze_api_v1(m_state);
             Lua::Api::open_balltze_api_v2(m_state);
+
+            // Set up preloaded libraries
+            Lua::set_preloaded_libraries(m_state);
 
             // Remove os.exit, os.getenv and os.execute functions
             lua_getglobal(m_state, "os");

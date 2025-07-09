@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__ENGINE__RASTERIZER_HPP
-#define BALLTZE_API__ENGINE__RASTERIZER_HPP
+#ifndef BALLTZE_LEGACY_API__ENGINE__RASTERIZER_HPP
+#define BALLTZE_LEGACY_API__ENGINE__RASTERIZER_HPP
 
 #include <d3d9.h>
 #include "tag_definitions/bitmap.hpp"

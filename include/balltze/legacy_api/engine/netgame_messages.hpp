@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__ENGINE__NETGAME_MESSAGES_HPP
-#define BALLTZE_API__ENGINE__NETGAME_MESSAGES_HPP
+#ifndef BALLTZE_LEGACY_API__ENGINE__NETGAME_MESSAGES_HPP
+#define BALLTZE_LEGACY_API__ENGINE__NETGAME_MESSAGES_HPP
 
 #include "../../memory.hpp"
 #include "data_types.hpp"

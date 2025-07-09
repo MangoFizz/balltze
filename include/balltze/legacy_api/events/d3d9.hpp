@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE_API__EVENTS__D3D9_HPP
-#define BALLTZE_API__EVENTS__D3D9_HPP
+#ifndef BALLTZE_LEGACY_API__EVENTS__D3D9_HPP
+#define BALLTZE_LEGACY_API__EVENTS__D3D9_HPP
 
 #include <d3d9.h>
 #include "../event.hpp"
