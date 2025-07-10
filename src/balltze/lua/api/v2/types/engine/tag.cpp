@@ -178,7 +178,7 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_PUSH_OBJECT(state, TagRawData, &raw_data, readonly);
     }
 
-    void define_ringworld_tag_types(lua_State *state) noexcept {
+    void define_engine_tag_types(lua_State *state) noexcept {
         define_tag_group_type(state);
         define_tag_handle_type(state);
         define_tag_entry_type(state);

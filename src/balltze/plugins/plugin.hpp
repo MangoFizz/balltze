@@ -30,6 +30,7 @@ namespace Balltze::Plugins {
         std::filesystem::path m_directory;
         bool m_loaded = false;
         bool m_execute_first_tick = false;
+        semver::version m_loaded_api;
 
         virtual void set_up_directory() = 0;
         virtual void update_metadata() = 0;
@@ -49,6 +50,7 @@ namespace Balltze::Plugins {
         bool path_is_valid(std::filesystem::path path) const noexcept;
         void init_data_directory();
         bool loaded() const noexcept;
+        bool read_manifest() noexcept;
 
         virtual bool initialized() const noexcept = 0;
         virtual PluginLoadResult load() = 0;

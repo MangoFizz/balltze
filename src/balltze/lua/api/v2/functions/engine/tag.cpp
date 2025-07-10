@@ -8,7 +8,7 @@
 #include "../../types.hpp"
 
 namespace Balltze::Lua::Api::V2 {
-    static int lua_ringworld_tag_lookup(lua_State *state) noexcept {
+    static int lua_engine_tag_lookup(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 2) {
             return luaL_error(state, "Invalid number of arguments in function Engine.tag.lookup.");
@@ -32,7 +32,7 @@ namespace Balltze::Lua::Api::V2 {
         return 1;
     }
 
-    static int lua_ringworld_tag_get_data(lua_State *state) noexcept {
+    static int lua_engine_tag_get_data(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 2) {
             return luaL_error(state, "Invalid number of arguments in function Engine.tag.getData.");
@@ -58,7 +58,7 @@ namespace Balltze::Lua::Api::V2 {
         return 1;
     }
 
-    static int lua_ringworld_tag_get_entry(lua_State *state) noexcept {
+    static int lua_engine_tag_get_entry(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 1) {
             return luaL_error(state, "Invalid number of arguments in function Engine.tag.getEntry.");
@@ -80,7 +80,7 @@ namespace Balltze::Lua::Api::V2 {
         return 1;
     }
 
-    static int lua_ringworld_tag_filter(lua_State *state) noexcept {
+    static int lua_engine_tag_filter(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 2) {
             return luaL_error(state, "Invalid number of arguments in function Engine.tag.filter.");
@@ -109,14 +109,14 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static const luaL_Reg engine_tag_functions[] = {
-        {"lookupTag", lua_ringworld_tag_lookup},
-        {"getTagData", lua_ringworld_tag_get_data},
-        {"getTagEntry", lua_ringworld_tag_get_entry},
-        {"filterTags", lua_ringworld_tag_filter},
+        {"lookupTag", lua_engine_tag_lookup},
+        {"getTagData", lua_engine_tag_get_data},
+        {"getTagEntry", lua_engine_tag_get_entry},
+        {"filterTags", lua_engine_tag_filter},
         {nullptr, nullptr}
     };
 
-    void set_ringworld_tag_functions(lua_State *state) noexcept {
+    void set_engine_tag_functions(lua_State *state) noexcept {
         create_functions_table(state, "tag", engine_tag_functions);
     }
 }

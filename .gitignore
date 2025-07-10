@@ -3,10 +3,10 @@ build/
 dist/
 include/balltze/legacy_api/engine/tag_definitions/
 include/balltze/legacy_api/engine/tag_definitions.hpp
-lua/plugins/docs/types/tag_data/
+lua/plugins/docs/v1/types/tag_data/
 package/game-mods/balltze.dll
 src/balltze/lua/api/v1/types/engine_tag_data.cpp
 src/balltze/lua/api/v1/types/engine_tag_data.hpp
-src/balltze/lua/api/v2/types/ringworld/tag_data.cpp
-src/balltze/lua/api/v2/types/ringworld/tag_data.hpp
+src/balltze/lua/api/v2/types/engine/tag_data.cpp
+src/balltze/lua/api/v2/types/engine/tag_data.hpp
 package/my-games-data-path/balltze/config

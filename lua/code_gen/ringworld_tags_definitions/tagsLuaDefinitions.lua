@@ -122,8 +122,8 @@ add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
 
-#ifndef BALLTZE__LUA__API__V2__TYPES__RINGWORLD_TAG_DATA_HPP
-#define BALLTZE__LUA__API__V2__TYPES__RINGWORLD_TAG_DATA_HPP
+#ifndef BALLTZE__LUA__API__V2__TYPES__ENGINE_TAG_DATA_HPP
+#define BALLTZE__LUA__API__V2__TYPES__ENGINE_TAG_DATA_HPP
 
 #include <memory>
 #include "types.hpp"
@@ -139,7 +139,7 @@ add([[
 
 namespace Balltze::Lua::Api::V2 {
     void push_tag_data(lua_State *state, TagEntry *tag_entry) noexcept;
-    void define_ringworld_tag_data_types(lua_State *state) noexcept;
+    void define_engine_tag_data_types(lua_State *state) noexcept;
 }
 
 
@@ -325,7 +325,7 @@ add([[
 ]])
 
 indent(1)
-add("void define_ringworld_tag_data_types(lua_State *state) noexcept { \n")
+add("void define_engine_tag_data_types(lua_State *state) noexcept { \n")
 
 local definedStructs = {}
 

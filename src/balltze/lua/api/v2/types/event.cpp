@@ -2,7 +2,7 @@
 
 #include <cstring>
 #include <stdexcept>
-#include "events.hpp"
+#include "event.hpp"
 
 using namespace Balltze::Events;
 

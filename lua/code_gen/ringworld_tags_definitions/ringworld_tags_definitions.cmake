@@ -10,8 +10,8 @@ set(JSON_TAG_DEFINITIONS_PATH "${CMAKE_SOURCE_DIR}/src/ringworld/ringhopper/src/
 file(GLOB JSON_TAG_DEFINITION_FILES ${JSON_TAG_DEFINITIONS_PATH}/*.json)
 
 # Output files
-set(TAG_LUA_DEFINITIONS_CPP "${CMAKE_SOURCE_DIR}/src/balltze/lua/api/v2/types/ringworld/tag_data.cpp")
-set(TAG_LUA_DEFINITIONS_HPP "${CMAKE_SOURCE_DIR}/src/balltze/lua/api/v2/types/ringworld/tag_data.hpp")
+set(TAG_LUA_DEFINITIONS_CPP "${CMAKE_SOURCE_DIR}/src/balltze/lua/api/v2/types/engine/tag_data.cpp")
+set(TAG_LUA_DEFINITIONS_HPP "${CMAKE_SOURCE_DIR}/src/balltze/lua/api/v2/types/engine/tag_data.hpp")
 
 # Tell CMake how to generate the tag struct headers
 set(LUA_ENVIRONMENT_SCRIPT ${CMAKE_SOURCE_DIR}/lua/env.lua)

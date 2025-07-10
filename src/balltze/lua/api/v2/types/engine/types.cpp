@@ -609,7 +609,7 @@ namespace Balltze::Lua::Api::V2 {
         return matrix;
     }
 
-    void define_ringworld_types(lua_State *state) noexcept {
+    void define_engine_types(lua_State *state) noexcept {
         define_table_resource_handle_type(state);
         define_color_argb_type(state);
         define_color_rgb_type(state);

@@ -14,7 +14,7 @@ namespace Balltze {
 namespace Balltze::Lua::Api::V2 {
     using LuaPlugin = Plugins::LuaPlugin;
 
-    static int lua_get_commands_table(lua_State *state) noexcept {
+    static int get_commands_table(lua_State *state) noexcept {
         auto balltze_module = Balltze::get_current_module();
         lua_pushlightuserdata(state, balltze_module);
         lua_gettable(state, LUA_REGISTRYINDEX);
@@ -40,7 +40,7 @@ namespace Balltze::Lua::Api::V2 {
     CommandResult ConsoleCommand::call(std::size_t arg_count, const char **args) const noexcept {
         LuaPlugin *plugin = static_cast<LuaPlugin *>(m_plugin.value());
         lua_State *state = plugin->state();
-        if(lua_get_commands_table(state) == 0) {
+        if(get_commands_table(state) == 0) {
             return COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
         }
         lua_getfield(state, -1, m_name.c_str());
@@ -76,7 +76,7 @@ namespace Balltze::Lua::Api::V2 {
 
     void ConsoleCommand::register_command(LuaPlugin *plugin) {
         lua_State *state = plugin->state();
-        if(lua_get_commands_table(state) == 0) {
+        if(get_commands_table(state) == 0) {
             throw std::runtime_error("Could not find Lua commands table");
         }
         lua_pushvalue(state, -2);
@@ -92,7 +92,7 @@ namespace Balltze::Lua::Api::V2 {
         commands.emplace_back(std::make_shared<ConsoleCommand>(*this));
     }
 
-    static int register_command(lua_State *state) noexcept {
+    static int lua_register_command(lua_State *state) noexcept {
         auto *plugin = Plugins::get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
@@ -154,7 +154,7 @@ namespace Balltze::Lua::Api::V2 {
         }
     }
 
-    static int execute_command(lua_State *state) noexcept {
+    static int lua_execute_command(lua_State *state) noexcept {
         auto *plugin = Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.command.executeCommand.");
@@ -208,7 +208,7 @@ namespace Balltze::Lua::Api::V2 {
         return 0;
     }
 
-    static int load_settings(lua_State *state) noexcept {
+    static int lua_load_settings(lua_State *state) noexcept {
         auto *plugin = Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.command.loadSettings.");
@@ -237,14 +237,14 @@ namespace Balltze::Lua::Api::V2 {
         return 0;
     }
 
-    static const luaL_Reg command_functions[] = {
-        {"registerCommand", register_command},
-        {"executeCommand", execute_command},
-        {"loadSettings", load_settings},
-        {nullptr, nullptr}
-    };
-
-    void set_command_table(lua_State *state) noexcept {
-        create_functions_table(state, "command", command_functions);
+    void set_command_functions(lua_State *state, int table_idx) noexcept {
+        lua_pushvalue(state, table_idx);
+        push_plugin_function(state, lua_register_command);
+        lua_setfield(state, -2, "registerCommand");
+        push_plugin_function(state, lua_execute_command);
+        lua_setfield(state, -2, "executeCommand");
+        push_plugin_function(state, lua_load_settings);
+        lua_setfield(state, -2, "loadSettings");
+        lua_pop(state, 1); 
     }
 }

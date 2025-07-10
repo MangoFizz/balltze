@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__LUA__API__V2__TYPES__RINGWORLD__TAG_HPP
-#define BALLTZE__LUA__API__V2__TYPES__RINGWORLD__TAG_HPP
+#ifndef BALLTZE__LUA__API__V2__TYPES__ENGINE__TAG_HPP
+#define BALLTZE__LUA__API__V2__TYPES__ENGINE__TAG_HPP
 
 #include <string>
 #include <lua.hpp>
@@ -67,7 +67,7 @@ namespace Balltze::Lua::Api::V2 {
     /**
      * Define all tag types in the Lua state.
      */
-    void define_ringworld_tag_types(lua_State *state) noexcept;
+    void define_engine_tag_types(lua_State *state) noexcept;
 }
 
 #endif 

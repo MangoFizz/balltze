@@ -4,8 +4,13 @@
 #define BALLTZE__LUA__API__V1__API_HPP
 
 #include <lua.hpp>
+#include <semver.hpp>
 
 namespace Balltze::Lua::Api {
+    namespace V1 {
+        static const semver::version api_version{1, 1, 0};
+    }
+
     /**
      * Opens the Balltze API version 1 in the given Lua state.
      * 

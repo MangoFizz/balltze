@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#ifndef BALLTZE__LUA__API__V2__TYPES__RINGWORLD__TYPES_HPP
-#define BALLTZE__LUA__API__V2__TYPES__RINGWORLD__TYPES_HPP
+#ifndef BALLTZE__LUA__API__V2__TYPES__ENGINE__TYPES_HPP
+#define BALLTZE__LUA__API__V2__TYPES__ENGINE__TYPES_HPP
 
 #include <optional>
 #include <lua.hpp>
@@ -281,11 +281,11 @@ namespace Balltze::Lua::Api::V2 {
     std::optional<Matrix> get_matrix(lua_State *state, int idx) noexcept;
 
     /**
-     * Define all ringworld basic types in the Lua state.
+     * Define all engine basic types in the Lua state.
      * @param state Lua state
      * @note This function should be called to register all types from the functions of this header.
      */
-    void define_ringworld_types(lua_State *state) noexcept;
+    void define_engine_types(lua_State *state) noexcept;
 }
 
 #endif 

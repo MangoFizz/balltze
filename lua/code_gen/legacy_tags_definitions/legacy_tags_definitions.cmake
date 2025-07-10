@@ -18,7 +18,7 @@ set(TAG_REBASE_OFFSETS_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_rebase_offsets.cpp"
 set(TAG_LUA_TAG_DEFINITIONS_CPP "${CMAKE_SOURCE_DIR}/src/balltze/lua/api/v1/types/engine_tag_data.cpp")
 set(TAG_LUA_TAG_DEFINITIONS_HPP "${CMAKE_SOURCE_DIR}/src/balltze/lua/api/v1/types/engine_tag_data.hpp")
 set(TAG_COPY_DATA_FUNCTION_CPP "${CMAKE_BINARY_DIR}/tag_copy_data.cpp")
-set(TAG_LUA_ANNOTATIONS_PATH "${CMAKE_SOURCE_DIR}/lua/plugins/docs/types/tag_data")
+set(TAG_LUA_ANNOTATIONS_PATH "${CMAKE_SOURCE_DIR}/lua/plugins/docs/v1/types/tag_data")
 set(TAG_LUA_ANNOTATIONS_FILES)
 set(TAG_DEFINITION_HPP_FILES)
 set(TAG_DEFINITION_CPP_FILES)

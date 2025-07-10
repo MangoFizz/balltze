@@ -76,6 +76,41 @@ namespace Balltze::Plugins {
         return initialized() && m_loaded;
     }
 
+    bool Plugin::read_manifest() noexcept {
+        std::ifstream manifest_file(m_directory / "manifest.json");
+        if(!manifest_file) {
+            logger.error("Could not open manifest file for plugin {}.", m_filename);
+            return false;
+        }
+        nlohmann::json manifest;
+        manifest_file >> manifest;
+        manifest_file.close();
+
+        PluginMetadata metadata;
+        try {
+            metadata.name = manifest.at("name").get<std::string>();
+            metadata.author = manifest.at("author").get<std::string>();
+            metadata.version = semver::version(manifest.at("version").get<std::string>());
+            metadata.target_api = semver::version(manifest.at("target_api").get<std::string>());
+            metadata.reloadable = manifest.value("reloadable", false);
+            if(manifest.contains("maps")) {
+                metadata.maps = manifest.at("maps").get<std::vector<std::string>>();
+            }
+        }
+        catch(const nlohmann::json::exception &e) {
+            logger.error("Error reading manifest for plugin {}: {}", m_filename, e.what());
+            return false;
+        }
+        catch(const std::invalid_argument &e) {
+            logger.error("Invalid version in manifest for plugin {}: {}", m_filename, e.what());
+            return false;
+        }
+
+        m_metadata = metadata;
+        
+        return true;
+    }
+
     void NativePlugin::update_metadata() {
         auto metadata_proc = GetProcAddress(m_handle, "plugin_metadata");
         if(metadata_proc) {
@@ -110,10 +145,10 @@ namespace Balltze::Plugins {
         if(m_handle) {
             throw std::runtime_error("plugin already initialized");
         }
+        set_up_directory();
         m_handle = LoadLibraryA(m_filepath.string().c_str());
         if(m_handle) {
             update_metadata();
-            set_up_directory();
         }
         else {
             throw std::runtime_error("could not load plugin");
@@ -390,12 +425,35 @@ namespace Balltze::Plugins {
         if(m_state) {
             throw std::runtime_error("plugin already initialized");
         }
+
+        set_up_directory();
+        read_manifest();
+
+        m_loaded_api = m_metadata ? m_metadata->target_api : semver::version{1, 1, 0};
+        if(m_loaded_api.major == 1 && m_loaded_api != Lua::Api::V1::api_version) {
+            logger.warning("Plugin {} is using an outdated 1.x.x API version ({}), expected {}.", 
+                m_filename, m_loaded_api.to_string(), Lua::Api::V1::api_version.to_string());
+        }
+        else if(m_loaded_api.major == 2 && m_loaded_api < Lua::Api::V2::api_version) {
+            logger.warning("Plugin {} is using an outdated API version ({}), expected {}.", 
+                m_filename, m_loaded_api.to_string(), Lua::Api::V2::api_version.to_string());
+        }
+        else if(m_loaded_api > Lua::Api::V2::api_version) {
+            throw std::runtime_error("Plugin " + m_filename + " is using a newer API version (" + m_loaded_api.to_string() + 
+                "), expected " + Lua::Api::V2::api_version.to_string() + ".");
+        }
+
         m_state = luaL_newstate();
         if(m_state) {
             // Open standard libraries and Balltze API
             luaL_openlibs(m_state);
-            Lua::Api::open_balltze_api_v1(m_state);
-            Lua::Api::open_balltze_api_v2(m_state);
+            
+            if(m_loaded_api.major == 1) {
+                Lua::Api::open_balltze_api_v1(m_state);
+            }
+            else if(m_loaded_api.major == 2) {
+                Lua::Api::open_balltze_api_v2(m_state);
+            }
 
             // Set up preloaded libraries
             Lua::set_preloaded_libraries(m_state);
@@ -408,9 +466,6 @@ namespace Balltze::Plugins {
             lua_setfield(m_state, -2, "getenv");
             lua_pushnil(m_state);
             lua_setfield(m_state, -2, "execute");
-            
-            // Get plugin directory
-            set_up_directory();
                  
             // Set package.path and package.cpath
             lua_getglobal(m_state, "package");

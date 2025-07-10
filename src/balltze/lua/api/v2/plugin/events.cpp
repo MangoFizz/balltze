@@ -85,10 +85,8 @@ namespace Balltze::Lua::Api::V2 {
             lua_pushvalue(state, -2); // listeners table
             lua_pushstring(state, handle.c_str());
             lua_pushcclosure(state, +[](lua_State *state) -> int {
-                lua_pushvalue(state, lua_upvalueindex(2));
                 lua_pushnil(state);
-                const char *handle = luaL_checkstring(state, lua_upvalueindex(2));
-                lua_setfield(state, -2, handle);
+                lua_setfield(state, lua_upvalueindex(1), luaL_checkstring(state, lua_upvalueindex(2)));
                 return 0;
             }, 2);
             lua_setfield(state, -4, "remove");
@@ -253,20 +251,17 @@ namespace Balltze::Lua::Api::V2 {
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEvent, frame)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(TickEvent, tick)
 
-    static const luaL_Reg events_functions[] = {
-        {"addListener", lua_event_add_listener},
-        {"removeListeners", lua_event_remove_listeners},
-        {nullptr, nullptr}
-    };
-
-    void set_up_events_table(lua_State *state, int table_idx) noexcept {
+    void set_event_functions(lua_State *state, int table_idx) noexcept {
         int table_abs_idx = lua_absindex(state, table_idx);
         
         SET_UP_EVENT(FrameEvent, frame);
         SET_UP_EVENT(TickEvent, tick);
 
         lua_pushvalue(state, table_abs_idx);
-        create_functions_table(state, "events", events_functions);
+        push_plugin_function(state, lua_event_add_listener);
+        lua_setfield(state, -2, "addEventListener");
+        push_plugin_function(state, lua_event_remove_listeners);
+        lua_setfield(state, -2, "removeEventListeners");
         lua_pop(state, 1); 
     }
 
