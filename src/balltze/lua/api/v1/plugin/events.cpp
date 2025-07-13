@@ -6,8 +6,8 @@
 #include <balltze/legacy_api/engine/tag_definitions.hpp>
 #include <balltze/utils.hpp>
 #include "../../../../logger.hpp"
-#include "../../../../plugins/plugin.hpp"
-#include "../../../../plugins/loader.hpp"
+#include "../../../../legacy_api/plugins/plugin.hpp"
+#include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../helpers/function_table.hpp"
 #include "../../../helpers/registry.hpp"
 #include "../types.hpp"
@@ -267,7 +267,7 @@ namespace Balltze::Lua::Api::V1 {
 
     #define SET_POPULATE_EVENT_FUNCTION(eventClass, eventName, eventTable) \
         static void populate_##eventName##_events(eventClass &event, EventPriority priority) noexcept { \
-            auto plugins = Plugins::get_lua_plugins(); \
+            auto plugins = LegacyApi::Plugins::get_lua_plugins(); \
             for(auto *&plugin : plugins) { \
                 if(plugin->loaded()) { \
                     auto *state = plugin->state(); \
@@ -282,7 +282,7 @@ namespace Balltze::Lua::Api::V1 {
 
     #define SET_POPULATE_EVENT_NO_ARGS_FUNCTION(eventClass, eventName, eventTable) \
         static void populate_##eventName##_events(eventClass &event, EventPriority priority) noexcept { \
-            auto plugins = Plugins::get_lua_plugins(); \
+            auto plugins = LegacyApi::Plugins::get_lua_plugins(); \
             for(auto *&plugin : plugins) { \
                 if(plugin->loaded()) { \
                     auto *state = plugin->state(); \

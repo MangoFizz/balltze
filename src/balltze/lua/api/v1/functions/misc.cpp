@@ -5,7 +5,7 @@
 #include <clipboardxx/clipboardxx.hpp>
 #include <balltze/legacy_api/events/render.hpp>
 #include <balltze/legacy_api/events/tick.hpp>
-#include "../../../../plugins/loader.hpp"
+#include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../../logger.hpp"
 #include "../../../helpers/function_table.hpp"
 #include "../../../helpers/registry.hpp"
@@ -13,7 +13,7 @@
 #include "../../../libraries/preloaded_libraries.hpp"
 
 namespace Balltze::Lua::Api::V1 {
-    using LuaPlugin = Plugins::LuaPlugin;
+    using LuaPlugin = LegacyApi::Plugins::LuaPlugin;
 
     static int lua_get_elapsed_milliseconds(lua_State *state) noexcept {
         int args = lua_gettop(state);
@@ -141,7 +141,7 @@ namespace Balltze::Lua::Api::V1 {
     static int set_timer(lua_State *state) noexcept {
         using time_point_t = std::chrono::steady_clock::time_point;
 
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.misc.setTimer");
         }
@@ -233,7 +233,7 @@ namespace Balltze::Lua::Api::V1 {
 
         static auto tickHandler = LegacyApi::Event::TickEvent::subscribe_const([](const LegacyApi::Event::TickEvent &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
-                auto plugins = Plugins::get_lua_plugins();
+                auto plugins = LegacyApi::Plugins::get_lua_plugins();
                 for(auto *plugin : plugins) {
                     check_timers(plugin);
                 }
@@ -242,7 +242,7 @@ namespace Balltze::Lua::Api::V1 {
 
         static auto frameHandler = LegacyApi::Event::FrameEvent::subscribe_const([](const LegacyApi::Event::FrameEvent &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
-                auto plugins = Plugins::get_lua_plugins();
+                auto plugins = LegacyApi::Plugins::get_lua_plugins();
                 for(auto *plugin : plugins) {
                     check_timers(plugin);
                 }

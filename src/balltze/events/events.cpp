@@ -5,8 +5,11 @@
 namespace Balltze::Events {
     void set_up_events_handlers() {
         try {
-            EventHandler<FrameEvent>::init();
+            EventHandler<FrameBeginEvent>::init();
+            EventHandler<FrameEndEvent>::init();
             EventHandler<TickEvent>::init();
+            EventHandler<MapLoadEvent>::init();
+            EventHandler<MapLoadedEvent>::init();
         }
         catch(std::runtime_error) {
             throw;

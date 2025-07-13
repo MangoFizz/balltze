@@ -8,7 +8,7 @@
 #include <fmt/core.h>
 #include <fmt/os.h>
 #include <fmt/printf.h>
-#include "../plugins/loader.hpp"
+#include "../legacy_api/plugins/loader.hpp"
 
 namespace Balltze {
     static std::string name_for_log_level(Logger::LogLevel level) noexcept {
@@ -117,7 +117,7 @@ namespace Balltze {
             m_file_path = file_path;
         }
         else {
-            auto *plugin = Plugins::get_dll_plugin(module);
+            auto *plugin = LegacyApi::Plugins::get_dll_plugin(module);
             if(plugin) {
                 if(plugin->path_is_valid(file_path)) {
                     try {

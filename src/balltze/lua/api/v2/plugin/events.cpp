@@ -29,6 +29,7 @@ namespace Balltze::Lua::Api::V2 {
     static void get_event_table(lua_State *state, const char *name) noexcept {
         get_or_create_events_table(state);
         lua_getfield(state, -1, name);
+        lua_remove(state, -2);
     }
 
     static void get_or_create_event_listeners_table(lua_State *state, const char *name, const char *priority) noexcept {
@@ -151,29 +152,26 @@ namespace Balltze::Lua::Api::V2 {
             lua_pop(state, 1);
         }
 
-        bool has_context = false;
         if(create_event_object) {
             create_event_object(state);
-            has_context = true;
         }
         else {
             lua_pushnil(state);
         }
 
         // Call all event listeners
-        bool cancelled = false;
         int size = lua_rawlen(state, -2);
         for(int i = 1; i <= size; i++) {
-            lua_rawgeti(state, -2, i);
-            lua_pushvalue(state, -2);
-            int res = lua_pcall(state, 1, 0, 0);
+            lua_pushcfunction(state, Plugins::LuaPlugin::error_message_handler);
+            lua_rawgeti(state, -3, i);
+            int res = lua_pcall(state, 0, 0, -3);
             if(res != LUA_OK) {
                 logger.error("Error in event listener in Balltze.events.{}: {}.", name, lua_tostring(state, -1));
                 lua_pop(state, 1);
             }
         }
-
-        lua_pop(state, 2);
+        
+        lua_pop(state, 3);
     };
 
     int lua_event_add_listener(lua_State *state) noexcept {
@@ -223,7 +221,7 @@ namespace Balltze::Lua::Api::V2 {
             auto plugins = Plugins::get_lua_plugins(); \
             for(auto *&plugin : plugins) { \
                 if(plugin->loaded()) { \
-                    auto *state = plugin->state(); \
+                    auto *state = plugin->lua_state(); \
                     call_events_by_priority(state, #event_name, priority, nullptr); \
                 } \
             } \
@@ -248,13 +246,15 @@ namespace Balltze::Lua::Api::V2 {
         }, EVENT_PRIORITY_LOWEST); \
     }
 
-    POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEvent, frame)
+    POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameBeginEvent, frame_begin)
+    POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEndEvent, frame_end)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(TickEvent, tick)
 
-    void set_event_functions(lua_State *state, int table_idx) noexcept {
+    void set_up_plugin_events(lua_State *state, int table_idx) noexcept {
         int table_abs_idx = lua_absindex(state, table_idx);
         
-        SET_UP_EVENT(FrameEvent, frame);
+        SET_UP_EVENT(FrameBeginEvent, frame_begin);
+        SET_UP_EVENT(FrameEndEvent, frame_end);
         SET_UP_EVENT(TickEvent, tick);
 
         lua_pushvalue(state, table_abs_idx);

@@ -6,10 +6,17 @@
 #include "../events.hpp"
 
 namespace Balltze::Events {
-    class FrameEvent : public EventData<FrameEvent> {
+    class FrameBeginEvent : public EventData<FrameBeginEvent> {
     public:
-        FrameEvent() : EventData(false) {}
+        FrameBeginEvent() : EventData(false) {}
     };
+
+    class FrameEndEvent : public EventData<FrameEndEvent> {
+    public:
+        FrameEndEvent() : EventData(false) {}
+    };
+
+    using FrameEvent = FrameEndEvent;
 }
 
 #endif

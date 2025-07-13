@@ -13,7 +13,7 @@
 #include <balltze/utils.hpp>
 #include "../../../../version.hpp"
 #include "../../../../logger.hpp"
-#include "../../../../plugins/loader.hpp"
+#include "../../../../legacy_api/plugins/loader.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     int populate_chimera_table(lua_State *state) noexcept;
@@ -391,7 +391,7 @@ namespace Balltze::Lua::Api::V1 {
 
     int populate_chimera_table(lua_State *state) noexcept {
         if(LuaLibrary::balltze_chimera_script) {
-            auto plugins = Plugins::get_lua_plugins();
+            auto plugins = LegacyApi::Plugins::get_lua_plugins();
             for(auto *&plugin : plugins) {
                 if(plugin->initialized()) {
                     auto *plugin_state = plugin->state();

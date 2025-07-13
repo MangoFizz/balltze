@@ -3,7 +3,6 @@
 #include <string>
 #include <lua.hpp>
 #include <impl/tag/tag.h>
-#include "../../../../helpers/function_table.hpp"
 #include "../../../../helpers/enum.hpp"
 #include "../../types.hpp"
 
@@ -117,6 +116,7 @@ namespace Balltze::Lua::Api::V2 {
     };
 
     void set_engine_tag_functions(lua_State *state) noexcept {
-        create_functions_table(state, "tag", engine_tag_functions);
+        luaL_newlib(state, engine_tag_functions);
+        lua_setfield(state, -2, "tag");
     }
 }

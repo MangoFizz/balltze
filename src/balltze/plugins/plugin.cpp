@@ -1,617 +1,300 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include <nlohmann/json.hpp>
 #include "../config/config.hpp"
-#include "../logger.hpp"
-#include "../version.hpp"
-#include "../lua/api/v1/api.hpp"
-#include "../lua/api/v1/plugin/commands.hpp"
+#include "../lua/api/v2/plugin/commands.hpp"
 #include "../lua/api/v2/api.hpp"
 #include "../lua/libraries/preloaded_libraries.hpp"
+#include "../logger.hpp"
+#include "../version.hpp"
 #include "plugin.hpp"
 
-namespace Balltze {
-    extern std::vector<std::shared_ptr<Command>> commands;
-}
-
 namespace Balltze::Plugins {
-    static std::filesystem::path get_plugin_dll_path(HMODULE dll = NULL) {
-        char filename[MAX_PATH];
-        GetModuleFileNameA(dll, filename, MAX_PATH);
-        return std::filesystem::path(filename);
-    }
-
-    std::string Plugin::filename() const noexcept {
-        return m_filename;
-    }
-
-    std::filesystem::path Plugin::filepath() const noexcept {
-        return m_filepath;
-    }
-
-    std::string Plugin::name() const noexcept {
-        return m_metadata->name;
-    }
-
-    std::string Plugin::author() const noexcept {
-        return m_metadata->author;
-    }
-
-    semver::version Plugin::version() const noexcept {
-        return m_metadata->version;
-    }
-
-    semver::version Plugin::target_api() const noexcept {
-        return m_metadata->target_api;
-    }
-
-    std::vector<std::string> const &Plugin::maps() const noexcept {
-        return m_metadata->maps;
-    }
-
-    bool Plugin::reloadable() const noexcept {
-        return m_metadata->reloadable;
+    const PluginMetadata &Plugin::metadata() const noexcept {
+        return m_metadata;
     }
 
     std::filesystem::path Plugin::directory() const noexcept {
         return m_directory;
     }
 
-    bool Plugin::path_is_valid(std::filesystem::path path) const noexcept {
-        return std::filesystem::absolute(path).string().find(std::filesystem::absolute(m_directory).string()) != std::string::npos;
+    std::string Plugin::name() const noexcept {
+        return m_metadata.name;
     }
 
-    void Plugin::init_data_directory() {
-        if(!std::filesystem::exists(m_directory)) {
-            try {
-                std::filesystem::create_directories(m_directory);
-            }
-            catch(std::filesystem::filesystem_error& e) {
-                logger.error("Could not create plugin data directory: {}", e.what());
-                throw;
-            }
-        }
+    std::vector<std::string> const &Plugin::maps() const noexcept {
+        return m_metadata.maps;
+    }
+
+    bool Plugin::reloadable() const noexcept {
+        return m_metadata.reloadable;
     }
 
     bool Plugin::loaded() const noexcept {
-        return initialized() && m_loaded;
+        return m_loaded;
     }
 
-    bool Plugin::read_manifest() noexcept {
-        std::ifstream manifest_file(m_directory / "manifest.json");
-        if(!manifest_file) {
-            logger.error("Could not open manifest file for plugin {}.", m_filename);
-            return false;
+    Plugin::Plugin(std::filesystem::path directory, const PluginMetadata &metadata) : m_directory(std::move(directory)), m_metadata(metadata) {
+        if(!std::filesystem::exists(m_directory) || !std::filesystem::is_directory(m_directory)) {
+            throw std::invalid_argument("Invalid plugin directory: " + m_directory.string());
         }
-        nlohmann::json manifest;
-        manifest_file >> manifest;
-        manifest_file.close();
+        auto main_file = m_directory / m_metadata.plugin_main;
+        if(!std::filesystem::exists(main_file)) {
+            throw std::runtime_error("Plugin main file not found: " + main_file.string());
+        }
+    }
 
+    PluginMetadata Plugin::read_manifest(std::filesystem::path manifest_path) noexcept {
         PluginMetadata metadata;
+        if(!std::filesystem::exists(manifest_path)) {
+            throw std::runtime_error("Manifest file does not exist: " + manifest_path.string());
+        }
+
+        std::ifstream manifest_file(manifest_path);
+        if(!manifest_file.is_open()) {
+            throw std::runtime_error("Could not open plugin manifest: " + manifest_path.string());
+        }
+
         try {
-            metadata.name = manifest.at("name").get<std::string>();
-            metadata.author = manifest.at("author").get<std::string>();
-            metadata.version = semver::version(manifest.at("version").get<std::string>());
-            metadata.target_api = semver::version(manifest.at("target_api").get<std::string>());
-            metadata.reloadable = manifest.value("reloadable", false);
-            if(manifest.contains("maps")) {
-                metadata.maps = manifest.at("maps").get<std::vector<std::string>>();
-            }
-        }
-        catch(const nlohmann::json::exception &e) {
-            logger.error("Error reading manifest for plugin {}: {}", m_filename, e.what());
-            return false;
-        }
-        catch(const std::invalid_argument &e) {
-            logger.error("Invalid version in manifest for plugin {}: {}", m_filename, e.what());
-            return false;
-        }
+            nlohmann::json manifest_json;
+            manifest_file >> manifest_json;
 
-        m_metadata = metadata;
-        
-        return true;
-    }
+            metadata.name = manifest_json.at("name").get<std::string>();
+            metadata.author = manifest_json.at("author").get<std::string>();
+            metadata.plugin_main = manifest_json.at("plugin_main").get<std::string>();
+            metadata.version = semver::version(manifest_json.at("version").get<std::string>());
+            metadata.target_api = semver::version(manifest_json.at("target_api").get<std::string>());
+            metadata.maps = manifest_json.value("maps", std::vector<std::string>{});
+            metadata.reloadable = manifest_json.value("reloadable", false);
 
-    void NativePlugin::update_metadata() {
-        auto metadata_proc = GetProcAddress(m_handle, "plugin_metadata");
-        if(metadata_proc) {
-            auto get_metadata = reinterpret_cast<plugin_metadata_proc_t>(metadata_proc);
-            m_metadata = get_metadata();
-        }
-        else {
-            logger.warning("Could not find plugin_metadata function in plugin {}.", m_filename);
-            m_metadata = PluginMetadata();
-            m_metadata->name = m_filepath.stem().string();
-            m_metadata->reloadable = false;
+            return metadata;
+        } 
+        catch(const std::exception &e) {
+            throw std::runtime_error("Error reading plugin manifest: " + std::string(e.what()));
         }
     }
 
-    void NativePlugin::set_up_directory() {
-        m_directory = get_plugins_path() / m_filepath.stem().string();
-        init_data_directory();
-    }
-
-    HMODULE NativePlugin::handle() {
-        if(!m_handle) {
-            logger.warning("Trying to get handle of unloaded native plugin {}.", m_filename);
-        }
+    HMODULE NativePlugin::handle() const noexcept {
         return m_handle;
     }
 
-    bool NativePlugin::initialized() const noexcept {
-        return m_handle != nullptr;
-    }
-
-    void NativePlugin::init() {
-        if(m_handle) {
-            throw std::runtime_error("plugin already initialized");
+    void NativePlugin::load() {
+        if(m_load_failed) {
+            return;
         }
-        set_up_directory();
-        m_handle = LoadLibraryA(m_filepath.string().c_str());
-        if(m_handle) {
-            update_metadata();
-        }
-        else {
-            throw std::runtime_error("could not load plugin");
-        }
-    }
-
-    PluginLoadResult NativePlugin::load() {
-        logger.info("Loading plugin {}...", m_filename);
 
         if(m_loaded) {
-            throw std::runtime_error("tried to load a plugin that is already loaded");
+            throw std::runtime_error("Plugin already loaded: " + m_metadata.name);
         }
-        m_loaded = true;
 
+        m_handle = LoadLibraryA(m_directory.string().c_str());
         if(!m_handle) {
-            try {
-                init();
-            }
-            catch(std::runtime_error &e) {
-                logger.error("Failed to initialize plugin {}: {}", m_filename, e.what());
-                return PluginLoadResult::PLUGIN_LOAD_FAILURE;
-            }
+            m_load_failed = true;
+            throw std::runtime_error("Could not load plugin DLL: " + m_directory.string());
         }
 
-        // check if plugin is compatible with the current version of Balltze
-        if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
-            return PluginLoadResult::PLUGIN_LOAD_INCOMPATIBLE;
+        m_loaded = true;
+        logger.info("Plugin {} loaded successfully.", m_metadata.name);
+    }
+
+    void NativePlugin::call_on_game_start() {
+        if(!m_loaded) {
+            throw std::runtime_error("Plugin not loaded: " + m_metadata.name);
         }
 
-        auto load_proc = GetProcAddress(m_handle, "plugin_load");
-        if(load_proc) {
-            try {
-                auto load_plugin = reinterpret_cast<plugin_load_proc_t>(load_proc);
-                bool result = load_plugin();
-                if(result) {
-                    m_execute_first_tick = true;
-                    return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
-                }
-            }
-            catch(std::runtime_error& e) {
-                logger.error("Failed to load plugin {}: {}", m_metadata->name, e.what());
-            }
-            return PluginLoadResult::PLUGIN_LOAD_FAILURE;
+        if(m_game_start_called) {
+            return;
         }
-        else {
-            return PluginLoadResult::PLUGIN_LOAD_NOT_FOUND;
+        m_game_start_called = true;
+
+        auto on_game_start_func = reinterpret_cast<void(*)()>(GetProcAddress(m_handle, "plugin_on_game_start"));
+        if(on_game_start_func) {
+            try {
+                on_game_start_func();
+            } 
+            catch(const std::exception &e) {
+                logger.error("Error calling plugin on_game_start function: {}", e.what());
+            }
+        } else {
+            logger.warning("Plugin {} does not have an on_game_start function.", m_metadata.name);
         }
     }
 
     void NativePlugin::unload() {
-        if(!m_handle) {
-            throw std::runtime_error("tried to unload plugin that is not initialized");
+        if(m_handle) {
+            auto unload_func = reinterpret_cast<void(*)()>(GetProcAddress(m_handle, "plugin_unload"));
+            if(unload_func) {
+                try {
+                    unload_func();
+                } 
+                catch(const std::exception &e) {
+                    logger.error("Error calling plugin unload function: {}", e.what());
+                }
+            }
+            FreeLibrary(m_handle);
+            m_handle = nullptr;
         }
-        if(!m_loaded) {
-            throw std::runtime_error("tried to unload plugin that is not loaded");
-        }
-
-        logger.info("Unloading plugin {}...", m_filename);
-        auto unload_proc = GetProcAddress(m_handle, "plugin_unload");
-        if(unload_proc) {
-            auto unload_plugin = reinterpret_cast<plugin_unload_proc_t>(unload_proc);
-            unload_plugin();
-        }
-
-        remove_commands_from_plugin(this);
-        
-        dispose();
+        m_game_start_called = false;
+        m_load_failed = false;
         m_loaded = false;
     }
 
-    void NativePlugin::dispose() {
-        if(!m_handle) {
-            throw std::runtime_error("plugin not initialized");
+    NativePlugin::~NativePlugin() {
+        if(m_loaded) {
+            try {
+                logger.debug("Disposing plugin {}...", m_metadata.name);
+                unload();
+            } 
+            catch(const std::runtime_error &e) {
+                logger.error("Failed to unload plugin {}: {}", m_metadata.name, e.what());
+            }
         }
-        logger.debug("Disposing plugin {}...", m_filename);
-        FreeLibrary(m_handle);
-        m_handle = nullptr;
     }
 
-    void NativePlugin::first_tick() {
-        if(!m_handle) {
-            throw std::runtime_error("plugin not initialized");
-        }
-        if(!m_execute_first_tick) {
+    lua_State *LuaPlugin::lua_state() const noexcept {
+        return m_lua_state;
+    }
+
+    Logger *LuaPlugin::plugin_logger() noexcept {
+        return m_plugin_logger.get();
+    }
+
+    void LuaPlugin::load() {
+        if(m_load_failed) {
             return;
         }
-        auto first_tick_proc = GetProcAddress(m_handle, "plugin_first_tick");
-        if(first_tick_proc) {
-            auto first_tick = reinterpret_cast<plugin_first_tick_proc_t>(first_tick_proc);
-            first_tick();
-        }
-        m_execute_first_tick = false;
-    }
-
-    NativePlugin::NativePlugin(std::filesystem::path dll_file) {
-        m_filename = dll_file.filename().string();
-        m_filepath = dll_file;
-        m_handle = nullptr;
-        try {
-            init();
-        }
-        catch(std::runtime_error& e) {
-            logger.error("Failed to initialize plugin {}: {}", m_filename, e.what());
-            throw;
-        }
-    }
-
-    NativePlugin::~NativePlugin() {
-        if(m_handle) {
-            dispose();
-        }
-    }
-
-    void LuaPlugin::update_metadata() {
-        m_metadata = PluginMetadata();
-        lua_getglobal(m_state, "PluginMetadata");
-        if(lua_isfunction(m_state, -1)) {
-            lua_pcall(m_state, 0, 1, 0);
-            if(lua_istable(m_state, -1)) {
-                lua_getfield(m_state, -1, "name");
-                if(lua_isstring(m_state, -1)) {
-                    m_metadata->name = lua_tostring(m_state, -1);
-                }
-                else {
-                    logger.warning("Could not read name in plugin {}.", m_filename);
-                    m_metadata->name = m_filepath.stem().string();
-                }
-                lua_pop(m_state, 1);
-                
-                lua_getfield(m_state, -1, "author");
-                if(lua_isstring(m_state, -1)) {
-                    m_metadata->author = lua_tostring(m_state, -1);
-                }
-                else {
-                    logger.warning("Could not read author in plugin {}.", m_filename);
-                    m_metadata->author = "Unknown";
-                }
-                lua_pop(m_state, 1);
-                
-                try {
-                    lua_getfield(m_state, -1, "version");
-                    if(lua_isstring(m_state, -1)) {
-                        auto *version_str = luaL_checkstring(m_state, -1); 
-                        m_metadata->version = semver::version{version_str};
-                    }
-                    lua_pop(m_state, 1);
-                    
-                    lua_getfield(m_state, -1, "targetApi");
-                    if(lua_isstring(m_state, -1)) {
-                        auto *version_str = luaL_checkstring(m_state, -1);
-                        m_metadata->target_api = semver::version{version_str};
-                    }
-                    lua_pop(m_state, 1);
-                }
-                catch(std::runtime_error& e) {
-                    logger.warning("Could not read plugin version/target api version in plugin {}.", m_filename);
-                }
-
-                lua_getfield(m_state, -1, "maps");
-                if(lua_istable(m_state, -1)) {
-                    lua_pushnil(m_state);
-                    while(lua_next(m_state, -2) != 0) {
-                        if(lua_isstring(m_state, -1)) {
-                            m_metadata->maps.push_back(lua_tostring(m_state, -1));
-                        }
-                        lua_pop(m_state, 1);
-                    }
-                }
-                lua_pop(m_state, 1);
-
-                lua_getfield(m_state, -1, "reloadable");
-                if(lua_isboolean(m_state, -1)) {
-                    m_metadata->reloadable = lua_toboolean(m_state, -1);
-                }
-                else {
-                    logger.warning("Could not read reloadable in plugin {}.", m_filename);
-                    m_metadata->reloadable = false;
-                }
-                lua_pop(m_state, 1);
-            }
-            else {
-                logger.warning("PluginMetadata function did not return a table in plugin {}.", m_filename);
-                m_metadata->name = m_filepath.stem().string();
-            }
-            lua_pop(m_state, 1);
-        }
-        else {
-            logger.warning("Could not find PluginMetadata function in plugin {}.", m_filename);
-            m_metadata->name = m_filepath.stem().string();
-        }
-    }
-
-    void LuaPlugin::set_up_directory() {
-        m_directory =  get_plugins_path() / ("lua_" + m_filepath.stem().string());
-        init_data_directory();
-    }
-
-    lua_State* LuaPlugin::state() noexcept {
-        if(!m_state) {
-            logger.warning("Trying to get state of unloaded Lua plugin {}.", m_filename);
-        }
-        return m_state;
-    }
-
-    void LuaPlugin::add_logger(std::string name) {
-        if(get_logger(name)) {
-            throw std::runtime_error("Logger already exists.");
-        }
-        m_loggers.push_back(std::make_unique<Logger>(name));
-    }
-
-    void LuaPlugin::remove_logger(std::string name) {
-        for(auto it = m_loggers.begin(); it != m_loggers.end(); ++it) {
-            if((*it)->name() == name) {
-                m_loggers.erase(it);
-                return;
-            }
-        }
-        throw std::runtime_error("Logger does not exist.");
-    }
-
-    Logger *LuaPlugin::get_logger(std::string name) noexcept {
-        for(auto& logger : m_loggers) {
-            if(logger->name() == name) {
-                return logger.get();
-            }
-        }
-        return nullptr;
-    }
-
-    void LuaPlugin::add_tag_import(std::string map_name_or_path, std::string tag_path, LegacyApi::Engine::TagClassInt tag_class) {
-        if(m_tag_imports.find(map_name_or_path) == m_tag_imports.end()) {
-            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>();
-        }
-        m_tag_imports[map_name_or_path].push_back(std::make_pair(tag_path, tag_class));
-    }
-
-    void LuaPlugin::import_all_tags(std::string map_name_or_path) {
-        if(m_tag_imports.find(map_name_or_path) == m_tag_imports.end()) {
-            m_tag_imports[map_name_or_path] = std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>();
-        }
-    }
-
-    void LuaPlugin::clear_tag_imports() noexcept {
-        m_tag_imports.clear();
-    }
-
-    std::map<std::string, std::vector<std::pair<std::string, LegacyApi::Engine::TagClassInt>>> const &LuaPlugin::imported_tags() const noexcept {
-        return m_tag_imports;
-    }
-
-    void LuaPlugin::print_traceback() {
-        luaL_traceback(m_state, m_state, NULL, 1);
-        const char *traceback = lua_tostring(m_state, -1);
-        lua_pop(m_state, 1);
-        logger.debug("Traceback: {}", traceback);
-    }
-
-    std::string LuaPlugin::get_error_message() {
-        const char *err = lua_tostring(m_state, -1);
-        if(err == nullptr) {
-            err = "Unknown error (no error message available).";
-        }
-        std::string message = err;
-        lua_pop(m_state, 1);
-        return err;
-    }
-
-    bool LuaPlugin::initialized() const noexcept {
-        return m_state != nullptr;
-    }
-
-    void LuaPlugin::init() {
-        if(m_state) {
-            throw std::runtime_error("plugin already initialized");
-        }
-
-        set_up_directory();
-        read_manifest();
-
-        m_loaded_api = m_metadata ? m_metadata->target_api : semver::version{1, 1, 0};
-        if(m_loaded_api.major == 1 && m_loaded_api != Lua::Api::V1::api_version) {
-            logger.warning("Plugin {} is using an outdated 1.x.x API version ({}), expected {}.", 
-                m_filename, m_loaded_api.to_string(), Lua::Api::V1::api_version.to_string());
-        }
-        else if(m_loaded_api.major == 2 && m_loaded_api < Lua::Api::V2::api_version) {
-            logger.warning("Plugin {} is using an outdated API version ({}), expected {}.", 
-                m_filename, m_loaded_api.to_string(), Lua::Api::V2::api_version.to_string());
-        }
-        else if(m_loaded_api > Lua::Api::V2::api_version) {
-            throw std::runtime_error("Plugin " + m_filename + " is using a newer API version (" + m_loaded_api.to_string() + 
-                "), expected " + Lua::Api::V2::api_version.to_string() + ".");
-        }
-
-        m_state = luaL_newstate();
-        if(m_state) {
-            // Open standard libraries and Balltze API
-            luaL_openlibs(m_state);
-            
-            if(m_loaded_api.major == 1) {
-                Lua::Api::open_balltze_api_v1(m_state);
-            }
-            else if(m_loaded_api.major == 2) {
-                Lua::Api::open_balltze_api_v2(m_state);
-            }
-
-            // Set up preloaded libraries
-            Lua::set_preloaded_libraries(m_state);
-
-            // Remove os.exit, os.getenv and os.execute functions
-            lua_getglobal(m_state, "os");
-            lua_pushnil(m_state);
-            lua_setfield(m_state, -2, "exit");
-            lua_pushnil(m_state);
-            lua_setfield(m_state, -2, "getenv");
-            lua_pushnil(m_state);
-            lua_setfield(m_state, -2, "execute");
-                 
-            // Set package.path and package.cpath
-            lua_getglobal(m_state, "package");
-            auto new_lua_path = m_directory.string() + "\\modules\\?.lua";
-            lua_pushstring(m_state, new_lua_path.c_str());
-            lua_setfield(m_state, -2, "path");
-            auto new_lua_cpath = get_plugins_path().string() + "\\?.dll;" + m_directory.string() + "\\modules\\?.dll";
-            lua_pushstring(m_state, new_lua_cpath.c_str());
-            lua_setfield(m_state, -2, "cpath");
-            lua_pop(m_state, 1);
-
-            if(luaL_loadfile(m_state, m_filepath.string().c_str()) == LUA_OK) {
-                int res = lua_pcall(m_state, 0, 0, 0);
-                if(res != LUA_OK) {
-                    logger.error("Could not execute Lua plugin '{}': {}", m_filename, get_error_message());
-                    print_traceback();
-                    lua_close(m_state);
-                    throw std::runtime_error("Could not execute Lua plugin '" + m_filename + "'.");
-                }
-                update_metadata();
-            }
-            else {
-                lua_close(m_state);
-                throw std::runtime_error("could not read Lua plugin '" + m_filename + "'.");
-            }
-        }
-        else {
-            throw std::runtime_error("could not create Lua state for plugin '" + m_filename + "'.");
-        }
-    }
-
-    PluginLoadResult LuaPlugin::load() {
-        logger.info("Loading plugin {}...", m_filename);
 
         if(m_loaded) {
-            throw std::runtime_error("tried to load a plugin that is already loaded");
+            throw std::runtime_error("Plugin already loaded: " + m_metadata.name);
         }
+
+        init_lua_state();
+
+        auto script_path = m_directory / m_metadata.plugin_main;
+        if(luaL_loadfile(m_lua_state, script_path.string().c_str())) {
+            std::string error_msg = lua_tostring(m_lua_state, -1);
+            lua_pop(m_lua_state, 1); 
+            m_load_failed = true;
+            throw std::runtime_error("Could not load Lua plugin main file: " + script_path.string() + " - " + error_msg);
+        }
+
+        lua_pushcfunction(m_lua_state, error_message_handler);
+        lua_insert(m_lua_state, -2);
+
+        if(lua_pcall(m_lua_state, 0, 0, -2)) {
+            m_load_failed = true;
+            throw std::runtime_error("Error executing Lua plugin main file: " + pop_error_message());
+        }
+
         m_loaded = true;
+    }
 
-        if(!m_state) {
-            try {
-                init();
-            }
-            catch(std::runtime_error &e) {
-                logger.error("Failed to initialize plugin '{}': {}", m_filename, e.what());
-                return PluginLoadResult::PLUGIN_LOAD_FAILURE;
-            }
-        }
-        
-        if(m_metadata && m_metadata->target_api.major != Balltze::balltze_version.major) {
-            return PluginLoadResult::PLUGIN_LOAD_INCOMPATIBLE;
+    void LuaPlugin::call_on_game_start() {
+        if(!m_loaded) {
+            throw std::runtime_error("Plugin not loaded: " + m_metadata.name);
         }
 
-        lua_getglobal(m_state, "PluginLoad");
-        if(lua_isfunction(m_state, -1)) {
-            auto res = lua_pcall(m_state, 0, 1, 0);
-            if(res == LUA_OK) {
-                if(lua_isboolean(m_state, -1)) {
-                    bool result = lua_toboolean(m_state, -1);
-                    lua_pop(m_state, 1);
-                    if(result) {
-                        m_execute_first_tick = true;
-                        return PluginLoadResult::PLUGIN_LOAD_SUCCESS;
-                    }
-                }
-                lua_pop(m_state, 1);
-            }
-            else {
-                logger.error("Failed to load plugin '{}': {}", m_filename, get_error_message());
-                print_traceback();
-            }
-            return PluginLoadResult::PLUGIN_LOAD_FAILURE;
+        if(m_game_start_called) {
+            return;
         }
+        m_game_start_called = true;
+
+        lua_getglobal(m_lua_state, "PluginOnGameStart");
+        if(lua_isfunction(m_lua_state, -1)) {
+            if(lua_pcall(m_lua_state, 0, 0, 0)) {
+                logger.error("Error calling PluginOnGameStart in Lua plugin '{}': {}", m_metadata.name, pop_error_message());
+            }
+        } 
         else {
-            return PluginLoadResult::PLUGIN_LOAD_NOT_FOUND;
+            lua_pop(m_lua_state, 1); // Remove the non-function value
         }
     }
 
     void LuaPlugin::unload() {
-        if(!m_state) {
-            throw std::runtime_error("plugin already disposed");
-        }
-        if(!m_loaded) {
-            throw std::runtime_error("tried to unload plugin that is not loaded");
-        }
-
-        logger.debug("Unloading Lua plugin '{}'...", m_filename);
-        lua_getglobal(m_state, "PluginUnload");
-        if(lua_isfunction(m_state, -1)) {
-            auto res = lua_pcall(m_state, 0, 0, 0);
-            if(res != LUA_OK) {
-                logger.error("Error while unloading Lua plugin '{}': {}", m_filename, get_error_message());
-                print_traceback();
+        Lua::Api::V2::remove_console_commands_for_plugin(this);
+        if(m_lua_state) {
+            lua_pushcfunction(m_lua_state, error_message_handler);
+            lua_getglobal(m_lua_state, "PluginUnload");
+            if(lua_isfunction(m_lua_state, -1)) {
+                if(lua_pcall(m_lua_state, 0, 0, -2)) {
+                    logger.error("Error while calling PluginUnload in Lua plugin '{}': {}", m_metadata.name, pop_error_message());
+                }
             }
+            lua_close(m_lua_state);
+            m_lua_state = nullptr;
         }
-
-        remove_plugin_commands(this);
-
-        dispose();
+        m_game_start_called = false;
+        m_load_failed = false;
         m_loaded = false;
     }
 
-    void LuaPlugin::dispose() {
-        if(!m_state) {
-            throw std::runtime_error("plugin already disposed");
-        }
-        logger.debug("Disposing Lua plugin '{}'...", m_filename);
-        lua_close(m_state);
-        m_state = nullptr;
+    void LuaPlugin::add_tag_import(std::string map_name_or_path, std::string tag_path, LegacyApi::Engine::TagClassInt tag_class) {
+        m_tag_imports.push_back({std::move(map_name_or_path), std::move(tag_path), tag_class});
     }
 
-    void LuaPlugin::first_tick() {
-        if(!m_state) {
-            throw std::runtime_error("plugin not initialized");
-        }
-        if(!m_execute_first_tick) {
-            return;
-        }
-        lua_getglobal(m_state, "PluginFirstTick");
-        if(lua_isfunction(m_state, -1)) {
-            auto res = lua_pcall(m_state, 0, 0, 0);
-            if(res != LUA_OK) {
-                logger.error("Error while calling PluginFirstTick in Lua plugin '{}': {}", m_filename, get_error_message());
-                print_traceback();
-            }
-        }
-        m_execute_first_tick = false;
+    const std::vector<LuaPlugin::TagImport> &LuaPlugin::imported_tags() const noexcept {
+        return m_tag_imports;
     }
 
-    LuaPlugin::LuaPlugin(std::filesystem::path lua_file) {
-        m_filename = lua_file.filename().string();
-        m_filepath = lua_file;
-        m_state = nullptr;
-        try {
-            init();
-        }
-        catch(std::runtime_error &e) {
-            logger.error("Failed to initialize plugin '{}': {}", m_filename, e.what());
-            throw;
-        }
+    LuaPlugin::LuaPlugin(std::filesystem::path plugin_directory, const PluginMetadata &metadata) : Plugin(std::move(plugin_directory), metadata) {
+        m_plugin_logger = std::make_unique<Logger>(m_metadata.name);
     }
 
     LuaPlugin::~LuaPlugin() {
-        if(m_state) {
-            dispose();
+        if(m_loaded) {
+            try {
+                logger.debug("Disposing plugin {}...", m_metadata.name);
+                unload();
+            } 
+            catch(const std::runtime_error &e) {
+                logger.error("Failed to unload plugin {}: {}", m_metadata.name, e.what());
+            }
         }
+    }
+
+    void LuaPlugin::init_lua_state() {
+        m_lua_state = luaL_newstate();
+        if(!m_lua_state) {
+            throw std::runtime_error("Could not create Lua state for plugin: " + m_metadata.name);
+        }
+        
+        auto *state = m_lua_state;
+        luaL_openlibs(state);
+        Lua::Api::open_balltze_api_v2(state);
+        Lua::set_preloaded_libraries(state);
+
+        // Remove os.exit, os.getenv and os.execute functions
+        lua_getglobal(state, "os");
+        lua_pushnil(state);
+        lua_setfield(state, -2, "exit");
+        lua_pushnil(state);
+        lua_setfield(state, -2, "getenv");
+        lua_pushnil(state);
+        lua_setfield(state, -2, "execute");
+
+        // Set package.path and package.cpath
+        lua_getglobal(state, "package");
+        auto new_lua_path = m_directory.string() + "\\modules\\?.lua";
+        lua_pushstring(state, new_lua_path.c_str());
+        lua_setfield(state, -2, "path");
+        auto new_lua_cpath = m_directory.string() + "\\modules\\?.dll";
+        lua_pushstring(state, new_lua_cpath.c_str());
+        lua_setfield(state, -2, "cpath");
+        lua_pop(state, 1);
+    }
+
+    std::string LuaPlugin::pop_error_message() const noexcept {
+        const char *err = lua_tostring(m_lua_state, -1);
+        if(err == nullptr) {
+            err = "Unknown error (no error message available).";
+        }
+        lua_pop(m_lua_state, 1);
+        return err;
+    }
+
+    int LuaPlugin::error_message_handler(lua_State *state) noexcept {
+        luaL_traceback(state, state, lua_tostring(state, 1), 1);
+        return 1;
     }
 
     std::filesystem::path get_plugins_path() noexcept {
@@ -638,16 +321,4 @@ namespace Balltze::Plugins {
             throw;
         }
     }
-
-    void remove_plugin_commands(LuaPlugin *plugin) noexcept {
-        logger.debug("Removing commands from plugin {}", plugin->name());
-        for(auto it = commands.begin(); it != commands.end();) {
-            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
-                it = commands.erase(it);
-            }
-            else {
-                it++;
-            }
-        }   
-    }
-}
+} 

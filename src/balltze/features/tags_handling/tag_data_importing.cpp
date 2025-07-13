@@ -18,7 +18,7 @@
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
 #include "../../config/config.hpp"
-#include "../../plugins/loader.hpp"
+#include "../../legacy_api/plugins/loader.hpp"
 #include "../../logger.hpp"
 #include "map.hpp"
 #include "tags_handling.hpp"

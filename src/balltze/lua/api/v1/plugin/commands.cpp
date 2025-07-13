@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "../../../../logger.hpp"
-#include "../../../../plugins/loader.hpp"
+#include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../../config/config.hpp"
 #include "../../../helpers/function_table.hpp"
 #include "commands.hpp"
@@ -12,7 +12,7 @@ namespace Balltze {
 }
 
 namespace Balltze::Lua::Api::V1 {
-    using LuaPlugin = Plugins::LuaPlugin;
+    using LuaPlugin = LegacyApi::Plugins::LuaPlugin;
 
     static int lua_get_commands_table(lua_State *state) noexcept {
         auto balltze_module = Balltze::get_current_module();
@@ -93,7 +93,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int register_command(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 10) {
@@ -155,7 +155,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int execute_command(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.command.executeCommand.");
         }
@@ -179,7 +179,7 @@ namespace Balltze::Lua::Api::V1 {
         CommandResult res = COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
         for(const auto command : commands) {
             if(command->full_name() == command_name) {
-                Plugins::Plugin *command_plugin = reinterpret_cast<Plugins::Plugin *>(*command->plugin());
+                LegacyApi::Plugins::Plugin *command_plugin = reinterpret_cast<LegacyApi::Plugins::Plugin *>(*command->plugin());
                 if(command->is_public() || plugin == command_plugin || plugin->filename() == "balltze_devkit_server.lua") {
                     res = command->call(arg_count, arguments_alloc.get());
 
@@ -209,7 +209,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int load_settings(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.command.loadSettings.");
         }

@@ -1,31 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <windows.h>
-#include <vector>
-#include <filesystem>
-#include <memory>
+#include <balltze/events.hpp>
 #include <balltze/command.hpp>
-#include <balltze/legacy_api/event.hpp>
 #include "../logger.hpp"
+#include "plugin.hpp"
 #include "loader.hpp"
 
+using namespace Balltze::Events;
+
+namespace Balltze::LegacyApi::Plugins {
+    extern bool reinit_plugins_on_next_tick;
+}
+
 namespace Balltze::Plugins {
-    using namespace LegacyApi::Event;
-
+    static bool reload_plugins_on_next_tick = false;
     static std::vector<std::unique_ptr<Plugin>> plugins;
-    static bool reinit_plugins_on_next_tick;
-    static std::optional<std::string> last_map;
 
-    static bool plugin_loaded(std::filesystem::path path) noexcept {
-        for(auto &plugin : plugins) {
-            if(plugin->filepath() == path) {
-                return true;
-            }
-        }
-        return false;
+    static bool plugin_is_global(Plugin *plugin) noexcept {
+        return plugin->maps().empty();
     }
 
-    static bool plugin_should_load_on_map(Plugin *plugin, std::string map) noexcept {
+    static bool plugin_should_load_on_map(Plugin *plugin, const std::string &map) noexcept {
         if(plugin->maps().empty()) {
             return true;
         }
@@ -35,158 +30,6 @@ namespace Balltze::Plugins {
             }
         }
         return false;
-    }
-
-    static bool plugin_is_global(Plugin *plugin) noexcept {
-        return plugin->maps().empty();
-    }
-
-    static void init_plugins() noexcept {
-        logger.info("Initializing plugins...");
-        init_plugins_path();
-        auto plugins_path = get_plugins_path();
-
-        // Load native plugins first so that they can be used by Lua plugins
-        for(auto &plugin_file : std::filesystem::directory_iterator(plugins_path)) {
-            if(plugin_file.path().extension() == ".dll") {
-                if(plugin_loaded(plugin_file.path())) {
-                    continue;
-                }
-                try {
-                    plugins.emplace_back(std::make_unique<NativePlugin>(plugin_file.path()));
-                }
-                catch(std::runtime_error &) {
-                    logger.error("Failed to initialize plugin {}", plugin_file.path().filename().string());
-                }
-            }
-        }
-
-        for(auto &plugin_file : std::filesystem::directory_iterator(plugins_path)) {
-            if(plugin_file.path().extension() == ".lua") {
-                if(plugin_loaded(plugin_file.path())) {
-                    continue;
-                }
-                try {
-                    plugins.emplace_back(std::make_unique<LuaPlugin>(plugin_file.path()));
-                }
-                catch(std::runtime_error &) {
-                    logger.error("Failed to initialize plugin {}", plugin_file.path().filename().string());
-                }
-            }
-        }
-    }
-
-    static void load_plugin(Plugin *plugin) {
-        auto load_result = plugin->load();
-        switch(load_result) {
-            case PLUGIN_LOAD_SUCCESS:
-                logger.debug("Plugin {} loaded successfully.", plugin->name());
-                break;
-            case PLUGIN_LOAD_FAILURE:
-                logger.warning("Plugin {} failed to load.", plugin->name());
-                break;
-            case PLUGIN_LOAD_INCOMPATIBLE:
-                logger.warning("Failed to load plugin {}: plugin is not compatible with this version of Balltze.", plugin->name());
-                break;
-            case PLUGIN_LOAD_NOT_FOUND:
-                logger.warning("Could not find load function in plugin {}.", plugin->name());
-                break;
-        }
-    }
-
-    static void load_map_plugins(std::string map) {
-        for(auto &plugin : plugins) {
-            if(!plugin_is_global(plugin.get()) && plugin_should_load_on_map(plugin.get(), map)) {
-                load_plugin(plugin.get());
-            }
-        }
-    }
-
-    static void unload_map_plugins() {
-        for(auto &plugin : plugins) {
-            if(!plugin_is_global(plugin.get()) && plugin->loaded()) {
-                plugin->unload();
-            }
-        }
-    }
-
-    static void load_global_plugins() {
-        for(auto &plugin : plugins) {
-            if(plugin_is_global(plugin.get()) && !plugin->loaded()) {
-                load_plugin(plugin.get());
-            }
-        }
-    }
-
-    static void reinitialize_all_plugins() {
-        auto it = plugins.begin();
-        while(it != plugins.end()) {
-            auto *plugin = it->get();
-            if(plugin->reloadable()) {
-                if(plugin->loaded()) {
-                    plugin->unload();
-                }
-                it = plugins.erase(it);
-            }
-            else {
-                it++;
-            }
-        }
-        init_plugins();
-    }
-
-    static bool first_load = true;
-
-    static void plugins_tick(TickEvent const &context) noexcept {
-        if(context.time == EVENT_TIME_AFTER) {
-            return;
-        }
-
-        if(reinit_plugins_on_next_tick) {
-            logger.info("Reloading plugins...");
-            reinitialize_all_plugins();
-            load_global_plugins();
-            if(last_map) {
-                load_map_plugins(*last_map);
-            }
-            else {
-                logger.error("FIXME: No map loaded, skipping map plugins loading.");
-            }
-            reinit_plugins_on_next_tick = false;
-        }
-
-        for(auto &plugin : plugins) {
-            if(plugin->loaded()) {
-                plugin->first_tick();
-            }
-        }
-    }
-
-    static void plugins_frame(FrameEvent const &context) noexcept {
-        if(context.time == EVENT_TIME_AFTER) {
-            auto lua_plugins = get_lua_plugins();
-            for(auto &plugin : lua_plugins) {
-                if(plugin->loaded()) {
-                    auto *state = plugin->state();
-                    lua_gc(state, LUA_GCCOLLECT, 0);
-                }
-            }
-        }
-    }
-
-    static void plugins_map_load(MapLoadEvent const &ev) noexcept {
-        static bool first_load = true;
-        if(ev.time == EVENT_TIME_BEFORE) {
-            if(first_load) {
-                load_global_plugins();
-                first_load = false;
-            }
-            else {
-                unload_map_plugins();
-            }
-            load_map_plugins(ev.context.name);
-            last_map = ev.context.name;
-        }
     }
 
     std::vector<LuaPlugin *> get_lua_plugins() noexcept {
@@ -203,7 +46,7 @@ namespace Balltze::Plugins {
         void *upvalue_state = reinterpret_cast<lua_State *>(lua_touserdata(state, lua_upvalueindex(1)));
         for(auto &plugin : plugins) {
             if(auto lua_plugin = dynamic_cast<LuaPlugin *>(plugin.get())) {
-                if(lua_plugin->state() == upvalue_state) {
+                if(lua_plugin->lua_state() == upvalue_state) {
                     return lua_plugin;
                 }
             }
@@ -211,35 +54,141 @@ namespace Balltze::Plugins {
         return nullptr;
     }
 
-    NativePlugin *get_dll_plugin(HMODULE handle) noexcept {
+    static void load_plugin(Plugin *plugin) {
+        logger.debug("Loading plugin {}...", plugin->name());
+        try {
+            if(!plugin->loaded()) {
+                plugin->load();
+            }
+        }
+        catch(std::runtime_error &e) {
+            logger.error("Failed to load plugin {}: {}", plugin->name(), e.what());
+        }
+    }
+
+    static void unload_plugin(Plugin *plugin) {
+        logger.debug("Unloading plugin {}...", plugin->name());
+        try {
+            plugin->unload();
+        }
+        catch(std::runtime_error &e) {
+            logger.error("Failed to unload plugin {}: {}", plugin->name(), e.what());
+        }
+    }
+
+    static void load_global_plugins() {
         for(auto &plugin : plugins) {
-            if(auto dll_plugin = dynamic_cast<NativePlugin *>(plugin.get())) {
-                if(dll_plugin->handle() == handle) {
-                    return dll_plugin;
+            if(plugin_is_global(plugin.get()) && !plugin->loaded()) {
+                load_plugin(plugin.get());
+            }
+        }
+    }
+
+    static void load_map_plugins(std::string map) {
+        for(auto &plugin : plugins) {
+            if(!plugin_is_global(plugin.get()) && plugin_should_load_on_map(plugin.get(), map)) {
+                load_plugin(plugin.get());
+            }
+        }
+    }
+
+    static void unload_map_plugins() {
+        for(auto &plugin : plugins) {
+            if(!plugin_is_global(plugin.get()) && plugin->loaded()) {
+                unload_plugin(plugin.get());
+            }
+        }
+    }
+
+    static void unload_all_plugins() {
+        for(auto &plugin : plugins) {
+            if(plugin->reloadable() && plugin->loaded()) {
+                plugin->unload();
+            }
+        }
+    }
+
+    static void plugins_tick(TickEvent const &context) noexcept {
+        if(reload_plugins_on_next_tick) {
+            logger.info("Reloading plugins...");
+            for(auto &plugin : plugins) {
+                if(plugin->reloadable() && plugin->loaded()) {
+                    unload_plugin(plugin.get());
+                    load_plugin(plugin.get());
+                }
+            }
+            reload_plugins_on_next_tick = false;
+        }
+
+        for(auto &plugin : plugins) {
+            if(plugin->loaded()) {
+                plugin->call_on_game_start();
+            }
+        }
+    }
+
+    static void lua_plugins_collect_garbage(FrameEndEvent const &context) noexcept {
+        auto lua_plugins = get_lua_plugins();
+        for(auto &plugin : lua_plugins) {
+            auto *state = plugin->lua_state();
+            if(state) {
+                lua_gc(state, LUA_GCCOLLECT, 0);
+            }
+        }
+    }
+
+    static void plugins_map_load(const MapLoadEvent &context) noexcept {
+        auto map_name = context.map_name();
+        load_global_plugins();
+        unload_map_plugins();
+        load_map_plugins(map_name);
+    }
+
+    static void initialize_plugins() {
+        logger.info("Initializing plugins...");
+        auto plugins_path = get_plugins_path();
+        for(auto &directory_entry : std::filesystem::directory_iterator(plugins_path)) {
+            if(directory_entry.is_directory()) {
+                auto path = directory_entry.path();
+                try {
+                    auto metadata = Plugin::read_manifest(path / "manifest.json");
+                    if(metadata.plugin_main.empty()) {
+                        logger.error("Plugin {} has no main file specified in manifest.", metadata.name);
+                        continue;
+                    }
+                    std::filesystem::path main_file = path.stem() / metadata.plugin_main;
+                    logger.debug("Initializing plugin {}...", main_file.string());
+                    if(metadata.plugin_main.ends_with(".dll")) {
+                        plugins.emplace_back(std::make_unique<NativePlugin>(path, metadata));
+                    } 
+                    else if(metadata.plugin_main.ends_with(".lua")) {
+                        plugins.emplace_back(std::make_unique<LuaPlugin>(path, metadata));
+                    } 
+                    else {
+                        logger.error("Plugin {} has an unsupported main file type: {}", metadata.name, metadata.plugin_main);
+                        continue;
+                    }
+                }
+                catch(std::exception &e) {
+                    logger.error("Failed to initialize plugin {}: {}", directory_entry.path().filename().string(), e.what());
                 }
             }
         }
-        return nullptr;
     }
 
-    void set_up_plugins() noexcept {
-        TickEvent::subscribe_const(plugins_tick, EVENT_PRIORITY_HIGHEST);
-        FrameEvent::subscribe_const(plugins_frame, EVENT_PRIORITY_HIGHEST);
-        MapLoadEvent::subscribe_const(plugins_map_load, EVENT_PRIORITY_HIGHEST);
-
-        init_plugins();
-        reinit_plugins_on_next_tick = false;
+    void set_up_plugins_loader() noexcept {       
+        init_plugins_path();
+        initialize_plugins();
+        
+        TickEvent::subscribe(plugins_tick, EVENT_PRIORITY_HIGHEST);
+        FrameEvent::subscribe(lua_plugins_collect_garbage, EVENT_PRIORITY_LOWEST);
+        MapLoadEvent::subscribe(plugins_map_load, EVENT_PRIORITY_HIGHEST);
 
         register_command("reload_plugins", "plugins", "Reloads all loaded reloadable plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
-            reinit_plugins_on_next_tick = true;
+            reload_plugins_on_next_tick = true;
+            LegacyApi::Plugins::reinit_plugins_on_next_tick = true;
+            logger.info("Plugins reloading scheduled for next tick.");
             return true;
         }, false, 0, 0);
-    }
-}
-
-namespace Balltze {
-    std::filesystem::path get_plugin_path(PluginHandle handle) {
-        auto *plugin = Plugins::get_dll_plugin(reinterpret_cast<HMODULE>(handle));
-        return plugin->directory();
     }
 }

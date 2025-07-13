@@ -55,7 +55,25 @@ add_library(balltze SHARED
     src/balltze/config/ini.cpp
     src/balltze/events/events.cpp
     src/balltze/events/frame.cpp
+    src/balltze/events/map.cpp
     src/balltze/events/tick.cpp
+    src/balltze/features/gamepad_pause_button.cpp
+    src/balltze/features/hud_button_prompts.cpp
+    src/balltze/features/loading_screen/loading_screen.cpp
+    src/balltze/features/loading_screen/loading_screen.S
+    src/balltze/features/loading_screen/loading_screen.rc
+    src/balltze/features/tags_handling/map.cpp
+    src/balltze/features/tags_handling/tag_data_importing.cpp
+    src/balltze/features/tags_handling/tag_data_importing.S
+    src/balltze/features/console_key_binding.cpp
+    src/balltze/features/map_data_read_warden.cpp
+    src/balltze/features/map_textures_preloading.cpp
+    src/balltze/features/extended_limits.cpp
+    src/balltze/features/extended_limits.S
+    src/balltze/features/echo_message.cpp
+    src/balltze/helpers/d3d9.cpp
+    src/balltze/helpers/resources.cpp
+    src/balltze/helpers/sprite_shader.rc
     src/balltze/legacy_api/engine/core.cpp
     src/balltze/legacy_api/engine/core.S
     src/balltze/legacy_api/engine/data_types.cpp
@@ -101,23 +119,8 @@ add_library(balltze SHARED
     src/balltze/legacy_api/event/tick.cpp
     src/balltze/legacy_api/event/widget.cpp
     src/balltze/legacy_api/event/widget.S
-    src/balltze/features/gamepad_pause_button.cpp
-    src/balltze/features/hud_button_prompts.cpp
-    src/balltze/features/loading_screen/loading_screen.cpp
-    src/balltze/features/loading_screen/loading_screen.S
-    src/balltze/features/loading_screen/loading_screen.rc
-    src/balltze/features/tags_handling/map.cpp
-    src/balltze/features/tags_handling/tag_data_importing.cpp
-    src/balltze/features/tags_handling/tag_data_importing.S
-    src/balltze/features/console_key_binding.cpp
-    src/balltze/features/map_data_read_warden.cpp
-    src/balltze/features/map_textures_preloading.cpp
-    src/balltze/features/extended_limits.cpp
-    src/balltze/features/extended_limits.S
-    src/balltze/features/echo_message.cpp
-    src/balltze/helpers/d3d9.cpp
-    src/balltze/helpers/resources.cpp
-    src/balltze/helpers/sprite_shader.rc
+    src/balltze/legacy_api/plugins/loader.cpp
+    src/balltze/legacy_api/plugins/plugin.cpp
     src/balltze/lua/api/v1/api.cpp
     src/balltze/lua/api/v1/functions/config.cpp
     src/balltze/lua/api/v1/functions/devkit.cpp
@@ -158,6 +161,7 @@ add_library(balltze SHARED
     src/balltze/lua/api/v2/functions/engine.cpp
     src/balltze/lua/api/v2/plugin/commands.cpp
     src/balltze/lua/api/v2/plugin/events.cpp
+    src/balltze/lua/api/v2/plugin/logger.cpp
     src/balltze/lua/api/v2/types/engine/tag_data.cpp
     src/balltze/lua/api/v2/types/engine/tag.cpp
     src/balltze/lua/api/v2/types/engine/types.cpp

@@ -2,6 +2,7 @@
 
 #include <balltze/api.hpp>
 #include <balltze/utils.hpp>
+#include "../../helpers/registry.hpp"
 #include "../../libraries/preloaded_libraries.hpp"
 #include "types.hpp"
 #include "api.hpp"
@@ -42,11 +43,7 @@ namespace Balltze::Lua::Api {
     using namespace V1;
 
     void open_balltze_api_v1(lua_State *state) {
-        // Set up balltze registry table
-        auto balltze_module = Balltze::get_current_module();
-        lua_pushlightuserdata(state, balltze_module);
-        lua_newtable(state);
-        lua_settable(state, LUA_REGISTRYINDEX);
+        create_balltze_registry(state);
 
         // Set up Balltze funcion tables
         lua_newtable(state);

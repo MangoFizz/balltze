@@ -75,8 +75,11 @@ namespace Balltze::Events {
         call_by_priority(EVENT_PRIORITY_LOWEST);
     }
 
-    template class EventHandler<FrameEvent>;
+    template class EventHandler<FrameBeginEvent>;
+    template class EventHandler<FrameEndEvent>;
     template class EventHandler<TickEvent>;
+    template class EventHandler<MapLoadEvent>;
+    template class EventHandler<MapLoadedEvent>;
 
     /**
      * Initializes the event handlers for the Balltze events.

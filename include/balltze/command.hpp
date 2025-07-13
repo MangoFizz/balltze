@@ -9,7 +9,7 @@
 #include <optional>
 #include "utils.hpp"
 #include "api.hpp"
-#include "plugin.hpp"
+#include "legacy_api/plugin.hpp"
 
 namespace Balltze {
     #define BOOL_TO_STR(boolean) (boolean ? "true" : "false")

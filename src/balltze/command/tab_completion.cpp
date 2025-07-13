@@ -5,7 +5,7 @@
 #include <map>
 #include <balltze/legacy_api/engine/script.hpp>
 #include <balltze/hook.hpp>
-#include <balltze/plugin.hpp>
+#include <balltze/legacy_api/plugin.hpp>
 #include <balltze/command.hpp>
 #include "../logger.hpp"
 

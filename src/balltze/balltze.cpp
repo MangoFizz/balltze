@@ -11,6 +11,7 @@
 #include "features/features.hpp"
 #include "legacy_api/event/event.hpp"
 #include "memory/memory.hpp"
+#include "legacy_api/plugins/loader.hpp"
 #include "plugins/loader.hpp"
 #include "command/command.hpp"
 #include "config/config.hpp"
@@ -36,10 +37,14 @@ namespace Balltze {
             balltze_side = Memory::find_signatures();
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
+
                 LegacyApi::Event::set_up_events();
+                LegacyApi::Plugins::set_up_plugins();
+                
                 Events::set_up_events_handlers();
                 Features::set_up_features();
-                Plugins::set_up_plugins();
+                Plugins::set_up_plugins_loader();
+                
                 set_up_commands();
                 load_commands_settings();
 
@@ -49,7 +54,7 @@ namespace Balltze {
                 logger.info("loading dedicated server...");
                 LegacyApi::Event::set_up_events();
                 Features::set_up_features();
-                Plugins::set_up_plugins();
+                LegacyApi::Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
 

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <balltze/api.hpp>
 
 namespace Balltze::Lua::Api::V2 {
     void set_engine_tag_functions(lua_State *state) noexcept;

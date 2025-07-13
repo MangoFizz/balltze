@@ -2,15 +2,15 @@
 
 #include <lua.hpp>
 #include "../../../../logger.hpp"
-#include "../../../../plugins/plugin.hpp"
-#include "../../../../plugins/loader.hpp"
+#include "../../../../legacy_api/plugins/plugin.hpp"
+#include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../helpers/function_table.hpp"
 #include "../../../libraries/lfmt.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     #define LUA_LOGGER_FUNCTION(name) \
         static int lua_logger_##name(lua_State *state) { \
-            auto *plugin = Plugins::get_lua_plugin(state); \
+            auto *plugin = LegacyApi::Plugins::get_lua_plugin(state); \
             if(plugin) { \
                 int args = lua_gettop(state); \
                 if(args >= 2) { \
@@ -59,7 +59,7 @@ namespace Balltze::Lua::Api::V1 {
     LUA_LOGGER_FUNCTION(fatal)
 
     static int lua_logger_set_file(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 2 || args == 3) {
@@ -111,7 +111,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int lua_logger_mute_ingame(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 1 || args == 2) {
@@ -150,7 +150,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int lua_logger_mute_debug(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 1 || args == 2) {
@@ -189,7 +189,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int lua_logger__gc(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(plugin) {
             /* Get the logger name */
             lua_getfield(state, 1, "_name");
@@ -205,7 +205,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int lua_create_logger(lua_State *state) {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(plugin) {
             auto *logger_name = luaL_checkstring(state, 1);
 

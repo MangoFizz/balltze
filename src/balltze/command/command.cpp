@@ -9,7 +9,7 @@
 #include <balltze/legacy_api/engine/core.hpp>
 #include "../config/config.hpp"
 #include "../legacy_api/event/console_command.hpp"
-#include "../plugins/loader.hpp"
+#include "../legacy_api/plugins/loader.hpp"
 #include "../version.hpp"
 #include "../logger.hpp"
 #include "command.hpp"
@@ -86,7 +86,7 @@ namespace Balltze {
                 throw std::runtime_error("Command " + m_name + " already registered!");
             }
         }
-        auto *plugin = Plugins::get_dll_plugin(module_handle);
+        auto *plugin = LegacyApi::Plugins::get_dll_plugin(module_handle);
         m_plugin = reinterpret_cast<void *>(plugin);
         m_full_name = get_full_name();
         commands.emplace_back(std::make_shared<Command>(*this));
@@ -126,7 +126,7 @@ namespace Balltze {
             }
         }
         else {
-            Plugins::Plugin *plugin = Plugins::get_dll_plugin(module_handle);
+            LegacyApi::Plugins::Plugin *plugin = LegacyApi::Plugins::get_dll_plugin(module_handle);
             if(!plugin) {
                 throw std::runtime_error("Could not get plugin for module handle " + std::to_string(reinterpret_cast<std::uintptr_t>(module_handle)));
             }
@@ -161,7 +161,7 @@ namespace Balltze {
             module_name = "balltze";
         }
         else {
-            module_name = reinterpret_cast<Plugins::Plugin *>(*m_plugin)->name();
+            module_name = reinterpret_cast<LegacyApi::Plugins::Plugin *>(*m_plugin)->name();
 
             // replace spaces with underscores
             std::replace(module_name.begin(), module_name.end(), ' ', '_');
@@ -296,8 +296,8 @@ namespace Balltze {
                     break;
                 }
 
-                Plugins::Plugin *command_plugin = reinterpret_cast<Plugins::Plugin *>(*command->plugin());
-                Plugins::Plugin *module_plugin = Plugins::get_dll_plugin(module_handle);
+                LegacyApi::Plugins::Plugin *command_plugin = reinterpret_cast<LegacyApi::Plugins::Plugin *>(*command->plugin());
+                LegacyApi::Plugins::Plugin *module_plugin = LegacyApi::Plugins::get_dll_plugin(module_handle);
                 if(module_handle == get_current_module() || command->is_public() || module_plugin == command_plugin) {
                     res = command->call(arg_count, arguments_alloc.get());
 

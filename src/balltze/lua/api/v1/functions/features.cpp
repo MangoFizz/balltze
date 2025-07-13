@@ -5,14 +5,14 @@
 #include <balltze/legacy_api/events/map_load.hpp>
 #include <balltze/features.hpp>
 #include "../../../../features/tags_handling/map.hpp"
-#include "../../../../plugins/loader.hpp"
+#include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../../logger.hpp"
 #include "../../../helpers/function_table.hpp"
 #include "../types.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     static int lua_import_tag_from_map(lua_State *state) {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Plugin upvalue not found in function Balltze.features.importTagFromMap.");
         }
@@ -56,7 +56,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int lua_import_tags_from_map(lua_State *state) {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.features.importTagsFromMap.");
         }
@@ -95,7 +95,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int lua_clear_tag_imports(lua_State *state) {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(plugin) {
             plugin->clear_tag_imports();
         }
@@ -106,7 +106,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static int lua_reload_tag_data(lua_State *state) {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = LegacyApi::Plugins::get_lua_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.features.reloadTagData.");
         }
@@ -247,7 +247,7 @@ namespace Balltze::Lua::Api::V1 {
         if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
             return;
         }
-        auto plugins = Plugins::get_lua_plugins();
+        auto plugins = LegacyApi::Plugins::get_lua_plugins();
         for(auto &plugin : plugins) {
             auto map_imports = plugin->imported_tags();
             for(auto &[path, tags] : map_imports) {

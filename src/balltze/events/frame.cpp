@@ -5,13 +5,13 @@
 #include <balltze/legacy_api/events/frame.hpp>
 
 namespace Balltze::Events {
-    void dispatch_frame_event() {
-        FrameEvent event;
+    void dispatch_frame_begin_event() {
+        FrameBeginEvent event;
         event.dispatch();
     }
 
     template<>
-    void EventHandler<FrameEvent>::init() {
+    void EventHandler<FrameBeginEvent>::init() {
         static bool enabled = false;
         if(enabled) {
             return;
@@ -20,7 +20,27 @@ namespace Balltze::Events {
 
         LegacyApi::Event::FrameEvent::subscribe([](auto &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
-                dispatch_frame_event();
+                dispatch_frame_begin_event();
+            }
+        });
+    }
+
+    void dispatch_frame_end_event() {
+        FrameEndEvent event;
+        event.dispatch();
+    }
+
+    template<>
+    void EventHandler<FrameEndEvent>::init() {
+        static bool enabled = false;
+        if(enabled) {
+            return;
+        }
+        enabled = true;
+
+        LegacyApi::Event::FrameEvent::subscribe([](auto &event) {
+            if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
+                dispatch_frame_begin_event();
             }
         });
     }
