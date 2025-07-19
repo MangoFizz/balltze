@@ -41,8 +41,6 @@ int luastruct_array__index(lua_State *state) {
     } 
     else {
         if(array_info->elements_size == 0) {
-            printf("Array elements size is 0, calculating...\n");
-            printf("Array type: %s\n", ((LuastructTypeInfo *)array_info->elements_type_info)->name);
             array_info->elements_size = get_type_size(state, array_info->elements_type, array_info->elements_type_info);
         }
         data = array->data + (index - 1) * array_info->elements_size;
