@@ -44,7 +44,7 @@ namespace Balltze::Plugins {
         }
     }
 
-    PluginMetadata Plugin::read_manifest(std::filesystem::path manifest_path) noexcept {
+    PluginMetadata Plugin::read_manifest(std::filesystem::path manifest_path) {
         PluginMetadata metadata;
         if(!std::filesystem::exists(manifest_path)) {
             throw std::runtime_error("Manifest file does not exist: " + manifest_path.string());

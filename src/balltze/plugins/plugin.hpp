@@ -115,7 +115,7 @@ namespace Balltze::Plugins {
          * @return the plugin metadata
          * @throw std::runtime_error if the manifest file could not be read
          */
-        static PluginMetadata read_manifest(std::filesystem::path manifest_path) noexcept;
+        static PluginMetadata read_manifest(std::filesystem::path manifest_path);
     
     protected:
         const std::filesystem::path m_directory;

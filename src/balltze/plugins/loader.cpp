@@ -169,8 +169,11 @@ namespace Balltze::Plugins {
                         continue;
                     }
                 }
+                catch(std::runtime_error &e) {
+                    logger.debug("Failed to initialize plugin {}: {}", directory_entry.path().filename().string(), e.what());
+                }
                 catch(std::exception &e) {
-                    logger.error("Failed to initialize plugin {}: {}", directory_entry.path().filename().string(), e.what());
+                    logger.debug("Failed to initialize plugin {}: {}", directory_entry.path().filename().string(), e.what());
                 }
             }
         }

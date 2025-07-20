@@ -396,7 +396,6 @@ namespace Balltze::LegacyApi::Plugins {
             // Open standard libraries and Balltze API
             luaL_openlibs(m_state);
             Lua::Api::open_balltze_api_v1(m_state);
-            Lua::Api::open_balltze_api_v2(m_state);
 
             // Set up preloaded libraries
             Lua::set_preloaded_libraries(m_state);
