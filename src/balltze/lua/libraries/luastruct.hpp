@@ -12,7 +12,11 @@ enum {
 #define LUAS_STRUCT_FIELD(type, field) (((type *)NULL)->field)
 #define LUAS_SIZEOF_ARRAY(type, field) (sizeof(((type *)NULL)->field) / sizeof(((type *)NULL)->field[0]))
 
+#ifndef DONT_FUCK_WITH_INTELLISENSE
 #define SNAKE_TO_CAMEL(s) snake_to_camel_case(s).data
+#else
+#define SNAKE_TO_CAMEL(s) s
+#endif
 
 #define LUAS_ENUM(state, type) { \
 	{ type t; } \

@@ -246,6 +246,7 @@ namespace Balltze::Lua::Api::V2 {
         }, EVENT_PRIORITY_LOWEST); \
     }
 
+    POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEvent, frame)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameBeginEvent, frame_begin)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEndEvent, frame_end)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(TickEvent, tick)
@@ -253,6 +254,7 @@ namespace Balltze::Lua::Api::V2 {
     void set_up_plugin_events(lua_State *state, int table_idx) noexcept {
         int table_abs_idx = lua_absindex(state, table_idx);
         
+        SET_UP_EVENT(FrameEvent, frame);
         SET_UP_EVENT(FrameBeginEvent, frame_begin);
         SET_UP_EVENT(FrameEndEvent, frame_end);
         SET_UP_EVENT(TickEvent, tick);

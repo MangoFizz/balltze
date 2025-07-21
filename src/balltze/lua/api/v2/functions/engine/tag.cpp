@@ -4,6 +4,7 @@
 #include <lua.hpp>
 #include <impl/tag/tag.h>
 #include "../../../../helpers/enum.hpp"
+#include "../../../../helpers/function_table.hpp"
 #include "../../types.hpp"
 
 namespace Balltze::Lua::Api::V2 {
@@ -115,8 +116,10 @@ namespace Balltze::Lua::Api::V2 {
         {nullptr, nullptr}
     };
 
-    void set_engine_tag_functions(lua_State *state) noexcept {
-        luaL_newlib(state, engine_tag_functions);
-        lua_setfield(state, -2, "tag");
+    void set_engine_tag_functions(lua_State *state, int table_idx) noexcept {
+        int abs_idx = lua_absindex(state, table_idx);
+        lua_newtable(state);
+        set_functions_reg_array(state, -1, engine_tag_functions);
+        lua_setfield(state, abs_idx, "tag");
     }
 }

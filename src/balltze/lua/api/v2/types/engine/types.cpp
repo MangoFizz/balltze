@@ -9,6 +9,14 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_PRIMITIVE_FIELD(state, TableResourceHandle, value, LUAST_INT32, 0);
         LUAS_PRIMITIVE_FIELD(state, TableResourceHandle, id, LUAST_INT16, 0);
         LUAS_PRIMITIVE_FIELD(state, TableResourceHandle, index, LUAST_INT16, 0);
+        LUAS_METHOD_FIELD(state, TableResourceHandle, "isNull", [](lua_State *state) noexcept {
+            auto handle = get_table_resource_handle(state, 1);
+            if(!handle.has_value()) {
+                return luaL_error(state, "Invalid TableResourceHandle object.");
+            }
+            lua_pushboolean(state, HANDLE_IS_NULL(handle.value()));
+            return 1;
+        });
         lua_pop(state, 1);
     }
 

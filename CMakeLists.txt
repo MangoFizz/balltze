@@ -157,11 +157,20 @@ add_library(balltze SHARED
     src/balltze/lua/api/v1/types/engine_types.cpp
     src/balltze/lua/api/v1/types/engine_user_interface.cpp
     src/balltze/lua/api/v1/types/ringworld_saved_games.cpp
+    src/balltze/lua/api/v2/functions/engine/cache_file.cpp
+    src/balltze/lua/api/v2/functions/engine/console.cpp
+    src/balltze/lua/api/v2/functions/engine/game.cpp
+    src/balltze/lua/api/v2/functions/engine/script.cpp
     src/balltze/lua/api/v2/functions/engine/tag.cpp
     src/balltze/lua/api/v2/functions/engine.cpp
+    src/balltze/lua/api/v2/functions/config.cpp
+    src/balltze/lua/api/v2/functions/misc.cpp
     src/balltze/lua/api/v2/plugin/commands.cpp
     src/balltze/lua/api/v2/plugin/events.cpp
+    src/balltze/lua/api/v2/plugin/filesystem.cpp
     src/balltze/lua/api/v2/plugin/logger.cpp
+    src/balltze/lua/api/v2/types/engine/cache_file.cpp
+    src/balltze/lua/api/v2/types/engine/game_engine.cpp
     src/balltze/lua/api/v2/types/engine/tag_data.cpp
     src/balltze/lua/api/v2/types/engine/tag.cpp
     src/balltze/lua/api/v2/types/engine/types.cpp

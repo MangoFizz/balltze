@@ -17,7 +17,7 @@ set(TAG_LUA_DEFINITIONS_HPP "${CMAKE_SOURCE_DIR}/src/balltze/lua/api/v2/types/en
 set(LUA_ENVIRONMENT_SCRIPT ${CMAKE_SOURCE_DIR}/lua/env.lua)
 set(LUA_COMMAND ${CMAKE_COMMAND} -E env LUA_INIT="@${LUA_ENVIRONMENT_SCRIPT}" ${LUA_EXECUTABLE})
 set(RINGWORLD_TAG_DEFS_PARSER_SCRIPT ${CMAKE_SOURCE_DIR}/src/ringworld/lua/tagDefinitionParser.lua)
-set(TAG_LUA_DEFS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/ringworld_tags_definitions/tagsLuaDefinitions.lua)
+set(TAG_LUA_DEFS_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/lua/code_gen/ringworld_tags_definitions/tag_lua_definitions.lua)
 
 add_custom_command(
     OUTPUT ${TAG_LUA_DEFINITIONS_CPP} ${TAG_LUA_DEFINITIONS_HPP}

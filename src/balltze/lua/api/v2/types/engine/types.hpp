@@ -8,6 +8,12 @@
 #include <impl/types/types.h>
 
 namespace Balltze::Lua::Api::V2 {
+    #define DEFINE_STRING32_FIELD(state, type, field) { \
+        LuastructArrayDesc array_desc; \
+        luastruct_new_static_array_desc(state, LUAST_CHAR, NULL, LUAS_SIZEOF_ARRAY(type, field.string), false, true, &array_desc); \
+        luastruct_new_struct_array_field(state, SNAKE_TO_CAMEL(#field), &array_desc, offsetof(type, field), false, false); \
+    }
+
     /**
      * Push a TableResourceHandle to the Lua stack.
      * @param state Lua state

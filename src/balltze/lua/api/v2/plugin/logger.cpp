@@ -110,7 +110,7 @@ namespace Balltze::Lua::Api::V2 {
         {"warning", lua_logger_warning},
         {"error", lua_logger_error},
         {"fatal", lua_logger_fatal},
-        {"muteIngame", lua_logger_mute_ingame},
+        {"muteConsole", lua_logger_mute_ingame},
         {"muteDebug", lua_logger_mute_debug},
         {nullptr, nullptr}
     };

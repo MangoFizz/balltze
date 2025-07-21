@@ -2,3 +2,5 @@
 #include "types/engine/tag.hpp"
 #include "types/engine/tag_data.hpp"
 #include "types/event.hpp"
+#include "types/engine/cache_file.hpp"
+#include "types/engine/game_engine.hpp"
