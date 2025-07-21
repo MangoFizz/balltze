@@ -5,7 +5,6 @@ local glue = require "glue"
 local json = require "json"
 local definitionParser = require "tagDefinitionParser"
 
-local toCamelCase = definitionParser.toCamelCase
 local toSnakeCase = definitionParser.toSnakeCase
 local toPascalCase = definitionParser.toPascalCase
 local parseTagDefinition = definitionParser.parseTagDefinition
@@ -13,6 +12,8 @@ local commonTypes = definitionParser.types
 local commonEnums = definitionParser.commonEnums
 local commonBitfields = definitionParser.commonBitfields
 local primitiveTypes = definitionParser.primitiveTypes
+local isCommonType = definitionParser.isCommonType
+local isPrimitiveType = definitionParser.isPrimitiveType
 
 local parser = argparse("Ringworld tag Lua definitions generator")
 parser:argument("outputSource", "Output source file"):args(1)
@@ -31,6 +32,13 @@ end
 
 local function indent(n)
     add(string.rep(" ", n * 4))
+end
+
+local function ensureNoLeadingNumber(str)
+    if str:match("^%d") then
+        return "_" .. str
+    end
+    return str
 end
 
 local structs = {}
@@ -78,24 +86,6 @@ local function typeExists(typeName)
     end
     if primitiveTypes[typeName] ~= nil then
         return true
-    end
-    return false
-end
-
-local isCommonType = function(typeName)
-    for _, typeInfo in pairs(commonTypes) do
-        if typeInfo.alias == typeName then
-            return true
-        end
-    end
-    return false
-end
-
-local isPrimitiveType = function(typeName)
-    for _, primitiveType in ipairs(primitiveTypes) do
-        if primitiveType == typeName then
-            return true
-        end
     end
     return false
 end
@@ -172,12 +162,6 @@ namespace Balltze::Lua::Api::V2 {
         luastruct_new_dynamic_array_desc(state, LUAST_STRUCT, #elements_type, tag_block_array_counter, false, false, &array_desc); \
 	    luastruct_new_struct_array_field(state, SNAKE_TO_CAMEL(#field), &array_desc, offsetof(type, field.elements), true, false); \
     }
-    
-    #define DEFINE_STRING32_FIELD(state, type, field) { \
-        LuastructArrayDesc array_desc; \
-        luastruct_new_static_array_desc(state, LUAST_CHAR, NULL, LUAS_SIZEOF_ARRAY(type, field.string), false, true, &array_desc); \
-        luastruct_new_struct_array_field(state, SNAKE_TO_CAMEL(#field), &array_desc, offsetof(type, field), false, false); \
-    }
 
 ]])
 
@@ -202,6 +186,7 @@ for structType, struct in pairs(structs) do
 
     for _, field in ipairs(struct.fields) do
         if field.name then
+            local fieldName = ensureNoLeadingNumber(field.name)
             local fieldType = toSnakeCase(field.type)
             local fieldTypeName = field.type
 
@@ -213,45 +198,45 @@ for structType, struct in pairs(structs) do
             local size = field.size or 1
             indent(2)
             if structs[fieldTypeName] or definitionParser.commonBitfields[fieldTypeName] ~= nil or bitfields[fieldTypeName] then
-                add("LUAS_OBJREF_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. fieldTypeName .. ", 0); \n");
+                add("LUAS_OBJREF_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. fieldTypeName .. ", 0); \n");
             elseif definitionParser.commonEnums[fieldTypeName] ~= nil or enums[fieldTypeName] then
-                add("LUAS_ENUM_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. fieldTypeName .. ", 0); \n");
+                add("LUAS_ENUM_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. fieldTypeName .. ", 0); \n");
             else
                 if fieldTypeName == "String32" then
-                    add("DEFINE_STRING32_FIELD(state, " .. structType .. ", " .. field.name .. "); \n")
+                    add("DEFINE_STRING32_FIELD(state, " .. structType .. ", " .. fieldName .. "); \n")
                 elseif fieldTypeName == "ColorARGBInt" then
-                    add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. field.name .. ", LUAST_UINT32, 0); \n")
+                    add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. fieldName .. ", LUAST_UINT32, 0); \n")
                 elseif fieldTypeName == "Data" then
-                    add("LUAS_OBJREF_FIELD(state, " .. structType .. ", " .. field.name .. ", TagRawData, 0); \n");
+                    add("LUAS_OBJREF_FIELD(state, " .. structType .. ", " .. fieldName .. ", TagRawData, 0); \n");
                 elseif fieldTypeName == "TagGroup" then
-                    add("LUAS_ENUM_FIELD(state, " .. structType .. ", " .. field.name .. ", TagGroup, 0); \n");
+                    add("LUAS_ENUM_FIELD(state, " .. structType .. ", " .. fieldName .. ", TagGroup, 0); \n");
                 elseif(fieldTypeName == "TagBlock") then
                     local elementsType = toPascalCase(field.struct)
-                    add("DEFINE_TAG_BLOCK_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. elementsType .. "); \n");
+                    add("DEFINE_TAG_BLOCK_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. elementsType .. "); \n");
                 elseif fieldTypeName == "void *" then
-                    add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. field.name .. ", LUAST_UINT32, LUAS_FIELD_READONLY); \n")
+                    add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. fieldName .. ", LUAST_UINT32, LUAS_FIELD_READONLY); \n")
                 elseif(fieldTypeName == "float") then
                     if(size == 1) then
-                        add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. field.name .. ", LUAST_FLOAT, 0); \n");
+                        add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. fieldName .. ", LUAST_FLOAT, 0); \n");
                     else
-                        add("LUAS_PRIMITIVE_ARRAY_FIELD(state, " .. structType .. ", " .. field.name .. ", LUAST_FLOAT, 0); \n");
+                        add("LUAS_PRIMITIVE_ARRAY_FIELD(state, " .. structType .. ", " .. fieldName .. ", LUAST_FLOAT, 0); \n");
                     end
                 elseif(fieldTypeName == "uint32_t" or fieldTypeName == "uint16_t" or fieldTypeName == "uint8_t") then
                     if(size == 1) then
-                        add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
+                        add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
                     else
-                        add("LUAS_PRIMITIVE_ARRAY_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
+                        add("LUAS_PRIMITIVE_ARRAY_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
                     end
                 elseif(fieldTypeName == "int32_t" or fieldTypeName == "int16_t" or fieldTypeName == "int8_t") then
                     if(size == 1) then
-                        add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
+                        add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
                     else
-                        add("LUAS_PRIMITIVE_ARRAY_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
+                        add("LUAS_PRIMITIVE_ARRAY_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. typeForLuaStruct(field.type) .. ", 0); \n");
                     end
                 elseif isCommonType(fieldTypeName) then
-                    add("LUAS_OBJREF_FIELD(state, " .. structType .. ", " .. field.name .. ", " .. fieldTypeName .. ", 0); \n");
+                    add("LUAS_OBJREF_FIELD(state, " .. structType .. ", " .. fieldName .. ", " .. fieldTypeName .. ", 0); \n");
                 else
-                    error("Unknown type " .. field.type .. " in " .. structType .. " field " .. field.name)
+                    error("Unknown type " .. field.type .. " in " .. structType .. " field " .. fieldName)
                 end
             end
         end
@@ -271,7 +256,7 @@ for bitfieldType, bitfield in pairs(bitfields) do
     add("LUAS_STRUCT(state, " .. bitfieldType .. "); \n")
     for _, field in pairs(bitfield.fields) do
         indent(2)
-        add("LUAS_METHOD_FIELD(state, " .. bitfieldType .. ", \"" .. field.name .. "\", luastruct_bitfield_method(state, " .. bitfieldType .. ", " .. field.name .. ")); \n")
+        add("LUAS_METHOD_FIELD(state, " .. bitfieldType .. ", \"" .. ensureNoLeadingNumber(field.name) .. "\", luastruct_bitfield_method(state, " .. bitfieldType .. ", " .. field.name .. ")); \n")
     end
     indent(2)
     add("lua_pop(state, 1); \n")
@@ -287,8 +272,8 @@ for enumType, enum in pairs(enums) do
     indent(2)
     add("LUAS_ENUM(state, " .. enumType .. "); \n")
     for _, variant in ipairs(enum.values) do
-        local variantName = toCamelCase(variant.name)
-        local variantValue = (toSnakeCase(enumName) .. "_" .. toSnakeCase(variant.name)):upper()
+        local variantName = toSnakeCase(variant.name)
+        local variantValue = (toSnakeCase(enumName) .. "_" .. variantName):upper()
         indent(2)
         add("LUAS_ENUM_VARIANT(state, ".. enumType .. ", \"" .. variantName .. "\", " .. variantValue .. "); \n")
     end
