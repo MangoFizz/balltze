@@ -4,3 +4,5 @@
 #include "types/event.hpp"
 #include "types/engine/cache_file.hpp"
 #include "types/engine/game_engine.hpp"
+#include "types/engine/player.hpp"
+#include "types/engine/object.hpp"

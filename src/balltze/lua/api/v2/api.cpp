@@ -23,6 +23,8 @@ namespace Balltze::Lua::Api {
             define_engine_tag_data_types(state);
             define_engine_cache_file_types(state);
             define_engine_game_engine_types(state);
+            define_engine_object_types(state);
+            define_engine_player_types(state);
         }
     }
 
