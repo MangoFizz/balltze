@@ -108,6 +108,18 @@ local function typeForLuaStruct(typeName)
     end
 end
 
+local function typeForBitfield(width)
+    if width == 8 then
+        return "LUAST_UINT8"
+    elseif width == 16 then
+        return "LUAST_UINT16"
+    elseif width == 32 then
+        return "LUAST_UINT32"
+    else
+        error("Unknown bitfield width: " .. width)
+    end
+end
+
 add([[
 // SPDX-License-Identifier: GPL-3.0-only
 // This file is auto-generated. DO NOT EDIT!
@@ -154,7 +166,7 @@ add([[
 
 namespace Balltze::Lua::Api::V2 {
     static size_t tag_block_array_counter(lua_State *L, struct LuastructArray *array) {
-        return *(reinterpret_cast<uint32_t *>(array->context.parent + array->context.offset) - 1);
+        return *(reinterpret_cast<uint32_t *>(reinterpret_cast<std::byte *>(array->context.parent) + array->context.offset) - 1);
     }
 
     #define DEFINE_TAG_BLOCK_FIELD(state, type, field, elements_type) { \
@@ -254,9 +266,11 @@ for bitfieldType, bitfield in pairs(bitfields) do
     add("static void define_" .. bitfieldName .. "_type(lua_State *state) noexcept { \n")
     indent(2)
     add("LUAS_STRUCT(state, " .. bitfieldType .. "); \n")
+    local bitCount = 0
     for _, field in pairs(bitfield.fields) do
         indent(2)
-        add("LUAS_METHOD_FIELD(state, " .. bitfieldType .. ", \"" .. ensureNoLeadingNumber(field.name) .. "\", luastruct_bitfield_method(state, " .. bitfieldType .. ", " .. field.name .. ")); \n")
+        add("luastruct_new_struct_bit_field(state, SNAKE_TO_CAMEL(\"" .. ensureNoLeadingNumber(field.name) .. "\"), " .. typeForBitfield(bitfield.width) .. ", " .. 0 .. ", " .. bitCount .. ", false, false); \n")
+        bitCount = bitCount + 1
     end
     indent(2)
     add("lua_pop(state, 1); \n")
@@ -275,7 +289,7 @@ for enumType, enum in pairs(enums) do
         local variantName = toSnakeCase(variant.name)
         local variantValue = (toSnakeCase(enumName) .. "_" .. variantName):upper()
         indent(2)
-        add("LUAS_ENUM_VARIANT(state, ".. enumType .. ", \"" .. variantName .. "\", " .. variantValue .. "); \n")
+        add("LUAS_ENUM_VARIANT(state, ".. enumType .. ", \"" .. ensureNoLeadingNumber(variantName) .. "\", " .. variantValue .. "); \n")
     end
     indent(2)
     add("lua_pop(state, 1); \n")

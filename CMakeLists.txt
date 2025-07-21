@@ -17,8 +17,6 @@ add_definitions(-D_WIN32_WINNT=0x0601)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Include stuff
-include(lua/code_gen/legacy_tags_definitions/legacy_tags_definitions.cmake)
-include(lua/code_gen/ringworld_tags_definitions/ringworld_tags_definitions.cmake)
 include(lib/lua/lua.cmake)
 include(lib/lua_fmt/lua_fmt.cmake)
 include(lib/lua_memory_snapshot/lua_memory_snapshot.cmake)
@@ -27,6 +25,9 @@ include(lib/luacstruct/luacstruct.cmake)
 include(lib/luastruct/luastruct.cmake)
 include(lib/invader/invader.cmake)
 include(lib/lanes/lanes.cmake)
+include(src/balltze/tools/tools.cmake)
+include(lua/code_gen/legacy_tags_definitions/legacy_tags_definitions.cmake)
+include(lua/code_gen/ringworld_tags_definitions/ringworld_tags_definitions.cmake)
 
 # Set ringworld 
 set(RINGWORLD_BUILD_STATIC ON CACHE BOOL "Build a static library instead of the standalone module")

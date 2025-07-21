@@ -61,3 +61,115 @@ Engine.script = {}
 -- Execute a script
 ---@param script string @The script to execute
 function Engine.script.execute(script) end
+
+
+-------------------------------------------------------
+-- Engine.tag
+-------------------------------------------------------
+
+Engine.tag = {}
+
+-- Look up a tag by its path
+---@param path string @The path of the tag to look up
+---@return TagHandle @The tag handle if found, or nil if not found
+function Engine.tag.lookupTag(path) end
+
+-- Get the data of a tag
+---@param handle TagHandle @The handle of the tag to get the data from
+---@param group TagGroup @The group of the tag to get the data from
+---@overload fun(handle: TagHandle, group: "weapon_hud_interface"): WeaponHUDInterface
+---@overload fun(handle: TagHandle, group: "wind"): Wind
+---@overload fun(handle: TagHandle, group: "weapon"): Weapon
+---@overload fun(handle: TagHandle, group: "vehicle"): Vehicle
+---@overload fun(handle: TagHandle, group: "virtual_keyboard"): VirtualKeyboard
+---@overload fun(handle: TagHandle, group: "unicode_string_list"): UnicodeStringList
+---@overload fun(handle: TagHandle, group: "unit"): Unit
+---@overload fun(handle: TagHandle, group: "unit_hud_interface"): UnitHUDInterface
+---@overload fun(handle: TagHandle, group: "dialogue"): Dialogue
+---@overload fun(handle: TagHandle, group: "camera_track"): CameraTrack
+---@overload fun(handle: TagHandle, group: "tag_collection"): TagCollection
+---@overload fun(handle: TagHandle, group: "shader_transparent_water"): ShaderTransparentWater
+---@overload fun(handle: TagHandle, group: "string_list"): StringList
+---@overload fun(handle: TagHandle, group: "sound_scenery"): SoundScenery
+---@overload fun(handle: TagHandle, group: "shader_transparent_plasma"): ShaderTransparentPlasma
+---@overload fun(handle: TagHandle, group: "ui_widget_collection"): UIWidgetCollection
+---@overload fun(handle: TagHandle, group: "shader_transparent_generic"): ShaderTransparentGeneric
+---@overload fun(handle: TagHandle, group: "shader_model"): ShaderModel
+---@overload fun(handle: TagHandle, group: "sound_environment"): SoundEnvironment
+---@overload fun(handle: TagHandle, group: "sound"): Sound
+---@overload fun(handle: TagHandle, group: "shader_transparent_meter"): ShaderTransparentMeter
+---@overload fun(handle: TagHandle, group: "sky"): Sky
+---@overload fun(handle: TagHandle, group: "shader"): Shader
+---@overload fun(handle: TagHandle, group: "shader_transparent_glass"): ShaderTransparentGlass
+---@overload fun(handle: TagHandle, group: "shader_environment"): ShaderEnvironment
+---@overload fun(handle: TagHandle, group: "scenario"): Scenario
+---@overload fun(handle: TagHandle, group: "shader_transparent_chicago"): ShaderTransparentChicago
+---@overload fun(handle: TagHandle, group: "shader_transparent_chicago_extended"): ShaderTransparentChicagoExtended
+---@overload fun(handle: TagHandle, group: "scenery"): Scenery
+---@overload fun(handle: TagHandle, group: "scenario_structure_bsp"): ScenarioStructureBSP
+---@overload fun(handle: TagHandle, group: "weather_particle_system"): WeatherParticleSystem
+---@overload fun(handle: TagHandle, group: "projectile"): Projectile
+---@overload fun(handle: TagHandle, group: "point_physics"): PointPhysics
+---@overload fun(handle: TagHandle, group: "placeholder"): Placeholder
+---@overload fun(handle: TagHandle, group: "physics"): Physics
+---@overload fun(handle: TagHandle, group: "particle_system"): ParticleSystem 
+---@overload fun(handle: TagHandle, group: "particle"):  Particle
+---@overload fun(handle: TagHandle, group: "object"): Object
+---@overload fun(handle: TagHandle, group: "preferences_network_game"): PreferencesNetworkGame
+---@overload fun(handle: TagHandle, group: "multiplayer_scenario_description"): MultiplayerScenarioDescription
+---@overload fun(handle: TagHandle, group: "model"): Model
+---@overload fun(handle: TagHandle, group: "gbxmodel"): GBXModel
+---@overload fun(handle: TagHandle, group: "light_volume"): LightVolume
+---@overload fun(handle: TagHandle, group: "meter"): Meter
+---@overload fun(handle: TagHandle, group: "globals"): Globals
+---@overload fun(handle: TagHandle, group: "device_machine"): DeviceMachine
+---@overload fun(handle: TagHandle, group: "sound_looping"): SoundLooping
+---@overload fun(handle: TagHandle, group: "light"): Light
+---@overload fun(handle: TagHandle, group: "device_light_fixture"): DeviceLightFixture
+---@overload fun(handle: TagHandle, group: "lightning"): Lightning
+---@overload fun(handle: TagHandle, group: "lens_flare"): LensFlare
+---@overload fun(handle: TagHandle, group: "damage_effect"): DamageEffect
+---@overload fun(handle: TagHandle, group: "item_collection"): ItemCollection
+---@overload fun(handle: TagHandle, group: "item"): Item
+---@overload fun(handle: TagHandle, group: "hud_globals"): HUDGlobals
+---@overload fun(handle: TagHandle, group: "hud_number"): HUDNumber
+---@overload fun(handle: TagHandle, group: "hud_message_text"): HUDMessageText
+---@overload fun(handle: TagHandle, group: "grenade_hud_interface"): GrenadeHUDInterface
+---@overload fun(handle: TagHandle, group: "glow"): Glow
+---@overload fun(handle: TagHandle, group: "garbage"): Garbage
+---@overload fun(handle: TagHandle, group: "material_effects"): MaterialEffects
+---@overload fun(handle: TagHandle, group: "font"): Font
+---@overload fun(handle: TagHandle, group: "fog"): Fog
+---@overload fun(handle: TagHandle, group: "flag"): Flag
+---@overload fun(handle: TagHandle, group: "equipment"): Equipment
+---@overload fun(handle: TagHandle, group: "effect"): Effect
+---@overload fun(handle: TagHandle, group: "detail_object_collection"): DetailObjectCollection
+---@overload fun(handle: TagHandle, group: "device"): Device
+---@overload fun(handle: TagHandle, group: "input_device_defaults"): InputDeviceDefaults
+---@overload fun(handle: TagHandle, group: "ui_widget_definition"): UIWidgetDefinition
+---@overload fun(handle: TagHandle, group: "decal"): Decal
+---@overload fun(handle: TagHandle, group: "device_control"): DeviceControl
+---@overload fun(handle: TagHandle, group: "contrail"): Contrail
+---@overload fun(handle: TagHandle, group: "color_table"): ColorTable
+---@overload fun(handle: TagHandle, group: "model_collision_geometry"):  ModelCollisionGeometry
+---@overload fun(handle: TagHandle, group: "continuous_damage_effect"): ContinuousDamageEffect
+---@overload fun(handle: TagHandle, group: "bitmap"): Bitmap
+---@overload fun(handle: TagHandle, group: "biped"): Biped
+---@overload fun(handle: TagHandle, group: "model_animations"): ModelAnimations
+---@overload fun(handle: TagHandle, group: "antenna"): Antenna
+---@overload fun(handle: TagHandle, group: "actor_variant"): ActorVariant
+---@overload fun(handle: TagHandle, group: "actor"): Actor
+function Engine.tag.getData(handle, group) end
+
+-- Get the tag entry of a tag handle
+---@param handle TagHandle @The handle of the tag to get the entry from
+---@param group TagGroup @The group of the tag to get the entry from
+---@return TagEntry @The tag entry if found, or nil if not found
+function Engine.tag.getTagEntry(handle, group) end
+
+---Return a tag entry list given a keyword and a tag group
+---Leave the keyword empty to get all tags, if tag group is nil, it will return all tags
+---@param tagGroup? string @The tag group to filter the tags by
+---@param pathKeyword string @The keyword to search for in the tag paths
+---@return TagEntry[] @The list of tag entries that match the keyword and tag group
+function Engine.tag.filterTags(tagGroup, pathKeyword) end

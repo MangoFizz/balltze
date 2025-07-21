@@ -4,7 +4,7 @@ dist/
 include/balltze/legacy_api/engine/tag_definitions/
 include/balltze/legacy_api/engine/tag_definitions.hpp
 lua/plugins/docs/v1/types/tag_data/
-lua/plugins/docs/v2/types/tag_data/
+lua/plugins/docs/v2/meta_types.lua
 package/game-mods/balltze.dll
 src/balltze/lua/api/v1/types/engine_tag_data.cpp
 src/balltze/lua/api/v1/types/engine_tag_data.hpp

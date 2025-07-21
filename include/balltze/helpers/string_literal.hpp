@@ -34,7 +34,7 @@ consteval auto snake_to_camel_case(const char (&str)[N]) {
     std::size_t char_count = 0;
     bool capitalize_next = false;
     for(std::size_t i = 0; str[i] != '\0'; ++i) {
-        if(str[i] == '_') {
+        if(i > 0 && str[i] == '_') {
             capitalize_next = true;
         } 
         else {
