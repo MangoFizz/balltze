@@ -160,6 +160,7 @@ int luastruct_new_struct(lua_State *state, const char *name, const char *super_n
             return luaL_error(state, "Super struct type does not exist: %s", super_name);
         }
         super = luaL_checkudata(state, -1, STRUCT_METATABLE_NAME);
+        lua_pop(state, 1); 
     }
 
     if(strlen(name) >= LUASTRUCT_TYPENAME_LENGTH) {

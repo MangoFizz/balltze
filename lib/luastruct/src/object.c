@@ -55,7 +55,7 @@ int luastruct_get_object(lua_State *state, void *data, bool readonly) {
 
 static LuastructStructField *luastruct_find_field(lua_State *state, LuastructStruct *st, const char *field_name) {
     while(st) {
-        LuastructStructField *field = st->fields_by_name;
+        LuastructStructField *field = st->fields;
         while(field) {
             if(strcmp(field->field_name, field_name) == 0) {
                 return field;
