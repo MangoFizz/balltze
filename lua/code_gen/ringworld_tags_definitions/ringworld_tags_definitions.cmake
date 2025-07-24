@@ -36,4 +36,4 @@ add_custom_command(
     DEPENDS lua-types-dump
 )
 
-add_custom_target(tag-data-lua-docs ALL DEPENDS ${LUA_TYPES_ANNOTATIONS_PATH})
+add_custom_target(lua-types-annotations ALL DEPENDS ${LUA_TYPES_ANNOTATIONS_PATH})
