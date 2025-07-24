@@ -91,16 +91,16 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_engine_player_multiplayer_statistics_type(lua_State *state) {
         LUAS_STRUCT(state, PlayerMultiplayerStatistics);
-        luastruct_new_struct_field(state, "ctf_flag_grabs", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, ctf.flag_grabs), false, false);
-        luastruct_new_struct_field(state, "ctf_flag_returns", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, ctf.flag_returns), false, false);
-        luastruct_new_struct_field(state, "ctf_flag_scores", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, ctf.flag_scores), false, false);
-        luastruct_new_struct_field(state, "oddball_time", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, oddball.time), false, false);
-        luastruct_new_struct_field(state, "oddball_carrier_kills", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, oddball.carrier_kills), false, false);
-        luastruct_new_struct_field(state, "oddball_kills", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, oddball.kills), false, false);
-        luastruct_new_struct_field(state, "king_hill_score", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, king.hill_score), false, false);
-        luastruct_new_struct_field(state, "race_time", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, race.time), false, false);
-        luastruct_new_struct_field(state, "race_laps", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, race.laps), false, false);
-        luastruct_new_struct_field(state, "race_best_time", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, race.best_time), false, false);
+        luastruct_new_struct_field(state, "ctfFlagGrabs", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, ctf.flag_grabs), false, false);
+        luastruct_new_struct_field(state, "ctfFlagReturns", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, ctf.flag_returns), false, false);
+        luastruct_new_struct_field(state, "ctfFlagScores", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, ctf.flag_scores), false, false);
+        luastruct_new_struct_field(state, "oddballTime", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, oddball.time), false, false);
+        luastruct_new_struct_field(state, "oddballCarrierKills", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, oddball.carrier_kills), false, false);
+        luastruct_new_struct_field(state, "oddballKills", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, oddball.kills), false, false);
+        luastruct_new_struct_field(state, "kingHillScore", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, king.hill_score), false, false);
+        luastruct_new_struct_field(state, "raceTime", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, race.time), false, false);
+        luastruct_new_struct_field(state, "raceLaps", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, race.laps), false, false);
+        luastruct_new_struct_field(state, "raceBestTime", LUAST_INT16, NULL, offsetof(PlayerMultiplayerStatistics, race.best_time), false, false);
         lua_pop(state, 1);
     }
 
@@ -192,7 +192,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     void push_player(lua_State *state, const Player &player, bool readonly) noexcept {
-        LUAS_NEW_OBJECT(state, Player, readonly);
+        LUAS_PUSH_OBJECT(state, Player, &player, readonly);
     }
 
     void define_engine_player_types(lua_State *state) noexcept {

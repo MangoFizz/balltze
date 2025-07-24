@@ -6,3 +6,7 @@
 #include "types/engine/game_engine.hpp"
 #include "types/engine/player.hpp"
 #include "types/engine/object.hpp"
+#include "types/engine/unit.hpp"
+#include "types/engine/item.hpp"
+#include "types/engine/weapon.hpp"
+#include "types/engine/device.hpp"

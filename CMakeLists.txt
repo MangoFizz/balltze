@@ -171,12 +171,16 @@ add_library(balltze SHARED
     src/balltze/lua/api/v2/plugin/filesystem.cpp
     src/balltze/lua/api/v2/plugin/logger.cpp
     src/balltze/lua/api/v2/types/engine/cache_file.cpp
+    src/balltze/lua/api/v2/types/engine/device.cpp
     src/balltze/lua/api/v2/types/engine/game_engine.cpp
+    src/balltze/lua/api/v2/types/engine/item.cpp
     src/balltze/lua/api/v2/types/engine/object.cpp
     src/balltze/lua/api/v2/types/engine/player.cpp
     src/balltze/lua/api/v2/types/engine/tag_data.cpp
     src/balltze/lua/api/v2/types/engine/tag.cpp
     src/balltze/lua/api/v2/types/engine/types.cpp
+    src/balltze/lua/api/v2/types/engine/unit.cpp
+    src/balltze/lua/api/v2/types/engine/weapon.cpp
     src/balltze/lua/api/v2/types/event.cpp
     src/balltze/lua/api/v2/api.cpp
     src/balltze/lua/debug/lua_state_debug.cpp

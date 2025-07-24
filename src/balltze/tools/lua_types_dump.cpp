@@ -25,6 +25,10 @@ void define_luastruct_types(lua_State *state) noexcept {
     define_engine_game_engine_types(state);
     define_engine_object_types(state);
     define_engine_player_types(state);
+    define_engine_unit_types(state);
+    define_engine_item_types(state);
+    define_engine_weapon_types(state);
+    define_engine_device_types(state);
 }
 
 const char *get_type_name(LuastructType type, LuastructTypeInfo *type_info) {

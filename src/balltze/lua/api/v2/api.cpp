@@ -25,6 +25,10 @@ namespace Balltze::Lua::Api {
             define_engine_game_engine_types(state);
             define_engine_object_types(state);
             define_engine_player_types(state);
+            define_engine_unit_types(state);
+            define_engine_item_types(state);
+            define_engine_weapon_types(state);
+            define_engine_device_types(state);
         }
     }
 
