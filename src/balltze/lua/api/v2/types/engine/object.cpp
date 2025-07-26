@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "../../../../libraries/luastruct.hpp"
+#include "../../../../helpers/enum.hpp"
 #include "types.hpp"
 #include "object.hpp"
 
@@ -232,6 +233,10 @@ namespace Balltze::Lua::Api::V2 {
 
     void push_dynamic_object_base(lua_State *state, const DynamicObjectBase &object, bool readonly) noexcept {
         LUAS_PUSH_OBJECT(state, DynamicObjectBase, &object, readonly);
+    }
+
+    std::optional<ObjectType> get_object_type(lua_State *state, int idx) noexcept {
+        return GET_ENUM_VARIANT_VALUE(state, idx, ObjectType);
     }
 
     void define_engine_object_types(lua_State *state) noexcept {

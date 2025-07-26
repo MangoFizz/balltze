@@ -173,3 +173,42 @@ function Engine.tag.getTagEntry(handle, group) end
 ---@param pathKeyword string @The keyword to search for in the tag paths
 ---@return TagEntry[] @The list of tag entries that match the keyword and tag group
 function Engine.tag.filterTags(tagGroup, pathKeyword) end
+
+-------------------------------------------------------
+-- Engine.object
+-------------------------------------------------------
+
+Engine.object = {}
+
+-- Get an object of the current game
+---@param handle EngineObjectHandle|integer Handle of the object
+---@param type EngineTagObjectType? Type of the object
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeBiped): MetaEngineBipedObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeVehicle): MetaEngineVehicleObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeGarbage): MetaEngineGarbageObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeWeapon): MetaEngineWeaponObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeEquipment): MetaEngineEquipmentObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeProjectile): MetaEngineProjectileObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeDeviceMachine): MetaEngineDeviceMachineObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeDeviceControl): MetaEngineDeviceControlObject|nil
+---@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeDeviceLightFixture): MetaEngineDeviceLightFixtureObject|nil
+---@return MetaEngineBaseObject|nil
+function Engine.object.getObject(handle, type) end
+
+-- Spawn an object
+---@param tagHandle EngineTagHandle|integer @The tag handle of the object
+---@param parentObjectHandle? EngineObjectHandle|integer @The handle of the parent object
+---@param position EnginePoint3D @The position of the object
+---@return EngineObjectHandle @The handle of the object
+function Engine.object.createObject(tagHandle, parentObjectHandle, position) end
+
+-- Delete the object
+---@param objectHandle EngineObjectHandle|integer @The handle of the object
+function Engine.object.deleteObject(objectHandle) end
+
+-- Attach an object to another object
+---@param objectHandle EngineObjectHandle|integer @The handle of the object to attach
+---@param objectMarker string|nil @The marker of the object to attach
+---@param attachmentObjectHandle EngineObjectHandle|integer @The handle of the object to attach to
+---@param attachmentMarker string|nil @The marker of the attachment object
+function Engine.object.objectAttachToMarker(objectHandle, objectMarker, attachmentObjectHandle, attachmentMarker) end

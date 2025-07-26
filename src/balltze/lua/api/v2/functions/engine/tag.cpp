@@ -82,7 +82,7 @@ namespace Balltze::Lua::Api::V2 {
 
     static int lua_engine_tag_filter(lua_State *state) noexcept {
         int args = lua_gettop(state);
-        if(args != 2) {
+        if(args != 1 && args != 2) {
             return luaL_error(state, "Invalid number of arguments in function Engine.tag.filter.");
         }
 
@@ -91,7 +91,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid tag group in function Engine.tag.filter.");
         }
 
-        std::string filter = luaL_checkstring(state, 2);
+        std::string filter = luaL_optstring(state, 2, "");
 
         lua_newtable(state);
         auto *tag_data_header = tag_get_data_header();

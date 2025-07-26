@@ -8,6 +8,7 @@ namespace Balltze::Lua::Api::V2 {
     void set_engine_cache_file_functions(lua_State *state, int table_idx) noexcept;
     void set_engine_game_functions(lua_State *state, int table_idx) noexcept;
     void set_engine_script_functions(lua_State *state, int table_idx) noexcept;
+    void set_engine_object_functions(lua_State *state, int table_idx) noexcept;
 
     void set_engine_table(lua_State *state) noexcept {
         lua_newtable(state);
@@ -16,6 +17,7 @@ namespace Balltze::Lua::Api::V2 {
         set_engine_cache_file_functions(state, -1);
         set_engine_game_functions(state, -1);
         set_engine_script_functions(state, -1);
+        set_engine_object_functions(state, -1);
         lua_setglobal(state, "Engine");
     }
 }

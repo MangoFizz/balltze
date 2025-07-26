@@ -9,6 +9,33 @@
 
 namespace Balltze::Lua::Api::V2 {
     /**
+     * Push a EquipmentObject to the Lua stack.
+     * 
+     * @param state Lua state
+     * @param object The EquipmentObject to push
+     * @param readonly If true, the object will be read-only in Lua
+     */
+    void push_equipment_object(lua_State *state, const EquipmentObject &object, bool readonly = false) noexcept;
+
+    /**
+     * Push a GarbageObject to the Lua stack.
+     * 
+     * @param state Lua state
+     * @param object The GarbageObject to push
+     * @param readonly If true, the object will be read-only in Lua
+     */
+    void push_garbage_object(lua_State *state, const GarbageObject &object, bool readonly = false) noexcept;
+
+    /**
+     * Push a ProjectileObject to the Lua stack.
+     * 
+     * @param state Lua state
+     * @param object The ProjectileObject to push
+     * @param readonly If true, the object will be read-only in Lua
+     */
+    void push_projectile_object(lua_State *state, const ProjectileObject &object, bool readonly = false) noexcept;
+
+    /**
      * Define the Item type in Lua.
      *
      * @param state Lua state

@@ -33,7 +33,15 @@ namespace Balltze::Lua::Api::V2 {
      * @param object The DynamicObjectBase to push
      * @param readonly If true, the object will be read-only in Lua
      */
-    void push_dynamic_object_base(lua_State *state, const DynamicObjectBase &object, bool readonly) noexcept;
+    void push_dynamic_object_base(lua_State *state, const DynamicObjectBase &object, bool readonly = false) noexcept;
+
+    /**
+     * Get a ObjectType from the Lua stack.
+     * @param state Lua state
+     * @param idx The index of the value on the Lua stack
+     * @return An optional ObjectType, empty if the value is not a valid object type
+     */
+    std::optional<ObjectType> get_object_type(lua_State *state, int idx) noexcept;
 
     /**
      * Define the Object type in Lua.

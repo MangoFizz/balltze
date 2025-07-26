@@ -18,6 +18,33 @@ namespace Balltze::Lua::Api::V2 {
     void push_device_object(lua_State *state, const DeviceObject &device, bool readonly = false) noexcept;
 
     /**
+     * Push a DeviceMachineObject to the Lua stack.
+     *
+     * @param state Lua state
+     * @param device The DeviceMachineObject to push
+     * @param readonly If true, the device will be read-only in Lua
+     */
+    void push_device_machine_object(lua_State *state, const DeviceMachineObject &device, bool readonly = false) noexcept;
+
+    /**
+     * Push a DeviceControlObject to the Lua stack.
+     *
+     * @param state Lua state
+     * @param device The DeviceControlObject to push
+     * @param readonly If true, the device will be read-only in Lua
+     */
+    void push_device_control_object(lua_State *state, const DeviceControlObject &device, bool readonly = false) noexcept;
+
+    /**
+     * Push a DeviceLightFixtureObject to the Lua stack.
+     *
+     * @param state Lua state
+     * @param device The DeviceLightFixtureObject to push
+     * @param readonly If true, the device will be read-only in Lua
+     */
+    void push_device_light_fixture_object(lua_State *state, const DeviceLightFixtureObject &device, bool readonly = false) noexcept;
+
+    /**
      * Define the Device type in Lua.
      *
      * @param state Lua state
