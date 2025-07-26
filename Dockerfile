@@ -14,10 +14,6 @@ RUN pacman-key --init
 RUN pacman-key --populate archlinux
 RUN pacman -Sy --noconfirm --disable-sandbox archlinux-keyring
 
-# Set pacman mirrors
-RUN pacman -Sy --noconfirm --disable-sandbox reflector && \
-    reflector --latest 6 --sort rate --save /etc/pacman.d/mirrorlist
-
 # Update the system
 RUN pacman -Syu --noconfirm --disable-sandbox 
 
