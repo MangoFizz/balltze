@@ -1,6 +1,8 @@
 services:
   common: &common
-    image: balltze-dev-env
+    build:
+      context: .
+      dockerfile: Dockerfile
     stdin_open: true
     volumes:
       - ./:/workspace

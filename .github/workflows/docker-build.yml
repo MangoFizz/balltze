@@ -1,0 +1,22 @@
+name: Docker Compose Build
+
+on:
+  push:
+    tags:
+      - '*'
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || github.actor == github.repository_owner
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run build-release with Docker Compose
+        run: docker-compose run --rm build-release
