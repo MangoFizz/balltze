@@ -16,5 +16,49 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Run build-release with Docker Compose
+      - name: Get current Balltze version
+        id: version
+        run: |
+          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+          if [ -z "$TAG" ]; then
+            TAG=$(git rev-parse --short HEAD)
+          fi
+          echo "BALLTZE_VERSION=$TAG" >> $GITHUB_ENV
+
+      - name: Build Balltze
         run: docker compose run --rm build-release
+
+      - name: Create Balltze release artifact
+        run: |
+          ./bin/prepare-release.sh
+          zip -r balltze.zip dist/release/
+
+      - name: Upload Balltze release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "balltze-${{ env.BALLTZE_VERSION }}.zip"
+          path: balltze.zip
+
+      - name: Update Balltze C++ library repository
+        run: |
+          git clone https://x-access-token:${{ secrets.CPPLIB_REPO_TOKEN }}@github.com/mangofizz/balltze-cpplib.git balltze-cpplib
+          ./bin/prepare-cpp-library.sh
+          cp -r dist/cpplib/* balltze-cpplib/
+          cd balltze-cpplib
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Update library to Balltze version ${{ env.BALLTZE_VERSION }}"
+          git push
+
+      - name: Update Balltze Lua library repository
+        run: |
+          git clone https://x-access-token:${{ secrets.LUALIB_REPO_TOKEN }}@github.com/mangofizz/balltze-lualib.git balltze-lualib
+          ./bin/prepare-lua-library.sh
+          cp -r dist/lualib/* balltze-lualib/
+          cd balltze-lualib
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Update library to Balltze version ${{ env.BALLTZE_VERSION }}"
+          git push

@@ -2,7 +2,7 @@
 #define BALLTZE_VERSION "1.3.4"
 #ifdef __cplusplus
 
-#include <semver.hpp>
+#include <semver/semver.hpp>
 
 namespace Balltze {
     constexpr semver::version balltze_version{BALLTZE_VERSION};

@@ -7,6 +7,12 @@
     "label": "balltze",
     "files": [],
     "manifestVersion": "2.0.0",
+    "dependencies": [
+        {
+            "label": "chimera",
+            "version": "1.0.0-r969"
+        }
+    ],
     "removes": [
         "harmony"
     ]

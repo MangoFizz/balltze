@@ -8,7 +8,7 @@
 #include <filesystem>
 #include <windows.h>
 #include <lua.hpp>
-#include <semver.hpp>
+#include <semver/semver.hpp>
 #include <balltze/legacy_api/engine/tag.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/plugin.hpp>

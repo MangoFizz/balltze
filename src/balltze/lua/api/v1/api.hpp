@@ -4,7 +4,7 @@
 #define BALLTZE__LUA__API__V1__API_HPP
 
 #include <lua.hpp>
-#include <semver.hpp>
+#include <semver/semver.hpp>
 
 namespace Balltze::Lua::Api {
     namespace V1 {

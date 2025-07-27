@@ -26,7 +26,8 @@ most important mod for Halo on PC nowadays.
 2. Create a folder called "mods" (e.g. "D:\Halo Custom Edition\mods").
 3. Grab the latest release from the [releases page](https://github.com/MangoFizz/balltze/releases/latest).
 4. Copy balltze.dll file to your mods folder.
-5. Copy the contents of the "data" folder on your "My Games\Halo CE" folder.
+5. Copy the "config" folder to "My Games\Halo CE\balltze" folder. This step is optional if you are 
+not going to use the gamepad button prompts feature.
 6. Launch the game for the first time after installing Balltze.
 
 ### Mercury
@@ -39,8 +40,8 @@ mercury install balltze
 
 ## Contributing
 If you have any suggestions or want to contribute in any other way to the project, feel 
-free to do so and submit a pull request. The project has big goals in mind, so any kind
-of help is more than welcome.
+free to do so and open an issue or submit a pull request. The project has big goals in 
+mind, so any kind of help is more than welcome.
 
 ## Special mentions 
 - [Chimera](https://github.com/SnowyMouse/chimera) - The biggest mod for Halo 1 on PC and 
@@ -56,8 +57,10 @@ Combat Evolved for creating maps and assets.
 loader for Minecraft Bedrock Server which inspired the development of this mod as well.
 
 ## Credits 
-- Elaya Deerson - Supplying assets for testing.
-- [Mark Camarena](https://github.com/markmcfuzz) - Testing and ideas.
-- [MrChromed](https://github.com/MrChromed) - Testing, ideas and moral support.
-- [Sledmine](https://github.com/Sledmine) - Development and testing.
-- [SnowyMouse](https://github.com/SnowyMouse) - Development of Chimera and Invader.
+- [Aerocatia](https://github.com/Aerocatia/) - Testing, bug reporting, and assistance.
+- [Cambidd](https://github.com/cambidd) - Bug reporting and contributions to ringworld.
+- Norimeko Keisho - Providing assets for testing features.
+- [Mark Camarena](https://github.com/markmcfuzz) - Testing features and providing assets.
+- [MrChromed](https://github.com/MrChromed) - Testing features and moral support.
+- [Sledmine](https://github.com/Sledmine) - Development and testing contributions.
+- [SnowyMouse](https://github.com/SnowyMouse) - Developer of Chimera and Invader.

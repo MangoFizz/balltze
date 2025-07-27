@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <semver.hpp>
+#include <semver/semver.hpp>
 #include "../plugin.hpp"
 
 using PluginHandle = void *;
