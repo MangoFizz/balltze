@@ -33,3 +33,6 @@ cp LICENSE dist/cpplib/
 # Copy binary files to dist
 cp build/libballtze.dll.a dist/cpplib/lib/
 cp build/libfmt.a dist/cpplib/lib/
+
+# Copy CMake include file
+cp cmake/balltze-library.cmake dist/cpplib/
