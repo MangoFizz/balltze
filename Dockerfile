@@ -1,5 +1,7 @@
 FROM archlinux:base as base
 
+LABEL org.opencontainers.image.description="Development environment for Balltze"
+
 # Create devel user...
 ARG USER_ID=1001
 ARG GROUP_ID=1001
