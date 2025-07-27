@@ -2,6 +2,7 @@ services:
   common: &common
     image: ghcr.io/mangofizz/balltze-dev-env:latest
     stdin_open: true
+    user: root
     volumes:
       - ./:/workspace
     working_dir: /workspace
