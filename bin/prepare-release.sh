@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copy license files for used libraries
 declare -A license_files

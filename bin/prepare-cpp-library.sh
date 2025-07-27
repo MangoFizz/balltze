@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Prepare directory
 mkdir -p dist/cpplib/
