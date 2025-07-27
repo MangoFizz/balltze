@@ -35,4 +35,4 @@ cp build/libballtze.dll.a dist/cpplib/lib/
 cp build/libfmt.a dist/cpplib/lib/
 
 # Copy CMake include file
-cp cmake/balltze-library.cmake dist/cpplib/
+cp cmake/balltze-library.cmake dist/cpplib/balltze.cmake

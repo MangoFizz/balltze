@@ -78,10 +78,10 @@ jobs:
         run: git clone https://x-access-token:${{ secrets.CPPLIB_REPO_TOKEN }}@github.com/mangofizz/balltze-cpplib.git balltze-cpplib
 
       - name: Update C++ library
+        working-directory: balltze-cpplib
         run: |
-          cp -r dist/cpplib/* balltze-cpplib/
-          cd balltze-cpplib
-          find . -mindepth 1 -not -name '.git' -exec rm -rf {} +
+          git rm -rf . --ignore-unmatch
+          cp -r ../dist/cpplib/* .
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
@@ -103,10 +103,10 @@ jobs:
         run: git clone https://x-access-token:${{ secrets.LUALIB_REPO_TOKEN }}@github.com/mangofizz/balltze-lualib.git balltze-lualib
           
       - name: Update Lua library
+        working-directory: balltze-lualib
         run: |
-          cp -r dist/lualib/* balltze-lualib/
-          cd balltze-lualib
-          find . -mindepth 1 -not -name '.git' -exec rm -rf {} +
+          git rm -rf . --ignore-unmatch
+          cp -r ../dist/lualib/* .
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
@@ -125,17 +125,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ARTIFACT_ID=$(gh api \
+          gh api \
+            --method DELETE \
             -H "Accept: application/vnd.github+json" \
             /repos/${{ github.repository }}/actions/artifacts \
-            | jq '.artifacts[] | select(.name=="build-dist") | .id')
-
-          if [ -n "$ARTIFACT_ID" ]; then
-            echo "Deleting artifact ID $ARTIFACT_ID"
-            gh api \
-              --method DELETE \
-              -H "Accept: application/vnd.github+json" \
-              /repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID
-          else
-            echo "Artifact not found, skipping."
-          }
+            | jq '.artifacts | map(select(.name == "build-dist")) | .[].id' \
+            | xargs -I {} gh api -X DELETE /repos/${{ github.repository }}/actions/artifacts/{}
