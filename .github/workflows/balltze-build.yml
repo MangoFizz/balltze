@@ -1,4 +1,4 @@
-name: Docker Compose Build
+name: Balltze build
 on:
   push:
     tags:
@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch' || github.actor == github.repository_owner
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4

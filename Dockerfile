@@ -39,7 +39,8 @@ USER devel
 RUN yay -S --noconfirm --needed \
         mingw-w64-libvorbis \
         mingw-w64-flac \
-        mingw-w64-cmake
+        mingw-w64-cmake \
+        mingw-w64-wine
 
 # Cleanup
 USER root

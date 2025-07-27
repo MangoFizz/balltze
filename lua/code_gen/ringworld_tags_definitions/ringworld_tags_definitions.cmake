@@ -30,7 +30,7 @@ add_custom_command(
 set(LUA_TYPES_ANNOTATIONS_PATH "${CMAKE_SOURCE_DIR}/lua/plugins/docs/v2/meta_types.lua")
 add_custom_command(
     OUTPUT ${LUA_TYPES_ANNOTATIONS_PATH}
-    COMMAND $<TARGET_FILE:lua-types-dump> > ${LUA_TYPES_ANNOTATIONS_PATH}
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:lua-types-dump> > ${LUA_TYPES_ANNOTATIONS_PATH}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Generating Lua types annotations..."
     DEPENDS lua-types-dump
