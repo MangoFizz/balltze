@@ -1,7 +1,10 @@
 FROM archlinux:base as base
 
 # Create devel user...
-RUN useradd -m -d /home/devel -u 1000 -U -G users,tty -s /bin/bash devel
+ARG USER_ID=1001
+ARG GROUP_ID=1001
+RUN groupadd -g ${GROUP_ID} devel && \
+    useradd -m -d /home/devel -u ${USER_ID} -g ${GROUP_ID} -G users,tty -s /bin/bash devel
 RUN echo 'devel ALL=(ALL) NOPASSWD: /usr/sbin/pacman, /usr/sbin/makepkg' >> /etc/sudoers;
 
 RUN mkdir -p /workdir && chown devel:users /workdir
