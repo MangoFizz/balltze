@@ -31,20 +31,18 @@ include(lua/code_gen/ringworld_tags_definitions/ringworld_tags_definitions.cmake
 
 # Set ringworld 
 set(RINGWORLD_BUILD_STATIC ON CACHE BOOL "Build a static library instead of the standalone module")
-add_definitions(-DRINGWORLD_ENABLE_EVENTS_BUS -DRINGWORLD_ENABLE_ENHANCEMENTS)
+set(RINGWORLD_ENABLE_EVENTS_BUS ON CACHE BOOL "Enable the events bus")
+set(RINGWORLD_ENABLE_ENHANCEMENTS ON CACHE BOOL "Enable enhancements")
 add_subdirectory(src/ringworld)
 
 # Set include path
 include_directories(include include/lua lib/ lib/lua lib/lanes/src src/ringworld/src)
 
-# Define Balltze export macro
-add_definitions(-DBALLTZE_EXPORTS)
+# Set defines for Balltze
+add_definitions(-DBALLTZE_EXPORTS -DRINGWORLD_ENABLE_EVENTS_BUS -DRINGWORLD_ENABLE_ENHANCEMENTS)
 
-# Turn on experimental features
-option(BALLTZE_ENABLE_EXPERIMENTAL "enable experimental features" OFF)
-if(BALLTZE_ENABLE_EXPERIMENTAL)
-    add_definitions(-DBALLTZE_ENABLE_EXPERIMENTAL)
-endif()
+# Turn on experimental features by default
+add_definitions(-DBALLTZE_ENABLE_EXPERIMENTAL)
 
 add_library(balltze SHARED
     src/balltze/command/command.cpp

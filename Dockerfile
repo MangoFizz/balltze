@@ -14,18 +14,13 @@ RUN pacman-key --init
 RUN pacman-key --populate archlinux
 RUN pacman -Sy --noconfirm --disable-sandbox archlinux-keyring
 
-# Set pacman mirrors
-RUN pacman -Sy --noconfirm --disable-sandbox reflector && \
-    reflector --latest 6 --sort rate --save /etc/pacman.d/mirrorlist
-
 # Update the system
 RUN pacman -Syu --noconfirm --disable-sandbox 
 
 # Add packages to the base system
 RUN pacman -S --noconfirm --disable-sandbox \
-        base-devel cmake git go \
-        patch wget mingw-w64 ninja \
-        expac nano openssh vim lua53
+        base-devel cmake git go wine patch wget \
+        mingw-w64 ninja expac nano openssh vim lua53
 
 ENV EDITOR=nano
 
@@ -43,8 +38,7 @@ ENV HOME=/home/devel
 USER devel
 RUN yay -S --noconfirm --needed \
         mingw-w64-libvorbis \
-        mingw-w64-flac \
-        mingw-w64-cmake
+        mingw-w64-flac 
 
 # Cleanup
 USER root
