@@ -3,10 +3,15 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - '**'
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -19,46 +24,116 @@ jobs:
       - name: Get current Balltze version
         id: version
         run: |
-          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
-          if [ -z "$TAG" ]; then
-            TAG=$(git rev-parse --short HEAD)
+          VERSION=$(git describe --tags --exact-match 2>/dev/null || echo "")
+          if [ -z "$VERSION" ]; then
+            VERSION=r$(git rev-parse --short HEAD)
           fi
-          echo "BALLTZE_VERSION=$TAG" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Build Balltze
         run: docker compose run --rm build-release
 
-      - name: Create Balltze release artifact
+      - name: Prepare build dist
         run: |
           ./bin/prepare-release.sh
-          zip -r balltze.zip dist/release/
+          ./bin/prepare-cpp-library.sh
+          ./bin/prepare-lua-library.sh
 
-      - name: Upload Balltze release artifact
+      - name: Upload build artifact
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
-          name: "balltze-${{ env.BALLTZE_VERSION }}.zip"
-          path: balltze.zip
+          name: build-dist
+          path: dist/
 
-      - name: Update Balltze C++ library repository
+  upload-release-artifact:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: build
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+          path: dist/
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: balltze-${{ needs.build.outputs.version }}.zip
+          path: dist/release/
+
+  update-cpplib:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: build
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: balltze-dist
+          path: dist
+
+      - name: Clone repository
+        run: git clone https://x-access-token:${{ secrets.CPPLIB_REPO_TOKEN }}@github.com/mangofizz/balltze-cpplib.git balltze-cpplib
+
+      - name: Update C++ library
         run: |
-          git clone https://x-access-token:${{ secrets.CPPLIB_REPO_TOKEN }}@github.com/mangofizz/balltze-cpplib.git balltze-cpplib
-          ./bin/prepare-cpp-library.sh
           cp -r dist/cpplib/* balltze-cpplib/
           cd balltze-cpplib
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
-          git commit -m "Update library to Balltze version ${{ env.BALLTZE_VERSION }}"
+          git commit -m "Update library to Balltze version ${{ needs.build.outputs.version }}"
           git push
+        
+  update-lualib:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: build
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: balltze-dist
+          path: dist
 
-      - name: Update Balltze Lua library repository
+      - name: Clone repository
+        run: git clone https://x-access-token:${{ secrets.LUALIB_REPO_TOKEN }}@github.com/mangofizz/balltze-lualib.git balltze-lualib
+          
+      - name: Update Lua library
         run: |
-          git clone https://x-access-token:${{ secrets.LUALIB_REPO_TOKEN }}@github.com/mangofizz/balltze-lualib.git balltze-lualib
-          ./bin/prepare-lua-library.sh
           cp -r dist/lualib/* balltze-lualib/
           cd balltze-lualib
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
-          git commit -m "Update library to Balltze version ${{ env.BALLTZE_VERSION }}"
+          git commit -m "Update library to Balltze version ${{ needs.build.outputs.version }}"
           git push
+
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs:
+      - upload-release-artifact
+      - update-cpplib
+      - update-lualib
+    steps:
+      - name: Delete temporary artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ARTIFACT_ID=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/actions/artifacts \
+            | jq '.artifacts[] | select(.name=="build-dist") | .id')
+
+          if [ -n "$ARTIFACT_ID" ]; then
+            echo "Deleting artifact ID $ARTIFACT_ID"
+            gh api \
+              --method DELETE \
+              -H "Accept: application/vnd.github+json" \
+              /repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID
+          else
+            echo "Artifact not found, skipping."
+          }
