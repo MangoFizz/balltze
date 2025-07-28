@@ -83,8 +83,8 @@ jobs:
         run: |
           git rm -rf . --ignore-unmatch
           cp -r ../dist/cpplib/* .
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add .
           git commit -m "Update library to Balltze ${{ needs.build.outputs.balltze_version }}"
           git push
@@ -108,8 +108,8 @@ jobs:
         run: |
           git rm -rf . --ignore-unmatch
           cp -r ../dist/lualib/* .
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add .
           git commit -m "Update library to Balltze ${{ needs.build.outputs.balltze_version }}"
           git push
@@ -141,8 +141,8 @@ jobs:
       - name: Update C++ plugin template
         working-directory: balltze-plugin-cpp
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git submodule update --init --recursive
           git submodule foreach git pull origin master
           git add balltze-lib
@@ -160,8 +160,8 @@ jobs:
       - name: Update Lua plugin template
         working-directory: balltze-plugin-lua
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git submodule update --init --recursive
           git submodule foreach git pull origin v2
           git add balltze-lib
