@@ -20,11 +20,35 @@
 ---@field remove fun(): nil Function to remove the listener
 
 ---@class MapLoadEvent
----@field mapName fun(): string Get the name of the map being loaded
+local MapLoadEvent = {}
+
+-- Get the name of the map being loaded
+---@return string
+---@nodiscard
+function MapLoadEvent:mapName() end
 
 ---@class PlayerInputEvent
----@field getDevice fun(): string Get the name of the input device
----@field getKeyCode fun(): integer Get the key code if the input device is a keyboard
----@field getGamepadButton fun(): integer Get the gamepad button if the input device is a gamepad
----@field isMapped fun(): boolean Check if the input event is mapped to a game action
----@field cancel fun() Cancel the input event
+local PlayerInputEvent = {}
+
+-- Get the name of the input device
+---@return "keyboard"|"gamepad"
+---@nodiscard
+function PlayerInputEvent:getDevice() end
+
+-- Get the key code if the input device is a keyboard
+---@return integer
+---@nodiscard
+function PlayerInputEvent:getKeyCode() end
+
+-- Get the gamepad button if the input device is a gamepad
+---@return integer
+---@nodiscard
+function PlayerInputEvent:getGamepadButton() end
+
+-- Check if the input event is mapped to a game action
+---@return boolean
+---@nodiscard
+function PlayerInputEvent:isMapped() end
+
+-- Cancel the input event
+function PlayerInputEvent:cancel() end

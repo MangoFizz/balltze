@@ -26,7 +26,7 @@ jobs:
         run: |
           VERSION=$(git describe --tags --exact-match 2>/dev/null || echo "")
           if [ -z "$VERSION" ]; then
-            VERSION=r$(git rev-parse --short HEAD)
+            VERSION=rev-$(git rev-parse --short HEAD)
           fi
           echo "balltze_version=$VERSION" >> $GITHUB_OUTPUT
           echo "balltze_version=$VERSION" >> $GITHUB_ENV

@@ -123,6 +123,7 @@ function Balltze.loadSettings() end
 -- Events
 -------------------------------------------------------
 
+---@alias NoContextCallback fun()
 ---@alias MapLoadEventCallback fun(event: MapLoadEvent)
 ---@alias PlayerInputEventCallback fun(event: PlayerInputEvent)
 
@@ -131,6 +132,10 @@ function Balltze.loadSettings() end
 ---@param callbackFunction EventNoContextCallback @The function to call when the event is triggered
 ---@param priority? EventListenerPriority @The priority of the callback function; default is "default" duh
 ---@return EventListener @The handle of the event listener
+---@overload fun(eventName: "frame", callbackFunction: NoContextCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "frame_begin", callbackFunction: NoContextCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "frame_end", callbackFunction: NoContextCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "tick", callbackFunction: NoContextCallback, priority?: EventListenerPriority): EventListener
 ---@overload fun(eventName: "mapLoad", callbackFunction: MapLoadEventCallback, priority?: EventListenerPriority): EventListener
 ---@overload fun(eventName: "playerInput", callbackFunction: PlayerInputEventCallback, priority?: EventListenerPriority): EventListener
 function Balltze.addEventListener(eventName, callbackFunction, priority) end
