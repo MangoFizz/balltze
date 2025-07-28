@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <chrono>
 #include <balltze/events/frame.hpp>
 #include <balltze/legacy_api/events/frame.hpp>
 
@@ -32,11 +31,10 @@ namespace Balltze::Events {
 
     template<>
     void EventHandler<FrameEndEvent>::init() {
-        static bool enabled = false;
-        if(enabled) {
+        if(m_initialized) {
             return;
         }
-        enabled = true;
+        m_initialized = true;
 
         LegacyApi::Event::FrameEvent::subscribe([](auto &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {

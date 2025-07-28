@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <chrono>
 #include <balltze/events/map.hpp>
 #include <balltze/legacy_api/events/map_load.hpp>
 
@@ -16,11 +15,10 @@ namespace Balltze::Events {
 
     template<>
     void EventHandler<MapLoadEvent>::init() {
-        static bool enabled = false;
-        if(enabled) {
+        if(m_initialized) {
             return;
         }
-        enabled = true;
+        m_initialized = true;
 
         LegacyApi::Event::MapLoadEvent::subscribe([](LegacyApi::Event::MapLoadEvent &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
@@ -40,11 +38,10 @@ namespace Balltze::Events {
 
     template<>
     void EventHandler<MapLoadedEvent>::init() {
-        static bool enabled = false;
-        if(enabled) {
+        if(m_initialized) {
             return;
         }
-        enabled = true;
+        m_initialized = true;
 
         LegacyApi::Event::MapLoadEvent::subscribe([](auto &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {

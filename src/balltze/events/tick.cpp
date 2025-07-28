@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <chrono>
 #include <balltze/events/tick.hpp>
 #include <balltze/legacy_api/events/tick.hpp>
 
@@ -12,11 +11,10 @@ namespace Balltze::Events {
 
     template<>
     void EventHandler<TickEvent>::init() {
-        static bool enabled = false;
-        if(enabled) {
+        if(m_initialized) {
             return;
         }
-        enabled = true;
+        m_initialized = true;
 
         LegacyApi::Event::TickEvent::subscribe([](auto &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {

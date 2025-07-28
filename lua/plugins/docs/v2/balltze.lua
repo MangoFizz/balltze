@@ -123,11 +123,16 @@ function Balltze.loadSettings() end
 -- Events
 -------------------------------------------------------
 
+---@alias MapLoadEventCallback fun(event: MapLoadEvent)
+---@alias PlayerInputEventCallback fun(event: PlayerInputEvent)
+
 -- Add an event listener
 ---@param eventName string @The name of the event to listen to
 ---@param callbackFunction EventNoContextCallback @The function to call when the event is triggered
 ---@param priority? EventListenerPriority @The priority of the callback function; default is "default" duh
 ---@return EventListener @The handle of the event listener
+---@overload fun(eventName: "mapLoad", callbackFunction: MapLoadEventCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "playerInput", callbackFunction: PlayerInputEventCallback, priority?: EventListenerPriority): EventListener
 function Balltze.addEventListener(eventName, callbackFunction, priority) end
 
 -- Remove all event listeners for a specific event

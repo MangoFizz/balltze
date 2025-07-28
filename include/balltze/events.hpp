@@ -49,6 +49,9 @@ namespace Balltze::Events {
          * @param event The event data to be dispatched.
          */
         BALLTZE_API static void dispatch(T &event);
+
+    protected:
+        inline static bool m_initialized = false;
     };
 
     template<typename T>
@@ -115,7 +118,9 @@ namespace Balltze::Events {
          * 
          * @return True if the event is cancellable, false otherwise.
          */
-        bool cancellable() const;
+        inline bool cancellable() const {
+            return m_cancelable;
+        }
 
         /**
          * Cancel the event.
@@ -167,3 +172,4 @@ namespace Balltze::Events {
 #include "events/frame.hpp"
 #include "events/tick.hpp"
 #include "events/map.hpp"
+#include "events/input.hpp"

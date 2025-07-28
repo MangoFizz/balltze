@@ -108,7 +108,7 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_PRIMITIVE_FIELD(state, TagHandle, value, LUAST_UINT32, 0);
         LUAS_PRIMITIVE_FIELD(state, TagHandle, id, LUAST_INT16, 0);
         LUAS_PRIMITIVE_FIELD(state, TagHandle, index, LUAST_INT16, 0);
-        LUAS_METHOD_FIELD(state, TagHandle, "isNull", [](lua_State *state) noexcept {
+        LUAS_METHOD_FIELD(state, TagHandle, "isNull", [](lua_State *state) -> int {
             auto handle = get_table_resource_handle(state, 1);
             if(!handle.has_value()) {
                 return luaL_error(state, "Invalid TableResourceHandle object.");

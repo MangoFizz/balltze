@@ -29,6 +29,7 @@ namespace Balltze::Lua::Api {
             define_engine_item_types(state);
             define_engine_weapon_types(state);
             define_engine_device_types(state);
+            define_event_types(state);
         }
     }
 

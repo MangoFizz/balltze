@@ -227,6 +227,19 @@ namespace Balltze::Lua::Api::V2 {
             } \
         }
 
+    #define POPULATE_EVENT(Event, event_name, push_function) \
+        static void populate_##event_name##_events(Event &event, EventPriority priority) noexcept { \
+            auto plugins = Plugins::get_lua_plugins(); \
+            for(auto *&plugin : plugins) { \
+                if(plugin->loaded()) { \
+                    auto *state = plugin->lua_state(); \
+                    call_events_by_priority(state, #event_name, priority, [&](lua_State *state) { \
+                        push_function(state, event); \
+                    }); \
+                } \
+            } \
+        }
+
     #define SET_UP_EVENT(Event, event_name) { \
         create_event_table(state, #event_name); \
         Event::subscribe([](Event &context) { \
@@ -250,6 +263,8 @@ namespace Balltze::Lua::Api::V2 {
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameBeginEvent, frame_begin)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEndEvent, frame_end)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(TickEvent, tick)
+    POPULATE_EVENT(MapLoadEvent, map_load, push_map_load_event_context)
+    POPULATE_EVENT(PlayerInputEvent, player_input, push_player_input_event_context)
 
     void set_up_plugin_events(lua_State *state, int table_idx) noexcept {
         int table_abs_idx = lua_absindex(state, table_idx);
@@ -258,6 +273,8 @@ namespace Balltze::Lua::Api::V2 {
         SET_UP_EVENT(FrameBeginEvent, frame_begin);
         SET_UP_EVENT(FrameEndEvent, frame_end);
         SET_UP_EVENT(TickEvent, tick);
+        SET_UP_EVENT(MapLoadEvent, map_load);
+        SET_UP_EVENT(PlayerInputEvent, player_input);
 
         lua_pushvalue(state, table_abs_idx);
         push_plugin_function(state, lua_event_add_listener);

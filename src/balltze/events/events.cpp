@@ -10,6 +10,7 @@ namespace Balltze::Events {
             EventHandler<TickEvent>::init();
             EventHandler<MapLoadEvent>::init();
             EventHandler<MapLoadedEvent>::init();
+            EventHandler<PlayerInputEvent>::init();
         }
         catch(std::runtime_error) {
             throw;

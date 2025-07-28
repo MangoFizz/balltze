@@ -26,6 +26,24 @@ namespace Balltze::Lua::Api::V2 {
     Events::EventPriority event_priority_from_string(const char *priority);
 
     /**
+     * Push the MapLoadEvent context to the Lua state.
+     * 
+     * @param state The Lua state.
+     * @param event The MapLoadEvent to push.
+     * @param readonly If true, the event context will be read-only.
+     */
+    void push_map_load_event_context(lua_State *state, const Events::MapLoadEvent &event, bool readonly = false) noexcept;
+
+    /**
+     * Push the PlayerInputEvent context to the Lua state.
+     * 
+     * @param state The Lua state.
+     * @param event The PlayerInputEvent to push.
+     * @param readonly If true, the event context will be read-only.
+     */
+    void push_player_input_event_context(lua_State *state, const Events::PlayerInputEvent &event, bool readonly = false) noexcept;
+
+    /**
      * Define all event types in the Lua state.
      * @param state Lua state
      * @note This function should be called to register all types from the functions of this header.

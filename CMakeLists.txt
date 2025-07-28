@@ -54,6 +54,7 @@ add_library(balltze SHARED
     src/balltze/config/ini.cpp
     src/balltze/events/events.cpp
     src/balltze/events/frame.cpp
+    src/balltze/events/input.cpp
     src/balltze/events/map.cpp
     src/balltze/events/tick.cpp
     src/balltze/features/gamepad_pause_button.cpp
