@@ -64,7 +64,7 @@ jobs:
           name: balltze-${{ needs.build.outputs.balltze_version }}
           path: dist/release/
 
-  update-cpplib:
+  update-cpp-library:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     needs: build
@@ -89,7 +89,7 @@ jobs:
           git commit -m "Update library to Balltze ${{ needs.build.outputs.balltze_version }}"
           git push
         
-  update-lualib:
+  update-lua-library:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     needs: build
@@ -117,7 +117,7 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
-    needs: [build, upload-release-artifact, update-cpplib, update-lualib]
+    needs: [build, upload-release-artifact, update-cpp-library, update-lua-library]
     steps:
       - name: Delete temporary artifact
         env:
@@ -129,3 +129,41 @@ jobs:
           if [ -n "$ARTIFACT_ID" ]; then
             gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID
           fi
+
+  update-cpp-plugin-template:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: [update-cpp-library]
+    steps:
+      - name: Clone repository
+        run: git clone https://x-access-token:${{ secrets.CPPLIB_REPO_TOKEN }}@github.com/mangofizz/balltze-plugin-cpp.git balltze-plugin-cpp
+
+      - name: Update C++ plugin template
+        working-directory: balltze-plugin-cpp
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git submodule update --init --recursive
+          git submodule foreach git pull origin master
+          git add balltze-lib
+          git commit -m "Update library to latest version"
+          git push
+
+  update-lua-plugin-template:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: [update-lua-library]
+    steps:
+      - name: Clone repository
+        run: git clone https://x-access-token:${{ secrets.LUALIB_REPO_TOKEN }}@github.com/mangofizz/balltze-plugin-lua.git balltze-plugin-lua
+
+      - name: Update Lua plugin template
+        working-directory: balltze-plugin-lua
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git submodule update --init --recursive
+          git submodule foreach git pull origin v2
+          git add balltze-lib
+          git commit -m "Update library to latest version"
+          git push
