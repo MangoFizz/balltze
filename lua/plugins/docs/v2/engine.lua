@@ -181,34 +181,33 @@ function Engine.tag.filterTags(tagGroup, pathKeyword) end
 Engine.object = {}
 
 -- Get an object of the current game
----@param handle EngineObjectHandle|integer Handle of the object
----@param type EngineTagObjectType? Type of the object
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeBiped): MetaEngineBipedObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeVehicle): MetaEngineVehicleObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeGarbage): MetaEngineGarbageObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeWeapon): MetaEngineWeaponObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeEquipment): MetaEngineEquipmentObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeProjectile): MetaEngineProjectileObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeDeviceMachine): MetaEngineDeviceMachineObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeDeviceControl): MetaEngineDeviceControlObject|nil
----@overload fun(handle: EngineObjectHandle|integer, type: EngineTagObjectTypeDeviceLightFixture): MetaEngineDeviceLightFixtureObject|nil
----@return MetaEngineBaseObject|nil
+---@param handle ObjectHandle|integer @The handle of the object to get
+---@return DynamicObjectBase|nil
+---@overload fun(handle: ObjectHandle|integer, type: "biped"): BipedObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "vehicle"): VehicleObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "garbage"): GarbageObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "weapon"): WeaponObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "equipment"): EquipmentObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "projectile"): ProjectileObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "device_machine"): DeviceMachineObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "device_control"): DeviceControlObject|nil
+---@overload fun(handle: ObjectHandle|integer, type: "device_light_fixture"): DeviceLightFixtureObject|nil
 function Engine.object.getObject(handle, type) end
 
 -- Spawn an object
----@param tagHandle EngineTagHandle|integer @The tag handle of the object
----@param parentObjectHandle? EngineObjectHandle|integer @The handle of the parent object
----@param position EnginePoint3D @The position of the object
----@return EngineObjectHandle @The handle of the object
+---@param tagHandle TagHandle|integer @The tag handle of the object
+---@param parentObjectHandle? ObjectHandle|integer @The handle of the parent object
+---@param position VectorXYZ @The position of the object
+---@return ObjectHandle @The handle of the object
 function Engine.object.createObject(tagHandle, parentObjectHandle, position) end
 
 -- Delete the object
----@param objectHandle EngineObjectHandle|integer @The handle of the object
+---@param objectHandle ObjectHandle|integer @The handle of the object
 function Engine.object.deleteObject(objectHandle) end
 
 -- Attach an object to another object
----@param objectHandle EngineObjectHandle|integer @The handle of the object to attach
+---@param objectHandle ObjectHandle|integer @The handle of the object to attach
 ---@param objectMarker string|nil @The marker of the object to attach
----@param attachmentObjectHandle EngineObjectHandle|integer @The handle of the object to attach to
+---@param attachmentObjectHandle ObjectHandle|integer @The handle of the object to attach to
 ---@param attachmentMarker string|nil @The marker of the attachment object
 function Engine.object.objectAttachToMarker(objectHandle, objectMarker, attachmentObjectHandle, attachmentMarker) end
