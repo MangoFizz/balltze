@@ -2,6 +2,8 @@
 
 include_directories(lib/luastruct/include)
 
+add_definitions(-DLUAS_ENUM_VARIANTS_AS_STRINGS)
+
 add_library(luastruct STATIC
     lib/luastruct/src/struct.c
     lib/luastruct/src/debug.c

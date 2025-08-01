@@ -152,6 +152,16 @@ int luastruct_object__index(lua_State *state) {
                         break;
                 }
                 luastruct_get_enum_variant_by_value(state, enum_type, value);
+#ifdef LUAS_ENUM_VARIANTS_AS_STRINGS
+                LuastructEnumVariant *variant = lua_touserdata(state, -1);
+                if(variant) {
+                    lua_pushstring(state, variant->name);
+                } 
+                else {
+                    lua_pushnil(state);
+                }
+                lua_remove(state, -2); // Remove the enum variant userdata
+#endif
                 break;
             }
             case LUAST_ARRAY:
@@ -335,6 +345,7 @@ int luastruct_object__newindex(lua_State *state) {
                     lua_pop(state, 1); // Pop the variant
                     break;
                 }
+#ifndef LUAS_ENUM_VARIANTS_AS_STRINGS
                 case LUA_TNUMBER: {
                     int32_t value = luaL_checkinteger(state, 3);
                     luastruct_get_enum_variant_by_value(state, enum_type, value);
@@ -380,6 +391,7 @@ int luastruct_object__newindex(lua_State *state) {
                     }
                     break;
                 }
+#endif
                 default:
                     return luaL_error(state, "Invalid value type for enum: expected string or number");
             }
