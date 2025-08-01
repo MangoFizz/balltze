@@ -19,7 +19,7 @@ namespace Balltze::Events {
         bool remove_on_next_dispatch = false;
 
         EventListener() {
-            handle = next_handle++;
+            handle = ++next_handle;
         }
 
         void operator()(T &event) {

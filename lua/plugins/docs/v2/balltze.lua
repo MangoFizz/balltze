@@ -136,8 +136,9 @@ function Balltze.loadSettings() end
 ---@overload fun(eventName: "frame_begin", callbackFunction: NoContextCallback, priority?: EventListenerPriority): EventListener
 ---@overload fun(eventName: "frame_end", callbackFunction: NoContextCallback, priority?: EventListenerPriority): EventListener
 ---@overload fun(eventName: "tick", callbackFunction: NoContextCallback, priority?: EventListenerPriority): EventListener
----@overload fun(eventName: "mapLoad", callbackFunction: MapLoadEventCallback, priority?: EventListenerPriority): EventListener
----@overload fun(eventName: "playerInput", callbackFunction: PlayerInputEventCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "map_load", callbackFunction: MapLoadEventCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "map_loaded", callbackFunction: MapLoadEventCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "player_input", callbackFunction: PlayerInputEventCallback, priority?: EventListenerPriority): EventListener
 function Balltze.addEventListener(eventName, callbackFunction, priority) end
 
 -- Remove all event listeners for a specific event

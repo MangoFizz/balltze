@@ -13,6 +13,8 @@
 using namespace Balltze::Events;
 
 namespace Balltze::Lua::Api::V2 {
+    static bool events_initialized = false;
+
     static void get_or_create_events_table(lua_State *state) noexcept {
         get_or_create_registry_table(state, "events");
     }
@@ -90,7 +92,7 @@ namespace Balltze::Lua::Api::V2 {
                 lua_setfield(state, lua_upvalueindex(1), luaL_checkstring(state, lua_upvalueindex(2)));
                 return 0;
             }, 2);
-            lua_setfield(state, -4, "remove");
+            lua_setfield(state, -2, "remove");
 
             lua_remove(state, -2); // Remove the listener table from the stack
 
@@ -144,7 +146,8 @@ namespace Balltze::Lua::Api::V2 {
         lua_pushnil(state);
         while(lua_next(state, -3)) {
             if(lua_isfunction(state, -1)) {
-                lua_rawseti(state, -3, lua_rawlen(state, -3) + 1);
+                lua_pushvalue(state, -1);
+                lua_rawseti(state, -4, lua_rawlen(state, -4) + 1);
             }
             else {
                 logger.error("Invalid event listener in Balltze.events.{}: expected function, got {}.", name, lua_typename(state, lua_type(state, -1)));
@@ -164,7 +167,8 @@ namespace Balltze::Lua::Api::V2 {
         for(int i = 1; i <= size; i++) {
             lua_pushcfunction(state, Plugins::LuaPlugin::error_message_handler);
             lua_rawgeti(state, -3, i);
-            int res = lua_pcall(state, 0, 0, -3);
+            lua_pushvalue(state, -3); 
+            int res = lua_pcall(state, 1, 0, -3);
             if(res != LUA_OK) {
                 logger.error("Error in event listener in Balltze.events.{}: {}.", name, lua_tostring(state, -1));
                 lua_pop(state, 1);
@@ -242,21 +246,23 @@ namespace Balltze::Lua::Api::V2 {
 
     #define SET_UP_EVENT(Event, event_name) { \
         create_event_table(state, #event_name); \
-        Event::subscribe([](Event &context) { \
-            populate_##event_name##_events(context, EVENT_PRIORITY_HIGHEST); \
-        }, EVENT_PRIORITY_HIGHEST); \
-        \
-        Event::subscribe([](Event &context) { \
-            populate_##event_name##_events(context, EVENT_PRIORITY_ABOVE_DEFAULT); \
-        }, EVENT_PRIORITY_ABOVE_DEFAULT); \
-        \
-        Event::subscribe([](Event &context) { \
-            populate_##event_name##_events(context, EVENT_PRIORITY_DEFAULT); \
-        }, EVENT_PRIORITY_DEFAULT); \
-        \
-        Event::subscribe([](Event &context) { \
-            populate_##event_name##_events(context, EVENT_PRIORITY_LOWEST); \
-        }, EVENT_PRIORITY_LOWEST); \
+        if(!events_initialized) { \
+            Event::subscribe([](Event &context) { \
+                populate_##event_name##_events(context, EVENT_PRIORITY_HIGHEST); \
+            }, EVENT_PRIORITY_HIGHEST); \
+            \
+            Event::subscribe([](Event &context) { \
+                populate_##event_name##_events(context, EVENT_PRIORITY_ABOVE_DEFAULT); \
+            }, EVENT_PRIORITY_ABOVE_DEFAULT); \
+            \
+            Event::subscribe([](Event &context) { \
+                populate_##event_name##_events(context, EVENT_PRIORITY_DEFAULT); \
+            }, EVENT_PRIORITY_DEFAULT); \
+            \
+            Event::subscribe([](Event &context) { \
+                populate_##event_name##_events(context, EVENT_PRIORITY_LOWEST); \
+            }, EVENT_PRIORITY_LOWEST); \
+        } \
     }
 
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEvent, frame)
@@ -264,6 +270,7 @@ namespace Balltze::Lua::Api::V2 {
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(FrameEndEvent, frame_end)
     POPULATE_EVENT_WITH_NO_CONTEXT_FUNCTION(TickEvent, tick)
     POPULATE_EVENT(MapLoadEvent, map_load, push_map_load_event_context)
+    POPULATE_EVENT(MapLoadedEvent, map_loaded, push_map_loaded_event_context)
     POPULATE_EVENT(PlayerInputEvent, player_input, push_player_input_event_context)
 
     void set_up_plugin_events(lua_State *state, int table_idx) noexcept {
@@ -274,7 +281,11 @@ namespace Balltze::Lua::Api::V2 {
         SET_UP_EVENT(FrameEndEvent, frame_end);
         SET_UP_EVENT(TickEvent, tick);
         SET_UP_EVENT(MapLoadEvent, map_load);
+        SET_UP_EVENT(MapLoadedEvent, map_loaded);
         SET_UP_EVENT(PlayerInputEvent, player_input);
+
+        // Prevent re-initialization
+        events_initialized = true;
 
         lua_pushvalue(state, table_abs_idx);
         push_plugin_function(state, lua_event_add_listener);

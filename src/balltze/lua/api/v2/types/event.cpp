@@ -59,7 +59,7 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_event_map_load_context(lua_State *state) {
         LUAS_STRUCT(state, MapLoadEvent);
-        LUAS_METHOD_FIELD(state, MapLoadEvent, "mapName", [](lua_State *state) -> int {
+        LUAS_METHOD_FIELD(state, MapLoadEvent, "getMapName", [](lua_State *state) -> int {
             auto event = LUAS_CHECK_OBJECT(state, 1, MapLoadEvent);
             lua_pushstring(state, event->map_name().c_str());
             return 1;
@@ -68,6 +68,19 @@ namespace Balltze::Lua::Api::V2 {
 
     void push_map_load_event_context(lua_State *state, const MapLoadEvent &event, bool readonly) noexcept {
         LUAS_PUSH_OBJECT(state, MapLoadEvent, &event, readonly);
+    }
+
+    static void define_event_map_loaded_context(lua_State *state) {
+        LUAS_STRUCT(state, MapLoadedEvent);
+        LUAS_METHOD_FIELD(state, MapLoadedEvent, "getMapName", [](lua_State *state) -> int {
+            auto event = LUAS_CHECK_OBJECT(state, 1, MapLoadedEvent);
+            lua_pushstring(state, event->map_name().c_str());
+            return 1;
+        });
+    }
+
+    void push_map_loaded_event_context(lua_State *state, const MapLoadedEvent &event, bool readonly) noexcept {
+        LUAS_PUSH_OBJECT(state, MapLoadedEvent, &event, readonly);
     }
 
     static void define_event_player_input_context(lua_State *state) {
@@ -119,6 +132,7 @@ namespace Balltze::Lua::Api::V2 {
 
     void define_event_types(lua_State *state) noexcept {
         define_event_map_load_context(state);
+        define_event_map_loaded_context(state);
         define_event_player_input_context(state);
     }
 }

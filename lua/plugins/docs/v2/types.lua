@@ -25,7 +25,7 @@ local MapLoadEvent = {}
 -- Get the name of the map being loaded
 ---@return string
 ---@nodiscard
-function MapLoadEvent:mapName() end
+function MapLoadEvent:getMapName() end
 
 ---@class PlayerInputEvent
 local PlayerInputEvent = {}

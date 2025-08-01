@@ -35,6 +35,15 @@ namespace Balltze::Lua::Api::V2 {
     void push_map_load_event_context(lua_State *state, const Events::MapLoadEvent &event, bool readonly = false) noexcept;
 
     /**
+     * Push the MapLoadedEvent context to the Lua state.
+     * 
+     * @param state The Lua state.
+     * @param event The MapLoadedEvent to push.
+     * @param readonly If true, the event context will be read-only.
+     */
+    void push_map_loaded_event_context(lua_State *state, const Events::MapLoadedEvent &event, bool readonly = false) noexcept;
+
+    /**
      * Push the PlayerInputEvent context to the Lua state.
      * 
      * @param state The Lua state.
