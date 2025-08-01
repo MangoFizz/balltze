@@ -211,3 +211,15 @@ function Engine.object.deleteObject(objectHandle) end
 ---@param attachmentObjectHandle ObjectHandle|integer @The handle of the object to attach to
 ---@param attachmentMarker string|nil @The marker of the attachment object
 function Engine.object.objectAttachToMarker(objectHandle, objectMarker, attachmentObjectHandle, attachmentMarker) end
+
+
+-------------------------------------------------------
+-- Engine.player
+-------------------------------------------------------
+
+Engine.player = {}
+
+-- Get a player
+---@param playerIndexOrHandle? PlayerHandle|integer @The index or the handle of the player; If nil, the local player is returned
+---@return Player @The player
+function Engine.player.getPlayer(playerIndexOrHandle) end
