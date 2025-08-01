@@ -16,15 +16,14 @@ namespace Balltze::Lua::Api::V2 {
                 if(args >= 1) { \
                     /* Format the message using lfmt */ \
                     std::string message; \
-                    if(args > 2) { \
-                        lua_remove(state, 1); \
+                    if(args > 1) { \
                         Lformat(state); \
                         message = luaL_checkstring(state, -1); \
                         lua_pop(state, 1); \
                         lua_insert(state, 1); \
                     } \
                     else { \
-                        message = luaL_checkstring(state, 2); \
+                        message = luaL_checkstring(state, 1); \
                     } \
                     Logger *llogger = plugin->plugin_logger(); \
                     llogger->name(message); \
