@@ -7,18 +7,24 @@
 #include "../../../../helpers/function_table.hpp"
 #include "../../types.hpp"
 
+extern "C" bool *map_is_loaded;
+
 namespace Balltze::Lua::Api::V2 {
     static int lua_engine_tag_lookup(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 2) {
-            return luaL_error(state, "Invalid number of arguments in function Engine.tag.lookup.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.lookupTag.");
         }
 
         const char *tag_path = luaL_checkstring(state, 1);
 
         auto tag_group = get_tag_group(state, 2);
         if(!tag_group) {
-            return luaL_error(state, "Invalid tag group in function Engine.tag.lookup.");
+            return luaL_error(state, "Invalid tag group in function Engine.tag.lookupTag.");
+        }
+
+        if(!*map_is_loaded) {
+            return luaL_error(state, "Tried to lookup tag while map is not loaded in function Engine.tag.lookupTag.");
         }
 
         TagHandle tag = tag_lookup(tag_path, *tag_group);
@@ -35,22 +41,26 @@ namespace Balltze::Lua::Api::V2 {
     static int lua_engine_tag_get_data(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 2) {
-            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getData.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTagData.");
         }
 
         auto tag_handle = get_tag_handle(state, 1);
         if(!tag_handle) {
-            return luaL_error(state, "Invalid tag handle in function Engine.tag.getData.");
+            return luaL_error(state, "Invalid tag handle in function Engine.tag.getTagData.");
         }
 
         auto tag_group = get_tag_group(state, 2);
         if(!tag_group) {
-            return luaL_error(state, "Invalid tag group in function Engine.tag.getData.");
+            return luaL_error(state, "Invalid tag group in function Engine.tag.getTagData.");
+        }
+
+        if(!*map_is_loaded) {
+            return luaL_error(state, "Tried to get tag data while map is not loaded in function Engine.tag.getTagData.");
         }
         
         TagEntry *entry = tag_get_entry(*tag_handle);
         if(entry->primary_group != *tag_group) {
-            return luaL_error(state, "Tag group mismatch in function Engine.tag.getData.");
+            return luaL_error(state, "Tag group mismatch in function Engine.tag.getTagData.");
         }
 
         push_tag_data(state, entry);
@@ -61,12 +71,16 @@ namespace Balltze::Lua::Api::V2 {
     static int lua_engine_tag_get_entry(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 1) {
-            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getEntry.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.getTagEntry.");
         }
 
         auto tag_handle = get_tag_handle(state, 1);
         if(!tag_handle) {
-            return luaL_error(state, "Invalid tag handle in function Engine.tag.getEntry.");
+            return luaL_error(state, "Invalid tag handle in function Engine.tag.getTagEntry.");
+        }
+
+        if(!*map_is_loaded) {
+            return luaL_error(state, "Tried to get tag entry while map is not loaded in function Engine.tag.getTagEntry.");
         }
 
         TagEntry *tag_entry = tag_get_entry(*tag_handle);
@@ -83,15 +97,19 @@ namespace Balltze::Lua::Api::V2 {
     static int lua_engine_tag_filter(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args != 1 && args != 2) {
-            return luaL_error(state, "Invalid number of arguments in function Engine.tag.filter.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.tag.filterTags.");
         }
 
         auto tag_group = get_tag_group(state, 1);
         if(!tag_group) {
-            return luaL_error(state, "Invalid tag group in function Engine.tag.filter.");
+            return luaL_error(state, "Invalid tag group in function Engine.tag.filterTags.");
         }
 
         std::string filter = luaL_optstring(state, 2, "");
+
+        if(!*map_is_loaded) {
+            return luaL_error(state, "Tried to filter tags while map is not loaded in function Engine.tag.filterTags.");
+        }
 
         lua_newtable(state);
         auto *tag_data_header = tag_get_data_header();

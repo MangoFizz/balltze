@@ -71,12 +71,13 @@ Engine.tag = {}
 
 -- Look up a tag by its path
 ---@param path string @The path of the tag to look up
----@return TagHandle @The tag handle if found, or nil if not found
-function Engine.tag.lookupTag(path) end
+---@param group TagGroup @The group of the tag to look up
+---@return TagHandle @The tag handle if found, or nil if not found; error if the map is not loaded
+function Engine.tag.lookupTag(path, group) end
 
 -- Get the data of a tag
 ---@param handle TagHandle @The handle of the tag to get the data from
----@param group TagGroup @The group of the tag to get the data from
+---@param group TagGroup @The group of the tag to get the data from; error if the map is not loaded
 ---@overload fun(handle: TagHandle, group: "weapon_hud_interface"): WeaponHUDInterface
 ---@overload fun(handle: TagHandle, group: "wind"): Wind
 ---@overload fun(handle: TagHandle, group: "weapon"): Weapon
@@ -163,15 +164,14 @@ function Engine.tag.getData(handle, group) end
 
 -- Get the tag entry of a tag handle
 ---@param handle TagHandle @The handle of the tag to get the entry from
----@param group TagGroup @The group of the tag to get the entry from
----@return TagEntry @The tag entry if found, or nil if not found
+---@return TagEntry @The tag entry if found, or nil if not found; error if the map is not loaded
 function Engine.tag.getTagEntry(handle, group) end
 
 ---Return a tag entry list given a keyword and a tag group
 ---Leave the keyword empty to get all tags, if tag group is nil, it will return all tags
 ---@param tagGroup? string @The tag group to filter the tags by
 ---@param pathKeyword string @The keyword to search for in the tag paths
----@return TagEntry[] @The list of tag entries that match the keyword and tag group
+---@return TagEntry[] @The list of tag entries that match the keyword and tag group; error if the map is not loaded
 function Engine.tag.filterTags(tagGroup, pathKeyword) end
 
 -------------------------------------------------------
