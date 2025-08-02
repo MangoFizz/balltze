@@ -4,7 +4,7 @@
 #include <balltze/legacy_api/engine.hpp>
 #include <balltze/legacy_api/engine/saved_games.hpp>
 #include "../../types/ringworld_saved_games.hpp"
-#include "../../../../helpers/function_table.hpp"
+#include "../../../../helpers/plugin.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     static int saved_games_reload_player_profile(lua_State *state) noexcept {
@@ -61,6 +61,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_engine_saved_games_functions(lua_State *state) noexcept {
-        create_functions_table(state, "savedGames", engine_saved_games_functions);
+        push_plugin_functions_table(state, "savedGames", -1, engine_saved_games_functions);
     }        
 }

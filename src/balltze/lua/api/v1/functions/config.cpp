@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <balltze/config.hpp>
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     static int save_config_file(lua_State *state) {
@@ -358,6 +358,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_config_table(lua_State *state) noexcept {
-        create_functions_table(state, "config", config_functions);
+        push_plugin_functions_table(state, "config", -1, config_functions);
     }
 }

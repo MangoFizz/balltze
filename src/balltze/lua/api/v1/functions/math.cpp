@@ -2,7 +2,7 @@
 
 #include <lua.hpp>
 #include <balltze/math.hpp>
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     static int lua_get_bezier_curve_point(lua_State *state) noexcept {
@@ -99,6 +99,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_math_table(lua_State *state) noexcept {
-        create_functions_table(state, "math", math_functions);
+        push_plugin_functions_table(state, "math", -1, math_functions);
     }
 }

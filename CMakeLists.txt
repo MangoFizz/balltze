@@ -186,7 +186,7 @@ add_library(balltze SHARED
     src/balltze/lua/api/v2/types/event.cpp
     src/balltze/lua/api/v2/api.cpp
     src/balltze/lua/debug/lua_state_debug.cpp
-    src/balltze/lua/helpers/registry.cpp
+    src/balltze/lua/helpers/plugin.cpp
     src/balltze/lua/helpers/table.cpp
     src/balltze/lua/libraries/preloaded_libraries.cpp
     src/balltze/lua/libraries/preloaded_libraries.rc

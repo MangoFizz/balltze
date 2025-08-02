@@ -4,7 +4,7 @@
 #include "../../../../logger.hpp"
 #include "../../../../plugins/plugin.hpp"
 #include "../../../../plugins/loader.hpp"
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "../../../libraries/lfmt.hpp"
 
 namespace Balltze::Lua::Api::V2 {
@@ -115,6 +115,6 @@ namespace Balltze::Lua::Api::V2 {
     };
 
     void set_up_plugin_logger(lua_State *state) noexcept {
-        create_functions_table(state, "logger", logger_functions);
+        push_plugin_functions_table(state, "logger", -1, logger_functions);
     }
 }

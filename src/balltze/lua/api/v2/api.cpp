@@ -3,7 +3,7 @@
 #include <balltze/api.hpp>
 #include <balltze/utils.hpp>
 #include "../../libraries/preloaded_libraries.hpp"
-#include "../../helpers/registry.hpp"
+#include "../../helpers/plugin.hpp"
 #include "types.hpp"
 #include "api.hpp"
 
@@ -37,7 +37,7 @@ namespace Balltze::Lua::Api {
     using namespace V2;
 
     void open_balltze_api_v2(lua_State *state) {
-        create_balltze_registry(state);
+        create_plugin_registry(state);
 
         define_types(state);
         

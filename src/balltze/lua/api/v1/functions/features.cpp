@@ -7,7 +7,7 @@
 #include "../../../../features/tags_handling/map.hpp"
 #include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../../logger.hpp"
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "../types.hpp"
 
 namespace Balltze::Lua::Api::V1 {
@@ -297,7 +297,7 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_features_table(lua_State *state) noexcept {
-        create_functions_table(state, "features", features_functions);
+        push_plugin_functions_table(state, "features", -1, features_functions);
         LegacyApi::Event::MapLoadEvent::subscribe(on_map_load, LegacyApi::Event::EVENT_PRIORITY_LOWEST);
     }
 }

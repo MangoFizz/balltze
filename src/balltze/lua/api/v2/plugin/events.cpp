@@ -7,7 +7,7 @@
 #include "../../../../plugins/loader.hpp"
 #include "../../../../logger.hpp"
 #include "../../../helpers/function_table.hpp"
-#include "../../../helpers/registry.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "../types.hpp"
 
 using namespace Balltze::Events;
@@ -16,7 +16,7 @@ namespace Balltze::Lua::Api::V2 {
     static bool events_initialized = false;
 
     static void get_or_create_events_table(lua_State *state) noexcept {
-        get_or_create_registry_table(state, "events");
+        get_or_create_plugin_registry_table(state, "events");
     }
 
     static void create_event_table(lua_State *state, const char *name) noexcept {
@@ -165,7 +165,7 @@ namespace Balltze::Lua::Api::V2 {
         // Call all event listeners
         int size = lua_rawlen(state, -2);
         for(int i = 1; i <= size; i++) {
-            lua_pushcfunction(state, Plugins::LuaPlugin::error_message_handler);
+            lua_pushcfunction(state, plugin_error_handler);
             lua_rawgeti(state, -3, i);
             lua_pushvalue(state, -3); 
             int res = lua_pcall(state, 1, 0, -3);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <balltze/events/frame.hpp>
-#include <balltze/legacy_api/events/frame.hpp>
+#include <balltze/legacy_api/events/d3d9.hpp>
 
 namespace Balltze::Events {
     void dispatch_frame_begin_event() {
@@ -17,7 +17,7 @@ namespace Balltze::Events {
         }
         enabled = true;
 
-        LegacyApi::Event::FrameEvent::subscribe([](auto &event) {
+        LegacyApi::Event::D3D9BeginSceneEvent::subscribe([](auto &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
                 dispatch_frame_begin_event();
             }
@@ -36,9 +36,9 @@ namespace Balltze::Events {
         }
         m_initialized = true;
 
-        LegacyApi::Event::FrameEvent::subscribe([](auto &event) {
-            if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
-                dispatch_frame_begin_event();
+        LegacyApi::Event::D3D9EndSceneEvent::subscribe([](auto &event) {
+            if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
+                dispatch_frame_end_event();
             }
         });
     }

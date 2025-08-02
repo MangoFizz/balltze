@@ -6,7 +6,7 @@
 #include <lua.hpp>
 #include "../../../../plugins/loader.hpp"
 #include "../../../../plugins/plugin.hpp"
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 
 namespace fs = std::filesystem;
 
@@ -302,6 +302,6 @@ namespace Balltze::Lua::Api::V2 {
     };
 
     void set_filesystem_functions(lua_State *state, int table_idx) noexcept {
-        create_functions_table(state, "filesystem", filesystem_functions);
+        push_plugin_functions_table(state, "filesystem", -1, filesystem_functions);
     }
 }

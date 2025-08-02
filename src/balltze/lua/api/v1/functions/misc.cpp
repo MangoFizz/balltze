@@ -7,8 +7,7 @@
 #include <balltze/legacy_api/events/tick.hpp>
 #include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../../logger.hpp"
-#include "../../../helpers/function_table.hpp"
-#include "../../../helpers/registry.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "../../../helpers/table.hpp"
 #include "../../../libraries/preloaded_libraries.hpp"
 
@@ -119,7 +118,7 @@ namespace Balltze::Lua::Api::V1 {
     }
 
     static void get_timers_registry_table(lua_State *state) noexcept {
-        get_or_create_registry_table(state, "timers");
+        get_or_create_plugin_registry_table(state, "timers");
     }
 
     static int stop_timer(lua_State *state) noexcept {
@@ -229,7 +228,7 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_misc_table(lua_State *state) noexcept {
-        create_functions_table(state, "misc", misc_functions);
+        push_plugin_functions_table(state, "misc", -1, misc_functions);
 
         static auto tickHandler = LegacyApi::Event::TickEvent::subscribe_const([](const LegacyApi::Event::TickEvent &event) {
             if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {

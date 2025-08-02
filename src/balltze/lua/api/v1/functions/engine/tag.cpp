@@ -2,7 +2,7 @@
 
 #include <lua.hpp>
 #include <balltze/legacy_api/engine.hpp>
-#include "../../../../helpers/function_table.hpp"
+#include "../../../../helpers/plugin.hpp"
 #include "../../types.hpp"
 
 namespace Balltze::Lua::Api::V1 {
@@ -118,6 +118,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_engine_tag_functions(lua_State *state) noexcept {
-        create_functions_table(state, "tag", engine_tag_functions);
+        push_plugin_functions_table(state, "tag", -1, engine_tag_functions);
     }
 }

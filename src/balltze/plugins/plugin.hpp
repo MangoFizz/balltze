@@ -251,13 +251,6 @@ namespace Balltze::Plugins {
          */
         ~LuaPlugin() override;
 
-        /**
-         * Error handling function to print the Lua traceback.
-         * 
-         * @param state the Lua state
-         */
-        static int error_message_handler(lua_State *state) noexcept;
-
     private:
         lua_State *m_lua_state = nullptr;
         std::vector<TagImport> m_tag_imports;

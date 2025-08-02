@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <lua.hpp>
 #include "../../../../legacy_api/plugins/loader.hpp"
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 
 namespace fs = std::filesystem;
 
@@ -300,6 +300,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_filesystem_table(lua_State *state) noexcept {
-        create_functions_table(state, "filesystem", filesystem_functions);
+        push_plugin_functions_table(state, "filesystem", -1, filesystem_functions);
     }
 }

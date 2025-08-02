@@ -2,7 +2,7 @@
 
 #include <lua.hpp>
 #include <balltze/legacy_api/engine.hpp>
-#include "../../../../helpers/function_table.hpp"
+#include "../../../../helpers/plugin.hpp"
 #include "../../../../libraries/luacstruct.hpp"
 #include "../../types.hpp"
 
@@ -485,6 +485,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_engine_user_interface_functions(lua_State *state) noexcept {
-        create_functions_table(state, "userInterface", engine_user_interface_functions);
+        push_plugin_functions_table(state, "userInterface", -1, engine_user_interface_functions);
     }
 }

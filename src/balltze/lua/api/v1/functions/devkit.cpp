@@ -3,7 +3,7 @@
 #include <cstring>
 #include <ctime>
 #include "../../../debug/lua_state_debug.hpp"
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     /**
@@ -61,6 +61,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_devkit_table(lua_State *state) noexcept {
-        create_functions_table(state, "devkit", devkit_functions);
+        push_plugin_functions_table(state, "devkit", -1, devkit_functions);
     }
 }

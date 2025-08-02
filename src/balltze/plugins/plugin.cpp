@@ -4,6 +4,7 @@
 #include "../config/config.hpp"
 #include "../lua/api/v2/plugin/commands.hpp"
 #include "../lua/api/v2/api.hpp"
+#include "../lua/helpers/plugin.hpp"
 #include "../lua/libraries/preloaded_libraries.hpp"
 #include "../logger.hpp"
 #include "../version.hpp"
@@ -178,7 +179,7 @@ namespace Balltze::Plugins {
             throw std::runtime_error("Could not load Lua plugin main file: " + script_path.string() + " - " + error_msg);
         }
 
-        lua_pushcfunction(m_lua_state, error_message_handler);
+        lua_pushcfunction(m_lua_state, Lua::plugin_error_handler);
         lua_insert(m_lua_state, -2);
 
         if(lua_pcall(m_lua_state, 0, 0, -2)) {
@@ -213,7 +214,7 @@ namespace Balltze::Plugins {
     void LuaPlugin::unload() {
         Lua::Api::V2::remove_console_commands_for_plugin(this);
         if(m_lua_state) {
-            lua_pushcfunction(m_lua_state, error_message_handler);
+            lua_pushcfunction(m_lua_state, Lua::plugin_error_handler);
             lua_getglobal(m_lua_state, "PluginUnload");
             if(lua_isfunction(m_lua_state, -1)) {
                 if(lua_pcall(m_lua_state, 0, 0, -2)) {
@@ -290,11 +291,6 @@ namespace Balltze::Plugins {
         }
         lua_pop(m_lua_state, 1);
         return err;
-    }
-
-    int LuaPlugin::error_message_handler(lua_State *state) noexcept {
-        luaL_traceback(state, state, lua_tostring(state, 1), 1);
-        return 1;
     }
 
     std::filesystem::path get_plugins_path() noexcept {

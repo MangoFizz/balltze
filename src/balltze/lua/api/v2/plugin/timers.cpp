@@ -11,7 +11,7 @@
 #include "../../../../logger.hpp"
 #include "../../../helpers/function_table.hpp"
 #include "../../../helpers/table.hpp"
-#include "../../../helpers/registry.hpp"
+#include "../../../helpers/plugin.hpp"
 
 namespace Balltze::Lua::Api::V2 {
     using time_point_t = std::chrono::steady_clock::time_point;
@@ -31,7 +31,7 @@ namespace Balltze::Lua::Api::V2 {
     static bool timers_initialized = false;
 
     static void get_or_create_timer_functions_table(lua_State *state) noexcept {
-        get_or_create_registry_table(state, "timer_functions");
+        get_or_create_plugin_registry_table(state, "timer_functions");
     }
 
     LuaTimer::LuaTimer(lua_State *state, int function_idx, uint32_t interval) : lua_state(state), interval(interval) {

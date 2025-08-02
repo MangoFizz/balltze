@@ -2,7 +2,7 @@
 
 #include <lua.hpp>
 #include <balltze/legacy_api/engine.hpp>
-#include "../../../../helpers/function_table.hpp"
+#include "../../../../helpers/plugin.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     static int execute_script(lua_State *state) noexcept {
@@ -23,6 +23,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_engine_hsc_functions(lua_State *state) noexcept {
-        create_functions_table(state, "hsc", engine_renderer_functions);
+        push_plugin_functions_table(state, "hsc", -1, engine_renderer_functions);
     }
 }

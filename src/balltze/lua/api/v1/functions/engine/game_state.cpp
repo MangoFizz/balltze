@@ -4,7 +4,7 @@
 #include <balltze/legacy_api/engine.hpp>
 #include <balltze/helpers/string_literal.hpp>
 #include "../../../../../logger.hpp"
-#include "../../../../helpers/function_table.hpp"
+#include "../../../../helpers/plugin.hpp"
 #include "../../types.hpp"
 
 namespace Balltze::Lua::Api::V1 {
@@ -402,6 +402,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_engine_game_state_functions(lua_State *state) noexcept {
-        create_functions_table(state, "gameState", engine_game_state_functions);
+        push_plugin_functions_table(state, "gameState", -1, engine_game_state_functions);
     }
 }

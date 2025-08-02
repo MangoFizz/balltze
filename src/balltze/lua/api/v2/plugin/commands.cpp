@@ -5,7 +5,7 @@
 #include "../../../../plugins/plugin.hpp"
 #include "../../../../plugins/loader.hpp"
 #include "../../../../logger.hpp"
-#include "../../../helpers/registry.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "../../../helpers/function_table.hpp"
 #include "commands.hpp"
 
@@ -26,11 +26,11 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static void get_commands_table(lua_State *state) noexcept {
-        get_or_create_registry_table(state, LUA_CONSOLE_COMMANDS_TABLE);
+        get_or_create_plugin_registry_table(state, LUA_CONSOLE_COMMANDS_TABLE);
     }
 
     static void clear_commands_table(lua_State *state) noexcept {
-        clear_registry_table(state, LUA_CONSOLE_COMMANDS_TABLE);
+        clear_registry_plugin_registry_table(state, LUA_CONSOLE_COMMANDS_TABLE);
     }
 
     CommandResult ConsoleCommand::call(std::size_t arg_count, const char **args) const noexcept {
@@ -40,7 +40,7 @@ namespace Balltze::Lua::Api::V2 {
         lua_rawgeti(state, -1, function_ref);
         lua_remove(state, -2); 
         if(!lua_isnil(state, -1)) {
-            lua_pushcfunction(state, LuaPlugin::error_message_handler);
+            lua_pushcfunction(state, plugin_error_handler);
             lua_pushvalue(state, -2);
             lua_newtable(state);
             for(std::size_t i = 0; i < arg_count; i++) {

@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <windows.h>
 #include <lua.hpp>
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 
 namespace Balltze::Lua::Api::V1 {
     template <typename T>
@@ -157,6 +157,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_memory_function(lua_State *state) noexcept {
-        create_functions_table(state, "memory", memory_functions);
+        push_plugin_functions_table(state, "memory", -1, memory_functions);
     }
 }

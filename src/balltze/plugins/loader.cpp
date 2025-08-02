@@ -2,6 +2,7 @@
 
 #include <balltze/events.hpp>
 #include <balltze/command.hpp>
+#include "../lua/helpers/plugin.hpp"
 #include "../logger.hpp"
 #include "plugin.hpp"
 #include "loader.hpp"
@@ -43,14 +44,19 @@ namespace Balltze::Plugins {
     }
 
     LuaPlugin *get_lua_plugin(lua_State *state) noexcept {
-        void *upvalue_state = reinterpret_cast<lua_State *>(lua_touserdata(state, lua_upvalueindex(1)));
+        if(!state) {
+            logger.error("Lua state is null. Cannot get Lua plugin.");
+            return nullptr;
+        }
+        lua_State *plugin_lua_state = Lua::get_plugin_lua_state(state);
         for(auto &plugin : plugins) {
             if(auto lua_plugin = dynamic_cast<LuaPlugin *>(plugin.get())) {
-                if(lua_plugin->lua_state() == upvalue_state) {
+                if(lua_plugin->lua_state() == plugin_lua_state) {
                     return lua_plugin;
                 }
             }
         }
+        logger.error("Could not find Lua plugin for the given Lua state. Undefined behavior may occur.");
         return nullptr;
     }
 

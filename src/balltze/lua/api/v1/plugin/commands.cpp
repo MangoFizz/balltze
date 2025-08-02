@@ -4,7 +4,7 @@
 #include "../../../../logger.hpp"
 #include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../../config/config.hpp"
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "commands.hpp"
 
 namespace Balltze {
@@ -245,6 +245,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_command_table(lua_State *state) noexcept {
-        create_functions_table(state, "command", command_functions);
+        push_plugin_functions_table(state, "command", -1, command_functions);
     }
 }

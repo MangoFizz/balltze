@@ -9,7 +9,7 @@
 #include "../../../../legacy_api/plugins/plugin.hpp"
 #include "../../../../legacy_api/plugins/loader.hpp"
 #include "../../../helpers/function_table.hpp"
-#include "../../../helpers/registry.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "../types.hpp"
 
 namespace Balltze::LegacyApi::Event {
@@ -23,7 +23,7 @@ namespace Balltze::Lua::Api::V1 {
     static std::size_t tick_event_count = 0;
 
     static void lua_get_events_registry_table(lua_State *state) noexcept {
-        get_or_create_registry_table(state, "events");
+        get_or_create_plugin_registry_table(state, "events");
     }
 
     static void set_up_event_table(lua_State *state, const char *name, lua_CFunction add, lua_CFunction remove, lua_CFunction remove_all) noexcept {

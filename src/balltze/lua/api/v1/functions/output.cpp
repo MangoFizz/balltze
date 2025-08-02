@@ -3,7 +3,7 @@
 #include <string>
 #include <lua.hpp>
 #include <balltze/output.hpp>
-#include "../../../helpers/function_table.hpp"
+#include "../../../helpers/plugin.hpp"
 #include "../types.hpp"
 
 namespace Balltze::Lua::Api::V1 {
@@ -26,6 +26,6 @@ namespace Balltze::Lua::Api::V1 {
     };
 
     void set_output_table(lua_State *state) noexcept {
-        create_functions_table(state, "output", output_functions);
+        push_plugin_functions_table(state, "output", -1, output_functions);
     }
 }
