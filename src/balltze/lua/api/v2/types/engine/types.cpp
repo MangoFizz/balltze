@@ -311,8 +311,8 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_vector_ij_type(lua_State *state) noexcept {
         LUAS_STRUCT(state, VectorIJ);
-        LUAS_PRIMITIVE_FIELD(state, VectorIJ, i, LUAST_INT16, 0);
-        LUAS_PRIMITIVE_FIELD(state, VectorIJ, j, LUAST_INT16, 0);
+        LUAS_PRIMITIVE_FIELD(state, VectorIJ, i, LUAST_FLOAT, 0);
+        LUAS_PRIMITIVE_FIELD(state, VectorIJ, j, LUAST_FLOAT, 0);
         lua_pop(state, 1);
     }
 
@@ -341,9 +341,9 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_vector_ijk_type(lua_State *state) noexcept {
         LUAS_STRUCT(state, VectorIJK);
-        LUAS_PRIMITIVE_FIELD(state, VectorIJK, i, LUAST_INT16, 0);
-        LUAS_PRIMITIVE_FIELD(state, VectorIJK, j, LUAST_INT16, 0);
-        LUAS_PRIMITIVE_FIELD(state, VectorIJK, k, LUAST_INT16, 0);
+        LUAS_PRIMITIVE_FIELD(state, VectorIJK, i, LUAST_FLOAT, 0);
+        LUAS_PRIMITIVE_FIELD(state, VectorIJK, j, LUAST_FLOAT, 0);
+        LUAS_PRIMITIVE_FIELD(state, VectorIJK, k, LUAST_FLOAT, 0);
         lua_pop(state, 1);
     }
 
