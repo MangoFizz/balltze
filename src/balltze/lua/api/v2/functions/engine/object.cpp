@@ -23,7 +23,8 @@ namespace Balltze::Lua::Api::V2 {
             }
 
             auto *object_table = object_table_get();
-            auto *object = (DynamicObjectBase *)table_get_element(object_table, *object_handle);
+            auto *object_header = (DynamicObjectHeader *)table_get_element(object_table, *object_handle);
+            auto *object = (DynamicObjectBase *)object_header->address;
 
             if(object) {
                 if(args == 2) {

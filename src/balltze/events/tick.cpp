@@ -17,7 +17,7 @@ namespace Balltze::Events {
         m_initialized = true;
 
         LegacyApi::Event::TickEvent::subscribe([](auto &event) {
-            if(event.time == LegacyApi::Event::EVENT_TIME_BEFORE) {
+            if(event.time == LegacyApi::Event::EVENT_TIME_AFTER) {
                 dispatch_tick_event();
             }
         });
