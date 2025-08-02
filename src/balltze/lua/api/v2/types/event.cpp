@@ -42,20 +42,20 @@ namespace Balltze::Lua::Api::V2 {
         }
     }
 
-    template<typename T>
-    static int event_context_cancel_method(lua_State *state) {
-        auto *event = LUAS_CHECK_OBJECT(state, 1, T);
-        if(!event) {
-            return luaL_error(state, "Invalid event context in event.cancel method.");
+    #define EVENT_CONTEXT_CANCEL_METHOD(type) \
+        [](lua_State *state) -> int { \
+            auto *event = LUAS_CHECK_OBJECT(state, 1, type); \
+            if(!event) { \
+                return luaL_error(state, "Invalid event context in event.cancel method."); \
+            } \
+            try { \
+                event->cancel(); \
+            } \
+            catch(const std::runtime_error &e) { \
+                return luaL_error(state, "%s", e.what()); \
+            } \
+            return 0; \
         }
-        try {
-            event->cancel();
-        }
-        catch(const std::runtime_error &e) {
-            return luaL_error(state, "%s", e.what());
-        }
-        return 0;
-    }
 
     static void define_event_map_load_context(lua_State *state) {
         LUAS_STRUCT(state, MapLoadEvent);
@@ -85,7 +85,7 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_event_player_input_context(lua_State *state) {
         LUAS_STRUCT(state, PlayerInputEvent);
-        LUAS_METHOD_FIELD(state, PlayerInputEvent, "cancel", event_context_cancel_method<PlayerInputEvent>);
+        LUAS_METHOD_FIELD(state, PlayerInputEvent, "cancel", EVENT_CONTEXT_CANCEL_METHOD(PlayerInputEvent));
         LUAS_METHOD_FIELD(state, PlayerInputEvent, "getDevice", [](lua_State *state) -> int {
             auto *event = LUAS_CHECK_OBJECT(state, 1, PlayerInputEvent);
             if(event->device() == LegacyApi::Engine::INPUT_DEVICE_KEYBOARD) {
