@@ -166,7 +166,7 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_tag_reference_type(lua_State *state) noexcept {
         LUAS_STRUCT(state, TagReference);
-        LUAS_OBJREF_FIELD(state, TagReference, tag_handle, TagHandle, LUAS_FIELD_READONLY);
+        LUAS_OBJREF_FIELD(state, TagReference, tag_handle, TagHandle, 0);
         LUAS_ENUM_FIELD(state, TagReference, tag_group, TagGroup, LUAS_FIELD_READONLY);
         lua_pop(state, 1);
     }

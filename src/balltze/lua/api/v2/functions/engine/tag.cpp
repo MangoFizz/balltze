@@ -114,12 +114,13 @@ namespace Balltze::Lua::Api::V2 {
         lua_newtable(state);
         auto *tag_data_header = tag_get_data_header();
         auto tag_count = tag_data_header->tag_count;
-        for(std::size_t i = 0; i < tag_count; i++) {
+        for(std::size_t i = 0, found_tags = 0; i < tag_count; i++) {
             TagEntry *tag_entry = tag_data_header->tags + i;
             std::string path = tag_entry->path;
             if(path.find(filter) != std::string::npos && tag_entry->primary_group == tag_group.value()) {
                 push_tag_entry(state, *tag_entry, true);
-                lua_rawseti(state, -2, i + 1);
+                lua_rawseti(state, -2, found_tags + 1);
+                found_tags++;
             }
         }
 
