@@ -21,6 +21,7 @@ namespace Balltze::Lua::Api::V2 {
         time_point_t timestamp;
         int function_ref = LUA_NOREF;
         uint32_t interval = 0;
+        bool removed = false;
 
         int lua_get_function();
         LuaTimer(lua_State *state, int table_idx, uint32_t interval);
@@ -50,7 +51,12 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     int LuaTimer::lua_get_function() {
-        lua_rawgeti(lua_state, LUA_REGISTRYINDEX, function_ref);
+        get_or_create_timer_functions_table(lua_state);
+        lua_rawgeti(lua_state, -1, function_ref);
+        lua_remove(lua_state, -2); 
+        if(!lua_isfunction(lua_state, -1)) {
+            return luaL_error(lua_state, "Timer function reference is not a function");
+        }
         return 1;
     }
 
@@ -58,16 +64,13 @@ namespace Balltze::Lua::Api::V2 {
         if(lua_isnil(state, lua_upvalueindex(1))) {
             return luaL_error(state, "timer has already been stopped");
         }
-        
         LuaTimer *self = reinterpret_cast<LuaTimer *>(lua_touserdata(state, lua_upvalueindex(1)));
         if(!self) {
             return luaL_error(state, "Invalid timer");
         }
-        
-        timers.erase(std::remove_if(timers.begin(), timers.end(), [&](const std::unique_ptr<LuaTimer> &timer) {
-            return timer->lua_state == state && timer.get() == self;
-        }), timers.end());
-        
+        self->removed = true;
+        lua_pushnil(state);
+        lua_replace(state, lua_upvalueindex(1)); 
         return 0;
     }
 
@@ -92,7 +95,7 @@ namespace Balltze::Lua::Api::V2 {
         }
         
         // Create timer
-        timers.emplace_back(std::make_unique<LuaTimer>(state, 2, interval));
+        timers.emplace_back(std::make_unique<LuaTimer>(plugin->lua_state(), 2, interval));
         auto *timer = timers.back().get();
 
         // Create timer handle
@@ -111,7 +114,7 @@ namespace Balltze::Lua::Api::V2 {
             auto plugin = Plugins::get_lua_plugin(timer->lua_state);
             if(plugin) {
                 lua_State *state = plugin->lua_state();
-                lua_pushcfunction(state, Plugins::LuaPlugin::error_message_handler);
+                lua_pushcfunction(state, plugin_error_handler);
                 timer->lua_get_function();
                 if(lua_pcall(state, 0, 0, -2) != LUA_OK) {
                     logger.error("Error in Lua timer function: {}", plugin->pop_error_message());
@@ -122,6 +125,11 @@ namespace Balltze::Lua::Api::V2 {
                 it = timers.erase(it);
             }
         }
+
+        // remove timers that have been marked as removed
+        timers.erase(std::remove_if(timers.begin(), timers.end(), [](const std::unique_ptr<LuaTimer> &timer) {
+            return timer->removed;
+        }), timers.end());
     }
 
     void set_up_plugin_timers(lua_State *state, int table_idx) noexcept {
