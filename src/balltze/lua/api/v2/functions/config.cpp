@@ -7,17 +7,24 @@
 namespace Balltze::Lua::Api::V2 {
     static auto LUA_CONFIG_OBJECT_METATABLE = "balltze_config_object";
 
+    static Config::Config *get_config_object(lua_State *state, int index) {
+        if(!lua_isuserdata(state, index)) {
+            luaL_error(state, "Expected a userdata object at index %d.", index);
+        }
+        auto *config = static_cast<Config::Config *>(luaL_checkudata(state, index, LUA_CONFIG_OBJECT_METATABLE));
+        if(!config) {
+            luaL_error(state, "Invalid config object at index %d.", index);
+        }
+        return config;
+    }
+
     static int save_config_file(lua_State *state) {
         int args = lua_gettop(state);
         if(args != 1) {
             return luaL_error(state, "Invalid number of arguments in function Config:saveConfigFile.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:saveConfigFile.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
+        auto *config = get_config_object(state, 1);
         try {
             config->save();
         }
@@ -34,12 +41,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:loadConfigFile.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:loadConfigFile.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         try {
             config->load();
         }
@@ -56,12 +58,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:keyExists.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:keyExists.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
             return luaL_error(state, "Invalid key in function Config:keyExists.");
@@ -77,12 +74,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:removeKey.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:removeKey.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
             return luaL_error(state, "Invalid key in function Config:removeKey.");
@@ -98,12 +90,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:getInteger.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:getInteger.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
             return luaL_error(state, "Invalid key in function Config:getInteger.");
@@ -130,12 +117,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:getNumber.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:getNumber.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
             return luaL_error(state, "Invalid key in function Config:getNumber.");
@@ -162,12 +144,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:getString.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:getString.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
             return luaL_error(state, "Invalid key in function Config:getString.");
@@ -194,12 +171,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:getBoolean.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:getBoolean.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
             return luaL_error(state, "Invalid key in function Config:getBoolean.");
@@ -226,12 +198,7 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid number of arguments in function Config:setKeyInteger.");
         }
 
-        if(!lua_isuserdata(state, 1)) {
-            return luaL_error(state, "Invalid argument #1 in function Config:setKeyInteger.");
-        }
-
-        auto *config = reinterpret_cast<Config::Config *>(lua_touserdata(state, 1));
-
+        auto *config = get_config_object(state, 1);
         auto *key = luaL_checkstring(state, 2);
         if(std::strlen(key) == 0) {
             return luaL_error(state, "Invalid key in function Config:setKeyInteger.");
@@ -304,8 +271,6 @@ namespace Balltze::Lua::Api::V2 {
             return luaL_error(state, "Invalid config filepath in function Config:openConfigFile.");
         }
 
-        lua_newtable(state);
-
         Config::Config *config = nullptr;
         try {
             config = new Config::Config(filepath);
@@ -317,8 +282,7 @@ namespace Balltze::Lua::Api::V2 {
 
         lua_pushlightuserdata(state, config);
 
-        if(luaL_newmetatable(state, LUA_CONFIG_OBJECT_METATABLE)) {
-            lua_newtable(state);
+        if(luaL_newmetatable(state, LUA_CONFIG_OBJECT_METATABLE) != 0) {
             luaL_newlib(state, functions);
             lua_setfield(state, -2, "__index");
             lua_pushcfunction(state, config__gc);
