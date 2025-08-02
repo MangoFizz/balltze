@@ -171,6 +171,7 @@ add_library(balltze SHARED
     src/balltze/lua/api/v2/plugin/events.cpp
     src/balltze/lua/api/v2/plugin/filesystem.cpp
     src/balltze/lua/api/v2/plugin/logger.cpp
+    src/balltze/lua/api/v2/plugin/timers.cpp
     src/balltze/lua/api/v2/types/engine/cache_file.cpp
     src/balltze/lua/api/v2/types/engine/device.cpp
     src/balltze/lua/api/v2/types/engine/game_engine.cpp

@@ -16,6 +16,7 @@ namespace Balltze::Lua::Api {
         void set_up_plugin_commands(lua_State *state, int table_idx) noexcept;
         void set_up_plugin_events(lua_State *state, int table_idx) noexcept;
         void set_up_plugin_logger(lua_State *state) noexcept;
+        void set_up_plugin_timers(lua_State *state, int table_idx) noexcept;
 
         void define_types(lua_State *state) noexcept {
             define_engine_types(state);
@@ -47,6 +48,7 @@ namespace Balltze::Lua::Api {
         set_up_plugin_commands(state, -1);
         set_up_plugin_events(state, -1);
         set_up_plugin_logger(state);
+        set_up_plugin_timers(state, -1);
         lua_setglobal(state, "Balltze");
 
         set_engine_table(state);

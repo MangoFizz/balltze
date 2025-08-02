@@ -147,6 +147,20 @@ function Balltze.removeEventListeners(eventName) end
 
 
 -------------------------------------------------------
+-- Miscellaneous
+-------------------------------------------------------
+
+---@class Timer
+---@field stop fun() @Stop the timer and removes it
+
+-- Create a timer
+---@param interval integer @The interval of the timer in milliseconds
+---@param callback fun() @The function to call when the timer elapses
+---@return Timer @Handle of the timer
+function Balltze.setTimer(interval, callback) end
+
+
+-------------------------------------------------------
 -- Filesystem functions
 -------------------------------------------------------
 
