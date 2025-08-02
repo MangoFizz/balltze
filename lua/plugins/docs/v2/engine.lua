@@ -160,7 +160,7 @@ function Engine.tag.lookupTag(path, group) end
 ---@overload fun(handle: TagHandle, group: "antenna"): Antenna
 ---@overload fun(handle: TagHandle, group: "actor_variant"): ActorVariant
 ---@overload fun(handle: TagHandle, group: "actor"): Actor
-function Engine.tag.getData(handle, group) end
+function Engine.tag.getTagData(handle, group) end
 
 -- Get the tag entry of a tag handle
 ---@param handle TagHandle @The handle of the tag to get the entry from

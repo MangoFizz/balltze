@@ -13,7 +13,7 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_METHOD_FIELD(state, PlayerHandle, "isNull", [](lua_State *state) -> int {
             auto handle = get_table_resource_handle(state, 1);
             if(!handle.has_value()) {
-                return luaL_error(state, "Invalid TableResourceHandle object.");
+                return luaL_error(state, "Invalid ObjectHandle object.");
             }
             lua_pushboolean(state, HANDLE_IS_NULL(handle.value()));
             return 1;
@@ -121,7 +121,7 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_PRIMITIVE_FIELD(state, MultiplayerPlayerInfo, speed_multiplier, LUAST_FLOAT, 0);
         LUAS_PRIMITIVE_FIELD(state, MultiplayerPlayerInfo, teleporter_index, LUAST_INT32, 0);
         LUAS_PRIMITIVE_FIELD(state, MultiplayerPlayerInfo, objective_mode, LUAST_INT32, 0);
-        LUAS_OBJREF_FIELD(state, MultiplayerPlayerInfo, objective_player_handle, TableResourceHandle, 0);
+        LUAS_OBJREF_FIELD(state, MultiplayerPlayerInfo, objective_player_handle, PlayerHandle, 0);
         LUAS_PRIMITIVE_FIELD(state, MultiplayerPlayerInfo, target_player, LUAST_INT32, 0);
         LUAS_PRIMITIVE_FIELD(state, MultiplayerPlayerInfo, target_time, LUAST_UINT32, 0);
         LUAS_PRIMITIVE_FIELD(state, MultiplayerPlayerInfo, last_death_time, LUAST_UINT32, 0);
@@ -146,16 +146,16 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_PRIMITIVE_ARRAY_FIELD(state, Player, name, LUAST_CHAR, LUAS_FIELD_READONLY);
         LUAS_PRIMITIVE_FIELD(state, Player, squad_index, LUAST_UINT32, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, team_index, LUAST_UINT32, 0);
-        LUAS_OBJREF_FIELD(state, Player, interaction_object_handle, TableResourceHandle, 0);
+        LUAS_OBJREF_FIELD(state, Player, interaction_object_handle, ObjectHandle, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, interaction_object_type, LUAST_UINT16, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, interaction_object_seat, LUAST_UINT16, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, respawn_time, LUAST_UINT32, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, respawn_time_penalty, LUAST_UINT32, 0);
-        LUAS_OBJREF_FIELD(state, Player, unit_handle, TableResourceHandle, 0);
-        LUAS_OBJREF_FIELD(state, Player, dead_unit_handle, TableResourceHandle, 0);
+        LUAS_OBJREF_FIELD(state, Player, unit_handle, ObjectHandle, 0);
+        LUAS_OBJREF_FIELD(state, Player, dead_unit_handle, ObjectHandle, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, bsp_cluster_index, LUAST_INT16, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, weapon_swap_result, LUAST_BOOL, 0);
-        LUAS_OBJREF_FIELD(state, Player, auto_aim_target_object, TableResourceHandle, 0);
+        LUAS_OBJREF_FIELD(state, Player, auto_aim_target_object, ObjectHandle, 0);
         LUAS_PRIMITIVE_FIELD(state, Player, last_fire_time, LUAST_UINT32, 0);
         LUAS_OBJREF_FIELD(state, Player, network_player_data, NetworkPlayer, 0);
         LUAS_PRIMITIVE_ARRAY_FIELD(state, Player, power_up_durations, LUAST_UINT16, 2);
