@@ -38,11 +38,11 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_ui_widget_type(lua_State *state) noexcept {
         LUAS_STRUCT(state, Widget);
-        LUAS_PRIMITIVE_FIELD(state, Widget, definition_tag_handle, LUAST_UINT32, 0);
-        LUAS_PRIMITIVE_FIELD(state, Widget, name, LUAST_STRING_LITERAL, 0);
-        LUAS_PRIMITIVE_FIELD(state, Widget, local_player_index, LUAST_INT16, 0);
+        LUAS_OBJREF_FIELD(state, Widget, definition_tag_handle, TagHandle, LUAS_FIELD_READONLY);
+        LUAS_PRIMITIVE_FIELD(state, Widget, name, LUAST_STRING_LITERAL, LUAS_FIELD_READONLY);
+        LUAS_PRIMITIVE_FIELD(state, Widget, local_player_index, LUAST_INT16, LUAS_FIELD_READONLY);
         LUAS_OBJREF_FIELD(state, Widget, position, VectorXYInt, 0);
-        LUAS_ENUM_FIELD(state, Widget, type, UIWidgetType, 0);
+        LUAS_ENUM_FIELD(state, Widget, type, UIWidgetType, LUAS_FIELD_READONLY);
         LUAS_PRIMITIVE_FIELD(state, Widget, visible, LUAST_BOOL, 0);
         LUAS_PRIMITIVE_FIELD(state, Widget, render_regardless_of_controller_index, LUAST_BOOL, 0);
         LUAS_PRIMITIVE_FIELD(state, Widget, never_receive_events, LUAST_BOOL, 0);
@@ -54,11 +54,11 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_PRIMITIVE_FIELD(state, Widget, ms_to_close, LUAST_UINT32, 0);
         LUAS_PRIMITIVE_FIELD(state, Widget, ms_to_close_fade_time, LUAST_UINT32, 0);
         LUAS_PRIMITIVE_FIELD(state, Widget, alpha_modifier, LUAST_FLOAT, 0);
-        LUAS_OBJREF_FIELD(state, Widget, previous, Widget, LUAS_FIELD_POINTER);
-        LUAS_OBJREF_FIELD(state, Widget, next, Widget, LUAS_FIELD_POINTER);
-        LUAS_OBJREF_FIELD(state, Widget, parent, Widget, LUAS_FIELD_POINTER);
-        LUAS_OBJREF_FIELD(state, Widget, child, Widget, LUAS_FIELD_POINTER);
-        LUAS_OBJREF_FIELD(state, Widget, focused_child, Widget, LUAS_FIELD_POINTER);
+        LUAS_OBJREF_FIELD(state, Widget, previous, Widget, LUAS_FIELD_POINTER | LUAS_FIELD_READONLY);
+        LUAS_OBJREF_FIELD(state, Widget, next, Widget, LUAS_FIELD_POINTER | LUAS_FIELD_READONLY);
+        LUAS_OBJREF_FIELD(state, Widget, parent, Widget, LUAS_FIELD_POINTER | LUAS_FIELD_READONLY);
+        LUAS_OBJREF_FIELD(state, Widget, child, Widget, LUAS_FIELD_POINTER | LUAS_FIELD_READONLY);
+        LUAS_OBJREF_FIELD(state, Widget, focused_child, Widget, LUAS_FIELD_POINTER | LUAS_FIELD_READONLY);
         LUAS_OBJREF_FIELD(state, Widget, text_box_parameters, WidgetTextBoxParameters, LUAS_FIELD_POINTER);
         LUAS_OBJREF_FIELD(state, Widget, list_parameters, WidgetListParameters, LUAS_FIELD_POINTER);
         LUAS_OBJREF_FIELD(state, Widget, animation_data, WidgetAnimationData, LUAS_FIELD_POINTER);
