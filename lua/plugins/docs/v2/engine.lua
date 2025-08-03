@@ -223,3 +223,37 @@ Engine.player = {}
 ---@param playerIndexOrHandle? PlayerHandle|integer @The index or the handle of the player; If nil, the local player is returned
 ---@return Player @The player
 function Engine.player.getPlayer(playerIndexOrHandle) end
+
+
+-------------------------------------------------------
+-- Engine.uiWidget
+-------------------------------------------------------
+
+Engine.uiWidget = {}
+
+-- Launch a UI widget 
+---@param uiWidgetDefinition TagHandle|integer @The tag handle of the UI widget definition
+function Engine.uiWidget.launchWidget(uiWidgetDefinition) end
+
+-- Get the currently active UI widget
+---@return Widget|nil @The active widget, or nil if no widget is active
+function Engine.uiWidget.getActiveWidget() end
+
+-- Close the currently active UI widget
+function Engine.uiWidget.closeWidget() end
+
+-- Replace the currently active UI widget with a new one
+---@param widget Widget @The new widget to replace the current one
+---@param uiWidgetDefinition TagHandle|integer @The tag handle of the definition for the new widget
+---@return Widget @The new widget that was created
+function Engine.uiWidget.replaceWidget(widget, uiWidgetDefinition) end
+
+-- Reload a UI widget
+---@param widget Widget @The widget to reload
+---@return Widget @The reloaded widget
+function Engine.uiWidget.reloadWidget(widget) end
+
+-- Focus a UI widget
+---@param widget Widget @The widget to focus
+function Engine.uiWidget.focusWidget(widget) end
+

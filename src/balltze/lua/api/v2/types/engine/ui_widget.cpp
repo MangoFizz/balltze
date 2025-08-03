@@ -69,6 +69,17 @@ namespace Balltze::Lua::Api::V2 {
         LUAS_PUSH_OBJECT(state, Widget, &widget, readonly);
     }
 
+    std::optional<Widget *> get_ui_widget(lua_State *state, int index) noexcept {
+        if(!lua_isuserdata(state, index)) {
+            return std::nullopt;
+        }
+        auto *widget = LUAS_CHECK_OBJECT(state, index, Widget);
+        if(!widget) {
+            return std::nullopt;
+        }
+        return widget;
+    }
+
     static void define_ui_widget_event_record_type_type(lua_State *state) noexcept {
         LUAS_ENUM(state, UIWidgetEventRecordType);
         LUAS_ENUM_VARIANT(state, UIWidgetEventRecordType, "none", EVENT_TYPE_NONE);

@@ -166,6 +166,7 @@ add_library(balltze SHARED
     src/balltze/lua/api/v2/functions/engine/player.cpp
     src/balltze/lua/api/v2/functions/engine/script.cpp
     src/balltze/lua/api/v2/functions/engine/tag.cpp
+    src/balltze/lua/api/v2/functions/engine/ui_widget.cpp
     src/balltze/lua/api/v2/functions/engine.cpp
     src/balltze/lua/api/v2/functions/config.cpp
     src/balltze/lua/api/v2/functions/misc.cpp

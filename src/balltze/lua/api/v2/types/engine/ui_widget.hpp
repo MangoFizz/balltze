@@ -17,6 +17,14 @@ namespace Balltze::Lua::Api::V2 {
     void push_ui_widget(lua_State *state, const Widget &widget, bool readonly = false) noexcept;
 
     /**
+     * Get a Widget from the Lua stack.
+     * @param state Lua state
+     * @param index Index of the widget on the stack
+     * @return Pointer to the Widget, or nullptr if not found
+     */
+    std::optional<Widget *> get_ui_widget(lua_State *state, int index) noexcept;
+
+    /**
      * Push a UIWidgetEventRecord to the Lua stack.
      * @param state Lua state
      * @param event_record The UIWidgetEventRecord to push
