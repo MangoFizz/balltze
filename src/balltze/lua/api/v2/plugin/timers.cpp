@@ -113,11 +113,15 @@ namespace Balltze::Lua::Api::V2 {
             auto &timer = *it;
             auto plugin = Plugins::get_lua_plugin(timer->lua_state);
             if(plugin) {
-                lua_State *state = plugin->lua_state();
-                lua_pushcfunction(state, plugin_error_handler);
-                timer->lua_get_function();
-                if(lua_pcall(state, 0, 0, -2) != LUA_OK) {
-                    logger.error("Error in Lua timer function: {}", plugin->pop_error_message());
+                auto time_delta = std::chrono::steady_clock::now() - timer->timestamp;
+                if(std::chrono::duration_cast<std::chrono::milliseconds>(time_delta).count() > timer->interval) {
+                    lua_State *state = plugin->lua_state();
+                    lua_pushcfunction(state, plugin_error_handler);
+                    timer->lua_get_function();
+                    if(lua_pcall(state, 0, 0, -2) != LUA_OK) {
+                        logger.error("Error in Lua timer function: {}", plugin->pop_error_message());
+                    }
+                    timer->timestamp = std::chrono::steady_clock::now();
                 }
                 it++;
             }
