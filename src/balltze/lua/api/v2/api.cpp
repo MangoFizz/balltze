@@ -11,6 +11,7 @@ namespace Balltze::Lua::Api {
     namespace V2 {
         void set_engine_table(lua_State *state) noexcept;
         void set_filesystem_functions(lua_State *state, int table_idx) noexcept;
+        void set_memory_functions(lua_State *state, int table_idx) noexcept;
         void set_misc_functions(lua_State *state, int table_idx) noexcept;
         void set_config_functions(lua_State *state, int table_idx) noexcept;
         void set_up_plugin_commands(lua_State *state, int table_idx) noexcept;
@@ -45,6 +46,7 @@ namespace Balltze::Lua::Api {
         lua_newtable(state);
         set_config_functions(state, -1);
         set_filesystem_functions(state, -1);
+        set_memory_functions(state, -1);
         set_misc_functions(state, -1);
         set_up_plugin_commands(state, -1);
         set_up_plugin_events(state, -1);

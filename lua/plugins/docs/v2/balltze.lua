@@ -258,3 +258,101 @@ function Balltze.logger.muteConsole(setting) end
 ---@param setting? boolean @Whether to log debug messages
 ---@return boolean|nil @The current setting if no argument is provided
 function Balltze.logger.muteDebug(setting) end
+
+-------------------------------------------------------
+-- Balltze.memory
+-------------------------------------------------------
+
+Balltze.memory = {}
+
+-- Read a 8-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt8(address) end
+
+-- Read a 16-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt16(address) end
+
+-- Read a 32-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt32(address) end
+
+-- Read a 64-bit signed integer from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readInt64(address) end
+
+-- Write a 8-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt8(address, value) end
+
+-- Write a 16-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt16(address, value) end
+
+-- Write a 32-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt32(address, value) end
+
+-- Write a 64-bit signed integer to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeInt64(address, value) end
+
+-- Read a float from memory
+---@param address integer @The address to read from
+---@return number @The value read
+function Balltze.memory.readFloat(address) end
+
+-- Read a double from memory
+---@param address integer @The address to read from
+---@return number @The value read
+function Balltze.memory.readDouble(address) end
+
+-- Write a float to memory
+---@param address integer @The address to write to
+---@param value number @The value to write
+function Balltze.memory.writeFloat(address, value) end
+
+-- Write a double to memory
+---@param address integer @The address to write to
+---@param value number @The value to write
+function Balltze.memory.writeDouble(address, value) end
+
+-- Read an ASCII string from memory
+---@param address integer @The address to read from
+---@return string @The string read
+function Balltze.memory.readString(address) end
+
+-- Write an ASCII string to memory
+---@param address integer @The address to write to
+---@param value string @The string to write
+function Balltze.memory.writeString(address, value) end
+
+-- Read a byte from memory
+---@param address integer @The address to read from
+---@return integer @The value read
+function Balltze.memory.readByte(address) end
+
+-- Write a byte to memory
+---@param address integer @The address to write to
+---@param value integer @The value to write
+function Balltze.memory.writeByte(address, value) end
+
+-- Read a bit from memory
+---@param address integer @The address to read from
+---@param bit integer @The bit to read
+---@return integer @The value read
+function Balltze.memory.readBit(address, bit) end
+
+-- Write a bit to memory
+---@param address integer @The address to write to
+---@param bit integer @The bit to write
+---@param value integer @The value to write
+function Balltze.memory.writeBit(address, bit, value) end
