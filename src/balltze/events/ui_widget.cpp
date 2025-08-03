@@ -6,11 +6,14 @@
 
 namespace Balltze::Events {
     extern "C" {
+        extern void *ui_widget_event_handler_dispatch_function_address;
+        void *ui_widget_event_handler_dispatch_hook_return = nullptr;
         void ui_widget_event_handler_dispatch_hook();
         
-        void dispatch_widget_event(Widget *widget, UIWidgetDefinition *widget_definition, UIWidgetEventRecord *event_record, EventHandlerReference *event_handler, int16_t *controller_index) {
+        bool dispatch_widget_event(Widget *widget, UIWidgetDefinition *widget_definition, UIWidgetEventRecord *event_record, EventHandlerReference *event_handler, int16_t *controller_index) {
             WidgetEventDispatchEvent event(widget, event_record, event_handler);
             event.dispatch();
+            return event.cancelled();
         }
     }
 
@@ -33,6 +36,6 @@ namespace Balltze::Events {
         }
         m_initialized = true;
 
-        Memory::hook_function(reinterpret_cast<void *>(0x49d3c0), ui_widget_event_handler_dispatch_hook);
+        Memory::override_function(ui_widget_event_handler_dispatch_function_address, ui_widget_event_handler_dispatch_hook, &ui_widget_event_handler_dispatch_hook_return);
     }
 }

@@ -132,6 +132,7 @@ namespace Balltze::Lua::Api::V2 {
 
     static void define_event_widget_event_dispatch_context(lua_State *state) {
         LUAS_STRUCT(state, WidgetEventDispatchEvent);
+        LUAS_METHOD_FIELD(state, WidgetEventDispatchEvent, "cancel", EVENT_CONTEXT_CANCEL_METHOD(WidgetEventDispatchEvent));
         LUAS_METHOD_FIELD(state, WidgetEventDispatchEvent, "getWidget", [](lua_State *state) -> int {
             auto *event = LUAS_CHECK_OBJECT(state, 1, WidgetEventDispatchEvent);
             LUAS_PUSH_OBJECT(state, Widget, event->widget(), false);
@@ -142,7 +143,7 @@ namespace Balltze::Lua::Api::V2 {
             LUAS_PUSH_OBJECT(state, UIWidgetEventRecord, event->event_record(), false);
             return 1;
         });
-        LUAS_METHOD_FIELD(state, WidgetEventDispatchEvent, "getHandlerReference", [](lua_State *state) -> int {
+        LUAS_METHOD_FIELD(state, WidgetEventDispatchEvent, "getEventHandlerReference", [](lua_State *state) -> int {
             auto *event = LUAS_CHECK_OBJECT(state, 1, WidgetEventDispatchEvent);
             LUAS_PUSH_OBJECT(state, EventHandlerReference, event->event_handler_reference(), false);
             return 1;

@@ -38,6 +38,8 @@ namespace Balltze {
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
 
+                set_up_ringworld_hooks(RW_PLATFORM_GAME);
+
                 LegacyApi::Event::set_up_events();
                 LegacyApi::Plugins::set_up_plugins();
                 
@@ -47,18 +49,17 @@ namespace Balltze {
                 
                 set_up_commands();
                 load_commands_settings();
-
-                set_up_ringworld_hooks(RW_PLATFORM_GAME);
             }
             else if(balltze_side == BALLTZE_SIDE_DEDICATED_SERVER) {
                 logger.info("loading dedicated server...");
+
+                set_up_ringworld_hooks(RW_PLATFORM_DEDICATED_SERVER);
+
                 LegacyApi::Event::set_up_events();
                 Features::set_up_features();
                 LegacyApi::Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
-
-                set_up_ringworld_hooks(RW_PLATFORM_DEDICATED_SERVER);
             }
             else {
                 logger.fatal("failed to detect engine type");
