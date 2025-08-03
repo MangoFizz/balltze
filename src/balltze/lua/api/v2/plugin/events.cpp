@@ -272,6 +272,7 @@ namespace Balltze::Lua::Api::V2 {
     POPULATE_EVENT(MapLoadEvent, map_load, push_map_load_event_context)
     POPULATE_EVENT(MapLoadedEvent, map_loaded, push_map_loaded_event_context)
     POPULATE_EVENT(PlayerInputEvent, player_input, push_player_input_event_context)
+    POPULATE_EVENT(WidgetEventDispatchEvent, widget_event_dispatch, push_widget_event_context)
 
     void set_up_plugin_events(lua_State *state, int table_idx) noexcept {
         int table_abs_idx = lua_absindex(state, table_idx);
@@ -283,6 +284,7 @@ namespace Balltze::Lua::Api::V2 {
         SET_UP_EVENT(MapLoadEvent, map_load);
         SET_UP_EVENT(MapLoadedEvent, map_loaded);
         SET_UP_EVENT(PlayerInputEvent, player_input);
+        SET_UP_EVENT(WidgetEventDispatchEvent, widget_event_dispatch);
 
         // Prevent re-initialization
         events_initialized = true;

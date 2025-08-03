@@ -9,4 +9,5 @@
 #include "types/engine/item.hpp"
 #include "types/engine/weapon.hpp"
 #include "types/engine/device.hpp"
+#include "types/engine/ui_widget.hpp"
 #include "types/event.hpp"

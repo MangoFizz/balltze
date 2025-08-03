@@ -57,6 +57,8 @@ add_library(balltze SHARED
     src/balltze/events/input.cpp
     src/balltze/events/map.cpp
     src/balltze/events/tick.cpp
+    src/balltze/events/ui_widget.cpp
+    src/balltze/events/ui_widget.S
     src/balltze/features/gamepad_pause_button.cpp
     src/balltze/features/hud_button_prompts.cpp
     src/balltze/features/loading_screen/loading_screen.cpp
@@ -181,6 +183,7 @@ add_library(balltze SHARED
     src/balltze/lua/api/v2/types/engine/tag_data.cpp
     src/balltze/lua/api/v2/types/engine/tag.cpp
     src/balltze/lua/api/v2/types/engine/types.cpp
+    src/balltze/lua/api/v2/types/engine/ui_widget.cpp
     src/balltze/lua/api/v2/types/engine/unit.cpp
     src/balltze/lua/api/v2/types/engine/weapon.cpp
     src/balltze/lua/api/v2/types/event.cpp

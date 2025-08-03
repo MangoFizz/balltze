@@ -19,6 +19,7 @@
 ---@field priority EventListenerPriority Priority of the listener
 ---@field remove fun(): nil Function to remove the listener
 
+
 ---@class MapLoadEvent
 local MapLoadEvent = {}
 
@@ -26,6 +27,7 @@ local MapLoadEvent = {}
 ---@return string
 ---@nodiscard
 function MapLoadEvent:getMapName() end
+
 
 ---@class PlayerInputEvent
 local PlayerInputEvent = {}
@@ -52,3 +54,25 @@ function PlayerInputEvent:isMapped() end
 
 -- Cancel the input event
 function PlayerInputEvent:cancel() end
+
+
+---@class WidgetEventDispatchEvent
+local WidgetEventDispatchEvent = {}
+
+-- Get the widget associated with the event
+---@return Widget
+---@nodiscard
+function WidgetEventDispatchEvent:getWidget() end
+
+-- Get the record of the dispatched event
+---@return UIWidgetEventRecord
+---@nodiscard
+function WidgetEventDispatchEvent:getEventRecord() end
+
+-- Get the reference to the event handler
+---@return EventHandlerReference
+---@nodiscard
+function WidgetEventDispatchEvent:getEventHandlerReference() end
+
+-- Cancel the input event
+function WidgetEventDispatchEvent:cancel() end

@@ -53,6 +53,15 @@ namespace Balltze::Lua::Api::V2 {
     void push_player_input_event_context(lua_State *state, const Events::PlayerInputEvent &event, bool readonly = false) noexcept;
 
     /**
+     * Push the WidgetEventDispatchEvent context to the Lua state.
+     * 
+     * @param state The Lua state.
+     * @param event The WidgetEventDispatchEvent to push.
+     * @param readonly If true, the event context will be read-only.
+     */
+    void push_widget_event_context(lua_State *state, const Events::WidgetEventDispatchEvent &event, bool readonly = false) noexcept;
+
+    /**
      * Define all event types in the Lua state.
      * @param state Lua state
      * @note This function should be called to register all types from the functions of this header.

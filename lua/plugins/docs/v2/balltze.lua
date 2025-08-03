@@ -126,6 +126,7 @@ function Balltze.loadSettings() end
 ---@alias NoContextCallback fun()
 ---@alias MapLoadEventCallback fun(event: MapLoadEvent)
 ---@alias PlayerInputEventCallback fun(event: PlayerInputEvent)
+---@alias WidgetEventDispatchEventCallback fun(event: WidgetEventDispatchEvent)
 
 -- Add an event listener
 ---@param eventName string @The name of the event to listen to
@@ -139,6 +140,7 @@ function Balltze.loadSettings() end
 ---@overload fun(eventName: "map_load", callbackFunction: MapLoadEventCallback, priority?: EventListenerPriority): EventListener
 ---@overload fun(eventName: "map_loaded", callbackFunction: MapLoadEventCallback, priority?: EventListenerPriority): EventListener
 ---@overload fun(eventName: "player_input", callbackFunction: PlayerInputEventCallback, priority?: EventListenerPriority): EventListener
+---@overload fun(eventName: "widget_event_dispatch", callbackFunction: WidgetEventDispatchEventCallback, priority?: EventListenerPriority): EventListener
 function Balltze.addEventListener(eventName, callbackFunction, priority) end
 
 -- Remove all event listeners for a specific event

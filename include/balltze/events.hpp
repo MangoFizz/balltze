@@ -173,3 +173,4 @@ namespace Balltze::Events {
 #include "events/tick.hpp"
 #include "events/map.hpp"
 #include "events/input.hpp"
+#include "events/ui_widget.hpp"
