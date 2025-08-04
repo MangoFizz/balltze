@@ -91,7 +91,7 @@ namespace Balltze::Lua::Api::V2 {
     static void define_ui_widget_event_record_type(lua_State *state) noexcept {
         LUAS_STRUCT(state, UIWidgetEventRecord);
         LUAS_ENUM_FIELD(state, UIWidgetEventRecord, type, UIWidgetEventRecordType, 0);
-        LUAS_PRIMITIVE_FIELD(state, UIWidgetEventRecord, controller_index, LUAST_INT32, 0);
+        LUAS_PRIMITIVE_FIELD(state, UIWidgetEventRecord, controller_index, LUAST_INT16, 0);
         lua_pop(state, 1);
     }
 

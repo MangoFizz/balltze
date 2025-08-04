@@ -257,3 +257,22 @@ function Engine.uiWidget.reloadWidget(widget) end
 ---@param widget Widget @The widget to focus
 function Engine.uiWidget.focusWidget(widget) end
 
+-- Unfocus a UI widget
+---@param widget Widget @The widget to unfocus
+function Engine.uiWidget.unfocusWidget(widget) end
+
+-- Find UI widgets by a widget definition tag
+---@param uiWidgetDefinition TagHandle|integer @The tag handle of the UI widget definition to search for
+---@param baseWidget Widget|nil @The base widget to start the search from; if nil, the search starts from the root widget
+---@param firstMatch boolean @If true, only the first matching widget is returned; if false, all matching widgets are returned
+---@return Widget[] @A list of widgets that match the definition tag
+function Engine.uiWidget.findWidgets(uiWidgetDefinition, baseWidget, firstMatch) end
+
+-- Disable a UI widget
+---@param widget Widget @The widget to disable
+function Engine.uiWidget.disableWidget(widget) end
+
+-- Enable a UI widget
+---@param widget Widget @The widget to enable
+function Engine.uiWidget.enableWidget(widget) end
+
