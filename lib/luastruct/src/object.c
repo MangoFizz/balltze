@@ -97,6 +97,10 @@ int luastruct_object__index(lua_State *state) {
         bool readonly = obj->readonly || field->readonly;
         if(field->pointer) {
             data = *(void **)data;
+            if(!data) {
+                lua_pushnil(state);
+                return 1;
+            }
         }
         
         switch(field->type) {
