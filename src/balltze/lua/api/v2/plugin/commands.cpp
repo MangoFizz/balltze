@@ -85,12 +85,14 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     void remove_console_commands_for_plugin(Plugins::LuaPlugin *plugin) noexcept{
-        lua_State *state = plugin->lua_state();
-        clear_commands_table(state);
-        commands.erase(std::remove_if(commands.begin(), commands.end(),
-            [plugin](const std::shared_ptr<Command> &command) {
-                return command->plugin() == reinterpret_cast<PluginHandle>(plugin);
-            }), commands.end());
+        for(auto it = commands.begin(); it != commands.end();) {
+            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
+                it = commands.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
     }
     
     static int lua_register_command(lua_State *state) noexcept {

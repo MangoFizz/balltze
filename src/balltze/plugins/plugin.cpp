@@ -221,6 +221,9 @@ namespace Balltze::Plugins {
                     logger.error("Error while calling PluginUnload in Lua plugin '{}': {}", m_metadata.name, pop_error_message());
                 }
             }
+            else {
+                lua_pop(m_lua_state, 2);
+            }
             lua_close(m_lua_state);
             m_lua_state = nullptr;
         }
