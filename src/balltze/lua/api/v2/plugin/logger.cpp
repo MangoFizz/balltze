@@ -10,7 +10,7 @@
 namespace Balltze::Lua::Api::V2 {
     #define LUA_LOGGER_FUNCTION(name) \
         static int lua_logger_##name(lua_State *state) { \
-            auto *plugin = Plugins::get_lua_plugin(state); \
+            auto *plugin = get_plugin(state); \
             if(plugin) { \
                 int args = lua_gettop(state); \
                 if(args >= 1) { \
@@ -47,7 +47,7 @@ namespace Balltze::Lua::Api::V2 {
     LUA_LOGGER_FUNCTION(fatal)
 
     static int lua_logger_mute_ingame(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0 || args == 1) {
@@ -75,7 +75,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_logger_mute_debug(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 0 || args == 1) {

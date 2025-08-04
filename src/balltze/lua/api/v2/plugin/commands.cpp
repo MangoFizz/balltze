@@ -94,7 +94,7 @@ namespace Balltze::Lua::Api::V2 {
     }
     
     static int lua_register_command(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(plugin) {
             int args = lua_gettop(state);
             if(args == 10) {
@@ -157,7 +157,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_execute_command(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.command.executeCommand.");
         }
@@ -211,7 +211,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_load_settings(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.command.loadSettings.");
         }

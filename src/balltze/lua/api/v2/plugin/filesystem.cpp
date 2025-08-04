@@ -12,7 +12,7 @@ namespace fs = std::filesystem;
 
 namespace Balltze::Lua::Api::V2 {
     fs::path get_plugin_directory(lua_State *state) {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             throw std::runtime_error("Could not get plugin from Lua state");
         }
@@ -29,7 +29,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_create_directory(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.createDirectory.");
         }
@@ -50,7 +50,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_remove_directory(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.removeDirectory.");
         }
@@ -77,7 +77,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_list_directory(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.listDirectory.");
         }
@@ -113,7 +113,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_directory_exists(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.directoryExists.");
         }
@@ -140,7 +140,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_write_file(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.writeFile.");
         }
@@ -173,7 +173,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_read_file(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.readFile.");
         }
@@ -212,7 +212,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_delete_file(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.deleteFile.");
         }
@@ -239,7 +239,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_file_exists(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.filesystem.fileExists.");
         }
@@ -276,7 +276,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int get_plugin_path(lua_State *state) {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(plugin) {
             lua_pushstring(state, plugin->directory().string().c_str());
             return 1;

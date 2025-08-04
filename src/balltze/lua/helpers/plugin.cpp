@@ -2,6 +2,7 @@
 
 #include <lua.hpp>
 #include <balltze/utils.hpp>
+#include "../../plugins/loader.hpp"
 #include "../../logger.hpp"
 #include "plugin.hpp"
 
@@ -31,7 +32,7 @@ namespace Balltze::Lua {
         return is_plugin_lua_state;
     }
 
-    lua_State *get_plugin_lua_state(lua_State *state) noexcept {
+    lua_State *get_plugin_lua_state_from_upvalue(lua_State *state) noexcept {
         if(userdata_is_plugin_lua_state(state, lua_upvalueindex(1))) {
             lua_State *upvalue_state = reinterpret_cast<lua_State *>(lua_touserdata(state, lua_upvalueindex(1)));
             if(upvalue_state) {
@@ -39,6 +40,10 @@ namespace Balltze::Lua {
             }
         }
         return state; 
+    }
+
+    Plugins::LuaPlugin *get_plugin(lua_State *state) noexcept {
+        return Plugins::get_lua_plugin(get_plugin_lua_state_from_upvalue(state));
     }
 
     int plugin_func_upvalue_index(lua_State *state, int upvalue_index) noexcept {

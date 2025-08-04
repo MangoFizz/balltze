@@ -75,7 +75,7 @@ namespace Balltze::Lua::Api::V2 {
     }
 
     static int lua_set_timer(lua_State *state) noexcept {
-        auto *plugin = Plugins::get_lua_plugin(state);
+        auto *plugin = get_plugin(state);
         if(!plugin) {
             return luaL_error(state, "Missing plugin upvalue in function Balltze.setTimer");
         }
@@ -136,11 +136,13 @@ namespace Balltze::Lua::Api::V2 {
         }), timers.end());
     }
 
+    static void on_frame_event(Events::FrameEvent &event) {
+        check_timers();
+    }
+
     void set_up_plugin_timers(lua_State *state, int table_idx) noexcept {
         if(!timers_initialized) {
-            Events::FrameEvent::subscribe([](Events::FrameEvent &) {
-                check_timers();
-            });
+            Events::FrameEvent::subscribe(on_frame_event);
         }
         timers_initialized = true;
 

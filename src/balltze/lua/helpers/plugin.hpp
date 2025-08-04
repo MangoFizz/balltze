@@ -29,15 +29,6 @@ namespace Balltze::Lua {
     int push_plugin_lua_state(lua_State *state) noexcept;
 
     /**
-     * Check if the userdata at the given index is a plugin Lua state.
-     * 
-     * @param state The Lua state.
-     * @param index The index of the userdata to check.
-     * @return true if the userdata is a plugin Lua state, false otherwise
-     */
-    bool userdata_is_plugin_lua_state(lua_State *state, int index) noexcept;
-
-    /**
      * Retrieve the main plugin Lua state from the given Lua state.
      * 
      * If the provided Lua state has the plugin's main Lua state stored as an upvalue,
@@ -46,7 +37,21 @@ namespace Balltze::Lua {
      * @param state The Lua state (may be a coroutine or the main plugin state).
      * @return The main plugin Lua state if available, otherwise the provided state.
      */
-    lua_State *get_plugin_lua_state(lua_State *state) noexcept;
+    lua_State *get_plugin_lua_state_from_upvalue(lua_State *state) noexcept;
+
+    /**
+     * Get the plugin corresponding to the Lua state stored in the first upvalue 
+     * of the given Lua state.
+     * 
+     * @warning This function assumes that the first upvalue is the plugin's Lua state.
+     * If this is not the case and the function is called from outside the Lua context,
+     * it may lead to undefined behavior; for example, calling this function from an
+     * event callback.
+     *
+     * @param state The Lua state.
+     * @return The corresponding Lua plugin, or nullptr if not found.
+     */
+    Plugins::LuaPlugin *get_plugin(lua_State *state) noexcept;
 
     /**
      * Get the index of an upvalue in a plugin function.
