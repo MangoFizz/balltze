@@ -69,8 +69,7 @@ namespace Balltze::Lua::Api::V2 {
         if(args == 0) {
             auto *timestamp = reinterpret_cast<std::chrono::steady_clock::time_point *>(lua_newuserdata(state, sizeof(std::chrono::steady_clock::time_point)));
             *timestamp = std::chrono::steady_clock::now();
-            if(luaL_newmetatable(state, LUA_TIMESTAMP_METATABLE)) {
-                lua_newtable(state);
+            if(luaL_newmetatable(state, LUA_TIMESTAMP_METATABLE) != 0) {
                 luaL_newlib(state, timestamp_functions);
                 lua_setfield(state, -2, "__index");
             }
