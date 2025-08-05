@@ -52,91 +52,66 @@ namespace Balltze {
          * Get the name of the command
          * @return pointer to the name of the command
          */
-        const char *name() const noexcept {
-            return this->m_name.c_str();
-        }
+        const char *name() const noexcept;
 
         /**
          * Get the handle of the plugin that registered the command
          */
-        std::optional<PluginHandle> plugin() const noexcept {
-            return this->m_plugin;
-        }
+        std::optional<PluginHandle> plugin();
 
         /**
          * Get the full name of the command
          * @return pointer to the full name of the command
          */
-        const char *full_name() const noexcept {
-            return this->m_full_name->c_str();
-        }
+        const char *full_name() const noexcept;
 
         /**
          * Get the category of the command
          * @return pointer to the category of the command
          */
-        const char *category() const noexcept {
-            return this->m_category.c_str();
-        }
+        const char *category() const noexcept;
 
         /**
          * Get the help of the command
          * @return pointer to the help of the command
          */
-        const char *help() const noexcept {
-            return this->m_help.c_str();
-        }
+        const char *help() const noexcept;
 
         /**
          * Get the help of the parameters of the command
          * @return pointer to the help of the parameters of the command
          */
-        const char *params_help() const noexcept {
-            if(m_params_help.has_value()) {
-                return this->m_params_help->c_str();
-            }
-            return nullptr;
-        }
+        const char *params_help() const noexcept;
 
         /**
          * Get the minimum arguments of the command
          * @return minimum arguments
          */
-        std::size_t min_args() const noexcept {
-            return this->m_min_args;
-        }
+        std::size_t min_args() const noexcept;
 
         /**
          * Get the maximum arguments of the command
          * @return maximum arguments
          */
-        std::size_t max_args() const noexcept {
-            return this->m_max_args;
-        }
+        std::size_t max_args() const noexcept;
 
         /**
          * Return whether the command automatically saves
          * @return true if command should automatically save
          */
-        bool autosave() const noexcept {
-            return this->m_autosave;
-        }
+        bool autosave() const noexcept;
 
         /**
          * Return whether the command can be called from console
          * @return true if command can be called from console
          */
-        bool can_call_from_console() const noexcept {
-            return this->m_can_call_from_console;
-        }
+        bool can_call_from_console() const noexcept;
 
         /**
          * Return whether the command is public
          * @return true if command is public
          */
-        bool is_public() const noexcept {
-            return this->m_public;
-        }
+        bool is_public() const noexcept;
 
         /**
          * Call the function with the given arguments

@@ -17,6 +17,53 @@
 namespace Balltze {
     std::vector<std::shared_ptr<Command>> commands;
 
+    const char *Command::name() const noexcept {
+        return this->m_name.c_str();
+    }
+
+    std::optional<PluginHandle> Command::plugin() {
+        return this->m_plugin;
+    }
+
+    const char *Command::full_name() const noexcept {
+        return this->m_full_name->c_str();
+    }
+
+    const char *Command::category() const noexcept {
+        return this->m_category.c_str();
+    }
+
+    const char *Command::help() const noexcept {
+        return this->m_help.c_str();
+    }
+
+    const char *Command::params_help() const noexcept {
+        if(m_params_help.has_value()) {
+            return this->m_params_help->c_str();
+        }
+        return nullptr;
+    }
+
+    std::size_t Command::min_args() const noexcept {
+        return this->m_min_args;
+    }
+
+    std::size_t Command::max_args() const noexcept {
+        return this->m_max_args;
+    }
+
+    bool Command::autosave() const noexcept {
+        return this->m_autosave;
+    }
+
+    bool Command::can_call_from_console() const noexcept {
+        return this->m_can_call_from_console;
+    }
+
+    bool Command::is_public() const noexcept {
+        return this->m_public;
+    }
+
     CommandResult Command::call(std::size_t arg_count, const char **args) const noexcept {
         if(m_function == nullptr) {
             logger.debug("Command {} function has a null pointer", m_name);
@@ -393,7 +440,7 @@ namespace Balltze {
                 it = commands.erase(it);
             }
             else {
-                ++it;
+                it++;
             }
         }
     }

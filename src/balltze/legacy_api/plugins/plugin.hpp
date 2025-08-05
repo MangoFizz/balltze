@@ -105,8 +105,6 @@ namespace Balltze::LegacyApi::Plugins {
         LuaPlugin(std::filesystem::path lua_file);
         ~LuaPlugin();
     };
-
-    void remove_plugin_commands(LuaPlugin *plugin) noexcept;
 }
 
 #endif

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <balltze/events.hpp>
-#include <balltze/command.hpp>
+#include "../command/command.hpp"
 #include "../logger.hpp"
 #include "plugin.hpp"
 #include "loader.hpp"
@@ -73,6 +73,7 @@ namespace Balltze::Plugins {
     static void unload_plugin(Plugin *plugin) {
         logger.debug("Unloading plugin {}...", plugin->name());
         try {
+            remove_commands_from_plugin(reinterpret_cast<PluginHandle>(plugin));
             plugin->unload();
         }
         catch(std::runtime_error &e) {
@@ -107,6 +108,7 @@ namespace Balltze::Plugins {
     static void unload_all_plugins() {
         for(auto &plugin : plugins) {
             if(plugin->reloadable() && plugin->loaded()) {
+                remove_commands_from_plugin(reinterpret_cast<PluginHandle>(plugin.get()));
                 plugin->unload();
             }
         }

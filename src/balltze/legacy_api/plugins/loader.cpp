@@ -4,10 +4,10 @@
 #include <vector>
 #include <filesystem>
 #include <memory>
-#include <balltze/command.hpp>
 #include <balltze/legacy_api/event.hpp>
-#include "../../logger.hpp"
+#include "../../command/command.hpp"
 #include "../../plugins/loader.hpp"
+#include "../../logger.hpp"
 #include "loader.hpp"
 
 namespace Balltze::LegacyApi::Plugins {
@@ -107,6 +107,7 @@ namespace Balltze::LegacyApi::Plugins {
     static void unload_map_plugins() {
         for(auto &plugin : plugins) {
             if(!plugin_is_global(plugin.get()) && plugin->loaded()) {
+                remove_commands_from_plugin(plugin.get());
                 plugin->unload();
             }
         }
@@ -126,6 +127,7 @@ namespace Balltze::LegacyApi::Plugins {
             auto *plugin = it->get();
             if(plugin->reloadable()) {
                 if(plugin->loaded()) {
+                    remove_commands_from_plugin(plugin);
                     plugin->unload();
                 }
                 it = plugins.erase(it);

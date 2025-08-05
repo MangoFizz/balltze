@@ -212,7 +212,6 @@ namespace Balltze::Plugins {
     }
 
     void LuaPlugin::unload() {
-        Lua::Api::V2::remove_console_commands_for_plugin(this);
         if(m_lua_state) {
             lua_pushcfunction(m_lua_state, Lua::plugin_error_handler);
             lua_getglobal(m_lua_state, "PluginUnload");

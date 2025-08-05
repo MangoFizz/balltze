@@ -179,8 +179,6 @@ namespace Balltze::LegacyApi::Plugins {
             unload_plugin();
         }
 
-        remove_commands_from_plugin(this);
-        
         dispose();
         m_loaded = false;
     }
@@ -507,8 +505,6 @@ namespace Balltze::LegacyApi::Plugins {
             }
         }
 
-        remove_plugin_commands(this);
-
         dispose();
         m_loaded = false;
     }
@@ -557,17 +553,5 @@ namespace Balltze::LegacyApi::Plugins {
         if(m_state) {
             dispose();
         }
-    }
-
-    void remove_plugin_commands(LuaPlugin *plugin) noexcept {
-        logger.debug("Removing commands from plugin {}", plugin->name());
-        for(auto it = commands.begin(); it != commands.end();) {
-            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
-                it = commands.erase(it);
-            }
-            else {
-                it++;
-            }
-        }   
     }
 }

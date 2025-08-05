@@ -261,13 +261,6 @@ namespace Balltze::Plugins {
          */
         void init_lua_state();
     };
-
-    /**
-     * Remove the plugin commands from the Lua environment.
-     * 
-     * @param plugin the Lua plugin to remove commands from
-     */
-    void remove_plugin_commands(LuaPlugin *plugin) noexcept;
 }
 
 #endif
