@@ -276,3 +276,34 @@ function Engine.uiWidget.disableWidget(widget) end
 ---@param widget Widget @The widget to enable
 function Engine.uiWidget.enableWidget(widget) end
 
+-- Get the index of a child widget within its parent widget
+---@param parentWidget Widget @The parent widget
+---@param childWidget Widget @The child widget
+---@return integer|nil @The index of the child widget within the parent widget, or nil if the child widget is not a child of the parent
+function Engine.uiWidget.getIndexForChildWidget(parentWidget, childWidget) end
+
+-- Get the Nth child widget of a parent widget
+---@param parentWidget Widget @The parent widget
+---@param index integer @The index of the child widget to retrieve (0-based)
+---@return Widget|nil @The Nth child widget, or nil if the index is out of bounds
+function Engine.uiWidget.getNthChildWidget(parentWidget, index) end
+
+-- Get the last child widget of a parent widget
+---@param widget Widget @The parent widget
+---@return Widget|nil @The last child widget, or nil if the parent has no children
+function Engine.uiWidget.getLastChildWidget(widget) end
+
+-- Get the topmost parent widget of a widget
+---@param widget Widget @The widget to find the topmost parent for
+---@return Widget|nil @The topmost parent widget, or nil if the widget has no
+function Engine.uiWidget.getTopmostParentWidget(widget) end
+
+-- Check if a widget is a list widget
+---@param widget Widget @The widget to check
+---@return boolean @True if the widget is a list widget, false otherwise
+function Engine.uiWidget.isListWidget(widget) end
+
+-- Check if a text box widget is focused
+---@param widget Widget @The text box widget to check
+---@return boolean @True if the text box widget is focused, false otherwise
+function Engine.uiWidget.textBoxWidgetIsFocused(widget) end
