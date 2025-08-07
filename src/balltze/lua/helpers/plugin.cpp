@@ -9,6 +9,21 @@
 namespace Balltze::Lua {
     static const char *PLUGIN_LUA_STATE_METATABLE = "plugin_lua_state";
 
+    bool current_function_was_called_from_lua(lua_State *state) noexcept {
+        // Level 0 = current function (C function),
+        // Level 1 = caller
+        lua_Debug ar;
+        if(lua_getstack(state, 1, &ar)) {
+            if(lua_getinfo(state, "S", &ar)) {
+                // check if the source is Lua or C
+                if(strcmp(ar.what, "Lua") == 0) {
+                    return true;
+                }
+            }
+        }
+        return false; 
+    }
+
     int push_plugin_lua_state(lua_State *state) noexcept {
         lua_pushlightuserdata(state, state);
         luaL_newmetatable(state, PLUGIN_LUA_STATE_METATABLE);
@@ -33,7 +48,7 @@ namespace Balltze::Lua {
     }
 
     lua_State *get_plugin_lua_state_from_upvalue(lua_State *state) noexcept {
-        if(userdata_is_plugin_lua_state(state, lua_upvalueindex(1))) {
+        if(current_function_was_called_from_lua(state) && userdata_is_plugin_lua_state(state, lua_upvalueindex(1))) {
             lua_State *upvalue_state = reinterpret_cast<lua_State *>(lua_touserdata(state, lua_upvalueindex(1)));
             if(upvalue_state) {
                 return upvalue_state;

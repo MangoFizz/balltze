@@ -17,6 +17,18 @@
 
 namespace Balltze::Lua {
     /**
+     * Check if the current function was called from Lua.
+     * 
+     * This function checks if the current function is being executed in a Lua context,
+     * which is useful for determining if certain operations should be performed or skipped
+     * based on the execution context.
+     *
+     * @param state The Lua state to check.
+     * @return true if the current function was called from Lua, false otherwise.
+     */
+    bool current_function_was_called_from_lua(lua_State *state) noexcept;
+
+    /**
      * Pushes the plugin's main Lua state onto the stack as a light userdata.
      *
      * This allows Lua code to reference the main plugin Lua state, even from coroutines
@@ -42,11 +54,6 @@ namespace Balltze::Lua {
     /**
      * Get the plugin corresponding to the Lua state stored in the first upvalue 
      * of the given Lua state.
-     * 
-     * @warning This function assumes that the first upvalue is the plugin's Lua state.
-     * If this is not the case and the function is called from outside the Lua context,
-     * it may lead to undefined behavior; for example, calling this function from an
-     * event callback.
      *
      * @param state The Lua state.
      * @return The corresponding Lua plugin, or nullptr if not found.
