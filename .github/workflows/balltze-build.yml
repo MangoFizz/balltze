@@ -32,7 +32,7 @@ jobs:
           echo "balltze_version=$VERSION" >> $GITHUB_ENV
 
       - name: Build Balltze
-        run: docker compose run --rm build-release
+        run: docker compose run --rm build
 
       - name: Prepare build dist
         run: |
