@@ -10,6 +10,8 @@ project(balltze
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "-Wl,--export-all-symbols")
+
 # Minimum supported platform is Windows 7
 add_definitions(-D_WIN32_WINNT=0x0601)
 
@@ -217,7 +219,12 @@ add_library(balltze SHARED
 # Set Balltze output properties
 set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
-set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
+if(NOT CMAKE_BUILD_TYPE MATCHES Release)
+    set(BALLTZE_LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--export-all-symbols")
+else()
+    set(BALLTZE_LINK_FLAGS "-static -static-libgcc -static-libstdc++ -s")
+endif()
+set_target_properties(balltze PROPERTIES LINK_FLAGS "${BALLTZE_LINK_FLAGS}")
 add_dependencies(balltze tag-definitions-headers)
 target_link_libraries(balltze ringworld lua53 fmt invader luacstruct luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
 

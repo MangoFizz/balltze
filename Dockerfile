@@ -43,7 +43,8 @@ ENV HOME=/home/devel
 USER devel
 RUN yay -S --noconfirm --needed \
         mingw-w64-libvorbis \
-        mingw-w64-flac 
+        mingw-w64-flac \
+        mingw-w64-libbacktrace-git
 
 # Cleanup
 USER root
