@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <windows.h>
+#include <filesystem>
 #include <balltze/legacy_api/event.hpp>
 #include <balltze/legacy_api/engine/rasterizer.hpp>
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
 #include <impl/debug/debug_symbols.h>
+#include <impl/debug/log.h>
 #include <ringworld.h>
 #include "events/events.hpp"
 #include "features/features.hpp"
@@ -17,6 +19,8 @@
 #include "command/command.hpp"
 #include "config/config.hpp"
 
+extern "C" LogLevel current_log_level;
+
 namespace Balltze {
     using namespace LegacyApi::Event;
 
@@ -26,6 +30,7 @@ namespace Balltze {
 
     static void initialize_balltze() noexcept {
         logger.mute_ingame(true);
+        logger.mute_debug(true);
         try {
             logger.set_file(Config::get_balltze_directory() / "balltze.log", false);
         }
@@ -33,6 +38,12 @@ namespace Balltze {
             logger.error("failed to set log file: {}", e.what());
         }
         logger.info << logger.endl;
+
+        if(std::filesystem::exists("mods\\balltze.dll.debug")) {
+            logger.debug("Debugging symbols found, enabling debug logs");
+            current_log_level = LOG_DEBUG;
+            logger.mute_debug(false);
+        }
 
         try {
             balltze_side = Memory::find_signatures();
