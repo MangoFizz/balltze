@@ -6,6 +6,7 @@
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
+#include <impl/debug/debug_symbols.h>
 #include <ringworld.h>
 #include "events/events.hpp"
 #include "features/features.hpp"
@@ -38,6 +39,7 @@ namespace Balltze {
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
 
+                debug_symbols_initialize();
                 set_up_ringworld_hooks(RW_PLATFORM_GAME);
 
                 LegacyApi::Event::set_up_events();

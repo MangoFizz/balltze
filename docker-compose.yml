@@ -25,9 +25,8 @@ services:
     - -c
     - >
       mkdir -p build && cd build &&
-      cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-i686-w64-mingw32.cmake -DCMAKE_CROSSCOMPILING_EMULATOR="bin/i686-w64-mingw32-wine.sh" &&
-      make -j $(nproc) &&
-      i686-w64-mingw32-strip balltze.dll
+      cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-i686-w64-mingw32.cmake -DCMAKE_CROSSCOMPILING_EMULATOR="bin/i686-w64-mingw32-wine.sh" &&
+      make -j $(nproc)
   clean:
     <<: *common
     entrypoint:

@@ -10,8 +10,6 @@ project(balltze
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "-Wl,--export-all-symbols")
-
 # Minimum supported platform is Windows 7
 add_definitions(-D_WIN32_WINNT=0x0601)
 
@@ -219,14 +217,25 @@ add_library(balltze SHARED
 # Set Balltze output properties
 set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
-if(NOT CMAKE_BUILD_TYPE MATCHES Release)
-    set(BALLTZE_LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--export-all-symbols")
-else()
-    set(BALLTZE_LINK_FLAGS "-static -static-libgcc -static-libstdc++ -s")
-endif()
-set_target_properties(balltze PROPERTIES LINK_FLAGS "${BALLTZE_LINK_FLAGS}")
+set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--export-all-symbols")
 add_dependencies(balltze tag-definitions-headers)
 target_link_libraries(balltze ringworld lua53 fmt invader luacstruct luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
+
+if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
+    message(CONFIGURE_LOG "Build type is set to Release; no debug information will be included (not recommended)")
+    add_custom_command(TARGET balltze POST_BUILD
+        COMMAND ${CMAKE_STRIP} --strip-all $<TARGET_FILE:balltze>
+    )
+endif()
+
+if(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+    message(CONFIGURE_LOG "Build type is set to RelWithDebInfo; debug information will be included in an external file")
+    add_custom_command(TARGET balltze POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} --only-keep-debug $<TARGET_FILE:balltze> $<TARGET_FILE:balltze>.debug
+        COMMAND ${CMAKE_STRIP} --strip-debug $<TARGET_FILE:balltze>
+        COMMAND ${CMAKE_OBJCOPY} --add-gnu-debuglink=$<TARGET_FILE:balltze>.debug $<TARGET_FILE:balltze>
+    )
+endif()
 
 # Install Balltze
 install(TARGETS balltze DESTINATION "${CMAKE_INSTALL_PREFIX}")
