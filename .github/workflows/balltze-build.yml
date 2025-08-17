@@ -36,9 +36,7 @@ jobs:
 
       - name: Prepare build dist
         run: |
-          ./bin/prepare-release.sh
-          ./bin/prepare-cpp-library.sh
-          ./bin/prepare-lua-library.sh
+          ./bin/prepare-dist.sh
 
       - name: Upload build artifact
         if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
