@@ -208,11 +208,12 @@ namespace Balltze {
             auto output_level = apply_format(stream.m_console_style, stream.m_prefix);
             auto output_prefix = apply_format(fg(fmt::color::white), name);
             auto output_content = apply_format(fg(fmt::color::white), content);
-            fmt::print(fmt::runtime(stream.m_console_format), output_time, output_level, output_prefix, output_content);
+            fmt::print(stdout, fmt::runtime(stream.m_console_format), output_time, output_level, output_prefix, output_content);
         }
         else {
-            fmt::print("\n");
+            fmt::print(stdout, "\n");
         }
+        fflush(stdout);
     }
 
     void Logger::print_file(LoggerStream &stream) {
