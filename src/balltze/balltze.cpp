@@ -39,18 +39,22 @@ namespace Balltze {
         }
         logger.info << logger.endl;
 
+#ifdef DEBUG
+        debug_symbols_initialize();
+#else
         if(std::filesystem::exists("mods\\balltze.dll.debug")) {
             logger.debug("Debugging symbols found, enabling debug logs");
             current_log_level = LOG_DEBUG;
             logger.mute_debug(false);
+            debug_symbols_initialize();
         }
+#endif
 
         try {
             balltze_side = Memory::find_signatures();
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
 
-                debug_symbols_initialize();
                 set_up_ringworld_hooks(RW_PLATFORM_GAME);
 
                 LegacyApi::Event::set_up_events();
