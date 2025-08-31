@@ -216,7 +216,7 @@ for structType, struct in pairs(structs) do
             else
                 if fieldTypeName == "String32" then
                     add("DEFINE_STRING32_FIELD(state, " .. structType .. ", " .. fieldName .. "); \n")
-                elseif fieldTypeName == "ColorARGBInt" then
+                elseif fieldTypeName == "Pixel32" then
                     add("LUAS_PRIMITIVE_FIELD(state, " .. structType .. ", " .. fieldName .. ", LUAST_UINT32, 0); \n")
                 elseif fieldTypeName == "Data" then
                     add("LUAS_OBJREF_FIELD(state, " .. structType .. ", " .. fieldName .. ", TagRawData, 0); \n");

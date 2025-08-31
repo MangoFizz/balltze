@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 find_package(LuaRuntime REQUIRED)
 
 # Tag definitions
-set(JSON_TAG_DEFINITIONS_PATH "${CMAKE_SOURCE_DIR}/src/ringworld/ringhopper/src/ringhopper-definitions/json/tag")
+set(JSON_TAG_DEFINITIONS_PATH "${CMAKE_SOURCE_DIR}/src/ringworld/ringhopper-definitions/json/tag")
 file(GLOB JSON_TAG_DEFINITION_FILES ${JSON_TAG_DEFINITIONS_PATH}/*.json)
 
 # Tell CMake how to generate the tag struct headers
