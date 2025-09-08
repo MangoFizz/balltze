@@ -14,13 +14,10 @@ namespace Balltze::Features {
     void set_up_map_data_read_warden() noexcept;
     void set_up_map_textures_preloading() noexcept;
     void set_up_extended_limits();
-    void set_up_echo_message_command();
     void set_up_set_console_key_binding_command() noexcept;
 
     inline void set_up_features() {
         try {
-            set_up_echo_message_command();
-
             switch(get_balltze_side()) {
                 case BALLTZE_SIDE_CLIENT: {
                     set_up_gamepad_pause_button();
