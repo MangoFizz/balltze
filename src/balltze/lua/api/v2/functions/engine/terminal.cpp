@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <lua.hpp>
-#include <impl/console/console.h>
+#include <impl/terminal/terminal.h>
 #include "../../../../helpers/function_table.hpp"
 #include "../../../../libraries/lfmt.hpp"
 #include "../../types.hpp"
 
 namespace Balltze::Lua::Api::V2 {
-    static int lua_engine_console_print(lua_State *state) noexcept {
+    static int lua_engine_terminal_print(lua_State *state) noexcept {
         int args = lua_gettop(state);
         if(args >= 1) {
             auto color = get_color_argb(state, 1);
@@ -31,23 +31,23 @@ namespace Balltze::Lua::Api::V2 {
             }
 
             ColorARGB color_value = color.value();
-            console_printf(&color_value, "%s", message.c_str());
+            terminal_printf(&color_value, "%s", message.c_str());
         }
         else {
-            return luaL_error(state, "Invalid number of arguments in function Engine.core.consolePrint.");
+            return luaL_error(state, "Invalid number of arguments in function Engine.terminal.print.");
         }
         return 0;
     }
 
-    static const luaL_Reg engine_console_functions[] = {
-        {"print", lua_engine_console_print},
+    static const luaL_Reg engine_terminal_functions[] = {
+        {"print", lua_engine_terminal_print},
         {nullptr, nullptr}
     };
 
-    void set_engine_console_functions(lua_State *state, int table_idx) noexcept {
+    void set_engine_terminal_functions(lua_State *state, int table_idx) noexcept {
         int abs_idx = lua_absindex(state, table_idx);
         lua_newtable(state);
-        set_functions_reg_array(state, -1, engine_console_functions);
-        lua_setfield(state, abs_idx, "console");
+        set_functions_reg_array(state, -1, engine_terminal_functions);
+        lua_setfield(state, abs_idx, "terminal");
     }
 }

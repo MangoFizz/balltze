@@ -27,32 +27,6 @@ namespace Balltze::LegacyApi::Event {
         }
     }
 
-    static bool debug_console_command_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<ConsoleCommandEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::ConsoleCommandEvent::subscribe_const([](ConsoleCommandEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Console command event ({}): command: {}", time, context.command);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_console_command_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<ConsoleCommandEvent>::init() {
         static bool enabled = false;
@@ -79,8 +53,5 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook console command event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_console_command_event", "debug", "Sets whenever to log console command event.", "[enable: boolean]", debug_console_command_event, true, 0, 1);
     }
 }

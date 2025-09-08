@@ -35,32 +35,6 @@ namespace Balltze::LegacyApi::Event {
         tick_event.dispatch();
     }
 
-    static bool debug_tick_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<TickEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::TickEvent::subscribe_const([](TickEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Tick event ({}): delta time: {}, tick count: {}", time, context.delta_time_ms, context.tick_count);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_tick_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<TickEvent>::init() {
         static bool enabled = false;
@@ -88,8 +62,5 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize tick event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_tick_event", "debug", "Sets whenever to log tick event.", "[enable: boolean]", debug_tick_event, true, 0, 1);
     }
 }

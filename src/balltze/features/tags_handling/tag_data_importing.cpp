@@ -9,16 +9,15 @@
 #include <functional>
 #include <numeric>
 #include <optional>
-
 #include <balltze/legacy_api/engine.hpp>
 #include <balltze/utils.hpp>
-#include <balltze/command.hpp>
 #include <balltze/legacy_api/event.hpp>
 #include <balltze/features.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/hook.hpp>
+#include <impl/terminal/terminal.h>
+#include "../../command/command.hpp"
 #include "../../config/config.hpp"
-#include "../../legacy_api/plugins/loader.hpp"
 #include "../../logger.hpp"
 #include "map.hpp"
 #include "tags_handling.hpp"
@@ -928,27 +927,33 @@ namespace Balltze::Features {
         auto *tag_data_read_done_sig = Memory::get_signature("tag_data_read_done");
         Memory::hook_function(tag_data_read_done_sig->data(), import_tag_data);
 
-        register_command("imported_tag_data_info", "debug", "Prints the details of the imported tag data from secondary maps.", std::nullopt, [](int arg_count, const char **args) -> bool {
-            if(secondary_maps_cache.empty()) {
-                LegacyApi::Engine::console_print("No tag data imported from secondary maps");
-                return true;
-            }
-            std::string maps_loaded;
-            std::size_t cached_data = 0;
-            for(std::size_t i = 0; i < secondary_maps_cache.size(); i++) {
-                auto &map = secondary_maps_cache[i];
-                maps_loaded += map->name();
-                cached_data += map->header().tag_data_size;
-                if(i < secondary_maps_cache.size() - 1) {
-                    maps_loaded += ", ";
+        CommandBuilder()
+            .name("imported_tag_data_info")
+            .category("debug")
+            .help("Prints the details of the imported tag data from secondary maps.")
+            .function([](const std::vector<std::string> &args) -> bool {
+                if(secondary_maps_cache.empty()) {
+                    terminal_info_printf("No tag data imported from secondary maps");
+                    return true;
                 }
-            }
-            LegacyApi::Engine::console_print("Imported tag data summary");
-            LegacyApi::Engine::console_printf("Maps loaded: %zu (%s)", secondary_maps_cache.size(), maps_loaded.c_str());
-            LegacyApi::Engine::console_printf("Tags imported: %zu", virtual_tag_data->tag_count() - map_cache->tag_data_header().tag_count);
-            LegacyApi::Engine::console_printf("Imported tag data size: %.2fMiB / %.2fMiB", static_cast<float>(virtual_tag_data->tag_data_size()) / MIB_SIZE, static_cast<float>(virtual_tag_data_buffer_size) / MIB_SIZE);
-            LegacyApi::Engine::console_printf("Cached tag data size: %.2f MiB", static_cast<float>(cached_data) / MIB_SIZE);
-            return true;
-        }, false, 0, 0);
+                std::string maps_loaded;
+                std::size_t cached_data = 0;
+                for(std::size_t i = 0; i < secondary_maps_cache.size(); i++) {
+                    auto &map = secondary_maps_cache[i];
+                    maps_loaded += map->name();
+                    cached_data += map->header().tag_data_size;
+                    if(i < secondary_maps_cache.size() - 1) {
+                        maps_loaded += ", ";
+                    }
+                }
+                terminal_info_printf("Imported tag data summary");
+                terminal_info_printf("Maps loaded: %zu (%s)", secondary_maps_cache.size(), maps_loaded.c_str());
+                terminal_info_printf("Tags imported: %zu", virtual_tag_data->tag_count() - map_cache->tag_data_header().tag_count);
+                terminal_info_printf("Imported tag data size: %.2fMiB / %.2fMiB", static_cast<float>(virtual_tag_data->tag_data_size()) / MIB_SIZE, static_cast<float>(virtual_tag_data_buffer_size) / MIB_SIZE);
+                terminal_info_printf("Cached tag data size: %.2f MiB", static_cast<float>(cached_data) / MIB_SIZE);
+                return true;
+            })
+            .can_call_from_console(true)
+            .create(COMMAND_SOURCE_BALLTZE);
     }
 }

@@ -80,6 +80,7 @@ namespace Balltze::Events {
     template class EventHandler<TickEvent>;
     template class EventHandler<MapLoadEvent>;
     template class EventHandler<MapLoadedEvent>;
+    template class EventHandler<ConsoleCommandEvent>;
     template class EventHandler<PlayerInputEvent>;
     template class EventHandler<WidgetEventDispatchEvent>;
 

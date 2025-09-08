@@ -35,58 +35,6 @@ namespace Balltze::LegacyApi::Event {
         }
     }
 
-    static bool debug_game_input_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<GameInputEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::GameInputEvent::subscribe_const([](GameInputEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Game input event ({}): device: {}, key code: {}, mapped: {}", time, static_cast<int>(context.device), context.button.key_code, context.mapped);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_game_input_event: {}", handle.has_value());
-        return true;
-    }
-
-    static bool debug_keypress_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<KeyboardInputEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::KeyboardInputEvent::subscribe_const([](KeyboardInputEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Keypress event ({}): key: {}", time, context.key.character);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_keypress_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<GameInputEvent>::init() {
         static bool enabled = false;
@@ -125,9 +73,6 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             logger.error("Failed to set up input event hooks: {}", e.what());
         }
-
-        // Register debug command
-        register_command("debug_game_input_event", "debug", "Sets whenever to log game input event.", "[enable: boolean]", debug_game_input_event, true, 0, 1);
     }
 
     template<>
@@ -153,8 +98,5 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             logger.error("Failed to set up keyboard input event hook: {}", e.what());
         }
-
-        // Register debug command
-        register_command("debug_keypress_event", "debug", "Sets whenever to log keyboard input event.", "[enable: boolean]", debug_keypress_event, true, 0, 1);
     }
 }

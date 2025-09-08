@@ -11,7 +11,7 @@
             "cStandard": "c17",
             "cppStandard": "c++20",
             "intelliSenseMode": "windows-gcc-x86",
-            "defines": ["RINGWORLD_ENABLE_ENHANCEMENTS", "DONT_FUCK_WITH_INTELLISENSE"]
+            "defines": ["RINGWORLD_ENABLE_ENHANCEMENTS", "DONT_FUCK_WITH_INTELLISENSE", "RINGWORLD_ENABLE_EVENTS_BUS"]
         }
     ],
     "version": 4

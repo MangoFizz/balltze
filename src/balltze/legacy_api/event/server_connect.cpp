@@ -39,34 +39,6 @@ namespace Balltze::LegacyApi::Event {
         return address;
     }
 
-    static bool debug_server_connect_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<ServerConnectEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::ServerConnectEvent::subscribe_const([](ServerConnectEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    auto address = ip_address_int_to_string(context.address);
-                    auto password = std::string(context.password.begin(), context.password.end());
-                    logger.debug("Server connect event ({}): address: {}, port: {}, password: {}", time, address, context.port, password);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_server_connect_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<ServerConnectEvent>::init() {
         static bool enabled = false;
@@ -92,8 +64,5 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook server connnect event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_server_connect_event", "debug", "Sets whenever to log server connect event.", "[enable: boolean]", debug_server_connect_event, true, 0, 1);
     }
 }

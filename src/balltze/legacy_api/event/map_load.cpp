@@ -32,32 +32,6 @@ namespace Balltze::LegacyApi::Event {
         }
     }
 
-    static bool debug_map_load_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<MapLoadEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::MapLoadEvent::subscribe_const([](MapLoadEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Map load event ({}): map name: {}", time, context.name);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_map_load_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<MapLoadEvent>::init() {
         static bool enabled = false;
@@ -83,9 +57,6 @@ namespace Balltze::LegacyApi::Event {
                 logger.error("failed to initialize map load event: {}", e.what());
             }
         }
-
-        // Register debug command
-        register_command("debug_map_load_event", "debug", "Sets whenever to log map load event.", "[enable: boolean]", debug_map_load_event, true, 0, 1);
     }
 
     extern "C" {
@@ -106,32 +77,6 @@ namespace Balltze::LegacyApi::Event {
             MapFileLoadEvent event(EVENT_TIME_BEFORE, args);
             event.dispatch();
         }
-    }
-
-    static bool debug_map_file_load_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<MapFileLoadEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::MapFileLoadEvent::subscribe_const([](MapFileLoadEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Map file load event ({}): map name: {}, map path: {}", time, context.map_name, context.map_path);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_map_file_load_event: {}", handle.has_value());
-        return true;
     }
 
     template<>
@@ -161,9 +106,6 @@ namespace Balltze::LegacyApi::Event {
         catch(std::runtime_error &e) {
             logger.error("failed to initialize map loading event: {}", e.what());
         }
-
-        // Register debug command
-        register_command("debug_map_file_load_event", "debug", "Sets whenever to log map file load event.", "[enable: boolean]", debug_map_file_load_event, true, 0, 1);
     }
 
     extern "C" {
@@ -192,32 +134,6 @@ namespace Balltze::LegacyApi::Event {
         }
     }
 
-    static bool debug_map_file_data_read_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<MapFileDataReadEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::MapFileDataReadEvent::subscribe_const([](MapFileDataReadEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Map file data read event ({}): file handle: {}, output buffer: {}, size: {}, overlapped: {}", time, reinterpret_cast<std::uint32_t>(context.file_handle), reinterpret_cast<std::uint32_t>(context.output_buffer), context.size, context.overlapped->Offset);
-                }, EVENT_PRIORITY_HIGHEST);
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_map_file_data_read_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<MapFileDataReadEvent>::init() {
         static bool enabled = false;
@@ -240,8 +156,5 @@ namespace Balltze::LegacyApi::Event {
         catch(std::runtime_error &e) {
             throw std::runtime_error("Could not hook map file data read event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_map_file_data_read_event", "debug", "Sets whenever to log map data read event", "[enable: boolean]", debug_map_file_data_read_event, true, 0, 1);
     }
 }

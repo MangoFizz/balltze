@@ -3,7 +3,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <balltze/command.hpp>
+#include "../command/command.hpp"
 #include "config.hpp"
 #include "chimera_preferences.hpp"
 

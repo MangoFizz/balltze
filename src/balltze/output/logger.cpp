@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include <windows.h>
-#include <balltze/api.hpp>
-#include <balltze/logger.hpp>
-#include <balltze/legacy_api/engine/core.hpp>
 #include <fmt/chrono.h>
 #include <fmt/core.h>
 #include <fmt/os.h>
 #include <fmt/printf.h>
-#include "../legacy_api/plugins/loader.hpp"
+#include <impl/terminal/terminal.h>
+#include <balltze/api.hpp>
+#include <balltze/logger.hpp>
+#include "../plugins/plugin.hpp"
+#include "../plugins/loader.hpp"
 
 namespace Balltze {
     static std::string name_for_log_level(Logger::LogLevel level) noexcept {
@@ -45,7 +46,7 @@ namespace Balltze {
         }
     }
 
-    static LegacyApi::Engine::ColorARGB color_for_log_level(Logger::LogLevel level) noexcept {
+    static ColorARGB color_for_log_level(Logger::LogLevel level) noexcept {
         switch(level) {
             case Logger::LOG_LEVEL_DEBUG:
                 return {0.65, 1.0, 1.0, 1.0};
@@ -117,15 +118,9 @@ namespace Balltze {
             m_file_path = file_path;
         }
         else {
-            auto *plugin = LegacyApi::Plugins::get_dll_plugin(module);
+            auto *plugin = Plugins::get_dll_plugin(module);
             if(plugin) {
                 if(plugin->path_is_valid(file_path)) {
-                    try {
-                        plugin->init_data_directory();
-                    }
-                    catch(std::exception &e) {
-                        throw;
-                    }
                     m_file_path = file_path;
                 }
                 else {
@@ -242,7 +237,7 @@ namespace Balltze {
         if(!content.empty()) {
             auto color = color_for_log_level(stream.m_level);
             auto text = fmt::format(fmt::runtime(stream.m_ingame_format), name, content);
-            LegacyApi::Engine::console_print(text, color);
+            terminal_printf(&color, text.c_str());
         }
     }
 }

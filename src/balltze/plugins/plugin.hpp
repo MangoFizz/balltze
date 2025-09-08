@@ -69,6 +69,22 @@ namespace Balltze::Plugins {
         bool loaded() const noexcept;
 
         /**
+         * Get the handle of the plugin. Usually the address of the respective
+         * plugin object.
+         * 
+         * @return the handle of the plugin
+         */
+        PluginHandle handle();
+
+        /**
+         * Check if a given path is within the plugin directory.
+         * 
+         * @param path the path to check
+         * @return true if the path is within the plugin directory, false otherwise
+         */
+        bool path_is_valid(std::filesystem::path path) const noexcept;
+
+        /**
          * Load the plugin.
          * 
          * The reason this is not part of the constructor is to ensure 
@@ -132,7 +148,7 @@ namespace Balltze::Plugins {
          * 
          * @return the handle of the DLL
          */
-        HMODULE handle() const noexcept;
+        HMODULE module_handle() const noexcept;
 
         /**
          * Load the plugin DLL.
@@ -169,7 +185,7 @@ namespace Balltze::Plugins {
         ~NativePlugin() override;
 
     private:
-        HMODULE m_handle = nullptr;
+        HMODULE m_module_handle = nullptr;
     };
 
     class LuaPlugin : public Plugin {

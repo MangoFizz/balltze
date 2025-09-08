@@ -7,8 +7,8 @@
 #include <stdexcept>
 #include <balltze/features.hpp>
 #include <balltze/memory.hpp>
-#include <balltze/command.hpp>
 #include <balltze/legacy_api/engine/core.hpp>
+#include "../command/command.hpp"
 #include "../logger.hpp"
 #include "codefinder.hpp"
 #include "memory.hpp"
@@ -352,23 +352,29 @@ namespace Balltze::Memory {
         auto client_found = find_client_signatures();
         auto dedicated_server_found = find_dedicated_server_signatures();
 
-        register_command("signature", "debug", "Get address for a signature", "<name: string>", +[](int arg_count, const char **args) -> bool {
-            if(arg_count == 1) {
-                auto sig = get_signature(args[0]);
-                if(sig) {
-                    char buffer[1024];
-                    sprintf_s(buffer, "0x%08X", sig->data());
-                    logger.debug("Signature {}: {}", args[0], buffer);
+        CommandBuilder()
+            .name("signature")
+            .category("debug")
+            .help("Get address for a signature")
+            .param(HSC_DATA_TYPE_STRING, "name")
+            .function([](const std::vector<std::string> &args) -> bool {
+                if(args.size() == 1) {
+                    auto sig = get_signature(args[0]);
+                    if(sig) {
+                        char buffer[1024];
+                        sprintf_s(buffer, "0x%08X", sig->data());
+                        logger.debug("Signature {}: {}", args[0], buffer);
+                    }
+                    else {
+                        logger.debug("Signature %s not found", args[0]);
+                    }
                 }
                 else {
-                    logger.debug("Signature %s not found", args[0]);
+                    logger.debug("Usage: signature <signature name>");
                 }
-            }
-            else {
-                logger.debug("Usage: signature <signature name>");
-            }
-            return true;
-        }, false, 0, 1);
+                return true;
+            })
+            .create(COMMAND_SOURCE_BALLTZE);
 
         if(core_found) {
             if(client_found) {

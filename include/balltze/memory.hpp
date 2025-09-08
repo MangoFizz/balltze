@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <cstdint>
 #include <cstddef>
+#include <impl/debug/stacktrace.h>
 #include "api.hpp"
 
 #define GAP(bytes, line) char gap_##line[bytes]
@@ -118,6 +119,30 @@ namespace Balltze::Memory {
      */
     template<typename T> inline std::byte *follow_32bit_jump(T *jmp) noexcept {
         return follow_32bit_offset(reinterpret_cast<std::uint32_t *>(reinterpret_cast<std::byte *>(jmp) + 1));
+    }
+
+    /**
+     * Get the module handle from an address.
+     * 
+     * @param address   Address to get the module handle from.
+     */
+    inline HMODULE get_module_from_address(void *address) noexcept {
+        HMODULE module_handle;
+        if(!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCSTR>(address), &module_handle)) {
+            return nullptr;
+        }
+        return module_handle;
+    }
+
+    /**
+     * Get the module handle of the module that called the current function.
+     * 
+     * @return  Module handle of the caller module.
+     */
+    inline HMODULE get_caller_module_handle() noexcept {
+        CONTEXT context;
+        RtlCaptureContext(&context);
+        return get_module_from_address(stacktrace_get_caller_address(&context));
     }
 
     #define ENDIAN_TEMPLATE(tname) template <template<typename> class tname>

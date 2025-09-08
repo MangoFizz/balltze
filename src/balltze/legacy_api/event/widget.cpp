@@ -59,8 +59,6 @@ namespace Balltze::LegacyApi::Event {
         }
 
         ringworld_event_subscribe(RW_EVENT_WIDGET_LOADED, reinterpret_cast<RingworldEventCallback>(dispatch_widget_create_event));
-
-        register_command("debug_widget_create_event", "debug", "Sets whenever to log widget open event.", "[enable: boolean]", debug_widget_create_event, true, 0, 1);
     }
 
     extern "C" {
@@ -79,33 +77,6 @@ namespace Balltze::LegacyApi::Event {
             UIWidgetBackEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
-    }
-
-    static bool debug_widget_back_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<UIWidgetBackEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::UIWidgetBackEvent::subscribe_const([](UIWidgetBackEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    auto *tag = LegacyApi::Engine::get_tag(context.widget->definition_tag_handle);
-                    logger.debug("Widget close event ({}): widget: {}", time, tag->path);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_widget_back_event: {}", handle.has_value());
-        return true;
     }
 
     template<>
@@ -131,9 +102,6 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget close event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_widget_back_event", "debug", "Sets whenever to log widget close event.", "[enable: boolean]", debug_widget_back_event, true, 0, 1);
     }
 
     extern "C" {
@@ -154,33 +122,6 @@ namespace Balltze::LegacyApi::Event {
             UIWidgetFocusEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
-    }
-
-    static bool debug_widget_focus_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<UIWidgetFocusEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::UIWidgetFocusEvent::subscribe_const([](UIWidgetFocusEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    auto *tag = LegacyApi::Engine::get_tag(context.widget->definition_tag_handle);
-                    logger.debug("Widget focus event ({}): widget: {}", time, tag->path);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_widget_focus_event: {}", handle.has_value());
-        return true;
     }
 
     template<>
@@ -209,9 +150,6 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget focus event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_widget_focus_event", "debug", "Sets whenever to log widget focus event.", "[enable: boolean]", debug_widget_focus_event, true, 0, 1);
     }
 
     extern "C" {
@@ -229,33 +167,6 @@ namespace Balltze::LegacyApi::Event {
             UIWidgetAcceptEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
-    }
-
-    static bool debug_widget_accept_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<UIWidgetAcceptEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::UIWidgetAcceptEvent::subscribe_const([](UIWidgetAcceptEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    auto *tag = LegacyApi::Engine::get_tag(context.widget->definition_tag_handle);
-                    logger.debug("Widget accept event ({}): widget: {}", time, tag->path);
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_widget_accept_event: {}", handle.has_value());
-        return true;
     }
 
     template<>
@@ -281,9 +192,6 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget accept event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_widget_accept_event", "debug", "Sets whenever to log widget accept event.", "[enable: boolean]", debug_widget_accept_event, true, 0, 1);
     }
 
     extern "C" {
@@ -302,32 +210,6 @@ namespace Balltze::LegacyApi::Event {
             UIWidgetSoundEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
-    }
-
-    static bool debug_widget_sound_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<UIWidgetSoundEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::UIWidgetSoundEvent::subscribe_const([](UIWidgetSoundEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Widget sound event ({}): sound: {}", time, static_cast<std::uint32_t>(context.sound));
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_widget_sound_event: {}", handle.has_value());
-        return true;
     }
 
     template<>
@@ -353,9 +235,6 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget sound event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_widget_sound_event", "debug", "Sets whenever to log widget sound event.", "[enable: boolean]", debug_widget_sound_event, true, 0, 1);
     }
 
     extern "C" {
@@ -386,33 +265,6 @@ namespace Balltze::LegacyApi::Event {
             UIWidgetListTabEvent event(EVENT_TIME_AFTER, args);
             event.dispatch();
         }
-    }
-
-    static bool debug_widget_list_tab_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<UIWidgetListTabEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::UIWidgetListTabEvent::subscribe_const([](UIWidgetListTabEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    auto *tag = LegacyApi::Engine::get_tag(context.widget_list->definition_tag_handle);
-                    logger.debug("Widget list tab event ({}): widget: {}. tab type: {}", time, tag->path, static_cast<std::uint32_t>(context.tab));
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_widget_list_tab_event: {}", handle.has_value());
-        return true;
     }
 
     template<>
@@ -448,9 +300,6 @@ namespace Balltze::LegacyApi::Event {
         HOOK_FUNCTION(widget_tab_children_previous_call, widget_tab_children_previous_event_before_asm, widget_tab_children_previous_event_after_asm);
 
         #undef HOOK_FUNCTION
-
-        // Register debug command
-        register_command("debug_widget_list_tab_event", "debug", "Sets whenever to log widget list tab event.", "[enable: boolean]", debug_widget_list_tab_event, true, 0, 1);
     }
 
     extern "C" {
@@ -462,33 +311,6 @@ namespace Balltze::LegacyApi::Event {
             event.dispatch();
             return !event.cancelled();
         }
-    }
-
-    static bool debug_widget_mouse_button_press_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<UIWidgetMouseButtonPressEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::UIWidgetMouseButtonPressEvent::subscribe_const([](UIWidgetMouseButtonPressEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    auto *tag = LegacyApi::Engine::get_tag(context.widget->definition_tag_handle);
-                    logger.debug("Widget mouse button event ({}): widget: {}. button: {}", time, tag->path, static_cast<std::uint32_t>(context.button));
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_widget_mouse_button_click_event: {}", handle.has_value());
-        return true;
     }
 
     template<>
@@ -515,8 +337,5 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("failed to initialize widget sound event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_widget_mouse_button_click_event", "debug", "Sets whenever to log widget mouse button click event.", "[enable: boolean]", debug_widget_mouse_button_press_event, true, 0, 1);
     }
 }

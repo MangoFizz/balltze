@@ -10,6 +10,7 @@ namespace Balltze::Events {
             EventHandler<TickEvent>::init();
             EventHandler<MapLoadEvent>::init();
             EventHandler<MapLoadedEvent>::init();
+            EventHandler<ConsoleCommandEvent>::init();
             EventHandler<PlayerInputEvent>::init();
             EventHandler<WidgetEventDispatchEvent>::init();
         }

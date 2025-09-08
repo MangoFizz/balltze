@@ -9,11 +9,10 @@
 #include <balltze/command.hpp>
 #include "../legacy_api/event/console_command.hpp"
 #include "../logger.hpp"
+#include "command.hpp"
 
 namespace Balltze {
     using HscFunctionEntry = LegacyApi::Engine::HscFunctionEntry;
-
-    extern std::vector<std::shared_ptr<Command>> commands;
 
     static HscFunctionEntry ***entries_ptr_1 = nullptr;
     static HscFunctionEntry ***entries_ptr_2 = nullptr;
@@ -31,6 +30,7 @@ namespace Balltze {
             old_entries = *entries_ptr_1;
 
             new_entries_list = std::vector<HscFunctionEntry *>(old_entries, old_entries + old_entry_count);
+            auto &commands = get_commands();
             for(const auto &command : commands) {
                 auto &new_command = new_entries_added.emplace_back(std::make_unique<HscFunctionEntry>());
                 new_command->return_type = LegacyApi::Engine::HSC_DATA_TYPE_VOID;

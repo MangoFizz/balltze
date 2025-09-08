@@ -135,32 +135,6 @@ namespace Balltze::LegacyApi::Event {
         }
     }
 
-    static bool debug_hud_element_bitmap_render_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<HUDElementBitmapRenderEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::HUDElementBitmapRenderEvent::subscribe([](HUDElementBitmapRenderEvent &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("HUD element bitmap render event ({}): bitmap data: {}, vertices: {}", time, reinterpret_cast<std::uint32_t>(context.bitmap_data), reinterpret_cast<std::uint32_t>(&context.quad));
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_hud_element_bitmap_render_event: {}", handle.has_value());
-        return true;
-    }
-
     static EventListenerHandle<TickEvent> hud_element_bitmap_render_event_init_tick_event_handle;
 
     template<>
@@ -192,9 +166,6 @@ namespace Balltze::LegacyApi::Event {
 
             hud_element_bitmap_render_event_init_tick_event_handle.remove();
         });
-
-        // Register debug command
-        register_command("debug_hud_element_bitmap_render_event", "debug", "Sets whenever to log HUD element bitmap render event.", "[enable: boolean]", debug_hud_element_bitmap_render_event, true, 0, 1);
     }
 
     extern "C" {
@@ -217,32 +188,6 @@ namespace Balltze::LegacyApi::Event {
             UIWidgetBackgroundRenderEvent widget_background_render_event(EVENT_TIME_AFTER, args);
             widget_background_render_event.dispatch();
         }
-    }
-
-    static bool debug_widget_background_render_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<UIWidgetBackgroundRenderEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::UIWidgetBackgroundRenderEvent::subscribe_const([](UIWidgetBackgroundRenderEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Widget background render event ({}): widget: {}", time, reinterpret_cast<std::uint32_t>(context.widget));
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_widget_background_render_event: {}", handle.has_value());
-        return true;
     }
 
     static EventListenerHandle<TickEvent> widget_background_render_event_init_tick_event_handle;
@@ -270,9 +215,6 @@ namespace Balltze::LegacyApi::Event {
 
             widget_background_render_event_init_tick_event_handle.remove();
         });
-
-        // Register debug command
-        register_command("debug_widget_background_render_event", "debug", "Sets whenever to log widget background render event.", "[enable: boolean]", debug_widget_background_render_event, true, 0, 1);
     }
 
     static bool navpoints_render_event_before_dispatcher() {

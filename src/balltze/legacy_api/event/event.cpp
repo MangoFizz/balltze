@@ -134,7 +134,7 @@ namespace Balltze::LegacyApi::Event {
             EventHandler<SoundPlaybackEvent>::init();
             EventHandler<FrameEvent>::init();
             EventHandler<MapFileDataReadEvent>::init();
-            EventHandler<ConsoleCommandEvent>::init();
+            // EventHandler<ConsoleCommandEvent>::init();
             EventHandler<CameraEvent>::init();
             EventHandler<ServerConnectEvent>::init();
             EventHandler<ObjectDamageEvent>::init();

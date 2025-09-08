@@ -5,10 +5,12 @@
 
 #include <vector>
 #include <filesystem>
+#include <windows.h>
 #include <lua.hpp>
 
 namespace Balltze::Plugins {
     class LuaPlugin;
+    class NativePlugin;
 
     /**
      * Get the path to the plugins directory.
@@ -38,6 +40,14 @@ namespace Balltze::Plugins {
      * @return the Lua plugin or nullptr if not found
      */
     LuaPlugin *get_lua_plugin(lua_State *state) noexcept;
+
+    /**
+     * Get the native plugin for a given DLL module handle.
+     * 
+     * @param module_handle the DLL module handle
+     * @return the native plugin or nullptr if not found
+     */
+    NativePlugin *get_dll_plugin(HMODULE module_handle) noexcept;
 
     /**
      * Set up plugins loader.

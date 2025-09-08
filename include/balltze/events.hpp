@@ -169,6 +169,7 @@ namespace Balltze::Events {
 
 #endif
 
+#include "events/console.hpp"
 #include "events/frame.hpp"
 #include "events/tick.hpp"
 #include "events/map.hpp"

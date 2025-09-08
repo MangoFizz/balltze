@@ -29,6 +29,11 @@ namespace Balltze::Config {
      * Get the Balltze gamepad configs.
      */
     std::optional<Config> get_gamepad_config();
+
+    /**
+     * Load commands settings from config.
+     */
+    void load_commands_settings();
 }
 
 #endif

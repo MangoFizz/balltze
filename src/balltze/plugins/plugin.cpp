@@ -35,6 +35,14 @@ namespace Balltze::Plugins {
         return m_loaded;
     }
 
+    PluginHandle Plugin::handle() {
+        return reinterpret_cast<PluginHandle>(this);
+    }
+
+    bool Plugin::path_is_valid(std::filesystem::path path) const noexcept {
+        return std::filesystem::absolute(path).string().find(std::filesystem::absolute(m_directory).string()) != std::string::npos;
+    }
+
     Plugin::Plugin(std::filesystem::path directory, const PluginMetadata &metadata) : m_directory(std::move(directory)), m_metadata(metadata) {
         if(!std::filesystem::exists(m_directory) || !std::filesystem::is_directory(m_directory)) {
             throw std::invalid_argument("Invalid plugin directory: " + m_directory.string());
@@ -75,8 +83,8 @@ namespace Balltze::Plugins {
         }
     }
 
-    HMODULE NativePlugin::handle() const noexcept {
-        return m_handle;
+    HMODULE NativePlugin::module_handle() const noexcept {
+        return m_module_handle;
     }
 
     void NativePlugin::load() {
@@ -88,8 +96,8 @@ namespace Balltze::Plugins {
             throw std::runtime_error("Plugin already loaded: " + m_metadata.name);
         }
 
-        m_handle = LoadLibraryA(m_directory.string().c_str());
-        if(!m_handle) {
+        m_module_handle = LoadLibraryA(m_directory.string().c_str());
+        if(!m_module_handle) {
             m_load_failed = true;
             throw std::runtime_error("Could not load plugin DLL: " + m_directory.string());
         }
@@ -108,7 +116,7 @@ namespace Balltze::Plugins {
         }
         m_game_start_called = true;
 
-        auto on_game_start_func = reinterpret_cast<void(*)()>(GetProcAddress(m_handle, "plugin_on_game_start"));
+        auto on_game_start_func = reinterpret_cast<void(*)()>(GetProcAddress(m_module_handle, "plugin_on_game_start"));
         if(on_game_start_func) {
             try {
                 on_game_start_func();
@@ -122,8 +130,8 @@ namespace Balltze::Plugins {
     }
 
     void NativePlugin::unload() {
-        if(m_handle) {
-            auto unload_func = reinterpret_cast<void(*)()>(GetProcAddress(m_handle, "plugin_unload"));
+        if(m_module_handle) {
+            auto unload_func = reinterpret_cast<void(*)()>(GetProcAddress(m_module_handle, "plugin_unload"));
             if(unload_func) {
                 try {
                     unload_func();
@@ -132,8 +140,8 @@ namespace Balltze::Plugins {
                     logger.error("Error calling plugin unload function: {}", e.what());
                 }
             }
-            FreeLibrary(m_handle);
-            m_handle = nullptr;
+            FreeLibrary(m_module_handle);
+            m_module_handle = nullptr;
         }
         m_game_start_called = false;
         m_load_failed = false;

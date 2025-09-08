@@ -43,32 +43,6 @@ namespace Balltze::LegacyApi::Event {
         }
     }
 
-    static bool debug_rcon_message_event(int arg_count, const char **args) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<RconMessageEvent>> handle;
-        if(arg_count == 1) {
-            bool new_setting = STR_TO_BOOL(args[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = LegacyApi::Event::RconMessageEvent::subscribe_const([](RconMessageEvent const &event) {
-                    auto &context = event.context;
-                    auto time = event_time_to_string(event.time);
-                    logger.debug("Rcon message event ({}): message: {}", time, context.message.value_or("null"));
-                });
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_rcon_message_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<RconMessageEvent>::init() {
         static bool enabled = false;
@@ -98,8 +72,5 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook rcon message event: " + std::string(e.what()));
         }
-
-        // Register debug command
-        register_command("debug_rcon_message_event", "debug", "Sets whenever to log rcon message event.", "[enable: boolean]", debug_rcon_message_event, true, 0, 1);
     }
 }

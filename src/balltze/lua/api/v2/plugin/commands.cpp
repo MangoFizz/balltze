@@ -9,10 +9,6 @@
 #include "../../../helpers/function_table.hpp"
 #include "commands.hpp"
 
-namespace Balltze {
-    extern std::vector<std::shared_ptr<Command>> commands;
-}
-
 namespace Balltze::Lua::Api::V2 {
     static auto LUA_CONSOLE_COMMANDS_TABLE = "console_commands";
 
@@ -33,66 +29,42 @@ namespace Balltze::Lua::Api::V2 {
         clear_registry_plugin_registry_table(state, LUA_CONSOLE_COMMANDS_TABLE);
     }
 
-    CommandResult ConsoleCommand::call(std::size_t arg_count, const char **args) const noexcept {
-        LuaPlugin *plugin = static_cast<LuaPlugin *>(m_plugin.value());
-        lua_State *state = plugin->lua_state();
-        get_commands_table(state);
-        lua_rawgeti(state, -1, function_ref);
-        lua_remove(state, -2); 
-        if(!lua_isnil(state, -1)) {
-            lua_pushcfunction(state, plugin_error_handler);
-            lua_pushvalue(state, -2);
-            lua_newtable(state);
-            for(std::size_t i = 0; i < arg_count; i++) {
-                lua_pushstring(state, args[i]);
-                lua_rawseti(state, -2, i + 1);
-            }
-            if(lua_pcall(state, 1, 1, -3) == LUA_OK) {
-                if(!lua_isnil(state, -1)) {
-                    if(lua_toboolean(state, -1)) {
-                        lua_pop(state, 2);
-                        return COMMAND_RESULT_SUCCESS;
+    static CommandFunction get_command_function(LuaPlugin *plugin, std::string command_name, int function_ref) noexcept {
+        return [plugin, command_name, function_ref](const std::vector<std::string> &arguments) -> bool {
+            lua_State *state = plugin->lua_state();
+            get_commands_table(state);
+            lua_rawgeti(state, -1, function_ref);
+            lua_remove(state, -2); 
+            if(!lua_isnil(state, -1)) {
+                lua_pushcfunction(state, plugin_error_handler);
+                lua_pushvalue(state, -2);
+                lua_newtable(state);
+                for(std::size_t i = 0; i < arguments.size(); i++) {
+                    lua_pushstring(state, arguments[i].c_str());
+                    lua_rawseti(state, -2, i + 1);
+                }
+                if(lua_pcall(state, 1, 1, -3) == LUA_OK) {
+                    if(!lua_isnil(state, -1)) {
+                        if(lua_toboolean(state, -1)) {
+                            lua_pop(state, 2);
+                            return true;
+                        }
                     }
+                    else {
+                        logger.warning("Lua command {} returned nil in plugin {}", command_name, plugin->name());
+                    }
+                    lua_pop(state, 1);
                 }
                 else {
-                    logger.warning("Lua command {} returned nil", *m_full_name);
+                    logger.debug("Lua command {} from plugin {} failed: {}", command_name, plugin->name(), plugin->pop_error_message());
                 }
-                lua_pop(state, 1);
             }
             else {
-                logger.debug("Lua command {} failed: {}", *m_full_name, plugin->pop_error_message());
+                logger.warning("Lua command {} not found in plugin {}", command_name, plugin->name());
             }
-        }
-        else {
-            logger.warning("Lua command {} not found", *m_full_name);
-        }
-        lua_pop(state, 1);
-        return COMMAND_RESULT_FAILED_ERROR;
-    }
-
-    void ConsoleCommand::register_command(LuaPlugin *plugin) {
-        lua_State *state = plugin->lua_state();
-        for(const auto &command : commands) {
-            if(std::strcmp(command->name(), this->name()) == 0 && command->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
-                throw std::runtime_error("Command " + std::string(this->name()) + " already registered!");
-            }
-        }
-        m_plugin = reinterpret_cast<PluginHandle>(plugin);
-        std::string plugin_name = plugin->name();
-        std::replace(plugin_name.begin(), plugin_name.end(), ' ', '_');
-        m_full_name = to_lower(plugin_name + "_" + this->name());
-        commands.emplace_back(std::make_shared<ConsoleCommand>(*this));
-    }
-
-    void remove_console_commands_for_plugin(Plugins::LuaPlugin *plugin) noexcept{
-        for(auto it = commands.begin(); it != commands.end();) {
-            if((*it)->plugin() == reinterpret_cast<PluginHandle>(plugin)) {
-                it = commands.erase(it);
-            }
-            else {
-                ++it;
-            }
-        }
+            lua_pop(state, 1);
+            return false;
+        };
     }
     
     static int lua_register_command(lua_State *state) noexcept {
@@ -139,13 +111,11 @@ namespace Balltze::Lua::Api::V2 {
                 int function_ref = luaL_ref(state, -2);
                 lua_pop(state, 1); 
 
-                ConsoleCommand command(name, category, help, params_help, autosave, min_args, max_args, function_ref, can_call_from_console, is_public);
-                try {
-                    command.register_command(plugin);
-                }
-                catch(const std::runtime_error &e) {
-                    return luaL_error(state, e.what());
-                }
+                auto function = get_command_function(plugin, name, function_ref);
+
+                add_command(Command(name, category, help, params_help, function, 
+                    autosave, min_args, max_args, can_call_from_console, is_public, COMMAND_SOURCE_PLUGIN, plugin));
+
                 return 0;
             }
             else {
@@ -171,21 +141,16 @@ namespace Balltze::Lua::Api::V2 {
 
         auto *command = luaL_checkstring(state, 1);
         std::vector<std::string> arguments = split_arguments(command);
-        std::size_t arg_count = arguments.size() - 1;
         std::string command_name = arguments[0];
         arguments.erase(arguments.begin());
 
-        auto arguments_alloc(std::make_unique<const char *[]>(arg_count));
-        for(std::size_t i = 0; i < arg_count; i++) {
-            arguments_alloc[i] = arguments[i].data();
-        }
-        
         CommandResult res = COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
-        for(const auto command : commands) {
+        auto &commands = get_commands();
+        for(const auto &command : commands) {
             if(command->full_name() == command_name) {
                 Plugins::Plugin *command_plugin = reinterpret_cast<Plugins::Plugin *>(*command->plugin());
                 if(command->is_public() || plugin == command_plugin) {
-                    res = command->call(arg_count, arguments_alloc.get());
+                    res = command->call(arguments);
 
                     // Save if autosave is enabled
                     if(command->autosave() && res == COMMAND_RESULT_SUCCESS) {
@@ -219,19 +184,14 @@ namespace Balltze::Lua::Api::V2 {
         }
         auto directory = plugin->directory();
         auto config = Config::Config(directory / "settings.json");
-        for(auto &command : commands) {
+        auto &commands = get_commands();
+        for(const auto &command : commands) {
             auto command_key = std::string("commands.") + command->name();
             if(command->plugin() && command->plugin() == reinterpret_cast<void *>(plugin)) {
                 if(config.exists(command_key)) {
                     auto command_value = config.get<std::string>(command_key);
                     auto arguments = split_arguments(command_value.value());
-                    
-                    auto arguments_alloc(std::make_unique<const char *[]>(arguments.size()));
-                    for(std::size_t i = 0; i < arguments.size(); i++) {
-                        arguments_alloc[i] = arguments[i].data();
-                    }
-
-                    bool res = command->call(arguments.size(), arguments_alloc.get());
+                    bool res = command->call(arguments);
                     if(res == COMMAND_RESULT_FAILED_ERROR) {
                         logger.error("Command {} failed to load from config", command->name());
                     }

@@ -45,12 +45,13 @@ add_definitions(-DBALLTZE_ENABLE_EXPERIMENTAL)
 
 add_library(balltze SHARED
     src/balltze/command/command.cpp
-    src/balltze/command/command.S
-    src/balltze/command/help.cpp
-    src/balltze/command/tab_completion.cpp
+    src/balltze/command/command_help.cpp
+    src/balltze/command/command_tab_completion.cpp
+    src/balltze/command/helpers.cpp
     src/balltze/config/chimera_preferences.cpp
     src/balltze/config/config.cpp
     src/balltze/config/ini.cpp
+    src/balltze/events/console.cpp
     src/balltze/events/events.cpp
     src/balltze/events/frame.cpp
     src/balltze/events/input.cpp

@@ -28,33 +28,6 @@ namespace Balltze::LegacyApi::Event {
         }
     }
 
-    static bool debug_network_game_chat_message_event_command(int argc, const char **argv) {
-        static std::optional<LegacyApi::Event::EventListenerHandle<NetworkGameChatMessageEvent>> handle;
-        if(argc == 1) {
-            bool new_setting = STR_TO_BOOL(argv[0]);
-            if(new_setting) {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-                handle = NetworkGameChatMessageEvent::subscribe_const([](NetworkGameChatMessageEvent const &event) {
-                    auto &context = event.context;
-                    if(event.time == EVENT_TIME_BEFORE) {
-                        logger.debug("Network game message event: message type: {}", static_cast<int>(context.chat_message->msg_type));
-                    }                    
-                }, EVENT_PRIORITY_HIGHEST);
-            }
-            else {
-                if(handle) {
-                    handle->remove();
-                    handle = std::nullopt;
-                }
-            }
-        }
-        logger.info("debug_network_game_message_event: {}", handle.has_value());
-        return true;
-    }
-
     template<>
     void EventHandler<NetworkGameChatMessageEvent>::init() {
         static bool enabled = false;
@@ -94,8 +67,6 @@ namespace Balltze::LegacyApi::Event {
         catch(const std::runtime_error &e) {
             throw std::runtime_error("Could not hook network game chat message event: " + std::string(e.what()));
         }
-
-        register_command("debug_network_game_chat_message_event", "debug", "Sets whenever to log when a network game chat message is received.", "[enable: boolean]", debug_network_game_chat_message_event_command, true, 0, 1);
     }
 
     extern "C" {

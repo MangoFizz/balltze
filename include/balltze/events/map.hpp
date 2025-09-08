@@ -19,7 +19,7 @@ namespace Balltze::Events {
          * Constructor for MapLoadEvent.
          * This event is dispatched before a map is loaded.
          */
-        MapLoadEvent(std::string map_name) : EventData(false), m_map_name(std::move(map_name)) {}
+        MapLoadEvent(const std::string &map_name) : EventData(false), m_map_name(map_name) {}
     private:
         std::string m_map_name;
     };
@@ -37,7 +37,7 @@ namespace Balltze::Events {
          * Constructor for MapLoadedEvent.
          * This event is dispatched after a map has been loaded.
          */
-        MapLoadedEvent(std::string map_name) : EventData(false), m_map_name(std::move(map_name)) {}
+        MapLoadedEvent(const std::string &map_name) : EventData(false), m_map_name(map_name) {}
 
     private:
         std::string m_map_name;

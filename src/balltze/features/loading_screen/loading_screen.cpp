@@ -9,7 +9,6 @@
 #include <d3d9.h>
 #include <windows.h>
 #include <gdiplus.h>
-#include <balltze/command.hpp>
 #include <balltze/hook.hpp>
 #include <balltze/memory.hpp>
 #include <balltze/legacy_api/event.hpp>
@@ -18,6 +17,8 @@
 #include <balltze/helpers/resources.hpp>
 #include <impl/rasterizer/rasterizer_dx9_render_target.h>
 #include <impl/interface/loading_screen.h>
+#include <impl/terminal/terminal.h>
+#include "../../command/command.hpp"
 #include "../../config/config.hpp"
 #include "../../config/chimera_preferences.hpp"
 #include "../../legacy_api/event/console_command.hpp"
@@ -203,24 +204,31 @@ namespace Balltze::Features {
         }
     }
 
-    static bool loading_scree_enable_command(int arg_count, const char **args) {
+    static bool loading_screen_enable_command(const std::vector<std::string> &args) {
         auto &config = Config::get_config();
         bool mute_ingame = logger.mute_ingame();
         logger.mute_ingame(false);
-        if(arg_count == 1) {
-            bool enable = STR_TO_BOOL(args[0]);
+        if(args.size() == 1) {
+            bool enable = STR_TO_BOOL(args[0].c_str());
             config.set("loading_screen.enable", enable);
             config.save();
-            logger.warning("You must restart the game for this change to take effect.");
+            terminal_warning_printf("You must restart the game for this change to take effect.");
         }
         auto enable = config.get<bool>("loading_screen.enable");
-        logger.info("Loading screen is {}", enable.value_or(true) ? "enabled" : "disabled");
+        terminal_info_printf("Loading screen is %s", BOOL_TO_STR(enable.value_or(true)));
         logger.mute_ingame(mute_ingame);
         return true;
     }
 
     void set_up_loading_screen() {
-        register_command("enable_loading_screen", "features", "Set whether to set up loading screen at startup", "<setting: boolean>", loading_scree_enable_command, false, 0, 1);
+        CommandBuilder()
+            .name("loading_screen_enable")
+            .category("features")
+            .help("Set whether to set up loading screen at startup")
+            .param(HSC_DATA_TYPE_BOOLEAN, "setting", true)
+            .function(loading_screen_enable_command)
+            .can_call_from_console(true)
+            .create(COMMAND_SOURCE_BALLTZE);
 
         auto enable = Config::get_config().get<bool>("loading_screen.enable").value_or(true);
         if(!enable) {

@@ -2,12 +2,12 @@
 
 #include <windows.h>
 #include <filesystem>
-#include <balltze/legacy_api/event.hpp>
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
-#include <balltze/utils.hpp>
 #include <impl/debug/debug_symbols.h>
 #include <impl/debug/log.h>
+#include <impl/exception/exception.h>
+#include <impl/terminal/terminal.h>
 #include <ringworld.h>
 #include "events/events.hpp"
 #include "features/features.hpp"
@@ -16,6 +16,7 @@
 #include "plugins/loader.hpp"
 #include "command/command.hpp"
 #include "config/config.hpp"
+#include "version.hpp"
 
 extern "C" LogLevel current_log_level;
 
@@ -26,16 +27,24 @@ namespace Balltze {
     
     static BalltzeSide balltze_side;
 
+    static void print_stacktrace_on_unhandled_exception() {
+        CONTEXT context;
+        RtlCaptureContext(&context);
+        exception_print_stack_trace(&context);
+    }
+
     static void initialize_balltze() noexcept {
-        logger.mute_ingame(true);
-        logger.mute_debug(true);
+        std::set_terminate(print_stacktrace_on_unhandled_exception);
+
+        logger.mute_ingame(true); // mute this because ringworld terminal is not initialized yet
+        logger.mute_debug(false);
         try {
             logger.set_file(Config::get_balltze_directory() / "balltze.log", false);
+            logger.info << logger.endl;
         }
         catch(std::runtime_error &e) {
             logger.error("failed to set log file: {}", e.what());
         }
-        logger.info << logger.endl;
 
 #ifdef DEBUG
         debug_symbols_initialize();
@@ -52,31 +61,23 @@ namespace Balltze {
             balltze_side = Memory::find_signatures();
             if(balltze_side == BALLTZE_SIDE_CLIENT) {
                 logger.info("loading client...");
-
                 set_up_ringworld_hooks(RW_PLATFORM_GAME);
-
-                LegacyApi::Event::set_up_events();
-                Events::set_up_events_handlers();
-                Features::set_up_features();
-                Plugins::set_up_plugins_loader();
-                
-                set_up_commands();
-                load_commands_settings();
             }
             else if(balltze_side == BALLTZE_SIDE_DEDICATED_SERVER) {
                 logger.info("loading dedicated server...");
-
                 set_up_ringworld_hooks(RW_PLATFORM_DEDICATED_SERVER);
-
-                LegacyApi::Event::set_up_events();
-                Features::set_up_features();
-                set_up_commands();
-                load_commands_settings();
             }
             else {
                 logger.fatal("failed to detect engine type");
                 std::exit(EXIT_FAILURE);
             }
+
+            LegacyApi::Event::set_up_events();
+            Events::set_up_events_handlers();
+            set_up_commands();
+            Features::set_up_features();
+            Plugins::set_up_plugins_loader();
+
             logger.info("initialized successfully!");
         }
         catch(std::runtime_error &e) {
@@ -84,16 +85,38 @@ namespace Balltze {
             std::terminate();
         }
 
-        register_command("console_debug", "debug", "Sets whenever to print log messages to the in-game console.", "[enable: boolean]", [](int arg_count, const char **args) -> bool {
-            if(arg_count == 1) {
-                bool new_setting = STR_TO_BOOL(args[0]);
-                logger.mute_ingame(!new_setting);
-            }
-            else {
-                logger.info("console_debug: {}", logger.mute_ingame());
-            }
-            return true;
-        }, true, 0, 1);
+        CommandBuilder()
+            .name("version")
+            .category("misc")
+            .help("Prints the current version of Balltze")
+            .function([](const std::vector<std::string> &args) -> bool {
+                auto version = balltze_version.to_string();
+                terminal_info_printf("Balltze version %s", version.c_str());
+                return true;
+            })
+            .can_call_from_console(true)
+            .create(COMMAND_SOURCE_BALLTZE);
+
+        CommandBuilder()
+            .name("terminal_debug")
+            .category("debug")
+            .help("Sets whether to print log messages to the in-game terminal.")
+            .param(HSC_DATA_TYPE_BOOLEAN, "enable", true)
+            .function([](const std::vector<std::string> &args) -> bool {
+                if(args.size() == 1) {
+                    bool new_setting = STR_TO_BOOL(args[0].c_str());
+                    logger.mute_ingame(!new_setting);
+                }
+                else {
+                    terminal_info_printf("terminal_debug: %s", BOOL_TO_STR(!logger.mute_ingame()));
+                }
+                return true;
+            })
+            .autosave(true)
+            .can_call_from_console(true)
+            .create(COMMAND_SOURCE_BALLTZE);
+
+        Config::load_commands_settings();
     }
 
     BalltzeSide get_balltze_side() noexcept {

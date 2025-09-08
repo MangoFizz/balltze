@@ -2,9 +2,12 @@
 
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <impl/terminal/terminal.h>
 #include <balltze/config.hpp>
 #include <balltze/legacy_api/engine.hpp>
 #include <balltze/legacy_api/plugin.hpp>
+#include "../command/command.hpp"
+#include "../logger.hpp"
 #include "config.hpp"
 
 namespace fs = std::filesystem;
@@ -182,6 +185,38 @@ namespace Balltze::Config {
             }
         }
         return std::nullopt;
+    }
+
+    void load_commands_settings() {
+        auto &config = get_config();
+        auto &commands = get_commands();
+        terminal_mute_output(true);
+        for(auto &command : commands) {
+            auto command_key = std::string("commands.") + command->full_name();
+            if(command->source() != COMMAND_SOURCE_BALLTZE || !config.exists(command_key)) {
+                continue;
+            }
+            bool failed = false;
+            auto command_value = config.get<std::string>(command_key);
+            if(command_value) {
+                auto arguments = split_arguments(command_value.value());
+                bool res = command->call(arguments);
+                if(res == COMMAND_RESULT_FAILED_ERROR) {
+                    failed = true;
+                }
+            }
+            else {
+                failed = true;
+            }
+
+            if(failed) {
+                logger.warning("Command {} failed to load from config", command->full_name());
+            }
+            else {
+                logger.info("Command {} loaded from config", command->full_name());
+            }
+        }
+        terminal_mute_output(false);
     }
 
     Ini get_chimera_ini() noexcept {

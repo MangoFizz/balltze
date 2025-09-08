@@ -6,18 +6,21 @@
 #include <cstring>
 #include <string>
 #include <vector>
-#include <optional>
-#include "utils.hpp"
+#include <functional>
+#include <impl/script/hsc.h>
 #include "api.hpp"
-#include "legacy_api/plugin.hpp"
 
 namespace Balltze {
     #define BOOL_TO_STR(boolean) (boolean ? "true" : "false")
     #define STR_TO_BOOL(str) (std::strcmp(str, "1") == 0 || std::strcmp(str, "true") == 0)
 
     /**
-     * Result of a command
+     * Function type for a command
+     * @param arguments arguments passed to the command
+     * @return          true if success; false if failure
      */
+    using CommandFunction = std::function<bool(const std::vector<std::string> &arguments)>;
+
     enum CommandResult {
         /** Command was a success. If invoked by console and the command can save, save here. */
         COMMAND_RESULT_SUCCESS = 0,
@@ -35,237 +38,126 @@ namespace Balltze {
         COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS
     };
 
-    /**
-     * Function type for a command
-     * @param arg_count Number of arguments
-     * @param args      Arguments given; not valid if arg_count is 0
-     * @return          true if success; false if failure
-     */
-    using CommandFunction = bool (*)(int arg_count, const char **args);
-
-    /**
-     * Command the user can call to execute functions
-     */
-    class BALLTZE_API Command {
+    BALLTZE_API class CommandBuilder {
     public:
         /**
-         * Get the name of the command
-         * @return pointer to the name of the command
+         * Set the name of the command.
+         * This is required for the command to be valid.
+         * 
+         * @param name name of the command
+         * @return     reference to the builder
          */
-        const char *name() const noexcept;
+        CommandBuilder &name(const std::string &name);
 
         /**
-         * Get the handle of the plugin that registered the command
-         */
-        std::optional<PluginHandle> plugin();
-
-        /**
-         * Get the full name of the command
-         * @return pointer to the full name of the command
-         */
-        const char *full_name() const noexcept;
-
-        /**
-         * Get the category of the command
-         * @return pointer to the category of the command
-         */
-        const char *category() const noexcept;
-
-        /**
-         * Get the help of the command
-         * @return pointer to the help of the command
-         */
-        const char *help() const noexcept;
-
-        /**
-         * Get the help of the parameters of the command
-         * @return pointer to the help of the parameters of the command
-         */
-        const char *params_help() const noexcept;
-
-        /**
-         * Get the minimum arguments of the command
-         * @return minimum arguments
-         */
-        std::size_t min_args() const noexcept;
-
-        /**
-         * Get the maximum arguments of the command
-         * @return maximum arguments
-         */
-        std::size_t max_args() const noexcept;
-
-        /**
-         * Return whether the command automatically saves
-         * @return true if command should automatically save
-         */
-        bool autosave() const noexcept;
-
-        /**
-         * Return whether the command can be called from console
-         * @return true if command can be called from console
-         */
-        bool can_call_from_console() const noexcept;
-
-        /**
-         * Return whether the command is public
-         * @return true if command is public
-         */
-        bool is_public() const noexcept;
-
-        /**
-         * Call the function with the given arguments
-         * @param  arg_count number of arguments to pass
-         * @param  args      array of arguments
-         * @return           result of command
-         */
-        virtual CommandResult call(std::size_t arg_count, const char **args) const noexcept;
-
-        /**
-         * Call the function with the given arguments
-         * @param  args array of arguments
-         * @return      result of command
-         */
-        CommandResult call(const std::vector<std::string> &arguments) const noexcept;
-
-        /**
-         * Instantiate a command
-         * @param name     name of the command
+         * Set the category of the command
+         * This is required for the command to be valid.
+         * 
          * @param category category of the command
-         * @param help     help info of the command
-         * @param function function pointer of the command
-         * @param autosave auto saves if successful and at least 1 arg was passed
-         * @param min_args minimum arguments
-         * @param max_args maximum arguments
+         * @return        reference to the builder
          */
-        Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false);
+        CommandBuilder &category(const std::string &category);
 
         /**
-         * Instantiate a command
-         * @param name     name of the command
-         * @param category category of the command
-         * @param help     help info of the command
-         * @param function function pointer of the command
-         * @param autosave auto saves if successful and at least 1 arg was passed
-         * @param args     required number of arguments
+         * Set the help of the command
+         * This is required for the command to be valid.
+         * 
+         * @param help help of the command
+         * @return     reference to the builder
          */
-        Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t args = 0, bool can_call_from_console = true, bool is_public = false);
+        CommandBuilder &help(const std::string &help);
 
         /**
-         * Register the command to the command list
+         * Add a parameter to the command.
+         * Parameters are added in the order they are specified.
+         * 
+         * @param type     type of the parameter
+         * @param name     name of the parameter
+         * @param optional whether the parameter is optional (default: false)
+         * @return         reference to the builder
          */
-        inline void register_command() {
-            try {
-                this->register_command_impl(get_current_module());
-            }
-            catch(...) {
-                throw;
-            }
-        }
+        CommandBuilder &param(HscDataType type, const std::string &name, bool optional = false);
+
+        /**
+         * Set the function of the command
+         * This is required for the command to be valid.
+         * 
+         * @param function function of the command
+         * @return         reference to the builder
+         */
+        CommandBuilder &function(CommandFunction function);
+
+        /**
+         * Set whether the command automatically saves.
+         * If this function is not called, by default, the command will not automatically save.
+         * 
+         * @param autosave true if command should automatically save
+         * @return         reference to the builder
+         */
+        CommandBuilder &autosave(bool autosave = true);
+
+        /**
+         * Set whether the command can be called from console.
+         * If this function is not called, by default, the command cannot be called from console.
+         * 
+         * @param can_call whether the command can be called from console; true by default
+         * @return         reference to the builder
+         */
+        CommandBuilder &can_call_from_console(bool can_call = true);
+
+        /**
+         * Set whether the command is public
+         * If this function is not called, by default, the command is not public.
+         * 
+         * @param is_public true if command is public
+         * @return          reference to the builder
+         */
+        CommandBuilder &is_public(bool is_public);
+
+        /**
+         * Reset the builder to its initial state
+         */
+        void reset();
+
+        /**
+         * Create the command and register it in Balltze
+         * 
+         * @param r reserved for internal use
+         * @throw std::runtime_error if the command is invalid, incomplete or could not be created
+         */
+        virtual void create(int r = 2) const noexcept;
 
     protected:
-        /** Name of the command */
         std::string m_name;
-
-        /** Full name including prefix (if command is registered) */
-        std::optional<std::string> m_full_name;
-
-        /** Plugin that registered the command */
-        std::optional<PluginHandle> m_plugin;
-
-        std::string get_full_name() const noexcept;
-        Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, bool is_public);
-
-    private:
-        /** Category of the command */
         std::string m_category;
-
-        /** Help of the command */
         std::string m_help;
+        CommandFunction m_function = nullptr;
+        bool m_autosave = false;
+        bool m_can_call_from_console = true;
+        bool m_is_public = false;
+        std::string m_params_help;
+        std::size_t m_min_args = 0;
+        std::size_t m_max_args = 0;
 
-        /** Help of the parameters of the command */
-        std::optional<std::string> m_params_help;
-
-        /** Function to call for the command */
-        CommandFunction m_function;
-
-        /** Command automatically saves */
-        bool m_autosave;
-
-        /** Minimum required arguments for the command */
-        std::size_t m_min_args;
-
-        /** Maximum required arguments for the command */
-        std::size_t m_max_args;
-
-        /** Can be called from console */
-        bool m_can_call_from_console;
-
-        /** Is public? Can be called from other plugins */
-        bool m_public;
-
-        void register_command_impl(HMODULE module_handle);
-        friend CommandResult execute_command(std::string command);
-        static CommandResult execute_command_impl(HMODULE module_handle, std::string command);
-        friend void load_commands_settings();
-        static void load_commands_settings_impl(HMODULE module_handle);
+        /**
+         * Validate the command
+         * 
+         * @return true if the command is valid; false otherwise
+         */
+        bool validate() const;
     };
-
-    /** 
-     * Split arguments from a console command
-     * @param command   Console command input
-     * @return          Splitted arguments
-     */
-    BALLTZE_API std::vector<std::string> split_arguments(std::string command) noexcept;
-
-    /**
-     * Unsplit the arguments
-     * @param  arguments arguments to unsplit
-     * @return           combined arguments
-     */
-    BALLTZE_API std::string unsplit_arguments(const std::vector<std::string> &arguments) noexcept;
-
-    /**
-     * Register a command
-     * @param name                  name of the command
-     * @param category              category of the command
-     * @param help                  help info of the command
-     * @param function              function pointer of the command
-     * @param autosave              auto saves if successful and at least 1 arg was passed
-     * @param min_args              minimum arguments
-     * @param max_args              maximum arguments
-     * @param can_call_from_console can be called from console
-     * @param is_public             is public? can be called from other plugins
-     */
-    inline void register_command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, bool is_public = false) noexcept {
-        Command command(name, category, help, params_help, function, autosave, min_args, max_args, can_call_from_console, is_public);
-        command.register_command();
-    }
 
     /**
      * Execute a command. Command must be registered.
+     * 
      * @param command   command to execute
      */
-    inline CommandResult execute_command(std::string command) {
-        try {
-            return Command::execute_command_impl(get_current_module(), command);
-        }
-        catch(...) {
-            throw;
-        }
-    }
+    CommandResult execute_command(const std::string &command);
 
     /**
      * Load commands settings
      */
-    inline void load_commands_settings() {
-        try {
-            Command::load_commands_settings_impl(get_current_module());
-        }
-        catch(...) {
-            throw;
-        }
-    }    
+    void load_commands_settings();
 }
 
 #endif

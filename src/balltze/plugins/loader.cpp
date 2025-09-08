@@ -8,10 +8,6 @@
 
 using namespace Balltze::Events;
 
-namespace Balltze::LegacyApi::Plugins {
-    extern bool reinit_plugins_on_next_tick;
-}
-
 namespace Balltze::Plugins {
     static bool reload_plugins_on_next_tick = false;
     static std::vector<std::unique_ptr<Plugin>> plugins;
@@ -55,6 +51,22 @@ namespace Balltze::Plugins {
             }
         }
         logger.error("Could not find Lua plugin for the given Lua state. Undefined behavior may occur.");
+        return nullptr;
+    }
+
+    NativePlugin *get_dll_plugin(HMODULE module_handle) noexcept {
+        if(!module_handle) {
+            logger.error("Module handle is null. Cannot get native plugin.");
+            return nullptr;
+        }
+        for(auto &plugin : plugins) {
+            if(auto native_plugin = dynamic_cast<NativePlugin *>(plugin.get())) {
+                if(native_plugin->module_handle() == module_handle) {
+                    return native_plugin;
+                }
+            }
+        }
+        // It's not an error if the plugin is not found, as the module may not belong to a plugin.
         return nullptr;
     }
 
@@ -193,11 +205,15 @@ namespace Balltze::Plugins {
         FrameEvent::subscribe(lua_plugins_collect_garbage, EVENT_PRIORITY_LOWEST);
         MapLoadEvent::subscribe(plugins_map_load, EVENT_PRIORITY_HIGHEST);
 
-        register_command("reload_plugins", "plugins", "Reloads all loaded reloadable plugins.", std::nullopt, [](int arg_count, const char **args) -> bool {
-            reload_plugins_on_next_tick = true;
-            LegacyApi::Plugins::reinit_plugins_on_next_tick = true;
-            logger.info("Plugins reloading scheduled for next tick.");
-            return true;
-        }, false, 0, 0);
+        CommandBuilder()
+            .name("reload_plugins")
+            .category("plugins")
+            .help("Reloads all loaded reloadable plugins.")
+            .function([](const std::vector<std::string> &args) -> bool {
+                reload_plugins_on_next_tick = true;
+                logger.info("Plugins reloading scheduled for next tick.");
+                return true;
+            })
+            .create(COMMAND_SOURCE_BALLTZE);
     }
 }
