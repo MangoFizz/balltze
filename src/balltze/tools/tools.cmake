@@ -5,5 +5,5 @@ add_executable(lua-types-dump
     src/balltze/tools/lua_types_dump.cpp
 )
 
-target_link_libraries(lua-types-dump PRIVATE ringworld lua53 fmt invader luacstruct luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
+target_link_libraries(lua-types-dump PRIVATE ringworld lua53 fmt invader luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
 set_target_properties(lua-types-dump PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")

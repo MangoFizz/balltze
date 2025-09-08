@@ -3,7 +3,6 @@
 #include <windows.h>
 #include <filesystem>
 #include <balltze/legacy_api/event.hpp>
-#include <balltze/legacy_api/engine/rasterizer.hpp>
 #include <balltze/api.hpp>
 #include <balltze/logger.hpp>
 #include <balltze/utils.hpp>
@@ -14,7 +13,6 @@
 #include "features/features.hpp"
 #include "legacy_api/event/event.hpp"
 #include "memory/memory.hpp"
-#include "legacy_api/plugins/loader.hpp"
 #include "plugins/loader.hpp"
 #include "command/command.hpp"
 #include "config/config.hpp"
@@ -58,8 +56,6 @@ namespace Balltze {
                 set_up_ringworld_hooks(RW_PLATFORM_GAME);
 
                 LegacyApi::Event::set_up_events();
-                LegacyApi::Plugins::set_up_plugins();
-                
                 Events::set_up_events_handlers();
                 Features::set_up_features();
                 Plugins::set_up_plugins_loader();
@@ -74,7 +70,6 @@ namespace Balltze {
 
                 LegacyApi::Event::set_up_events();
                 Features::set_up_features();
-                LegacyApi::Plugins::set_up_plugins();
                 set_up_commands();
                 load_commands_settings();
             }

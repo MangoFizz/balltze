@@ -21,7 +21,6 @@ include(lib/lua/lua.cmake)
 include(lib/lua_fmt/lua_fmt.cmake)
 include(lib/lua_memory_snapshot/lua_memory_snapshot.cmake)
 include(lib/fmt/fmt.cmake)
-include(lib/luacstruct/luacstruct.cmake)
 include(lib/luastruct/luastruct.cmake)
 include(lib/invader/invader.cmake)
 include(lib/lanes/lanes.cmake)
@@ -121,51 +120,13 @@ add_library(balltze SHARED
     src/balltze/legacy_api/event/tick.cpp
     src/balltze/legacy_api/event/widget.cpp
     src/balltze/legacy_api/event/widget.S
-    src/balltze/legacy_api/plugins/loader.cpp
-    src/balltze/legacy_api/plugins/plugin.cpp
-    src/balltze/lua/api/v1/api.cpp
-    src/balltze/lua/api/v1/functions/config.cpp
-    src/balltze/lua/api/v1/functions/devkit.cpp
-    src/balltze/lua/api/v1/functions/engine/core.cpp
-    src/balltze/lua/api/v1/functions/engine.cpp
-    src/balltze/lua/api/v1/functions/engine/game_state.cpp
-    src/balltze/lua/api/v1/functions/engine/hsc.cpp
-    src/balltze/lua/api/v1/functions/engine/map.cpp
-    src/balltze/lua/api/v1/functions/engine/netgame.cpp
-    src/balltze/lua/api/v1/functions/engine/rasterizer.cpp
-    src/balltze/lua/api/v1/functions/engine/saved_games.cpp
-    src/balltze/lua/api/v1/functions/engine/tag.cpp
-    src/balltze/lua/api/v1/functions/engine/user_interface.cpp
-    src/balltze/lua/api/v1/functions/features.cpp
-    src/balltze/lua/api/v1/functions/filesystem.cpp
-    src/balltze/lua/api/v1/functions/logger.cpp
-    src/balltze/lua/api/v1/functions/math.cpp
-    src/balltze/lua/api/v1/functions/memory.cpp
-    src/balltze/lua/api/v1/functions/misc.cpp
-    src/balltze/lua/api/v1/functions/output.cpp
-    src/balltze/lua/api/v1/plugin/chimera_library.cpp
-    src/balltze/lua/api/v1/plugin/commands.cpp
-    src/balltze/lua/api/v1/plugin/events.cpp
-    src/balltze/lua/api/v1/types/balltze_event.cpp
-    src/balltze/lua/api/v1/types/engine_gamestate_device_object.cpp
-    src/balltze/lua/api/v1/types/engine_gamestate_item_object.cpp
-    src/balltze/lua/api/v1/types/engine_gamestate_object.cpp
-    src/balltze/lua/api/v1/types/engine_gamestate_player.cpp
-    src/balltze/lua/api/v1/types/engine_gamestate_unit_object.cpp
-    src/balltze/lua/api/v1/types/engine_map.cpp
-    src/balltze/lua/api/v1/types/engine_rasterizer.cpp
-    src/balltze/lua/api/v1/types/engine_tag.cpp
-    src/balltze/lua/api/v1/types/engine_tag_data.cpp
-    src/balltze/lua/api/v1/types/engine_types.cpp
-    src/balltze/lua/api/v1/types/engine_user_interface.cpp
-    src/balltze/lua/api/v1/types/ringworld_saved_games.cpp
     src/balltze/lua/api/v2/functions/engine/cache_file.cpp
-    src/balltze/lua/api/v2/functions/engine/console.cpp
     src/balltze/lua/api/v2/functions/engine/game.cpp
     src/balltze/lua/api/v2/functions/engine/object.cpp
     src/balltze/lua/api/v2/functions/engine/player.cpp
     src/balltze/lua/api/v2/functions/engine/script.cpp
     src/balltze/lua/api/v2/functions/engine/tag.cpp
+    src/balltze/lua/api/v2/functions/engine/terminal.cpp
     src/balltze/lua/api/v2/functions/engine/ui_widget.cpp
     src/balltze/lua/api/v2/functions/engine.cpp
     src/balltze/lua/api/v2/functions/config.cpp
@@ -219,7 +180,7 @@ set_target_properties(balltze PROPERTIES PREFIX "")
 set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--export-all-symbols")
 add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze ringworld lua53 fmt invader luacstruct luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
+target_link_libraries(balltze ringworld lua53 fmt invader luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
 
 if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
     message(CONFIGURE_LOG "Build type is set to Release; no debug information will be included (not recommended)")

@@ -12,7 +12,6 @@ license_files=(
     ["lanes"]="lib/lanes/COPYRIGHT"
     ["lfmt"]="lib/lua_fmt/LICENSE"
     ["lua_memory_snapshot"]="lib/lua_memory_snapshot/LICENSE"
-    ["luacstruct"]="lib/luacstruct/COPYRIGHT"
     ["luastruct"]="lib/luastruct/LICENSE"
 )
 
