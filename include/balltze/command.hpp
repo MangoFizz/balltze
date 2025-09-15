@@ -112,7 +112,16 @@ namespace Balltze {
          * @param is_public true if command is public
          * @return          reference to the builder
          */
-        CommandBuilder &is_public(bool is_public);
+        CommandBuilder &is_public(bool is_public = true);
+
+        /**
+         * Set the default value for the command. This is the whole argument list as a single string.
+         * This is only used if the command has parameters and autosave is enabled. Also, the default value cannot be empty.
+         * 
+         * @param value default value for the command
+         * @return      reference to the builder
+         */
+        CommandBuilder &default_value(const std::string &value);
 
         /**
          * Reset the builder to its initial state
@@ -125,7 +134,7 @@ namespace Balltze {
          * @param r reserved for internal use
          * @throw std::runtime_error if the command is invalid, incomplete or could not be created
          */
-        virtual void create(int r = 2) const noexcept;
+        virtual void create(int r = 0) const noexcept;
 
     protected:
         std::string m_name;
@@ -135,6 +144,7 @@ namespace Balltze {
         bool m_autosave = false;
         bool m_can_call_from_console = true;
         bool m_is_public = false;
+        std::string m_default_value;
         std::string m_params_help;
         std::size_t m_min_args = 0;
         std::size_t m_max_args = 0;

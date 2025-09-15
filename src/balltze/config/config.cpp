@@ -193,7 +193,7 @@ namespace Balltze::Config {
         terminal_mute_output(true);
         for(auto &command : commands) {
             auto command_key = std::string("commands.") + command->full_name();
-            if(command->source() != COMMAND_SOURCE_BALLTZE || !config.exists(command_key)) {
+            if(command->source() == COMMAND_SOURCE_PLUGIN || !config.exists(command_key)) {
                 continue;
             }
             bool failed = false;

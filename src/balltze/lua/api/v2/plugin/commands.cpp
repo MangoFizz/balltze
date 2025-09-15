@@ -114,7 +114,7 @@ namespace Balltze::Lua::Api::V2 {
                 auto function = get_command_function(plugin, name, function_ref);
 
                 add_command(Command(name, category, help, params_help, function, 
-                    autosave, min_args, max_args, can_call_from_console, is_public, COMMAND_SOURCE_PLUGIN, plugin));
+                    autosave, min_args, max_args, can_call_from_console, is_public, "", COMMAND_SOURCE_PLUGIN, plugin));
 
                 return 0;
             }

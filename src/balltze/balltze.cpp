@@ -15,6 +15,7 @@
 #include "memory/memory.hpp"
 #include "plugins/loader.hpp"
 #include "command/command.hpp"
+#include "command/ringworld_commands.hpp"
 #include "config/config.hpp"
 #include "version.hpp"
 
@@ -75,6 +76,7 @@ namespace Balltze {
             LegacyApi::Event::set_up_events();
             Events::set_up_events_handlers();
             set_up_commands();
+            register_ringworld_commands();
             Features::set_up_features();
             Plugins::set_up_plugins_loader();
 
@@ -94,27 +96,22 @@ namespace Balltze {
                 terminal_info_printf("Balltze version %s", version.c_str());
                 return true;
             })
-            .can_call_from_console(true)
-            .create(COMMAND_SOURCE_BALLTZE);
+            .can_call_from_console()
+            .create();
 
         CommandBuilder()
             .name("terminal_debug")
             .category("debug")
             .help("Sets whether to print log messages to the in-game terminal.")
-            .param(HSC_DATA_TYPE_BOOLEAN, "enable", true)
+            .param(HSC_DATA_TYPE_BOOLEAN, "enable")
             .function([](const std::vector<std::string> &args) -> bool {
-                if(args.size() == 1) {
-                    bool new_setting = STR_TO_BOOL(args[0].c_str());
-                    logger.mute_ingame(!new_setting);
-                }
-                else {
-                    terminal_info_printf("terminal_debug: %s", BOOL_TO_STR(!logger.mute_ingame()));
-                }
+                bool new_setting = STR_TO_BOOL(args[0].c_str());
+                logger.mute_ingame(!new_setting);
                 return true;
             })
-            .autosave(true)
-            .can_call_from_console(true)
-            .create(COMMAND_SOURCE_BALLTZE);
+            .autosave()
+            .can_call_from_console()
+            .create();
 
         Config::load_commands_settings();
     }

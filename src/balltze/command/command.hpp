@@ -101,6 +101,13 @@ namespace Balltze {
         bool is_public() const noexcept;
 
         /**
+         * Get the default value of the command
+         * 
+         * @return default value of the command
+         */
+        const std::string &default_value() const noexcept;
+
+        /**
          * Call the function with the given arguments
          * 
          * @param  args array of arguments
@@ -120,12 +127,13 @@ namespace Balltze {
          * @param max_args maximum arguments
          * @param can_call_from_console whether the command can be called from console
          * @param is_public whether the command is public
+         * @param default_value default value of the command (only if it has parameters)
          * @param source  source of the command (balltze, ringworld, plugin)
          * @param plugin  handle of the plugin that registered the command (only if source is plugin)
          */
         Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, 
             CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, 
-            bool is_public = false, CommandSource source = COMMAND_SOURCE_BALLTZE, Plugins::Plugin *plugin = nullptr);
+            bool is_public = false, std::string default_value = "", CommandSource source = COMMAND_SOURCE_BALLTZE, Plugins::Plugin *plugin = nullptr);
 
     protected:
         std::string m_name;
@@ -145,6 +153,7 @@ namespace Balltze {
         std::optional<std::string> m_params_help;
         CommandFunction m_function;
         bool m_autosave = false;
+        std::string m_default_value;
         std::size_t m_min_args = 0;
         std::size_t m_max_args = 0;
         bool m_can_call_from_console = true;

@@ -953,7 +953,7 @@ namespace Balltze::Features {
                 terminal_info_printf("Cached tag data size: %.2f MiB", static_cast<float>(cached_data) / MIB_SIZE);
                 return true;
             })
-            .can_call_from_console(true)
+            .can_call_from_console()
             .create(COMMAND_SOURCE_BALLTZE);
     }
 }

@@ -47,6 +47,7 @@ add_library(balltze SHARED
     src/balltze/command/command.cpp
     src/balltze/command/command_help.cpp
     src/balltze/command/command_tab_completion.cpp
+    src/balltze/command/ringworld_commands.cpp
     src/balltze/command/helpers.cpp
     src/balltze/config/chimera_preferences.cpp
     src/balltze/config/config.cpp

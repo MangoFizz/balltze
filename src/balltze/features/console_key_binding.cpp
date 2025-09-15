@@ -31,9 +31,9 @@ namespace Balltze::Features {
                 terminal_info_printf("Console key binding set to: %s", args[0].c_str());
                 return true;
             })
-            .autosave(true)
-            .is_public(true)
-            .can_call_from_console(true)
-            .create(COMMAND_SOURCE_BALLTZE);
+            .autosave()
+            .is_public()
+            .can_call_from_console()
+            .create();
     }
 }

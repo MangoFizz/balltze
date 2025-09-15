@@ -227,8 +227,8 @@ namespace Balltze::Features {
             .help("Set whether to set up loading screen at startup")
             .param(HSC_DATA_TYPE_BOOLEAN, "setting", true)
             .function(loading_screen_enable_command)
-            .can_call_from_console(true)
-            .create(COMMAND_SOURCE_BALLTZE);
+            .can_call_from_console()
+            .create();
 
         auto enable = Config::get_config().get<bool>("loading_screen.enable").value_or(true);
         if(!enable) {

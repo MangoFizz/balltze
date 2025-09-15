@@ -65,6 +65,20 @@ namespace Balltze {
         return *this;
     }
 
+    CommandBuilder &CommandBuilder::default_value(const std::string &value) {
+        if(m_params_help.empty()) {
+            throw std::runtime_error("Cannot set default value for command without parameters");
+        }
+        if(!m_autosave) {
+            throw std::runtime_error("Cannot set default value for command without autosave enabled");
+        }
+        if(value.empty()) {
+            throw std::runtime_error("Default value cannot be empty");
+        }
+        m_default_value = value;
+        return *this;
+    }
+
     void CommandBuilder::create(int source) const noexcept {
         if(!validate()) {
             throw std::runtime_error("Command is invalid or incomplete");
@@ -84,7 +98,7 @@ namespace Balltze {
 
         commands.emplace_back(std::make_unique<Command>(m_name, m_category, m_help,
             m_params_help.empty() ? std::nullopt : std::optional<std::string>(m_params_help), m_function, m_autosave,
-            m_min_args, m_max_args, m_can_call_from_console, m_is_public, command_source, command_plugin));
+            m_min_args, m_max_args, m_can_call_from_console, m_is_public, m_default_value, command_source, command_plugin));
     }
 
     bool CommandBuilder::validate() const {
@@ -165,6 +179,10 @@ namespace Balltze {
         return this->m_public;
     }
 
+    const std::string &Command::default_value() const noexcept {
+        return this->m_default_value;
+    }
+
     CommandResult Command::call(const std::vector<std::string> &arguments) const noexcept {
         if(m_function == nullptr) {
             logger.debug("Command {} function has a null pointer", m_name);
@@ -190,11 +208,11 @@ namespace Balltze {
 
     Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, 
         CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, 
-        bool is_public, CommandSource source, Plugins::Plugin *plugin) : 
+        bool is_public, std::string default_value, CommandSource source, Plugins::Plugin *plugin) : 
         m_name(name), m_category(category), m_help(help), m_params_help(params_help), m_function(function), 
         m_autosave(autosave), m_min_args(min_args), m_max_args(max_args), m_can_call_from_console(can_call_from_console), 
-        m_public(is_public), m_source(source), m_plugin(plugin) {
-        
+        m_public(is_public), m_source(source), m_plugin(plugin), m_default_value(default_value) {
+
         m_name = to_lower(m_name);
         if(m_min_args > m_max_args) {
             throw std::runtime_error("Command " + m_name + " has a minimum argument count greater than the maximum argument count");
@@ -289,37 +307,80 @@ namespace Balltze {
             }
         }
 
-        // Call the command
-        CommandResult res = command->call(arguments);
+        CommandResult res;
 
-        // Save if autosave is enabled
-        if(res == COMMAND_RESULT_SUCCESS && command->autosave() && arguments.size() > 0) {
-            if(command->source() != COMMAND_SOURCE_PLUGIN) {
-                auto &config = Config::get_config();
-                config.set(std::string("commands.") + command->full_name(), unsplit_arguments(arguments));
-                config.save();
+        if(command->autosave() && command->min_args() > 0) {
+            if(arguments.size() > 0) {
+                res = command->call(arguments);
+    
+                // Save if autosave is enabled
+                if(res == COMMAND_RESULT_SUCCESS && command->autosave()) {
+                    if(command->source() != COMMAND_SOURCE_PLUGIN) {
+                        auto &config = Config::get_config();
+                        config.set(std::string("commands.") + command->full_name(), unsplit_arguments(arguments));
+                        config.save();
+                    }
+                    else {
+                        auto directory = command->plugin().value()->directory();
+                        auto config = Config::Config(directory / "settings.json");
+                        config.set(std::string("commands.") + command->name(), unsplit_arguments(arguments));
+                        config.save();
+                    }
+                }
+    
+                switch(res) {
+                    case CommandResult::COMMAND_RESULT_FAILED_NOT_ENOUGH_ARGUMENTS:
+                        terminal_error_printf("Command %s failed: not enough arguments", command_name.c_str());
+                        break;
+                    case CommandResult::COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS:
+                        terminal_error_printf("Command %s failed: too many arguments", command_name.c_str());
+                        break;
+                    case CommandResult::COMMAND_RESULT_FAILED_ERROR:
+                        terminal_error_printf("Command %s failed: error", command_name.c_str());
+                        break;
+                    default:
+                        break;
+                }
             }
             else {
-                auto directory = command->plugin().value()->directory();
-                auto config = Config::Config(directory / "settings.json");
-                config.set(std::string("commands.") + command->name(), unsplit_arguments(arguments));
-                config.save();
+                if(command->source() != COMMAND_SOURCE_PLUGIN) {
+                    auto &config = Config::get_config();
+                    auto current_config = config.get(std::string("commands.") + command->full_name());
+                    if(!current_config) {
+                        current_config = command->default_value();
+                    }
+                    terminal_info_printf("%s: %s", command_name.c_str(), current_config->c_str());
+                }
+                else {
+                    auto directory = command->plugin().value()->directory();
+                    auto config = Config::Config(directory / "settings.json");
+                    auto current_config = config.get(std::string("commands.") + command->name());
+                    if(!current_config) {
+                        current_config = command->default_value();
+                    }
+                    terminal_info_printf("%s: %s", command_name.c_str(), current_config->c_str());
+                }
+                res = CommandResult::COMMAND_RESULT_SUCCESS;
+            }
+        }
+        else {
+            res = command->call(arguments);
+    
+            switch(res) {
+                case CommandResult::COMMAND_RESULT_FAILED_NOT_ENOUGH_ARGUMENTS:
+                    terminal_error_printf("Command %s failed: not enough arguments", command_name.c_str());
+                    break;
+                case CommandResult::COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS:
+                    terminal_error_printf("Command %s failed: too many arguments", command_name.c_str());
+                    break;
+                case CommandResult::COMMAND_RESULT_FAILED_ERROR:
+                    terminal_error_printf("Command %s failed: error", command_name.c_str());
+                    break;
+                default:
+                    break;
             }
         }
 
-        switch(res) {
-            case CommandResult::COMMAND_RESULT_FAILED_NOT_ENOUGH_ARGUMENTS:
-                terminal_error_printf("Command %s failed: not enough arguments", command_name.c_str());
-                break;
-            case CommandResult::COMMAND_RESULT_FAILED_TOO_MANY_ARGUMENTS:
-                terminal_error_printf("Command %s failed: too many arguments", command_name.c_str());
-                break;
-            case CommandResult::COMMAND_RESULT_FAILED_ERROR:
-                terminal_error_printf("Command %s failed: error", command_name.c_str());
-                break;
-            default:
-                break;
-        }
         return res;
     }
 
