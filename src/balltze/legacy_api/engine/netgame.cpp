@@ -14,7 +14,7 @@ namespace Balltze::LegacyApi::Engine {
         void network_game_client_send_chat_message_asm(int channel, const wchar_t *message);
         void network_game_client_send_message_asm(void *message, size_t message_size);
 
-        std::uint32_t chat_get_local_rcon_id() noexcept {
+        std::uint32_t network_game_get_local_rcon_id_asm() noexcept {
             auto *list = network_game_get_server();
             auto *player = get_player_table().get_client_player();
             if(!list || !player) {
@@ -167,6 +167,6 @@ namespace Balltze::LegacyApi::Engine {
     }
 
     std::uint32_t network_game_get_local_rcon_id() noexcept {
-        return chat_get_local_rcon_id();
+        return network_game_get_local_rcon_id_asm();
     }
 }

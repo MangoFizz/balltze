@@ -34,7 +34,7 @@ namespace Balltze {
         exception_print_stack_trace(&context);
     }
 
-    static void initialize_balltze() noexcept {
+    void initialize() noexcept {
         std::set_terminate(print_stacktrace_on_unhandled_exception);
 
         logger.mute_ingame(true); // mute this because ringworld terminal is not initialized yet
@@ -48,6 +48,7 @@ namespace Balltze {
         }
 
 #ifdef DEBUG
+        current_log_level = LOG_DEBUG;
         debug_symbols_initialize();
 #else
         if(std::filesystem::exists("mods\\balltze.dll.debug")) {
@@ -80,55 +81,43 @@ namespace Balltze {
             Features::set_up_features();
             Plugins::set_up_plugins_loader();
 
+            CommandBuilder()
+                .name("version")
+                .category("misc")
+                .help("Prints the current version of Balltze")
+                .function([](const std::vector<std::string> &args) -> bool {
+                    auto version = balltze_version.to_string();
+                    terminal_info_printf("Balltze version %s", version.c_str());
+                    return true;
+                })
+                .can_call_from_console()
+                .create();
+
+            CommandBuilder()
+                .name("terminal_debug")
+                .category("debug")
+                .help("Sets whether to print log messages to the in-game terminal.")
+                .param(HSC_DATA_TYPE_BOOLEAN, "enable")
+                .function([](const std::vector<std::string> &args) -> bool {
+                    bool new_setting = STR_TO_BOOL(args[0].c_str());
+                    logger.mute_ingame(!new_setting);
+                    return true;
+                })
+                .autosave()
+                .can_call_from_console()
+                .create();
+
+            Config::load_commands_settings();
+
             logger.info("initialized successfully!");
         }
         catch(std::runtime_error &e) {
             logger.fatal("failed to initialize: {}", e.what());
             std::terminate();
         }
-
-        CommandBuilder()
-            .name("version")
-            .category("misc")
-            .help("Prints the current version of Balltze")
-            .function([](const std::vector<std::string> &args) -> bool {
-                auto version = balltze_version.to_string();
-                terminal_info_printf("Balltze version %s", version.c_str());
-                return true;
-            })
-            .can_call_from_console()
-            .create();
-
-        CommandBuilder()
-            .name("terminal_debug")
-            .category("debug")
-            .help("Sets whether to print log messages to the in-game terminal.")
-            .param(HSC_DATA_TYPE_BOOLEAN, "enable")
-            .function([](const std::vector<std::string> &args) -> bool {
-                bool new_setting = STR_TO_BOOL(args[0].c_str());
-                logger.mute_ingame(!new_setting);
-                return true;
-            })
-            .autosave()
-            .can_call_from_console()
-            .create();
-
-        Config::load_commands_settings();
     }
 
     BalltzeSide get_balltze_side() noexcept {
         return balltze_side;
     }
-}
-
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
-    switch(fdwReason) {
-        case DLL_PROCESS_ATTACH:
-            Balltze::initialize_balltze();
-            break;
-
-        default:
-            break;
-    }
-    return TRUE;
 }

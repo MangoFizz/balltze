@@ -34,6 +34,8 @@ set(RINGWORLD_ENABLE_EVENTS_BUS ON CACHE BOOL "Enable the events bus")
 set(RINGWORLD_ENABLE_ENHANCEMENTS ON CACHE BOOL "Enable enhancements")
 add_subdirectory(src/ringworld)
 
+add_subdirectory(src/chimera)
+
 # Set include path
 include_directories(include include/lua lib/ lib/lua lib/lanes/src src/ringworld/src)
 
@@ -169,6 +171,7 @@ add_library(balltze SHARED
     src/balltze/plugins/loader.cpp
     src/balltze/plugins/plugin.cpp
     src/balltze/balltze.cpp
+    src/balltze/main.cpp
 
     ${TAG_REBASE_OFFSETS_FUNCTION_CPP} 
     ${TAG_RESOLVE_DEPENDENCIES_FUNCTION_CPP} 
@@ -178,10 +181,10 @@ add_library(balltze SHARED
 
 # Set Balltze output properties
 set_target_properties(balltze PROPERTIES PREFIX "")
-set_target_properties(balltze PROPERTIES OUTPUT_NAME "balltze")
+set_target_properties(balltze PROPERTIES OUTPUT_NAME "strings")
 set_target_properties(balltze PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--export-all-symbols")
-add_dependencies(balltze tag-definitions-headers)
-target_link_libraries(balltze ringworld lua53 fmt invader luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32)
+add_dependencies(balltze tag-definitions-headers chimera)
+target_link_libraries(balltze ringworld chimera lua53 fmt invader luastruct lanes lua-fmt lua-memory-snapshot d3d9 gdiplus ws2_32 version)
 
 if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
     message(CONFIGURE_LOG "Build type is set to Release; no debug information will be included (not recommended)")

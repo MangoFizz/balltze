@@ -242,7 +242,7 @@ _network_game_client_send_chat_message_asm:
 
     pushfd
     pushad
-    call _chat_get_local_rcon_id
+    call _network_game_get_local_rcon_id_asm
     mov [esp + 0x24], eax
     popad
     popfd
@@ -326,7 +326,7 @@ _network_game_client_send_message_asm:
     sub esp, 4
     pushfd
     pushad
-    call _chat_get_local_rcon_id
+    call _network_game_get_local_rcon_id_asm
     mov [esp + 0x24], eax
     popad
     popfd

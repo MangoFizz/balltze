@@ -44,7 +44,9 @@ USER devel
 RUN yay -S --noconfirm --needed \
         mingw-w64-libvorbis \
         mingw-w64-flac \
-        mingw-w64-libbacktrace-debuglink-git
+        mingw-w64-libbacktrace-debuglink-git \
+        mingw-w64-curl-http-only \
+        mingw-w64-zstd-static
 
 # Cleanup
 USER root

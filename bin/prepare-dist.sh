@@ -26,8 +26,8 @@ for library in "${!license_files[@]}"; do
 done
 cp LICENSE dist/release/
 cp README.md dist/release/
-cp build/balltze.dll dist/release/
-cp build/balltze.dll.debug dist/release/
+cp build/strings.dll dist/release/
+cp -f build/strings.dll.debug dist/release/ 2>/dev/null
 cp -r data/config/ dist/release/ 
 
 # Prepare C++ library dist
@@ -39,7 +39,7 @@ for library in "${!license_files[@]}"; do
 done
 cp -r include/ dist/cpplib/
 cp LICENSE dist/cpplib/
-cp build/libballtze.dll.a dist/cpplib/lib/
+cp build/libstrings.dll.a dist/cpplib/lib/libballtze.dll.a
 cp build/libfmt.a dist/cpplib/lib/
 cp cmake/balltze-library.cmake dist/cpplib/balltze.cmake
 

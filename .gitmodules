@@ -1,3 +1,6 @@
 [submodule "src/ringworld"]
 	path = src/ringworld
 	url = https://github.com/MangoFizz/ringworld
+[submodule "src/chimera"]
+	path = src/chimera
+	url = https://github.com/MangoFizz/chimera
