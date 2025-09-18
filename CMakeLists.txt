@@ -43,6 +43,10 @@ include_directories(include include/lua lib/ lib/lua lib/lanes/src src/ringworld
 
 # Set defines for Balltze
 add_definitions(-DBALLTZE_EXPORTS -DRINGWORLD_ENABLE_EVENTS_BUS -DRINGWORLD_ENABLE_ENHANCEMENTS)
+if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+    add_definitions(-DDEBUG)
+    message(CONFIGURE_LOG "Build type is set to Debug; debug information will be included")
+endif()
 
 # Turn on experimental features by default
 add_definitions(-DBALLTZE_ENABLE_EXPERIMENTAL)
