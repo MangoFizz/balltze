@@ -10,6 +10,7 @@ namespace Balltze {
     enum CommandSource {
         COMMAND_SOURCE_BALLTZE = 0,
         COMMAND_SOURCE_RINGWORLD,
+        COMMAND_SOURCE_CHIMERA,
         COMMAND_SOURCE_PLUGIN
     };
 

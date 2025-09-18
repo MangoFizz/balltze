@@ -31,8 +31,10 @@ namespace Balltze {
     CommandBuilder &CommandBuilder::param(HscDataType type, const std::string &name, bool optional) {
         m_params_help.append(optional ? "[" : "<");
         m_params_help.append(name);
-        m_params_help.append(": ");
-        m_params_help.append(hsc_type_name(type));
+        if(type != -1) {
+            m_params_help.append(": ");
+            m_params_help.append(hsc_type_name(type));
+        }
         m_params_help.append(optional ? "]" : ">");
         m_params_help.append(" ");
         if(optional) {
@@ -96,8 +98,14 @@ namespace Balltze {
             command_plugin = plugin;
         }
 
+        // Trim trailing space from params help
+        auto params_help = m_params_help;
+        if(!params_help.empty() && params_help.back() == ' ') {
+            params_help.pop_back();
+        }
+
         commands.emplace_back(std::make_unique<Command>(m_name, m_category, m_help,
-            m_params_help.empty() ? std::nullopt : std::optional<std::string>(m_params_help), m_function, m_autosave,
+            params_help.empty() ? std::nullopt : std::optional<std::string>(params_help), m_function, m_autosave,
             m_min_args, m_max_args, m_can_call_from_console, m_is_public, m_default_value, command_source, command_plugin));
     }
 
@@ -233,6 +241,10 @@ namespace Balltze {
             case COMMAND_SOURCE_RINGWORLD:
                 module_name = "ringworld";
                 break;
+
+            case COMMAND_SOURCE_CHIMERA:
+                module_name = "chimera";
+                break;
             
             case COMMAND_SOURCE_PLUGIN:
                 module_name = m_plugin->name();
@@ -266,7 +278,7 @@ namespace Balltze {
         }
     }
 
-    CommandResult execute_command(const std::string &command_input) {
+    CommandResult execute_command(const std::string &command_input, bool saves) {
         std::vector<std::string> arguments = split_arguments(command_input);
         std::string command_name = arguments[0];
         arguments.erase(arguments.begin());
@@ -309,7 +321,7 @@ namespace Balltze {
 
         CommandResult res;
 
-        if(command->autosave() && command->min_args() > 0) {
+        if(command->autosave() && command->min_args() > 0 && saves) {
             if(arguments.size() > 0) {
                 res = command->call(arguments);
     

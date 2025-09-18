@@ -18,7 +18,7 @@ namespace Balltze::Events {
         }
         enabled = true;
 
-        ringworld_event_subscribe(RW_EVENT_CONSOLE_COMMAND, +[](void *data) -> bool {
+        ringworld_event_subscribe(RW_EVENT_CONSOLE_COMMAND_NOT_FOUND, +[](void *data) -> bool {
             std::string command = reinterpret_cast<char *>(data);
             ConsoleCommandEvent event(command);
             event.dispatch();

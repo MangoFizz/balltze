@@ -162,7 +162,7 @@ namespace Balltze {
      * 
      * @param command   command to execute
      */
-    CommandResult execute_command(const std::string &command);
+    CommandResult execute_command(const std::string &command, bool saves = true);
 
     /**
      * Load commands settings

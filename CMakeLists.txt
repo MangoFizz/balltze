@@ -34,7 +34,9 @@ set(RINGWORLD_ENABLE_EVENTS_BUS ON CACHE BOOL "Enable the events bus")
 set(RINGWORLD_ENABLE_ENHANCEMENTS ON CACHE BOOL "Enable enhancements")
 add_subdirectory(src/ringworld)
 
+# Set chimera
 add_subdirectory(src/chimera)
+target_include_directories(chimera PRIVATE include src/balltze src/ringworld/src)
 
 # Set include path
 include_directories(include include/lua lib/ lib/lua lib/lanes/src src/ringworld/src)
