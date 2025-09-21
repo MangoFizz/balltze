@@ -214,6 +214,7 @@ namespace Balltze::Plugins {
                 logger.info("Plugins reloading scheduled for next tick.");
                 return true;
             })
+            .is_core()
             .create(COMMAND_SOURCE_BALLTZE);
     }
 }

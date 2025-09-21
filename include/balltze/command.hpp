@@ -124,6 +124,38 @@ namespace Balltze {
         CommandBuilder &default_value(const std::string &value);
 
         /**
+         * Set a tag for the command. This can be used to group commands together.
+         * 
+         * @param tag tag for the command
+         * @return    reference to the builder
+         */
+        CommandBuilder &tag(const std::string &tag);
+
+        /**
+         * Set the command to be available on the client side.
+         * This will add the "client" tag to the command.
+         * 
+         * @return reference to the builder
+         */
+        CommandBuilder &is_client_side();
+
+        /**
+         * Set the command to be available on the server side.
+         * This will add the "server" tag to the command.
+         * 
+         * @return reference to the builder
+         */
+        CommandBuilder &is_server_side();
+
+        /**
+         * Set the command to be a core command. This makes the command available on both client and server side.
+         * This will add the "core", "client" and "server" tags to the command.
+         * 
+         * @return reference to the builder
+         */
+        CommandBuilder &is_core();
+
+        /**
          * Reset the builder to its initial state
          */
         void reset();
@@ -148,6 +180,7 @@ namespace Balltze {
         std::string m_params_help;
         std::size_t m_min_args = 0;
         std::size_t m_max_args = 0;
+        std::vector<std::string> m_tags;
 
         /**
          * Validate the command

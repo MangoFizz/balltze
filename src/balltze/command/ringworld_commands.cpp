@@ -22,6 +22,7 @@ namespace Balltze {
                 console_globals->console_is_enabled = STR_TO_BOOL(args[0].c_str());
                 return true;
             })
+            .is_client_side()
             .create(COMMAND_SOURCE_RINGWORLD);
 
         CommandBuilder()
@@ -54,6 +55,7 @@ namespace Balltze {
                 }
                 return true;
             })
+            .is_client_side()
             .create(COMMAND_SOURCE_RINGWORLD);
 
         CommandBuilder()
@@ -81,6 +83,7 @@ namespace Balltze {
                 }
                 return true;
             })
+            .is_client_side()
             .create(COMMAND_SOURCE_RINGWORLD);
 
         CommandBuilder()
@@ -92,6 +95,7 @@ namespace Balltze {
                 terminal_info_printf("Ringworld version %s", RINGWORLD_VERSION_STRING);
                 return true;
             })
+            .is_core()
             .create(COMMAND_SOURCE_RINGWORLD);
     }
 }

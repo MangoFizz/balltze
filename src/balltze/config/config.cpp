@@ -196,6 +196,12 @@ namespace Balltze::Config {
             if(command->source() == COMMAND_SOURCE_PLUGIN || !config.exists(command_key)) {
                 continue;
             }
+
+            if(!command->is_available()) {
+                logger.debug("Skipping command {} as it is not available in the current context", command->full_name());
+                continue;
+            }
+
             bool failed = false;
             auto command_value = config.get<std::string>(command_key);
             if(command_value) {

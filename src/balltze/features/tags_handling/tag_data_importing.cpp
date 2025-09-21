@@ -954,6 +954,7 @@ namespace Balltze::Features {
                 return true;
             })
             .can_call_from_console()
+            .is_core()
             .create(COMMAND_SOURCE_BALLTZE);
     }
 }

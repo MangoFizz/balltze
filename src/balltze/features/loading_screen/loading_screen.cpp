@@ -228,6 +228,7 @@ namespace Balltze::Features {
             .param(HSC_DATA_TYPE_BOOLEAN, "setting", true)
             .function(loading_screen_enable_command)
             .can_call_from_console()
+            .is_client_side()
             .create();
 
         auto enable = Config::get_config().get<bool>("loading_screen.enable").value_or(true);

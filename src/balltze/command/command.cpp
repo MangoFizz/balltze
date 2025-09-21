@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <balltze/events/console.hpp>
+#include <balltze/api.hpp>
 #include <impl/terminal/terminal.h>
 #include "../config/config.hpp"
 #include "../plugins/plugin.hpp"
@@ -81,6 +82,31 @@ namespace Balltze {
         return *this;
     }
 
+    CommandBuilder &CommandBuilder::tag(const std::string &tag) {
+        // Prevent duplicate tags
+        if(std::find(m_tags.begin(), m_tags.end(), tag) == m_tags.end()) {
+            m_tags.push_back(tag);
+        }
+        return *this;
+    }
+
+    CommandBuilder &CommandBuilder::is_client_side() {
+        this->tag("client");
+        return *this;
+    }
+
+    CommandBuilder &CommandBuilder::is_server_side() {
+        this->tag("server");
+        return *this;
+    }
+
+    CommandBuilder &CommandBuilder::is_core() {
+        this->tag("core");
+        this->tag("client");
+        this->tag("server");
+        return *this;
+    }
+
     void CommandBuilder::create(int source) const noexcept {
         if(!validate()) {
             throw std::runtime_error("Command is invalid or incomplete");
@@ -110,8 +136,8 @@ namespace Balltze {
         }
 
         commands.emplace_back(std::make_unique<Command>(m_name, m_category, m_help,
-            params_help.empty() ? std::nullopt : std::optional<std::string>(params_help), m_function, m_autosave,
-            m_min_args, m_max_args, m_can_call_from_console, m_is_public, default_value, command_source, command_plugin));
+            params_help.empty() ? std::nullopt : std::optional<std::string>(params_help), m_function, m_autosave, m_min_args, 
+            m_max_args, m_can_call_from_console, m_is_public, default_value, command_source, command_plugin, m_tags));
     }
 
     bool CommandBuilder::validate() const {
@@ -196,6 +222,14 @@ namespace Balltze {
         return this->m_default_value;
     }
 
+    const std::vector<std::string> &Command::tags() const noexcept {
+        return this->m_tags;
+    }
+
+    bool Command::has_tag(const std::string &tag) const noexcept {
+        return std::find(m_tags.begin(), m_tags.end(), tag) != m_tags.end();
+    }
+
     CommandResult Command::call(const std::vector<std::string> &arguments) const noexcept {
         if(m_function == nullptr) {
             logger.debug("Command {} function has a null pointer", m_name);
@@ -212,6 +246,18 @@ namespace Balltze {
         }
     }
 
+    bool Command::is_available() const noexcept {
+        if(!this->has_tag("core")) {
+            if(get_balltze_side() == BALLTZE_SIDE_CLIENT && !this->has_tag("client")) {
+                return false;
+            }
+            if(get_balltze_side() == BALLTZE_SIDE_DEDICATED_SERVER && !this->has_tag("server")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     static auto to_lower(std::string str) {
         std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
             return std::tolower(c);
@@ -221,10 +267,10 @@ namespace Balltze {
 
     Command::Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, 
         CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console, 
-        bool is_public, std::string default_value, CommandSource source, Plugins::Plugin *plugin) : 
+        bool is_public, std::string default_value, CommandSource source, Plugins::Plugin *plugin, std::vector<std::string> tags) : 
         m_name(name), m_category(category), m_help(help), m_params_help(params_help), m_function(function), 
         m_autosave(autosave), m_min_args(min_args), m_max_args(max_args), m_can_call_from_console(can_call_from_console), 
-        m_public(is_public), m_source(source), m_plugin(plugin), m_default_value(default_value) {
+        m_public(is_public), m_source(source), m_plugin(plugin), m_default_value(default_value), m_tags(tags) {
 
         m_name = to_lower(m_name);
         if(m_min_args > m_max_args) {
@@ -322,6 +368,10 @@ namespace Balltze {
                     return COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
                 }
             }
+        }
+
+        if(!command->is_available()) {
+            return COMMAND_RESULT_FAILED_ERROR_NOT_FOUND;
         }
 
         CommandResult res;

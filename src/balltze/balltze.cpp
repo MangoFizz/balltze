@@ -91,6 +91,7 @@ namespace Balltze {
                     return true;
                 })
                 .can_call_from_console()
+                .is_core()
                 .create();
 
             CommandBuilder()
@@ -105,6 +106,7 @@ namespace Balltze {
                 })
                 .autosave()
                 .can_call_from_console()
+                .is_client_side()
                 .create();
 
             Config::load_commands_settings();

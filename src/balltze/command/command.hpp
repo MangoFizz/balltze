@@ -109,12 +109,34 @@ namespace Balltze {
         const std::string &default_value() const noexcept;
 
         /**
+         * Get the tag of the command
+         * 
+         * @return tag of the command
+         */
+        const std::vector<std::string> &tags() const noexcept;
+
+        /**
+         * Check if the command has a specific tag
+         * 
+         * @param tag tag to check
+         * @return true if the command has the tag, false otherwise
+         */
+        bool has_tag(const std::string &tag) const noexcept;
+
+        /**
          * Call the function with the given arguments
          * 
          * @param  args array of arguments
          * @return      result of command
          */
         virtual CommandResult call(const std::vector<std::string> &arguments) const noexcept;
+
+        /**
+         * Check if the command is available in the current context
+         * 
+         * @return true if the command is available, false otherwise
+         */
+        bool is_available() const noexcept;
 
         /**
          * Instantiate a command
@@ -133,8 +155,10 @@ namespace Balltze {
          * @param plugin  handle of the plugin that registered the command (only if source is plugin)
          */
         Command(std::string name, std::string category, std::string help, std::optional<std::string> params_help, 
-            CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, bool can_call_from_console = true, 
-            bool is_public = false, std::string default_value = "", CommandSource source = COMMAND_SOURCE_BALLTZE, Plugins::Plugin *plugin = nullptr);
+            CommandFunction function, bool autosave, std::size_t min_args, std::size_t max_args, 
+            bool can_call_from_console = true, bool is_public = false, std::string default_value = "", 
+            CommandSource source = COMMAND_SOURCE_BALLTZE, Plugins::Plugin *plugin = nullptr, 
+            std::vector<std::string> tags = {});
 
     protected:
         std::string m_name;
@@ -159,6 +183,7 @@ namespace Balltze {
         std::size_t m_max_args = 0;
         bool m_can_call_from_console = true;
         bool m_public = false;
+        std::vector<std::string> m_tags;
     };
 
     /** 

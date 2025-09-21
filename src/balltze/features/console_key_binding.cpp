@@ -34,6 +34,7 @@ namespace Balltze::Features {
             .autosave()
             .is_public()
             .can_call_from_console()
+            .is_client_side()
             .create();
     }
 }
