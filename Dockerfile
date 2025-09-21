@@ -25,7 +25,8 @@ RUN pacman -Syu --noconfirm --disable-sandbox
 # Add packages to the base system
 RUN pacman -S --noconfirm --disable-sandbox \
         base-devel cmake git go wine patch wget \
-        mingw-w64 ninja expac nano openssh vim lua53
+        mingw-w64 ninja expac nano openssh vim lua53 \
+        python check-jsonschema
 
 ENV EDITOR=nano
 
